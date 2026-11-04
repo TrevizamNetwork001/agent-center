@@ -26,4 +26,19 @@ class Diagnostic extends Model
     {
         static::addGlobalScope(new TenantScope);
     }
+
+    public function profile()
+    {
+        return $this->belongsTo(Profile::class);
+    }
+
+    public function agent()
+    {
+        return $this->belongsTo(Agent::class);
+    }
+
+    public function conclusion()
+    {
+        return $this->hasOne(DiagnosticConclusion::class);
+    }
 }

@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Diagnostics\WorkerHealth;
 use App\Models\Agent;
-use App\Models\AgentTask;
-use App\Models\AgentTaskAttempt;
-use Illuminate\Support\Facades\DB;
+use App\Web\OperationalSnapshot;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class OperationsController extends Controller
 {
-    public function __invoke()
+    public function __invoke(Request $r, OperationalSnapshot $snapshot)
     {
         Gate::authorize('manage-diagnostic-catalog');
-        DB::select('SELECT 1');
+        $data = ['health' => $snapshot->get(), 'agents' => Agent::orderBy('name')->paginate(25)];
+        if ($r->boolean('fragment')) {
+            return response()->view('diagnostics.operations-content', $data)->header('X-AC-Fragment', 'operations-panel');
+        }
 
-        return view('diagnostics.operations', ['worker' => WorkerHealth::healthy(), 'agents' => Agent::orderBy('name')->get(), 'active' => AgentTask::whereIn('status', ['CLAIMED', 'RUNNING'])->count(), 'stale' => AgentTaskAttempt::whereIn('status', ['CLAIMED', 'RUNNING'])->whereRaw('lease_expires_at <= clock_timestamp()')->count(), 'failed' => AgentTaskAttempt::whereIn('status', ['FAILED', 'EXPIRED'])->count()]);
+        return view('diagnostics.operations', $data);
     }
 }

@@ -21,6 +21,31 @@ class DiagnosticCatalogController extends Controller
         return view('diagnostics.catalog', ['profiles' => Profile::orderBy('display_name')->get(), 'skills' => Skill::orderBy('key')->get(), 'fixtures' => session('fixtures', [])]);
     }
 
+    public function profiles()
+    {
+        Gate::authorize('manage-diagnostic-catalog');
+        app(Catalog::class)->ensure();
+
+        return view('diagnostics.profiles', ['profiles' => Profile::orderBy('display_name')->get()]);
+    }
+
+    public function skills()
+    {
+        Gate::authorize('manage-diagnostic-catalog');
+        app(Catalog::class)->ensure();
+
+        return view('diagnostics.skills', ['skills' => Skill::orderBy('display_name')->get()]);
+    }
+
+    public function show(Profile $profile)
+    {
+        Gate::authorize('manage-diagnostic-catalog');
+
+        return view('diagnostics.profile', ['profile' => $profile, 'fixtures' => session('fixtures', []), 'skills' => Skill::whereIn('key', match ($profile->key) {
+            'PROBLEMA_DNS' => ['dns_lookup'],'PERDA_LATENCIA' => ['dns_lookup', 'icmp_ping', 'traceroute'],default => ['dns_lookup', 'tcp_connect', 'http_probe', 'icmp_ping', 'traceroute']
+        })->get()]);
+    }
+
     public function profile(CatalogRequest $r, Profile $profile, Audit $audit)
     {
         DB::transaction(function () use ($r, $profile, $audit) {

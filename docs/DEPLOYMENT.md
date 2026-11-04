@@ -80,3 +80,16 @@ Rollback preservando evidências:
 ```
 
 Não remover volumes nem executar down de migrations em produção. Manter a nova imagem para investigação. Agents sem opt-in de protocolo continuam sem receber tarefas; para interromper Agents novos, parar serviços locais com procedimento autorizado. Nunca restaurar journal antigo sobre state atual.
+
+## RECOVERY-4
+
+Preservar recovery3 como agent-center-central:recovery4-rollback-1f36c51. Aplicar a migration aditiva de índices com migrator, subir a imagem recovery4 em web/worker/diagnostic-worker e recarregar somente o Nginx do projeto. Validar live/ready, assets locais e health do worker.
+
+Rollback sem apagar evidências:
+
+```sh
+./scripts/compose.sh -f deploy/rollback-recovery4.yaml up -d --no-deps --no-build web worker diagnostic-worker
+./scripts/compose.sh exec -T nginx nginx -s reload
+```
+
+A imagem anterior possui seu layout inline; assets novos não são exigidos por ela. Índices novos podem permanecer. Não executar migrate:rollback em produção nem remover volumes.

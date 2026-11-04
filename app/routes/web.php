@@ -36,6 +36,10 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->prefix('agents'
 
 Route::middleware(['auth', 'auth.session', 'password.changed'])->group(function () {
     Route::get('/diagnostics', [DiagnosticController::class, 'index'])->name('diagnostics.index');
+    Route::get('/diagnostics/history', [DiagnosticController::class, 'history'])->name('diagnostics.history');
+    Route::get('/profiles', [DiagnosticCatalogController::class, 'profiles'])->name('profiles.index');
+    Route::get('/skills', [DiagnosticCatalogController::class, 'skills'])->name('skills.index');
+    Route::get('/profiles/{profile}', [DiagnosticCatalogController::class, 'show'])->whereUuid('profile')->name('profiles.show');
     Route::get('/diagnostics/create', [DiagnosticController::class, 'create'])->name('diagnostics.create');
     Route::post('/diagnostics', [DiagnosticController::class, 'store'])->name('diagnostics.store');
     Route::get('/diagnostics/{diagnostic}', [DiagnosticController::class, 'show'])->whereUuid('diagnostic')->name('diagnostics.show');

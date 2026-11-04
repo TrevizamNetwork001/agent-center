@@ -1,3 +1,3 @@
 @extends('layout')
-@section('content')<h1>Diagnósticos</h1>@can('create',App\Models\Diagnostic::class)<a href="{{route('diagnostics.create')}}">Novo diagnóstico</a>@endcan
-<div class="table"><table><tr><th>Alvo</th><th>Status</th><th>Criado</th></tr>@foreach($diagnostics as $d)<tr><td><a href="{{route('diagnostics.show',$d)}}">{{$d->target}}</a></td><td>{{$d->status}}</td><td>{{$d->created_at}}</td></tr>@endforeach</table></div>{{$diagnostics->links()}}@endsection
+@section('title','Diagnósticos')
+@section('content')<div class="page-header"><div><div class="eyebrow">INVESTIGAR</div><h1>Diagnósticos</h1><p>Da hipótese à evidência, com execução controlada.</p></div><div class="actions"><a class="button button-secondary" href="{{route('diagnostics.history')}}">Histórico</a>@can('create',App\Models\Diagnostic::class)<a class="button" href="{{route('diagnostics.create')}}"><x-icon name="plus"/>Novo diagnóstico</a>@endcan</div></div><section class="card table-card">@include('diagnostics.table')@include('shared.pagination',['items'=>$diagnostics])</section>@endsection

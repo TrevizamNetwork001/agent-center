@@ -1,0 +1,1 @@
+@props(['value'=>null])<span class="badge badge-{{\App\Web\Presentation::tone($value)}}" data-state="{{$value}}"><span class="status-dot" aria-hidden="true"></span>{{\App\Web\Presentation::label($value)}}</span>

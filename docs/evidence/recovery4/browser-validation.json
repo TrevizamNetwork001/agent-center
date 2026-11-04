@@ -1,0 +1,430 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "name": "local_css_link",
+      "pass": true
+    },
+    {
+      "name": "login_native_session",
+      "pass": true
+    },
+    {
+      "name": "live_claim_start_for_progress",
+      "pass": true
+    },
+    {
+      "name": "refresh_pauses_for_confirmation",
+      "pass": true
+    },
+    {
+      "name": "escape_did_not_cancel_diagnostic",
+      "pass": true
+    },
+    {
+      "name": "dashboard_desktop_http",
+      "pass": true
+    },
+    {
+      "name": "dashboard_desktop_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "dashboard_desktop_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "agents_desktop_http",
+      "pass": true
+    },
+    {
+      "name": "agents_desktop_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "agents_desktop_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "new-diagnostic_desktop_http",
+      "pass": true
+    },
+    {
+      "name": "new-diagnostic_desktop_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "new-diagnostic_desktop_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "progress_desktop_http",
+      "pass": true
+    },
+    {
+      "name": "progress_desktop_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "progress_desktop_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "result_desktop_http",
+      "pass": true
+    },
+    {
+      "name": "result_desktop_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "result_desktop_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "history_desktop_http",
+      "pass": true
+    },
+    {
+      "name": "history_desktop_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "history_desktop_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "operations_desktop_http",
+      "pass": true
+    },
+    {
+      "name": "operations_desktop_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "operations_desktop_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "profiles_desktop_http",
+      "pass": true
+    },
+    {
+      "name": "profiles_desktop_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "profiles_desktop_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "skills_desktop_http",
+      "pass": true
+    },
+    {
+      "name": "skills_desktop_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "skills_desktop_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "audit_desktop_http",
+      "pass": true
+    },
+    {
+      "name": "audit_desktop_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "audit_desktop_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "dashboard_mobile_http",
+      "pass": true
+    },
+    {
+      "name": "dashboard_mobile_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "dashboard_mobile_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "agents_mobile_http",
+      "pass": true
+    },
+    {
+      "name": "agents_mobile_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "agents_mobile_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "new-diagnostic_mobile_http",
+      "pass": true
+    },
+    {
+      "name": "new-diagnostic_mobile_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "new-diagnostic_mobile_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "progress_mobile_http",
+      "pass": true
+    },
+    {
+      "name": "progress_mobile_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "progress_mobile_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "result_mobile_http",
+      "pass": true
+    },
+    {
+      "name": "result_mobile_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "result_mobile_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "history_mobile_http",
+      "pass": true
+    },
+    {
+      "name": "history_mobile_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "history_mobile_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "operations_mobile_http",
+      "pass": true
+    },
+    {
+      "name": "operations_mobile_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "operations_mobile_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "profiles_mobile_http",
+      "pass": true
+    },
+    {
+      "name": "profiles_mobile_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "profiles_mobile_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "skills_mobile_http",
+      "pass": true
+    },
+    {
+      "name": "skills_mobile_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "skills_mobile_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "audit_mobile_http",
+      "pass": true
+    },
+    {
+      "name": "audit_mobile_no_page_overflow",
+      "pass": true
+    },
+    {
+      "name": "audit_mobile_no_secrets",
+      "pass": true
+    },
+    {
+      "name": "responsive_1024__dashboard",
+      "pass": true
+    },
+    {
+      "name": "responsive_1024__agents",
+      "pass": true
+    },
+    {
+      "name": "responsive_1024__diagnostics_history",
+      "pass": true
+    },
+    {
+      "name": "responsive_1024__operations",
+      "pass": true
+    },
+    {
+      "name": "responsive_1024__profiles",
+      "pass": true
+    },
+    {
+      "name": "responsive_1024__skills",
+      "pass": true
+    },
+    {
+      "name": "responsive_768__dashboard",
+      "pass": true
+    },
+    {
+      "name": "responsive_768__agents",
+      "pass": true
+    },
+    {
+      "name": "responsive_768__diagnostics_history",
+      "pass": true
+    },
+    {
+      "name": "responsive_768__operations",
+      "pass": true
+    },
+    {
+      "name": "responsive_768__profiles",
+      "pass": true
+    },
+    {
+      "name": "responsive_768__skills",
+      "pass": true
+    },
+    {
+      "name": "responsive_360__dashboard",
+      "pass": true
+    },
+    {
+      "name": "responsive_360__agents",
+      "pass": true
+    },
+    {
+      "name": "responsive_360__diagnostics_history",
+      "pass": true
+    },
+    {
+      "name": "responsive_360__operations",
+      "pass": true
+    },
+    {
+      "name": "responsive_360__profiles",
+      "pass": true
+    },
+    {
+      "name": "responsive_360__skills",
+      "pass": true
+    },
+    {
+      "name": "mobile_navigation_visible",
+      "pass": true
+    },
+    {
+      "name": "mobile_navigation_escape",
+      "pass": true
+    },
+    {
+      "name": "destructive_confirmation",
+      "pass": true
+    },
+    {
+      "name": "destructive_escape_cancels",
+      "pass": true
+    },
+    {
+      "name": "escape_did_not_revoke",
+      "pass": true
+    },
+    {
+      "name": "history_filter_real_rows",
+      "pass": true
+    },
+    {
+      "name": "history_filtered_target",
+      "pass": true
+    },
+    {
+      "name": "refresh_no_document_navigation",
+      "pass": true
+    },
+    {
+      "name": "refresh_preserves_open_details",
+      "pass": true
+    },
+    {
+      "name": "changed_tenant_stops_refresh",
+      "pass": true
+    },
+    {
+      "name": "changed_tenant_does_not_replace_content",
+      "pass": true
+    },
+    {
+      "name": "no_browser_script_errors",
+      "pass": true
+    },
+    {
+      "name": "palette_contrast_wcag_aa",
+      "pass": true
+    }
+  ],
+  "contrast": [
+    {
+      "foreground": "17283e",
+      "background": "ffffff",
+      "ratio": 14.898810379599116
+    },
+    {
+      "foreground": "5c6d80",
+      "background": "ffffff",
+      "ratio": 5.310781261975421
+    },
+    {
+      "foreground": "14734f",
+      "background": "edf8f2",
+      "ratio": 5.3714452145183404
+    },
+    {
+      "foreground": "8b5709",
+      "background": "fff5dd",
+      "ratio": 5.58642557357199
+    },
+    {
+      "foreground": "ac3037",
+      "background": "fff0f0",
+      "ratio": 5.8706138797737095
+    },
+    {
+      "foreground": "215bcc",
+      "background": "ffffff",
+      "ratio": 6.117049802014443
+    }
+  ],
+  "viewports": [
+    "1366x768",
+    "1024x700",
+    "768x1024",
+    "390x844",
+    "360x740"
+  ],
+  "screenshots": 22,
+  "source": "Real Chromium renders of isolated Laravel/PostgreSQL lab; persisted synthetic fixtures, no production data."
+}

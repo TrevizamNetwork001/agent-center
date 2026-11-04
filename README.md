@@ -44,3 +44,7 @@ Réplica externa de backup ainda depende de destino/chave reais. Procedimentos e
 ## RECOVERY-3
 
 Diagnósticos determinísticos, seis Profiles e seis Skills fechadas, Task Engine com leases/fencing e worker funcional. Documentação: [Task Engine](docs/TASK_ENGINE.md), [Diagnósticos](docs/DIAGNOSTICS.md), [Profiles/Skills](docs/PROFILES_AND_SKILLS.md), [Saúde](docs/OPERATIONS_HEALTH.md), [Vendors desativados](docs/VENDOR_SKILLS_ROADMAP.md).
+
+## RECOVERY-4
+
+Experiência operacional com dashboard real, navegação por grupos, filtros de histórico, Perfis/Skills, saúde dedicada e atualização por fragmentos. [WEB_UX](docs/WEB_UX.md) · [Galeria desktop/mobile](docs/evidence/recovery4/README.md).

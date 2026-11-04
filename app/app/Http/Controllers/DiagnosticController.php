@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Diagnostics\Catalog;
 use App\Diagnostics\Engine;
 use App\Http\Requests\DiagnosticRequest;
+use App\Http\Requests\HistoryRequest;
 use App\Models\Agent;
 use App\Models\Diagnostic;
 use App\Models\DiagnosticConclusion;
 use App\Models\DiagnosticPlan;
 use App\Models\DiagnosticStep;
 use App\Models\Profile;
+use Carbon\CarbonImmutable;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class DiagnosticController extends Controller
@@ -19,7 +22,30 @@ class DiagnosticController extends Controller
     {
         Gate::authorize('viewAny', Diagnostic::class);
 
-        return view('diagnostics.index', ['diagnostics' => Diagnostic::latest()->paginate(30)]);
+        return view('diagnostics.index', ['diagnostics' => Diagnostic::with(['profile', 'agent', 'conclusion'])->latest()->paginate(25)]);
+    }
+
+    public function history(HistoryRequest $r)
+    {
+        $f = $r->validated();
+        $q = Diagnostic::query();
+        if ($f['from'] ?? null) {
+            $q->where('created_at', '>=', CarbonImmutable::parse($f['from'])->startOfDay());
+        }if ($f['until'] ?? null) {
+            $q->where('created_at', '<', CarbonImmutable::parse($f['until'])->addDay()->startOfDay());
+        }
+        foreach (['profile_id', 'agent_id', 'status'] as $key) {
+            if ($f[$key] ?? null) {
+                $q->where($key, $f[$key]);
+            }
+        }if ($f['target'] ?? null) {
+            $q->where('target', 'ilike', '%'.addcslashes($f['target'], '%_\\').'%');
+        }
+        if ($f['classification'] ?? null) {
+            $q->whereHas('conclusion', fn ($c) => $c->where('classification', $f['classification']));
+        }
+
+        return view('diagnostics.history', ['diagnostics' => $q->with(['profile', 'agent', 'conclusion'])->latest()->paginate(25)->withQueryString(), 'profiles' => Profile::orderBy('display_name')->get(['id', 'display_name']), 'agents' => Agent::orderBy('name')->limit(100)->get(['id', 'name'])]);
     }
 
     public function create()
@@ -37,11 +63,16 @@ class DiagnosticController extends Controller
         return redirect()->route('diagnostics.show', $d);
     }
 
-    public function show(Diagnostic $diagnostic)
+    public function show(Diagnostic $diagnostic, Request $r)
     {
         Gate::authorize('view', $diagnostic);
 
-        return view('diagnostics.show', ['diagnostic' => $diagnostic, 'steps' => DiagnosticStep::where('diagnostic_id', $diagnostic->id)->orderBy('wave')->orderBy('key')->get(), 'plan' => DiagnosticPlan::where('diagnostic_id', $diagnostic->id)->first(), 'conclusion' => DiagnosticConclusion::where('diagnostic_id', $diagnostic->id)->first()]);
+        $data = ['diagnostic' => $diagnostic, 'steps' => DiagnosticStep::where('diagnostic_id', $diagnostic->id)->orderBy('wave')->orderBy('key')->get(), 'plan' => DiagnosticPlan::where('diagnostic_id', $diagnostic->id)->first(), 'conclusion' => DiagnosticConclusion::where('diagnostic_id', $diagnostic->id)->first()];
+        if ($r->boolean('fragment')) {
+            return response()->view('diagnostics.result', $data)->header('X-AC-Fragment', 'diagnostic-panel');
+        }
+
+        return view('diagnostics.show', $data);
     }
 
     public function cancel(Diagnostic $diagnostic, Engine $engine)

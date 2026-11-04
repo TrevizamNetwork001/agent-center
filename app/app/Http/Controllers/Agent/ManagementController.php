@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Agent\EnrollmentRequest;
 use App\Models\Agent;
 use App\Models\AgentEnrollment;
+use App\Models\AuditEvent;
 use App\Services\Audit;
 use App\Tenancy\TenantContext;
 use Illuminate\Http\Request;
@@ -15,18 +16,25 @@ use Illuminate\Support\Str;
 
 class ManagementController extends Controller
 {
-    public function index()
+    public function index(Request $r)
     {
         Gate::authorize('viewAny', Agent::class);
 
-        return view('agents.index', ['agents' => Agent::orderBy('name')->paginate(25)]);
+        $data = ['agents' => Agent::orderBy('name')->paginate(25)];
+        if ($r->boolean('fragment')) {
+            return response()->view('agents.list', $data)->header('X-AC-Fragment', 'agents-panel');
+        }
+
+        return view('agents.index', $data);
     }
 
     public function show(Agent $agent)
     {
         Gate::authorize('view', $agent);
 
-        return view('agents.show', compact('agent'));
+        $events = Gate::allows('view-audit') ? AuditEvent::where('metadata->agent_id', $agent->id)->with(['actor', 'tenant'])->latest('id')->limit(10)->get() : collect();
+
+        return view('agents.show', compact('agent', 'events'));
     }
 
     public function enrollment(EnrollmentRequest $r, TenantContext $c, Audit $audit)

@@ -1,8 +1,3 @@
 @extends('layout')
-@section('content')
-<h1>Dashboard</h1><section class="card"><h2>{{ auth()->user()->name }}</h2>
-<p>{{ auth()->user()->email }}</p><p>Papel: <strong>{{ auth()->user()->role->value }}</strong></p>
-<p>Tenant: <strong>{{ $tenant?->name ?? 'Contexto da plataforma' }}</strong></p>
-@if($activeUsers !== null)<p>Usuários ativos neste tenant: <strong>{{ $activeUsers }}</strong></p>@else<p>Selecione um tenant na página Tenants para administrar seus usuários.</p>@endif</section>
-<section class="card"><h2>Eventos recentes</h2>@include('audit.table')</section>
-@endsection
+@section('title','Visão geral')
+@section('content')<div class="page-header"><div><div class="eyebrow">NOC INTELLIGENCE</div><h1>Visão geral</h1><p>O essencial para observar, investigar e decidir.</p></div>@can('create',App\Models\Diagnostic::class)<a class="button" href="{{route('diagnostics.create')}}"><x-icon name="plus"/>Novo diagnóstico</a>@endcan</div><div id="dashboard-panel" @if($tenant) data-live-panel data-tenant="{{app(\App\Tenancy\TenantContext::class)->tenantId}}" data-interval="10000" @endif>@include('dashboard.content')</div>@if($tenant)@include('shared.refresh',['panel'=>'dashboard-panel'])@endif @endsection

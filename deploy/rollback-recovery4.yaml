@@ -1,0 +1,8 @@
+# Preserve application data and the additive read indexes.
+services:
+  web:
+    image: agent-center-central:recovery4-rollback-1f36c51
+  worker:
+    image: agent-center-central:recovery4-rollback-1f36c51
+  diagnostic-worker:
+    image: agent-center-central:recovery4-rollback-1f36c51

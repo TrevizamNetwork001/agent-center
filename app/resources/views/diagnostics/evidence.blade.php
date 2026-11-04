@@ -1,0 +1,7 @@
+@php($r=$step->result??[])@php($d=$r['data']??[])
+@if($step->capability==='dns_lookup:v1')<strong>{{$d['record_type']??($step->definition['input']['record_type']??'DNS')}}</strong><span>{{isset($d['answers'])?(count($d['answers'])?implode(', ',$d['answers']):'Sem respostas'):\App\Web\Presentation::label($step->status)}}</span>
+@elseif($step->capability==='tcp_connect:v1')<strong>TCP 443</strong><span>{{isset($d['connected'])?($d['connected']?'Conexão estabelecida':'Conexão não estabelecida'):\App\Web\Presentation::label($step->status)}}</span>
+@elseif($step->capability==='http_probe:v1')<strong>HTTPS</strong>@if(isset($d['status']))<span>HTTP {{$d['status']}}</span><span>TLS {{$d['tls']?'validado':'não validado'}}</span>@else<span>{{\App\Web\Presentation::label($step->status)}}</span>@endif
+@elseif($step->capability==='icmp_ping:v1')<strong>ICMP</strong>@if(isset($d['loss_percent']))<span>Perda {{$d['loss_percent']}}%</span><span>Recebidos {{$d['received']}}/{{$d['sent']}}</span>@if(isset($d['avg_ms']))<span>Média {{$d['avg_ms']}}ms</span>@endif @else<span>{{\App\Web\Presentation::label($step->status)}}</span>@endif
+@else<strong>Rota</strong><span>{{isset($d['hops'])?count($d['hops']).' saltos observados':\App\Web\Presentation::label($step->status)}}</span>@endif
+@if(isset($d['duration_ms']))<span>{{$d['duration_ms']}}ms</span>@endif @if($r['error']??$d['error']??null)<span>{{$r['error']??$d['error']}}</span>@endif

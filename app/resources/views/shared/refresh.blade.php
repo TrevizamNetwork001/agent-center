@@ -1,0 +1,1 @@
+<p class="refresh-line" data-refresh-for="{{$panel}}" role="status" aria-live="polite"><span class="status-dot" aria-hidden="true"></span><span>Atualização automática · últimos dados desta consulta</span></p>

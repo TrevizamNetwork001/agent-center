@@ -33,6 +33,9 @@ class ResolveTenant
 
             $response = $next($request);
             $response->headers->set('Cache-Control', 'no-store, private');
+            if ($response->headers->has('X-AC-Fragment')) {
+                $response->headers->set('X-AC-Tenant', (string) ($context->tenantId ?? 'platform'));
+            }
 
             return $response;
         } finally {

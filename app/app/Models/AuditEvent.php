@@ -23,4 +23,14 @@ class AuditEvent extends Model
         static::updating(fn () => throw new LogicException('Auditoria imutável.'));
         static::deleting(fn () => throw new LogicException('Auditoria imutável.'));
     }
+
+    public function actor()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
+    }
 }
