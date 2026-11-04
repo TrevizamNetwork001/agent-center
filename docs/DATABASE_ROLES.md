@@ -36,3 +36,7 @@ Não inventar certificados/domínio nem usar sslmode=disable ou desabilitar vali
 Runtime: SELECT/INSERT/UPDATE em skills, profiles, diagnostics, diagnostic_steps, agent_tasks e agent_task_attempts; SELECT/INSERT apenas em diagnostic_plans/diagnostic_conclusions. Sem DELETE, DDL, ownership ou BYPASSRLS. Todas as oito tabelas têm ENABLE/FORCE RLS com tenant_id; FKs compostas amarram Agent/diagnóstico/step/task ao mesmo tenant. Não há bypass de platform_admin nas tabelas de domínio. Worker usa a mesma role runtime nesta fase; separação adicional por workload é evolução possível.
 
 Restore inclui schemas, índices, triggers, dados e policies; reaplicar scripts/db-grants.sh no destino. TLS prefer atual permanece; HOSTSSL/verify-full preparados exigem PKI final.
+
+## RECOVERY-5
+
+Dez tabelas adicionais FORCE RLS (total 23). Runtime SELECT/INSERT/UPDATE em knowledge_items, prompts, llm_providers, llm_models e llm_bindings; SELECT/INSERT somente em payloads versionados, version_events, diagnostic_interpretations e interpretation_sources. Views knowledge_versions/prompt_versions recebem SELECT e security_invoker=true, preservando RLS do caller. Sem DELETE, owner ou BYPASSRLS. FKs compostas impedem vínculos entre tenants.

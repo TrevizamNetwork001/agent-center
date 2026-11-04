@@ -14,3 +14,7 @@ SELECT format('GRANT SELECT, INSERT ON TABLE public.%I TO %I', tablename, :'runt
 SELECT format('GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.%I TO %I', tablename, :'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('sessions','cache','cache_locks','jobs','job_batches','failed_jobs','password_reset_tokens') \gexec
 SELECT format('GRANT SELECT ON TABLE public.migrations TO %I', :'runtime_user') WHERE to_regclass('public.migrations') IS NOT NULL \gexec
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO :"runtime_user";
+
+SELECT format('GRANT SELECT, INSERT, UPDATE ON TABLE public.%I TO %I', tablename, :'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('knowledge_items','prompts','llm_providers','llm_models','llm_bindings') \gexec
+SELECT format('GRANT SELECT, INSERT ON TABLE public.%I TO %I', tablename, :'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('knowledge_version_contents','prompt_version_contents','version_events','diagnostic_interpretations','interpretation_sources') \gexec
+SELECT format('GRANT SELECT ON TABLE public.%I TO %I', viewname, :'runtime_user') FROM pg_views WHERE schemaname='public' AND viewname IN ('knowledge_versions','prompt_versions') \gexec

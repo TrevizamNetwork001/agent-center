@@ -9,6 +9,7 @@ use App\Http\Requests\HistoryRequest;
 use App\Models\Agent;
 use App\Models\Diagnostic;
 use App\Models\DiagnosticConclusion;
+use App\Models\DiagnosticInterpretation;
 use App\Models\DiagnosticPlan;
 use App\Models\DiagnosticStep;
 use App\Models\Profile;
@@ -67,7 +68,8 @@ class DiagnosticController extends Controller
     {
         Gate::authorize('view', $diagnostic);
 
-        $data = ['diagnostic' => $diagnostic, 'steps' => DiagnosticStep::where('diagnostic_id', $diagnostic->id)->orderBy('wave')->orderBy('key')->get(), 'plan' => DiagnosticPlan::where('diagnostic_id', $diagnostic->id)->first(), 'conclusion' => DiagnosticConclusion::where('diagnostic_id', $diagnostic->id)->first()];
+        $interpretation = DiagnosticInterpretation::with('sources')->where('diagnostic_id', $diagnostic->id)->latest('created_at')->first();
+        $data = ['interpretation' => $interpretation, 'diagnostic' => $diagnostic, 'steps' => DiagnosticStep::where('diagnostic_id', $diagnostic->id)->orderBy('wave')->orderBy('key')->get(), 'plan' => DiagnosticPlan::where('diagnostic_id', $diagnostic->id)->first(), 'conclusion' => DiagnosticConclusion::where('diagnostic_id', $diagnostic->id)->first()];
         if ($r->boolean('fragment')) {
             return response()->view('diagnostics.result', $data)->header('X-AC-Fragment', 'diagnostic-panel');
         }

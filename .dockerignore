@@ -14,3 +14,5 @@ app/.phpunit*
 app/AGENTS.md
 app/CLAUDE.md
 app/README.md
+
+secrets/

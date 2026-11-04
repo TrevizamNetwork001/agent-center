@@ -93,3 +93,9 @@ Rollback sem apagar evidências:
 ```
 
 A imagem anterior possui seu layout inline; assets novos não são exigidos por ela. Índices novos podem permanecer. Não executar migrate:rollback em produção nem remover volumes.
+
+## RECOVERY-5
+
+Preparar chave com `python3 scripts/create-llm-key.py` (não sobrescreve existente); backup da chave é obrigatório. Preservar recovery4 como recovery5-rollback-de7d25f. Aplicar migration com migrator, reaplicar db-grants, atualizar web/worker/diagnostic-worker e recarregar Nginx do projeto. LLM_ALLOWED_HOSTS fica vazio até configuração autorizada; não há provider real seedado.
+
+Rollback operacional: `./scripts/compose.sh -f deploy/rollback-recovery5.yaml up -d --no-deps --no-build web worker diagnostic-worker`, seguido de reload Nginx. Preservar schema, versões, ciphertext e master key; não executar migration down ou restaurar DB antigo sobre dados novos.

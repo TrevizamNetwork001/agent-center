@@ -17,3 +17,5 @@ __pycache__/
 *.pyc
 /agent/dist/
 /agent/.ruff_cache/
+
+/secrets/

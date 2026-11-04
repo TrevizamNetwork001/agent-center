@@ -48,3 +48,7 @@ Diagnósticos determinísticos, seis Profiles e seis Skills fechadas, Task Engin
 ## RECOVERY-4
 
 Experiência operacional com dashboard real, navegação por grupos, filtros de histórico, Perfis/Skills, saúde dedicada e atualização por fragmentos. [WEB_UX](docs/WEB_UX.md) · [Galeria desktop/mobile](docs/evidence/recovery4/README.md).
+
+## RECOVERY-5
+
+[Knowledge versionado](docs/KNOWLEDGE.md), [Prompts/preview](docs/PROMPTS.md) e [LLM foundation](docs/LLM.md). Interpretação opcional não altera classificação, tasks ou estado técnico. Sem tools e com fallback determinístico.

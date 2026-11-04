@@ -1,0 +1,8 @@
+# Preserve new tables, encrypted secrets, version history and master key.
+services:
+  web:
+    image: agent-center-central:recovery5-rollback-de7d25f
+  worker:
+    image: agent-center-central:recovery5-rollback-de7d25f
+  diagnostic-worker:
+    image: agent-center-central:recovery5-rollback-de7d25f

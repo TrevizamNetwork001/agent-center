@@ -35,6 +35,9 @@ class AppServiceProvider extends ServiceProvider
                 ->withQuery(fn ($query) => $query->withoutGlobalScope(TenantScope::class));
         });
         Gate::policy(Agent::class, AgentPolicy::class);
+        Gate::define('manage-intelligence', fn (User $u) => (new AgentPolicy)->create($u));
+        Gate::define('read-knowledge', fn (User $u) => (new AgentPolicy)->viewAny($u));
+        RateLimiter::for('llm-call', fn ($r) => [Limit::perMinute(6)->by('user:'.$r->user()->id), Limit::perMinute(30)->by('tenant:'.app(TenantContext::class)->tenantId)]);
         Gate::policy(Diagnostic::class, DiagnosticPolicy::class);
         Gate::define('manage-diagnostic-catalog', fn (User $u) => (new AgentPolicy)->create($u));
         RateLimiter::for('agent-origin', fn ($r) => Limit::perMinute(1200)->by(hash('sha256', (string) $r->ip())));

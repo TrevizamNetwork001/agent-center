@@ -1,0 +1,15 @@
+<?php
+// stdout is a private manifest containing only IDs and verification digest, never the secret.
+require getcwd().'/vendor/autoload.php';$app=require getcwd().'/bootstrap/app.php';$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+use App\Models\{Tenant,User,Agent,Profile,Diagnostic,DiagnosticConclusion,InterpretationSource};
+use App\Knowledge\Versioning;use App\Llm\Configuration;use App\Tenancy\TenantContext;use Illuminate\Support\Facades\{DB,Hash};use Illuminate\Support\Str;
+if(DB::connection()->getDatabaseName()!=='agent_center_lab')throw new RuntimeException('Lab only');$ctx=app(TenantContext::class);
+try{$ctx->apply(platform:true);$t=Tenant::create(['name'=>'RECOVERY-5 isolated restore','slug'=>'recovery5-restore','status'=>'active']);$u=new User;$u->forceFill(['name'=>'Restore fixture','email'=>'restore@example.invalid','password'=>Hash::make(bin2hex(random_bytes(32))),'role'=>'tenant_admin','status'=>'active','must_change_password'=>true,'tenant_id'=>$t->id])->save();$ctx->forUser($u);
+$kb=app(Versioning::class)->create('knowledge',['key'=>'restore-reference','title'=>'Restore reference','category'=>'operations','scope'=>'diagnostic','tags'=>[],'content'=>'Published technical reference.'],$u);$kb=app(Versioning::class)->publish($kb,$u);
+$secret=bin2hex(random_bytes(32));$provider=app(Configuration::class)->provider(null,['name'=>'Restore provider','base_url'=>'https://provider.example.test/v1','timeout'=>2,'enabled'=>true,'api_key'=>$secret],$u);$m=app(Configuration::class)->model(['provider_id'=>$provider->id,'name'=>'Fixture model','model_identifier'=>'fixture','enabled'=>true],$u);app(Configuration::class)->defaults($m,$u);
+app(\App\Diagnostics\Catalog::class)->ensure();$a=new Agent;$a->forceFill(['id'=>(string)Str::uuid(),'tenant_id'=>$t->id,'name'=>'Restore fixture','hostname'=>'lab','status'=>'active','version'=>'0.5.2','token_hash'=>hash('sha256',random_bytes(32)),'capabilities'=>[],'metadata'=>[],'enrolled_at'=>now()])->save();$d=new Diagnostic;$d->forceFill(['id'=>(string)Str::uuid(),'tenant_id'=>$t->id,'agent_id'=>$a->id,'profile_id'=>Profile::where('key','SITE_LENTO')->sole()->id,'created_by'=>$u->id,'target'=>'example.test','status'=>'COMPLETED'])->save();$conclusion=new DiagnosticConclusion;$conclusion->forceFill(['id'=>(string)Str::uuid(),'tenant_id'=>$t->id,'diagnostic_id'=>$d->id,'classification'=>'INCONCLUSIVO','summary'=>'Evidência de fixture.','evidence'=>[],'next_steps'=>[],'created_at'=>now()])->save();
+// Strictly local fake client; it cannot access the network or execute a tool.
+$app->instance(\App\Llm\Client::class,new class extends \App\Llm\Client{public function call($provider,$model,array $messages,?callable $cancelled=null):array{return ['output'=>['summary'=>'Restore fixture interpretation','explanation'=>'Synthetic text for restore validation only.','next_steps'=>['Review fixture evidence.']]];}});
+$i=app(\App\Llm\Interpretation::class)->run($d,$u);
+echo json_encode(['tenant_id'=>$t->id,'provider_id'=>$provider->id,'knowledge_id'=>$kb->id,'expected_sha256'=>hash('sha256',$secret)],JSON_THROW_ON_ERROR);
+}finally{$ctx->apply();}

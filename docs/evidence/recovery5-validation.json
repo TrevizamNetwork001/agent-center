@@ -1,0 +1,16 @@
+{
+  "laravel_tests": 102,
+  "assertions": 880,
+  "rls_tables": 23,
+  "security_invoker_views": [
+    "knowledge_versions",
+    "prompt_versions"
+  ],
+  "restore_data_and_secret": true,
+  "fake_tls_http_tests": true,
+  "live_external_llm_calls": false,
+  "agent_changed": false,
+  "master_key_value_emitted": false,
+  "secret_cipher": "AES-256-GCM",
+  "interpretation_can_change_classification": false
+}

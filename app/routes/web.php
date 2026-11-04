@@ -6,7 +6,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiagnosticCatalogController;
 use App\Http\Controllers\DiagnosticController;
+use App\Http\Controllers\KnowledgeController;
+use App\Http\Controllers\LlmController;
 use App\Http\Controllers\OperationsController;
+use App\Http\Controllers\PromptController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -49,4 +52,32 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->group(function 
     Route::put('/diagnostic-catalog/skills/{skill}', [DiagnosticCatalogController::class, 'skill'])->whereUuid('skill')->name('diagnostic-catalog.skill');
     Route::post('/diagnostic-catalog/profiles/{profile}/fixtures', [DiagnosticCatalogController::class, 'fixtures'])->whereUuid('profile')->name('diagnostic-catalog.fixtures');
     Route::get('/operations', [OperationsController::class, '__invoke'])->name('operations');
+});
+
+Route::middleware(['auth', 'auth.session', 'password.changed'])->group(function () {
+    Route::get('/knowledge', [KnowledgeController::class, 'index'])->name('knowledge.index');
+    Route::get('/knowledge/create', [KnowledgeController::class, 'create'])->name('knowledge.create');
+    Route::post('/knowledge', [KnowledgeController::class, 'store'])->name('knowledge.store');
+    Route::get('/knowledge/{knowledge}', [KnowledgeController::class, 'show'])->whereUuid('knowledge')->name('knowledge.show');
+    Route::post('/knowledge/{knowledge}/draft', [KnowledgeController::class, 'draft'])->whereUuid('knowledge')->name('knowledge.draft');
+    foreach (['publish', 'archive'] as $op) {
+        Route::post('/knowledge/{knowledge}/'.$op, [KnowledgeController::class, $op])->whereUuid('knowledge')->name('knowledge.'.$op);
+    }
+    Route::post('/knowledge/{knowledge}/rollback/{version}', [KnowledgeController::class, 'rollback'])->whereUuid(['knowledge', 'version'])->name('knowledge.rollback');
+    Route::get('/advanced/prompts', [PromptController::class, 'index'])->name('prompts.index');
+    Route::get('/advanced/prompts/create', [PromptController::class, 'create'])->name('prompts.create');
+    Route::post('/advanced/prompts', [PromptController::class, 'store'])->name('prompts.store');
+    Route::get('/advanced/prompts/{prompt}', [PromptController::class, 'show'])->whereUuid('prompt')->name('prompts.show');
+    foreach (['draft', 'publish', 'archive'] as $op) {
+        Route::post('/advanced/prompts/{prompt}/'.$op, [PromptController::class, $op])->whereUuid('prompt')->name('prompts.'.$op);
+    }
+    Route::post('/advanced/prompts/{prompt}/preview/{version}', [PromptController::class, 'preview'])->whereUuid(['prompt', 'version'])->name('prompts.preview');
+    Route::get('/advanced/llm', [LlmController::class, 'index'])->name('llm.index');
+    Route::post('/advanced/llm/providers', [LlmController::class, 'providerStore'])->name('llm.provider.store');
+    Route::put('/advanced/llm/providers/{provider}', [LlmController::class, 'providerUpdate'])->whereUuid('provider')->name('llm.provider.update');
+    Route::post('/advanced/llm/models', [LlmController::class, 'modelStore'])->name('llm.model.store');
+    Route::post('/advanced/llm/bindings', [LlmController::class, 'binding'])->name('llm.binding');
+    Route::post('/advanced/llm/models/{model}/defaults', [LlmController::class, 'defaults'])->whereUuid('model')->name('llm.defaults');
+    Route::post('/advanced/llm/providers/{provider}/test', [LlmController::class, 'test'])->whereUuid('provider')->middleware('throttle:llm-call')->name('llm.test');
+    Route::post('/diagnostics/{diagnostic}/interpret', [LlmController::class, 'interpret'])->whereUuid('diagnostic')->middleware('throttle:llm-call')->name('diagnostics.interpret');
 });

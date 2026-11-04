@@ -1,6 +1,6 @@
 name: agent-center
 x-app: &app
-  image: agent-center-central:recovery4
+  image: agent-center-central:recovery5
   build:
     context: ..
     dockerfile: deploy/php/Dockerfile
@@ -10,6 +10,9 @@ x-app: &app
     APP_ENV: ${APP_ENV:-production}
     APP_KEY: ${APP_KEY:?required}
     APP_DEBUG: 'false'
+    LLM_MASTER_KEY_FILE: /run/secrets/llm-master.key
+    LLM_ALLOWED_HOSTS: ${LLM_ALLOWED_HOSTS:-}
+    LLM_PREVIOUS_KEY_FILES: ${LLM_PREVIOUS_KEY_FILES:-}
     APP_URL: ${APP_URL:-http://127.0.0.1:18083}
     APP_LOCALE: ${APP_LOCALE:-pt_BR}
     TZ: ${TZ:-Europe/Berlin}
@@ -87,6 +90,9 @@ services:
     command: [php, artisan, migrate, '--force']
   web:
     <<: *app
+    volumes:
+      - app_storage:/var/www/html/storage
+      - ../secrets/llm-master.key:/run/secrets/llm-master.key:ro
     healthcheck:
       test: [CMD-SHELL, 'SCRIPT_NAME=/fpm-ping SCRIPT_FILENAME=/fpm-ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000 | grep -q pong']
       interval: 10s
