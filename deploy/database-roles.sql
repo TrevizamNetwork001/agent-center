@@ -1,0 +1,16 @@
+\set ON_ERROR_STOP on
+\set VERBOSITY terse
+SET log_statement = 'none';
+SET log_min_error_statement = 'panic';
+\getenv runtime_user RUNTIME_DB_USER
+\getenv runtime_password RUNTIME_DB_PASSWORD
+SELECT format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT', :'runtime_user') WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname=:'runtime_user') \gexec
+ALTER ROLE :"runtime_user" PASSWORD :'runtime_password' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+GRANT CONNECT ON DATABASE :"DBNAME" TO :"runtime_user";
+REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+GRANT USAGE ON SCHEMA public TO :"runtime_user";
+SELECT format('GRANT SELECT, INSERT, UPDATE ON TABLE public.%I TO %I', tablename, :'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('users','tenants','agents','agent_enrollments') \gexec
+SELECT format('GRANT SELECT, INSERT ON TABLE public.%I TO %I', tablename, :'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename='audit_events' \gexec
+SELECT format('GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.%I TO %I', tablename, :'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('sessions','cache','cache_locks','jobs','job_batches','failed_jobs','password_reset_tokens') \gexec
+SELECT format('GRANT SELECT ON TABLE public.migrations TO %I', :'runtime_user') WHERE to_regclass('public.migrations') IS NOT NULL \gexec
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO :"runtime_user";

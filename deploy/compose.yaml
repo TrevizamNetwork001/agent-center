@@ -1,6 +1,6 @@
 name: agent-center
 x-app: &app
-  image: agent-center-central:recovery1
+  image: agent-center-central:recovery2
   build:
     context: ..
     dockerfile: deploy/php/Dockerfile
@@ -19,8 +19,8 @@ x-app: &app
     DB_HOST: postgres
     DB_PORT: '5432'
     DB_DATABASE: ${POSTGRES_DB:?required}
-    DB_USERNAME: ${APP_DB_USER:?required}
-    DB_PASSWORD: ${APP_DB_PASSWORD:?required}
+    DB_USERNAME: ${RUNTIME_DB_USER:?required}
+    DB_PASSWORD: ${RUNTIME_DB_PASSWORD:?required}
     SESSION_DRIVER: database
     SESSION_ENCRYPT: 'true'
     SESSION_SECURE_COOKIE: ${SESSION_SECURE_COOKIE:-false}
@@ -48,12 +48,15 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
       APP_DB_USER: ${APP_DB_USER:?required}
       APP_DB_PASSWORD: ${APP_DB_PASSWORD:?required}
+      RUNTIME_DB_USER: ${RUNTIME_DB_USER:?required}
+      RUNTIME_DB_PASSWORD: ${RUNTIME_DB_PASSWORD:?required}
       POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=C.UTF-8 --auth-host=scram-sha-256'
       TZ: ${TZ:-Europe/Berlin}
       PGTZ: ${TZ:-Europe/Berlin}
     command: [postgres, -c, timezone=Europe/Berlin, -c, log_statement=none]
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./database-roles.sql:/opt/agent-center/database-roles.sql:ro
       - ./postgres-init.sh:/docker-entrypoint-initdb.d/10-app.sh:ro
     networks: [backend]
     restart: unless-stopped
@@ -66,6 +69,22 @@ services:
     logging:
       driver: json-file
       options: {max-size: '10m', max-file: '3'}
+  migrator:
+    <<: *app
+    profiles: [operations]
+    restart: 'no'
+    environment:
+      APP_ENV: production
+      APP_DEBUG: 'false'
+      APP_KEY: ${APP_KEY:?required}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: '5432'
+      DB_DATABASE: ${POSTGRES_DB:?required}
+      DB_USERNAME: ${APP_DB_USER:?required}
+      DB_PASSWORD: ${APP_DB_PASSWORD:?required}
+      LOG_CHANNEL: stderr
+    command: [php, artisan, migrate, '--force']
   web:
     <<: *app
     healthcheck:

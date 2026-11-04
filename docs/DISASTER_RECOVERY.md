@@ -34,3 +34,9 @@ Backup local sozinho não satisfaz recuperação de perda da VPS. Destino extern
 6. Somente liberar tráfego após validar. Preservar banco/volume anterior para rollback. Não executar restore destrutivo automaticamente.
 
 O backup local inicial e a restauração de ensaio são registrados em VALIDATION.md. A publicação externa depende de destino real; deve ser concluída antes de uso de produção.
+
+## RECOVERY-2
+
+Backup PostgreSQL administrativo inclui automaticamente agents, agent_enrollments, audit e schema completo com FORCE RLS. Runtime não possui os objetos; restore usa APP_DB_USER migrator como owner e scripts/db-grants.sh para restaurar concessões do runtime. scripts/restore-check.sh testa também leitura negada a runtime sem contexto, além de cinco tabelas protegidas e trigger imutável. Secrets de banco separados continuam no .env privado; .env.migrator pode ser regenerado sem imprimir valores.
+
+Backups do Agent (config, state/identity/journal e runtime/updater/previous) estão detalhados em AGENT_OPERATIONS.md. São confidenciais, não entram no Git e precisam de cópia externa criptografada. A entrega não inventa destino externo nem habilita réplica sem credenciais reais.

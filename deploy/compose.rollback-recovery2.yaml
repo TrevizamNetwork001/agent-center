@@ -1,0 +1,6 @@
+# Explicit code rollback only; preserve schema/roles/state, run up --no-build.
+services:
+  web:
+    image: agent-center-central:recovery2-rollback-da20d9c
+  worker:
+    image: agent-center-central:recovery2-rollback-da20d9c

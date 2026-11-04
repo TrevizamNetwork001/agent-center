@@ -1,0 +1,42 @@
+[Unit]
+Description=Agent Center read-only Agent 0.5.2
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=120
+StartLimitBurst=3
+[Service]
+Type=simple
+User=agent-center-agent
+Group=agent-center-agent
+ExecStart=/usr/bin/python3 /opt/agent-center-agent/runtime/agent.pyz --config /etc/agent-center-agent/config.json
+Restart=on-failure
+RestartSec=15
+RestartPreventExitStatus=2 3
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+LockPersonality=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+CapabilityBoundingSet=
+AmbientCapabilities=
+StateDirectory=agent-center-agent
+StateDirectoryMode=0700
+LogsDirectory=agent-center-agent
+LogsDirectoryMode=0700
+RuntimeDirectory=agent-center-agent
+RuntimeDirectoryMode=0700
+Environment=DEVICE_OPERATIONS_FROZEN=1
+StandardOutput=journal
+StandardError=journal
+[Install]
+WantedBy=multi-user.target

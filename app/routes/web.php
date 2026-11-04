@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Agent\ManagementController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -21,4 +22,11 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->group(function 
     Route::resource('tenants', TenantController::class)->only(['index', 'store', 'edit', 'update']);
     Route::post('/tenant-context', [TenantController::class, 'select'])->name('tenant.select');
     Route::get('/audit', AuditController::class)->name('audit.index');
+});
+
+Route::middleware(['auth', 'auth.session', 'password.changed'])->prefix('agents')->group(function () {
+    Route::get('/', [ManagementController::class, 'index'])->name('agents.index');
+    Route::post('/enrollments', [ManagementController::class, 'enrollment'])->name('agents.enrollment');
+    Route::get('/{agent}', [ManagementController::class, 'show'])->whereUuid('agent')->name('agents.show');
+    Route::post('/{agent}/revoke', [ManagementController::class, 'revoke'])->whereUuid('agent')->name('agents.revoke');
 });

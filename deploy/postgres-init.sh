@@ -10,3 +10,5 @@ REVOKE ALL ON DATABASE :"app_database" FROM PUBLIC;
 REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 GRANT USAGE, CREATE ON SCHEMA public TO :"app_user";
 SQL
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -f /opt/agent-center/database-roles.sql

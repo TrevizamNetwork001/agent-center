@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\AgentOriginLimit;
+use App\Http\Middleware\AuthenticateAgent;
 use App\Http\Middleware\RequirePasswordChange;
 use App\Http\Middleware\ResolveTenant;
 use Illuminate\Database\QueryException;
@@ -7,6 +9,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -23,9 +26,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [ResolveTenant::class]);
         $middleware->appendToPriorityList(StartSession::class, ResolveTenant::class);
-        $middleware->alias(['password.changed' => RequirePasswordChange::class]);
+        $middleware->prependToPriorityList(ThrottleRequests::class, AuthenticateAgent::class);
+        $middleware->prependToPriorityList(AuthenticateAgent::class, AgentOriginLimit::class);
+        $middleware->alias(['password.changed' => RequirePasswordChange::class, 'agent.auth' => AuthenticateAgent::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->dontFlash(['code', 'token', 'lease_token', 'Authorization']);
         $exceptions->report(function (QueryException $exception): void {
             // QueryException pode conter bindings sensíveis; registrar apenas SQLSTATE.
             Log::error('Database operation failed', ['sqlstate' => (string) $exception->getCode()]);

@@ -1,0 +1,1 @@
+{"central_url":"https://central.example.invalid","state_dir":"/var/lib/agent-center-agent","log_dir":"/var/log/agent-center-agent","identity_file":"/var/lib/agent-center-agent/identity.json","heartbeat_interval":20,"poll_interval":5,"timeout":5,"device_operations_frozen":true,"allowed_networks":[]}

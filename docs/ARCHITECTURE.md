@@ -17,7 +17,7 @@ Python Agent
 FastAPI:
 NÃO FAZ PARTE DA NOVA ARQUITETURA.
 
-Nesta fase o Python Agent existe apenas como diretório reservado. Nenhum runtime, API ou integração de Agent foi criado.
+RECOVERY-2 implementa Agent Python 0.5.2 e Agent API v1 no Laravel. Agent é cliente separado, sem servidor Python. Ver AGENT_ARCHITECTURE.md e AGENT_API.md; tasks operacionais continuam desabilitadas.
 Não existe migração ou bridge de instalação anterior.
 
 ## Componentes
@@ -30,7 +30,7 @@ As redes são exclusivas do projeto Compose `agent-center`; backend é internal 
 
 ## Web, API e health
 
-Web usa middleware Laravel nativo. API está preparada como arquivo de rotas vazio, sem Agent API e sem autenticação alternativa. `/` redireciona ao dashboard protegido; identidade/RBAC/auditoria estão descritos em AUTH_AND_TENANCY.md.
+Web usa middleware Laravel nativo. API contém somente os oito contratos Agent v1 com Bearer, RLS e rate limits separados das sessões humanas. `/` redireciona ao dashboard protegido; identidade/RBAC/auditoria estão descritos em AUTH_AND_TENANCY.md.
 Health usa rotas stateless: live retorna 200 com processo Laravel ativo; ready executa `SELECT 1`, devolve 200 ou 503 genérico e não revela exceção/DSN/credenciais. Ambos proíbem cache.
 
 ## Multi-tenant e segurança futura
@@ -48,3 +48,5 @@ Fontes oficiais consultadas em 04/11/2026:
 - https://github.com/laravel/docs/blob/13.x/releases.md
 - https://www.php.net/archive/2026.php
 - https://www.docker.com/blog/security-update-on-php2shell-impact-for-docker-customers/
+
+RECOVERY-2: FORCE RLS também em agents/agent_enrollments. Web/worker usam role runtime sem ownership; migrations em profile separado. TLS interno possui overlay preparado, ainda sem PKI ativa.

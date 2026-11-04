@@ -68,8 +68,14 @@ class TenantIsolationTest extends IdentityTestCase
         app(Audit::class)->record('user.updated', $this->admin, $this->a->id, metadata: ['password' => 'do-not-log-secret', 'token' => 'token-secret', 'fields' => ['name']]);
         $event = AuditEvent::sole();
         $this->assertSame(['fields' => ['name']], $event->metadata);
-        $this->assertSame(0, DB::table('audit_events')->where('id', $event->id)->update(['event_type' => 'modified']));
-        $this->assertSame(0, DB::table('audit_events')->where('id', $event->id)->delete());
+        foreach (['update', 'delete'] as $operation) {
+            try {
+                DB::transaction(fn () => $operation === 'update' ? DB::table('audit_events')->where('id', $event->id)->update(['event_type' => 'modified']) : DB::table('audit_events')->where('id', $event->id)->delete());
+                $this->fail('Grant deveria negar mutação de auditoria.');
+            } catch (QueryException $exception) {
+                $this->assertSame('42501', $exception->getCode());
+            }
+        }
         $this->assertSame('user.updated', $event->fresh()->event_type);
     }
 

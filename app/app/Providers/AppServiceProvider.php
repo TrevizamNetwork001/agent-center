@@ -3,16 +3,20 @@
 namespace App\Providers;
 
 use App\Enums\Role;
+use App\Models\Agent;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Policies\AgentPolicy;
 use App\Policies\TenantPolicy;
 use App\Policies\UserPolicy;
 use App\Tenancy\TenantContext;
 use App\Tenancy\TenantScope;
 use Illuminate\Auth\EloquentUserProvider;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
             return (new EloquentUserProvider($app['hash'], $config['model']))
                 ->withQuery(fn ($query) => $query->withoutGlobalScope(TenantScope::class));
         });
+        Gate::policy(Agent::class, AgentPolicy::class);
+        RateLimiter::for('agent-origin', fn ($r) => Limit::perMinute(1200)->by(hash('sha256', (string) $r->ip())));
+        RateLimiter::for('agent-enrollment', fn ($r) => Limit::perMinute(10)->by(hash('sha256', (string) $r->ip())));
+        RateLimiter::for('agent-api', fn ($r) => Limit::perMinute(120)->by($r->attributes->get('agent')->id));
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Tenant::class, TenantPolicy::class);
         Gate::define('view-audit', fn (User $user) => in_array($user->role, [Role::PlatformAdmin, Role::TenantAdmin], true));

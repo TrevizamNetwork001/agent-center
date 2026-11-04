@@ -11,7 +11,8 @@ Linux com Git, Docker Engine/Compose plugin, curl, openssl, CA certificates, tar
 3. Manter APP_ENV=production, APP_DEBUG=false, DB_CONNECTION=pgsql. TZ=Europe/Berlin no banco/PHP/app. APP_URL deve refletir acesso real. `.env.example` é somente template.
 4. `./scripts/compose.sh config --quiet` (não imprimir config renderizada, pois contém secrets).
 5. `./scripts/compose.sh build web` e `./scripts/compose.sh up -d postgres web`.
-6. `./scripts/compose.sh exec -T web php artisan migrate --force`.
+6. `./scripts/compose.sh --profile operations run --rm --no-deps migrator
+./scripts/db-grants.sh`.
 7. `./scripts/compose.sh up -d --wait --wait-timeout 180`.
 8. Validar health e testes descritos abaixo; executar backup e réplica externa.
 
@@ -50,3 +51,11 @@ A criação inicial não alterou serviços globais. A reversão mantém `/opt/ag
 ## RECOVERY-1
 
 Consultar AUTH_AND_TENANCY.md para bootstrap interativo e rollback sem perda de auditoria. A UI atual usa Blade sem build JS; credenciais de administrador não são criadas automaticamente. Imagem de rollback: agent-center-central:recovery1-rollback-b1a2e9e.
+
+## RECOVERY-2
+
+Antes do primeiro deploy desta fase: prover RUNTIME_DB_USER/PASSWORD aleatórios separados do migrator, recriar apenas postgres do projeto para disponibilizar o novo ambiente e aguardar health, executar scripts/db-grants.sh. Nenhuma senha é versionada. Gerar .env.migrator privado com scripts/create-migrator-env.py quando necessário para testes. Ver DATABASE_ROLES.md.
+
+Migrations não podem mais rodar como web/worker. Usar profile operations/migrator e reaplicar grants. Após migração, ativar imagem recovery2, aguardar health e validar login/Agent API. Unit Python foi validada, sem habilitação global automática; produção exige URL HTTPS/identidade fornecida pelo operador.
+
+Rollback de Central: imagem retida agent-center-central:recovery2-rollback-da20d9c. Reapontar somente web/worker e recriar com --no-build; preservar schema/roles atuais, sem down de migrations que apagaria Agents/enrollments/auditoria. Banco anterior só em restore separado com validação e troca explícita de database. Os dados do Agent não são restaurados indiscriminadamente ao trocar runtime; seguir AGENT_OPERATIONS.md.

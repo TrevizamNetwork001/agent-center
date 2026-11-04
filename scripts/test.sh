@@ -10,6 +10,7 @@ docker run --rm --mount type=bind,src="$PWD/app",dst=/var/www/html agent-center-
 test_php() {
   docker run --rm --network agent-center_backend --env-file .env -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test --mount type=bind,src="$PWD/app",dst=/var/www/html --mount type=bind,src="$PWD/.env",dst=/var/www/html/.env,readonly agent-center-tooling:foundation php "$@"
 }
-test_php artisan migrate --force
+docker run --rm --network agent-center_backend --env-file .env.migrator -e DB_DATABASE=agent_center_test --mount type=bind,src="$PWD/app",dst=/var/www/html agent-center-tooling:foundation php artisan migrate --force
+./scripts/db-grants.sh agent_center_test
 test_php vendor/bin/phpunit --display-warnings --fail-on-warning
-test_php artisan migrate:rollback --force
+docker run --rm --network agent-center_backend --env-file .env.migrator -e DB_DATABASE=agent_center_test --mount type=bind,src="$PWD/app",dst=/var/www/html agent-center-tooling:foundation php artisan migrate:rollback --force

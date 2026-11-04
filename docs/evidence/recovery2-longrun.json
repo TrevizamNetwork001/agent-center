@@ -1,0 +1,1228 @@
+{
+  "agent_version": "0.5.2",
+  "python": "3.13.18",
+  "uid": 65532,
+  "transport": "Python Client against Laravel HTTP/PostgreSQL lab",
+  "summary": {
+    "duration_seconds": 900.22,
+    "samples": 60,
+    "heartbeat_successes": 45,
+    "heartbeat_max_gap": 20.49305280193221,
+    "poll_successes": 174,
+    "poll_max_gap": 6.328098090947606,
+    "rss_min_kib": 28308,
+    "rss_max_kib": 29476,
+    "rss_growth_kib": 1168,
+    "fds_min": 4,
+    "fds_max": 8,
+    "threads_max": 3,
+    "sockets_max": 1,
+    "children_max": 0,
+    "cpu_seconds": 1.44,
+    "journal_ok": true,
+    "journal_events_max": 0,
+    "pass": true
+  },
+  "samples": [
+    {
+      "rss_kib": 28308,
+      "threads": 3,
+      "fds": 4,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 44,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 0.0,
+        "heartbeat_successes": 0,
+        "poll_max_gap": 0.0,
+        "poll_successes": 0,
+        "schema_version": 1,
+        "state": "IDENTITY",
+        "version": "0.5.2"
+      },
+      "elapsed": 0.27
+    },
+    {
+      "rss_kib": 29260,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 49,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 0.0,
+        "heartbeat_successes": 1,
+        "poll_max_gap": 5.232156406971626,
+        "poll_successes": 3,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 15.55
+    },
+    {
+      "rss_kib": 29276,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 52,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 19.82888551405631,
+        "heartbeat_successes": 2,
+        "poll_max_gap": 5.232156406971626,
+        "poll_successes": 6,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 30.75
+    },
+    {
+      "rss_kib": 29300,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 54,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.01452025899198,
+        "heartbeat_successes": 3,
+        "poll_max_gap": 5.232156406971626,
+        "poll_successes": 9,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 46.2
+    },
+    {
+      "rss_kib": 29328,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 58,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.01452025899198,
+        "heartbeat_successes": 3,
+        "poll_max_gap": 5.377926754998043,
+        "poll_successes": 12,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 61.73
+    },
+    {
+      "rss_kib": 29336,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 60,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.379863061010838,
+        "heartbeat_successes": 4,
+        "poll_max_gap": 5.377926754998043,
+        "poll_successes": 15,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 76.95
+    },
+    {
+      "rss_kib": 29356,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 62,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.379863061010838,
+        "heartbeat_successes": 5,
+        "poll_max_gap": 5.377926754998043,
+        "poll_successes": 18,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 92.55
+    },
+    {
+      "rss_kib": 29376,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 63,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.379863061010838,
+        "heartbeat_successes": 6,
+        "poll_max_gap": 5.377926754998043,
+        "poll_successes": 21,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 107.77
+    },
+    {
+      "rss_kib": 29380,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 65,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.379863061010838,
+        "heartbeat_successes": 6,
+        "poll_max_gap": 5.377926754998043,
+        "poll_successes": 24,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 123.04
+    },
+    {
+      "rss_kib": 29380,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 69,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.379863061010838,
+        "heartbeat_successes": 7,
+        "poll_max_gap": 5.461482397979125,
+        "poll_successes": 27,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 138.41
+    },
+    {
+      "rss_kib": 29380,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 72,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.379863061010838,
+        "heartbeat_successes": 8,
+        "poll_max_gap": 5.534860057989135,
+        "poll_successes": 30,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 153.66
+    },
+    {
+      "rss_kib": 29380,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 75,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.379863061010838,
+        "heartbeat_successes": 9,
+        "poll_max_gap": 5.534860057989135,
+        "poll_successes": 33,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 170.0
+    },
+    {
+      "rss_kib": 29388,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 80,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.379863061010838,
+        "heartbeat_successes": 10,
+        "poll_max_gap": 5.534860057989135,
+        "poll_successes": 36,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 185.41
+    },
+    {
+      "rss_kib": 29396,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 82,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.379863061010838,
+        "heartbeat_successes": 10,
+        "poll_max_gap": 5.534860057989135,
+        "poll_successes": 39,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 200.62
+    },
+    {
+      "rss_kib": 29396,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 83,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.379863061010838,
+        "heartbeat_successes": 11,
+        "poll_max_gap": 5.534860057989135,
+        "poll_successes": 42,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 215.83
+    },
+    {
+      "rss_kib": 29404,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 85,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.379863061010838,
+        "heartbeat_successes": 12,
+        "poll_max_gap": 5.534860057989135,
+        "poll_successes": 45,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 234.78
+    },
+    {
+      "rss_kib": 29408,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 91,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 13,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 48,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 251.09
+    },
+    {
+      "rss_kib": 29420,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 99,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 14,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 51,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 266.52
+    },
+    {
+      "rss_kib": 29444,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 101,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 14,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 54,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 282.32
+    },
+    {
+      "rss_kib": 29444,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 104,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 15,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 57,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 297.92
+    },
+    {
+      "rss_kib": 29444,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 108,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 16,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 60,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 313.15
+    },
+    {
+      "rss_kib": 29444,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 110,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 17,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 63,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 328.49
+    },
+    {
+      "rss_kib": 29444,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 115,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 18,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 66,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 343.96
+    },
+    {
+      "rss_kib": 29444,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 117,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 18,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 69,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 359.67
+    },
+    {
+      "rss_kib": 29444,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 122,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 19,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 72,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 375.52
+    },
+    {
+      "rss_kib": 29444,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 123,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 20,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 75,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 391.03
+    },
+    {
+      "rss_kib": 29444,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 125,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 21,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 78,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 406.3
+    },
+    {
+      "rss_kib": 29444,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 129,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 21,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 81,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 421.61
+    },
+    {
+      "rss_kib": 29448,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 133,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 22,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 84,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 436.82
+    },
+    {
+      "rss_kib": 29468,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 139,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 23,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 87,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 452.05
+    },
+    {
+      "rss_kib": 29468,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 141,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 24,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 90,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 467.37
+    },
+    {
+      "rss_kib": 29468,
+      "threads": 3,
+      "fds": 8,
+      "sockets": 1,
+      "children": 0,
+      "cpu_ticks": 143,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 25,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 92,
+        "schema_version": 1,
+        "state": "CLAIM",
+        "version": "0.5.2"
+      },
+      "elapsed": 482.62
+    },
+    {
+      "rss_kib": 29468,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 143,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 25,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 95,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 497.83
+    },
+    {
+      "rss_kib": 29468,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 145,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 26,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 98,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 513.1
+    },
+    {
+      "rss_kib": 29468,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 149,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 27,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 101,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 528.45
+    },
+    {
+      "rss_kib": 29468,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 150,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 27,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 104,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 543.69
+    },
+    {
+      "rss_kib": 29468,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 151,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 28,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 107,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 558.9
+    },
+    {
+      "rss_kib": 29468,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 152,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 29,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 110,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 574.15
+    },
+    {
+      "rss_kib": 29468,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 153,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 30,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 113,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 589.44
+    },
+    {
+      "rss_kib": 29468,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 155,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 31,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 116,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 604.7
+    },
+    {
+      "rss_kib": 29468,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 156,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 31,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 119,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 619.9
+    },
+    {
+      "rss_kib": 29472,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 159,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 32,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 122,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 635.16
+    },
+    {
+      "rss_kib": 29472,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 160,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 33,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 125,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 650.46
+    },
+    {
+      "rss_kib": 29472,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 162,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 34,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 128,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 665.73
+    },
+    {
+      "rss_kib": 29472,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 164,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 34,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 131,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 681.03
+    },
+    {
+      "rss_kib": 29472,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 165,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 35,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 134,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 696.35
+    },
+    {
+      "rss_kib": 29476,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 167,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 36,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 137,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 711.67
+    },
+    {
+      "rss_kib": 29476,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 168,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 37,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 140,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 726.91
+    },
+    {
+      "rss_kib": 29476,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 169,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 37,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 143,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 742.21
+    },
+    {
+      "rss_kib": 29476,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 172,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 38,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 146,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 757.53
+    },
+    {
+      "rss_kib": 29476,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 173,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 39,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 149,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 772.74
+    },
+    {
+      "rss_kib": 29476,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 175,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 40,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 152,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 787.97
+    },
+    {
+      "rss_kib": 29476,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 177,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 41,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 155,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 803.21
+    },
+    {
+      "rss_kib": 29476,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 180,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 41,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 158,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 818.44
+    },
+    {
+      "rss_kib": 29476,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 182,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 42,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 161,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 833.69
+    },
+    {
+      "rss_kib": 29476,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 183,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 43,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 164,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 849.01
+    },
+    {
+      "rss_kib": 29476,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 184,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 44,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 167,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 864.21
+    },
+    {
+      "rss_kib": 29476,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 186,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 44,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 170,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 879.56
+    },
+    {
+      "rss_kib": 29476,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 187,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 45,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 173,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 894.82
+    },
+    {
+      "rss_kib": 29476,
+      "threads": 3,
+      "fds": 7,
+      "sockets": 0,
+      "children": 0,
+      "cpu_ticks": 188,
+      "journal_ok": true,
+      "journal_events": 0,
+      "state": {
+        "heartbeat_max_gap": 20.49305280193221,
+        "heartbeat_successes": 45,
+        "poll_max_gap": 6.328098090947606,
+        "poll_successes": 174,
+        "schema_version": 1,
+        "state": "ONLINE",
+        "version": "0.5.2"
+      },
+      "elapsed": 900.22
+    }
+  ]
+}

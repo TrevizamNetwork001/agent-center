@@ -1,10 +1,12 @@
-# Agent Center — RECOVERY-1
+# Agent Center — RECOVERY-2
 
-Central Laravel com base de autenticação, multi-tenant, RBAC e auditoria. Fundação original: b1a2e9e.
-Leia [AGENTS.md](AGENTS.md) antes de alterar o projeto; esta fase foi autorizada explicitamente. Nenhum AGENTS.md foi alterado no RECOVERY-1.
+Central Laravel com identidade, tenants, RBAC/auditoria e Agent API v1. Python Agent reconstruído em 0.5.2; protocol/tasks operacionais permanecem bloqueados nesta fase. Base RECOVERY-1: da20d9c.
+Leia [AGENTS.md](AGENTS.md) antes de alterar o projeto; esta fase foi autorizada explicitamente. Nenhum AGENTS.md foi alterado no RECOVERY-2.
 
-Browser → Nginx → Laravel Central → PostgreSQL. Python Agent permanece arquitetura futura, sem implementação. FastAPI é proibido.
+Browser → Nginx → Laravel Central → PostgreSQL. Python Agent é cliente separado, sem FastAPI/bridge.
 
+- [Agent: arquitetura](docs/AGENT_ARCHITECTURE.md), [API](docs/AGENT_API.md), [operação](docs/AGENT_OPERATIONS.md), [roles do banco](docs/DATABASE_ROLES.md)
+- [Validação RECOVERY-2](docs/RECOVERY_2_VALIDATION.md)
 - [Identidade, roles, isolamento, bootstrap e auditoria](docs/AUTH_AND_TENANCY.md)
 - [Inventário da fundação](docs/INVENTORY.md)
 - [Arquitetura](docs/ARCHITECTURE.md)
@@ -20,7 +22,8 @@ cd /opt/agent-center
 ./scripts/compose.sh config --quiet
 ./scripts/compose.sh build web
 ./scripts/compose.sh up -d postgres web
-./scripts/compose.sh exec -T web php artisan migrate --force
+./scripts/compose.sh --profile operations run --rm --no-deps migrator
+./scripts/db-grants.sh
 ./scripts/compose.sh up -d --wait --wait-timeout 180
 ./scripts/compose.sh exec web php artisan agent-center:create-admin
 ```
