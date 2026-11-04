@@ -1,0 +1,2 @@
+Bundle verified; independent local clone; fsck --full; matching HEAD: PASS
+Scope: same VPS, not external disaster recovery.

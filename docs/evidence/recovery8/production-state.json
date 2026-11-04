@@ -1,0 +1,12 @@
+{
+  "scope": "production",
+  "runtime": {
+    "image": "agent-center-central:recovery6",
+    "id": "sha256:eba672f9e5aa288536350dcdd41db2d2e004058d0cef9355d03380388d5d9b52"
+  },
+  "force_rls_tables": 27,
+  "migrations": 9,
+  "application_schema_preserved": true,
+  "production_commit": "dbf6921de749bc9ebe3b333a1056b3e3586088ea",
+  "production_evidence_commit": "6bbb4ba34ab28f213ca7997227405efee1ed5bd0"
+}

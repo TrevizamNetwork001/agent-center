@@ -36,7 +36,7 @@ SQL
 
 tar -czf "$backup_root/config/$stamp.tar.gz" deploy scripts docs AGENTS.md README.md .env.example .gitignore .dockerignore
 host_files=()
-for file in etc/nginx/sites-available/agent-center.conf etc/nginx/snippets/agent-center-access.conf etc/nginx/conf.d/agent-center-observability.conf etc/logrotate.d/agent-center etc/systemd/system/agent-center-backup.service etc/systemd/system/agent-center-backup.timer etc/systemd/system/agent-center-backup-alert.service etc/systemd/system/agent-center-operations.service etc/systemd/system/agent-center-operations.timer; do
+for file in etc/nginx/sites-available/agent-center.conf etc/nginx/snippets/agent-center-access.conf etc/nginx/conf.d/agent-center-observability.conf etc/logrotate.d/agent-center etc/systemd/system/agent-center-backup.service etc/systemd/system/agent-center-backup.timer etc/systemd/system/agent-center-backup-alert.service etc/systemd/system/agent-center-status-rotate.service etc/systemd/system/agent-center-status-rotate.timer etc/systemd/system/agent-center-operations.service etc/systemd/system/agent-center-operations.timer; do
   if [ -f "/$file" ]; then host_files+=("$file"); fi
 done
 if [ "${#host_files[@]}" -gt 0 ]; then tar -czf "$backup_root/config/$stamp.host.tar.gz" -C / "${host_files[@]}"; fi

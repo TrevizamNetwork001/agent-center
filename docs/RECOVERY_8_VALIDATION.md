@@ -42,8 +42,8 @@ Nenhuma conta/senha/Agent foi criado em produção. Operador confirmou web abrin
   passou; etapa externa sai 2 com EXTERNAL BACKUP NOT CONFIGURED. OnFailure registrou sinal
   local com sucesso. Isso é falha/pendência externa visível, não sucesso de réplica.
 - Nginx tem status log sanitizado (timestamp/status/duração) sem IP/URI/cookies/secrets.
-  Docker logs rotacionados. Logrotate não disponível no host: config específica preparada,
-  instalação/rotação efetiva desse novo status log permanecem pendentes; acompanhar tamanho.
+  Docker logs rotacionados. Logrotate não disponível no host: rotação específica usa o reopen nativo do Nginx e
+  timer diário, sete gerações com compressão adiada. Nenhuma rotação de outro vhost foi alterada.
 
 ## Backups e recuperação
 
@@ -124,7 +124,24 @@ Unit validada estaticamente; instalação com systemd real ainda depende de host
 3. URL Git privada e credencial autorizada; push/clone independente e validação de privacidade.
 4. Promoção revisada da aplicaçãoRECOVERY-7/8, cobertura nova no dashboard e implantação de
    Agent real somente em host expressamente autorizado, após pré-requisitos de recuperação.
-5. Rotação efetiva do novo status log Nginx e escrow externo das chaves existentes.
+5. Escrow externo das chaves existentes.
 
 Parte local implementada/testada e TLS/backup/monitoramento aplicados à produção. O projeto
 continua vulnerável à perda total desta VPS enquanto esses itens externos faltarem.
+
+
+## Fechamento operacional
+
+Commit principal do checkout: fe95823. Hardening aplicado em produção: dbf6921;
+commits adicionais selam rotação/evidências. Git log distingue as duas linhas de origem.
+Bundle verificado/clonado em diretório independente, fsck --full e HEAD idêntico passaram
+nesta VPS. Histórico foi examinado também contra os secrets atuais sem emitir seus valores.
+O laboratório foi encerrado: somente containers/redes/volumes agent-center-recovery8
+removidos após os dumps e provas; fixtures/logs privados preservados, kit0.5.3 conservado.
+Self-check do artefato0.5.3 como UID65532 confirmou exatamente as quatro capabilities e freeze.
+Master key foi recuperada do backup privado real e a prova AES-GCM repetida com sucesso.
+Rotação específica do status log foi instalada/testada com Nginx reopen; HTTPS permaneceu200.
+Timers de backup/monitor/rotação ativos; alerta de backup externo ausente continua visível.
+A aplicação/volumes/dados de produção e todos os outros projetos foram preservados.
+
+**Resultado permanece RECOVERY-8 BLOCKED. EXTERNAL BACKUP NOT CONFIGURED.**
