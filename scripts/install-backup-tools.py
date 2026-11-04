@@ -18,6 +18,16 @@ def main():
     tools = ROOT / 'tools'
     tools.mkdir(mode=0o700, exist_ok=True)
     tools.chmod(0o700)
+    destination = tools / 'backup-python'
+    if destination.exists():
+        # Preserve unknown dependencies instead of claiming a successful in-place upgrade.
+        saved = tools / 'backup-tools.json'
+        expected = hashlib.sha256((ROOT / 'deploy/backup-requirements.lock').read_bytes()).hexdigest()
+        if (not saved.exists() or not (tools / 'usr/bin/age').is_file()
+                or json.loads(saved.read_text()).get('sdk_lock_sha256') != expected):
+            raise ValueError('existing_sdk_requires_review')
+        print('Project-local backup tooling already matches the pinned dependency lock.')
+        return
     with tempfile.TemporaryDirectory(dir=tools, prefix='bootstrap-') as directory:
         package = Path(directory) / 'age.deb'
         with urllib.request.urlopen(AGE_URL, timeout=60) as response, package.open('wb') as out:
@@ -28,7 +38,6 @@ def main():
                 raise ValueError('tool_integrity_failed')
         subprocess.run(['dpkg-deb', '-x', str(package), str(tools)], check=True,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    destination = tools / 'backup-python'
     # The container is used only to install pure-Python dependencies; it never sees secrets.
     subprocess.run(['docker', 'run', '--rm', '--cap-drop', 'ALL',
                     '--security-opt', 'no-new-privileges:true',

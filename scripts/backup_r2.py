@@ -278,7 +278,7 @@ def run(root, config, credentials):
         finally:
             client.close()
     stages.update(upload_completed=True, integrity_verified=True)
-    receipt = dict(generation=generation, bucket=config['bucket'], endpoint=config['endpoint'],
+    receipt = dict(complete=True, generation=generation, bucket=config['bucket'], endpoint=config['endpoint'],
                    project='agent-center', encryption='age-v1', stages=stages, objects=proofs,
                    sha256=digest, bytes=size, verified_at=timestamp())
     atomic_json(receipt_path, receipt)
