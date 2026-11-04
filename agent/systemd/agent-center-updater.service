@@ -1,0 +1,25 @@
+[Unit]
+Description=Agent Center allowlisted update companion
+After=network-online.target
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/python3 -I /opt/agent-center-agent/remote-updater.pyz
+UMask=0077
+TimeoutStartSec=240
+NoNewPrivileges=true
+CapabilityBoundingSet=CAP_DAC_OVERRIDE CAP_DAC_READ_SEARCH CAP_SETUID CAP_SETGID CAP_CHOWN CAP_FOWNER
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+LockPersonality=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ReadWritePaths=/opt/agent-center-agent /var/lib/agent-center-agent /var/lib/agent-center-updater
+StandardOutput=journal
+StandardError=journal

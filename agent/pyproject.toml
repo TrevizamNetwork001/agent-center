@@ -1,9 +1,9 @@
 [build-system]
-requires = ["setuptools>=75"]
+requires = ["setuptools==80.9.0"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "agent-center-agent"
-version = "0.5.2"
+version = "0.5.3"
 requires-python = ">=3.13"
 dependencies = []
 [project.scripts]

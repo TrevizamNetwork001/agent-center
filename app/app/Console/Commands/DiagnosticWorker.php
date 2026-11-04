@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Diagnostics\Engine;
 use App\Diagnostics\WorkerHealth;
+use App\Jobs\OperationsPulse;
 use App\Models\Tenant;
 use App\Tenancy\TenantContext;
 use Illuminate\Console\Command;
@@ -32,6 +33,9 @@ class DiagnosticWorker extends Command
                     $progress += $engine->tick();
                 }$ctx->apply();
                 WorkerHealth::write(++$iterations, $progress);
+                if ($iterations % 15 === 1) {
+                    OperationsPulse::dispatch();
+                }
             } catch (Throwable) {
                 $this->error('Diagnostic loop unavailable.');
                 if ($this->option('once')) {

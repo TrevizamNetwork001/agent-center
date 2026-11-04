@@ -1,3 +1,11 @@
+# Contrato vigente — RECOVERY-7
+
+Enrollment agora é HTTP 202 com aprovação obrigatória; nenhum bearer antes de aprovação. `enrollment-status` recebe receipt privado via POST e emite credencial uma única vez após revisão. Código e receipt não são intercambiáveis. Ver AGENT_ONBOARDING.md. Runtime 0.5.3 implementa retomada; enrollment do cliente antigo 0.5.2 não deve ser usado para novos cadastros.
+
+Heartbeat aceita versão semver e telemetria de schema fechado; versão desconhecida é evidência de inconsistência e não ONLINE. `operations/claim`/`operations/report` são restritos ao Agent autenticado e executam somente o protocolo estreito de manutenção descrito em AGENT_UPDATES.md. Capabilities de diagnóstico continuam na allowlist original; não se anunciam capacidades operacionais fictícias. Bearer, receipt e código nunca são query strings ou audit metadata.
+
+Abaixo está a evolução histórica; o enrollment imediato RECOVERY-2 foi substituído.
+
 # Agent API v1 — RECOVERY-2
 
 Base `/api/v1/agent`; JSON em POST e Accept application/json. Não há HMAC/nonce/bridge. HTTPS é obrigatório fora de loopback. Enrollment code e Bearer nunca devem aparecer em URLs, logs, Git ou comandos de shell. Respostas com credenciais são no-store e não usam flash/session.

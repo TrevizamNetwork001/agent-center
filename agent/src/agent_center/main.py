@@ -3,7 +3,6 @@ import getpass
 import json
 import os
 import signal
-import socket
 import sqlite3
 import sys
 import threading
@@ -52,6 +51,7 @@ class Runtime:
             client_factory(config.central_url, identity.token, config.timeout),
             config.heartbeat_interval,
             self.stop,
+            state_dir=config.state_dir,
         )
         self.client = client_factory(config.central_url, identity.token, config.timeout)
         self.poller = Poller(self.client, identity, self.capabilities)
@@ -194,25 +194,17 @@ def main():
     try:
         config = Config.load(Path(args.config))
         if args.enroll:
-            if config.identity_file.exists():
-                raise StateError("identity_already_exists")
-            if not sys.stdin.isatty():
-                raise StateError("interactive_enrollment_required")
-            code = getpass.getpass("Enrollment code: ")
-            result = Client(config.central_url, timeout=config.timeout, retries=0).call(
-                "enroll",
-                {
-                    "code": code,
-                    "hostname": socket.gethostname(),
-                    "version": __version__,
-                    "capabilities": list(self_check()),
-                },
-            )
-            if not result.ok:
-                logger.error("startup_failed")
-                return 2
-            Identity.validate(result.body).save(config.identity_file)
-            return 0
+            from .onboarding import enroll
+
+            pending = config.state_dir / "enrollment.json"
+            code = None
+            if not pending.exists():
+                if not sys.stdin.isatty():
+                    raise StateError("interactive_enrollment_required")
+                code = getpass.getpass("Enrollment code: ")
+            ready = enroll(config, code)
+            print(json.dumps({"state": "ENROLLED" if ready else "AWAITING_APPROVAL"}))
+            return 0 if ready else 4
         identity = Identity.load(config.identity_file)
         runtime = Runtime(config, identity)
         for sig in (signal.SIGTERM, signal.SIGINT):

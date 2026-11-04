@@ -1,6 +1,6 @@
 name: agent-center
 x-app: &app
-  image: agent-center-central:recovery6
+  image: agent-center-central:recovery7
   build:
     context: ..
     dockerfile: deploy/php/Dockerfile
@@ -104,7 +104,7 @@ services:
     command: [php, artisan, queue:work, '--sleep=3', '--tries=3', '--timeout=60', '--max-time=3600']
     stop_grace_period: 75s
     healthcheck:
-      test: [CMD, php, -r, 'exit(is_file("storage/framework/worker-heartbeat") && time()-filemtime("storage/framework/worker-heartbeat") < 90 ? 0 : 1);']
+      test: [CMD, php, artisan, 'agent-center:queue-health']
       interval: 20s
       timeout: 5s
       start_period: 30s

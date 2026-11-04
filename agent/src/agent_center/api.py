@@ -34,6 +34,9 @@ class Client:
     def call(self, operation, data=None):
         if operation not in {
             "enroll",
+            "enrollment-status",
+            "operations/claim",
+            "operations/report",
             "heartbeat",
             "capabilities",
             "claim",
@@ -47,7 +50,7 @@ class Client:
             payload = json.dumps(data or {}).encode()
         except (ValueError, TypeError):
             return Outcome(False, 0, {}, "invalid_payload")
-        attempts = 1 if operation == "enroll" else self.retries + 1
+        attempts = 1 if operation in {"enroll", "enrollment-status"} else self.retries + 1
         for attempt in range(attempts):
             status, retryable = 0, True
             headers = {"Content-Type": "application/json", "Accept": "application/json"}

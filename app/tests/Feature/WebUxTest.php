@@ -6,6 +6,7 @@ use App\Diagnostics\Catalog;
 use App\Diagnostics\Classifier;
 use App\Diagnostics\Engine;
 use App\Diagnostics\WorkerHealth;
+use App\Jobs\OperationsPulse;
 use App\Models\Agent;
 use App\Models\Diagnostic;
 use App\Models\DiagnosticConclusion;
@@ -39,6 +40,7 @@ class WebUxTest extends IdentityTestCase
         $this->failed->forceFill(['created_at' => now()->subDays(2)])->save();
         $this->marker = is_file(WorkerHealth::path()) ? file_get_contents(WorkerHealth::path()) : null;
         WorkerHealth::write(1, 0);
+        (new OperationsPulse)->handle();
     }
 
     protected function tearDown(): void
@@ -62,7 +64,7 @@ class WebUxTest extends IdentityTestCase
 
     public function test_dashboard_real_counts_recent_and_tenant_context(): void
     {
-        $this->actingAs($this->admin)->get('/dashboard')->assertOk()->assertSee('Estado operacional')->assertSee('UX Agent A')->assertSee('alpha.example.test')->assertViewHas('health', fn ($h) => $h['agents_online'] === 1 && $h['agents_total'] === 1 && $h['today'] === 1 && $h['indications'] === 0 && $h['state'] === 'VERDE');
+        $this->actingAs($this->admin)->get('/dashboard')->assertOk()->assertSee('Estado operacional')->assertSee('UX Agent A')->assertSee('alpha.example.test')->assertViewHas('health', fn ($h) => $h['agents_online'] === 1 && $h['agents_total'] === 1 && $h['today'] === 1 && $h['indications'] === 0 && $h['state'] === 'ATENÇÃO');
     }
 
     public function test_no_agents_never_looks_green_and_stale_poll_needs_attention(): void
@@ -105,7 +107,7 @@ class WebUxTest extends IdentityTestCase
 
     public function test_agents_and_detail_never_expose_hash_or_token(): void
     {
-        $this->actingAs($this->admin)->get('/agents')->assertOk()->assertSee('UX Agent A')->assertSee('Capabilities')->assertSee('ONLINE')->assertDontSee($this->agent->token_hash);
+        $this->actingAs($this->admin)->get('/agents')->assertOk()->assertSee('UX Agent A')->assertSee('Capabilities')->assertSee('ATENÇÃO')->assertDontSee($this->agent->token_hash);
         $this->get('/agents/'.$this->agent->id)->assertOk()->assertSee('Device freeze')->assertDontSee($this->agent->token_hash);
         $this->get('/agents?fragment=1')->assertOk()->assertHeader('X-AC-Fragment', 'agents-panel')->assertDontSee('Criar código de cadastro');
     }

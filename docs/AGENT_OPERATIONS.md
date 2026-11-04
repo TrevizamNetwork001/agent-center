@@ -1,3 +1,37 @@
+# Agent Operations — RECOVERY-7
+
+A administração integra as páginas existentes; nenhuma Central Python/FastAPI. O Agent é o executor técnico. Runtime novo 0.5.3, baseline reconstruído 0.5.2 preservado como fonte Git.
+
+## Administração
+
+Em Agents: cadastrar no tenant selecionado, acompanhar estado de onboarding, revisar identidade, confirmar vínculo, ver versão/capabilities/última comunicação, inventário coletado, eventos, intenções de update/rollback e revogar credencial. Tokens existentes nunca são exibidos. Dados ausentes aparecem Indisponível; status active representa autorização e não presença.
+
+ONLINE exige heartbeat <60s, poll <30s, versão reconhecida e relato de freeze true. Heartbeat vencido é OFFLINE; processo com heartbeat mas poll travado, freeze ausente ou cadastro pendente é ATENÇÃO. Relato de processo não comprova saúde da unit systemd. Identidade nunca é compartilhada entre máquinas restauradas.
+
+## Instalador offline
+
+O kit contém runtime/updater/companion, units, wrappers, logrotate, catálogo e manifesto. Não baixa scripts. Dependências de runtime: nenhuma (stdlib); CPython 3.13 e ABI são validados. Debian 12/13 com Python 3.13 são aceitos, Debian 13 é prioritário. Não instala PHP, FastAPI, SSH, Huawei ou ferramentas de rede opcionais.
+
+```sh
+python3 agent/packaging/install-agent.py --kit /caminho/kit-confiavel --central-url https://central-autorizada.example --manifest-sha256 SHA256_REAL_DO_MANIFESTO --check
+```
+
+Depois de revisar artefatos/hash de fonte confiável, executar o mesmo comando como root sem `--check`. Endereço é exemplo, não destino provisionado. `--ca-file` exige `--ca-sha256` e instala somente CA revisada no trust store Debian; verificação TLS nunca é desativada. Cria usuário dedicado sem login, diretórios, runtime root-owned, config/identity privados, unit hardened, logs e logrotate. Recusa instalação preexistente; utilizar procedimento explícito de atualização. Não habilita companion remoto por padrão.
+
+Instalação termina em aprovação pendente (exit 4) antes de iniciar serviço. Depois da revisão, executar `/opt/agent-center-agent/complete-enrollment.sh`, que retoma receipt e valida presença funcional. `--lab-root` somente materializa layout num diretório vazio: não cria conta nem inicia systemd e declara isso explicitamente. Não confundir esse teste com instalação real completa.
+
+## Operação e segurança
+
+Config e identity permanecem privados. Root é recusado pelo runtime. Bearer é hash na Central; runtime mantém cópia 0600. Logs usam eventos fechados e não incluem request/response/token. Telemetria é schema fechado: OS/kernel/Python/CPU count, memória total/RSS, disco livre, PID/threads/uptime, processo, freeze, dry-run, leitura de journal e pendências; service_status fica indisponível quando não medido. Cada amostra tem horário de recebimento.
+
+Device freeze é obrigatório em Central, dispatcher e config do Agent. Futuras device_* desconhecidas são recusadas. Updater valida freeze no self-check e não troca config/policies/state; rollback não autoriza device/SSH. Nenhum shell arbitrário é executado pelo navegador ou LLM.
+
+Ver [Onboarding](AGENT_ONBOARDING.md), [Updates](AGENT_UPDATES.md), [Health](OPERATIONS_HEALTH.md) e [Validação](RECOVERY_7_VALIDATION.md).
+
+## Procedimentos anteriores reutilizados
+
+Os detalhes abaixo são o baseline RECOVERY-2/3. Trechos sobre emissão imediata ou ausência de controle remoto estão superados pelos documentos RECOVERY-7 acima.
+
 # Operação do Agent 0.5.2
 
 ## Artefatos e instalação local autorizada

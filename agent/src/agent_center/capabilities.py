@@ -46,7 +46,7 @@ def target(value, networks):
 
 def info(args, networks):
     return {
-        "version": "0.5.2",
+        "version": "0.5.3",
         "hostname": socket.gethostname(),
         "python": platform.python_version(),
         "device_operations_frozen": True,
@@ -210,7 +210,7 @@ def http(args, networks):
     )
     try:
         conn.request(
-            "HEAD", p.path or "/", headers={"Host": p.netloc, "User-Agent": "Agent-Center/0.5.2"}
+            "HEAD", p.path or "/", headers={"Host": p.netloc, "User-Agent": "Agent-Center/0.5.3"}
         )
         response = conn.getresponse()
         return {

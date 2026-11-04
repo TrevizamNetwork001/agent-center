@@ -8,7 +8,7 @@ trap cleanup EXIT
 docker build --target tooling -t agent-center-tooling:foundation -f deploy/php/Dockerfile . >/dev/null
 docker run --rm --mount type=bind,src="$PWD/app",dst=/var/www/html agent-center-tooling:foundation composer install --no-interaction --prefer-dist
 test_php() {
-  docker run --rm --network agent-center_backend --env-file .env -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test --mount type=bind,src="$PWD/app",dst=/var/www/html --mount type=bind,src="$PWD/.env",dst=/var/www/html/.env,readonly agent-center-tooling:foundation php "$@"
+  docker run --rm --network agent-center_backend --env-file .env -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test --mount type=bind,src="$PWD/app",dst=/var/www/html --mount type=bind,src="$PWD/.env",dst=/var/www/html/.env,readonly -e LARAVEL_STORAGE_PATH=/tmp/agent-center-testing agent-center-tooling:foundation sh -c 'mkdir -p /tmp/agent-center-testing/framework/cache /tmp/agent-center-testing/framework/sessions /tmp/agent-center-testing/framework/views /tmp/agent-center-testing/logs; exec php "$@"' -- "$@"
 }
 docker run --rm --network agent-center_backend --env-file .env.migrator -e DB_DATABASE=agent_center_test --mount type=bind,src="$PWD/app",dst=/var/www/html agent-center-tooling:foundation php artisan migrate --force
 ./scripts/db-grants.sh agent_center_test

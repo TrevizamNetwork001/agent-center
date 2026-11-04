@@ -1,0 +1,7 @@
+[Unit]
+Description=Refresh Agent Center health evidence
+[Timer]
+OnBootSec=20
+OnUnitInactiveSec=30
+[Install]
+WantedBy=timers.target

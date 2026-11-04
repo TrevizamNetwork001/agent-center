@@ -25,7 +25,11 @@ if [ -r /etc/letsencrypt/live/agent-center/privkey.pem ]; then
   chmod 600 "$backup_root/secrets/$stamp.tls-agent-center.tar.gz"
 fi
 chmod 600 "$backup_root/database/$stamp.dump" "$backup_root/config/$stamp.tar.gz" "$backup_root/secrets/$stamp.env"
-sha256sum "$backup_root/database/$stamp.dump" "$backup_root/config/$stamp.tar.gz" > "$backup_root/config/$stamp.sha256"
+# Include every member of this generation, including confidential secrets and bundle.
+(cd "$backup_root" && find database config secrets -maxdepth 1 -type f -name "$stamp.*" ! -name "$stamp.sha256" -print0 | sort -z | xargs -0 sha256sum) > "$backup_root/config/$stamp.sha256"
+chmod 600 "$backup_root/config/$stamp.sha256"
+(cd "$backup_root" && sha256sum -c "config/$stamp.sha256" >/dev/null)
+if [ -f "$backup_root/config/$stamp.bundle" ]; then git bundle verify "$backup_root/config/$stamp.bundle" >/dev/null 2>&1; fi
 # Só remove arquivos deste backup, após concluir o novo conjunto. Janela local: 7 dias.
 find "$backup_root/database" -maxdepth 1 -type f -name '*.dump' -mtime +6 -delete
 find "$backup_root/config" -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.sha256' -o -name '*.commit' -o -name '*.bundle' \) -mtime +6 -delete

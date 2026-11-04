@@ -3,6 +3,7 @@ import io
 import json
 import os
 import pwd
+import re
 import shutil
 import stat
 import subprocess
@@ -63,7 +64,8 @@ def self_check(path):
     )
     body = json.loads(result.stdout)
     if (
-        body.get("version") != "0.5.2"
+        not isinstance(body.get("version"), str)
+        or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", body["version"])
         or body.get("state_schema") != 1
         or body.get("journal_schema") != 1
         or body.get("device_operations_frozen") is not True
@@ -135,6 +137,13 @@ class Engine:
         return {"valid": True, "sha256": expected, "apply": False}
 
     def apply(self, artifact, expected):
+        lock = InstanceLock(self.base / "update.lock")
+        try:
+            return self._apply(artifact, expected)
+        finally:
+            lock.close()
+
+    def _apply(self, artifact, expected):
         self.dry_run(
             artifact, expected
         )  # Mandatory validation even if the operator skipped a separate dry-run.
@@ -205,6 +214,13 @@ class Engine:
                 shutil.rmtree(stage)
 
     def rollback(self, dry_run=True):
+        lock = InstanceLock(self.base / "update.lock")
+        try:
+            return self._rollback(dry_run)
+        finally:
+            lock.close()
+
+    def _rollback(self, dry_run=True):
         previous = self.base / ".previous"
         if previous.is_symlink() or not previous.is_dir():
             raise UpdateError("missing_previous")

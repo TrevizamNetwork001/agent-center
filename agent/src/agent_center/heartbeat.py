@@ -2,12 +2,14 @@ import threading
 import time
 
 from . import __version__
+from .telemetry import snapshot
 
 
 class Heartbeat(threading.Thread):
-    def __init__(self, client, interval, stop):
+    def __init__(self, client, interval, stop, state_dir=None):
         super().__init__(name="agent-heartbeat", daemon=True)
         self.client, self.interval, self.stop_event = client, interval, stop
+        self.state_dir = state_dir
         self.successes = 0
         self.last_success = None
         self.max_gap = 0.0
@@ -16,7 +18,9 @@ class Heartbeat(threading.Thread):
     def run(self):
         deadline = time.monotonic()
         while not self.stop_event.is_set():
-            result = self.client.call("heartbeat", {"version": __version__})
+            result = self.client.call(
+                "heartbeat", {"version": __version__, "telemetry": snapshot(self.state_dir)}
+            )
             now = time.monotonic()
             if result.ok and result.body.get("status") == "ok":
                 if self.last_success is not None:

@@ -114,7 +114,7 @@ class UpdateTests(unittest.TestCase):
             [sys.executable, "-I", str(artifact), "--self-check"], check=True, capture_output=True
         )
         info = json.loads(result.stdout)
-        self.assertEqual(info["version"], "0.5.2")
+        self.assertEqual(info["version"], "0.5.3")
         self.assertEqual(info["journal_schema"], 1)
         failure = subprocess.run(
             [sys.executable, "-I", str(artifact), "--config", "/missing/config.json"],

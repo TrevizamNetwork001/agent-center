@@ -29,19 +29,31 @@ class AgentApiTest extends IdentityTestCase
 
     private function enrolled(): array
     {
-        return $this->postJson('/api/v1/agent/enroll', ['code' => $this->code(), 'hostname' => 'lab-agent', 'version' => '0.5.2', 'capabilities' => ['agent_info']])->assertCreated()->json();
+        $r = $this->postJson('/api/v1/agent/enroll', ['code' => $this->code(), 'hostname' => 'lab-agent', 'version' => '0.5.2', 'capabilities' => ['agent_info']])->assertStatus(202)->json();
+
+        return $this->approved($r);
+    }
+
+    private function approved(array $r): array
+    {
+        $this->actingAs($this->admin)->post('/agents/'.$r['agent_id'].'/approve', ['identity_reviewed' => 1])->assertRedirect();
+        $this->app['auth']->forgetGuards();
+
+        return $this->postJson('/api/v1/agent/enrollment-status', ['receipt' => $r['receipt']])->assertOk()->json();
     }
 
     public function test_enrollment_is_single_use_and_stores_only_hash(): void
     {
         $code = $this->code();
         $payload = ['code' => $code, 'hostname' => 'lab', 'version' => '0.5.2', 'capabilities' => ['agent_info']];
-        $r = $this->postJson('/api/v1/agent/enroll', $payload)->assertCreated();
+        $pending = $this->postJson('/api/v1/agent/enroll', $payload)->assertStatus(202);
+        $this->assertNull($pending->json('token'));
+        $identity = $this->approved($pending->json());
         $this->postJson('/api/v1/agent/enroll', $payload)->assertConflict();
         $this->context()->apply(tenantId: $this->a->id);
         $agent = Agent::sole();
-        $this->assertSame(hash('sha256', $r->json('token')), $agent->token_hash);
-        $this->assertStringNotContainsString($r->json('token'), $agent->toJson());
+        $this->assertSame(hash('sha256', $identity['token']), $agent->token_hash);
+        $this->assertStringNotContainsString($identity['token'], $agent->toJson());
         $this->assertNotNull(AgentEnrollment::sole()->consumed_at);
     }
 

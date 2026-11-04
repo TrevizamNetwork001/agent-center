@@ -11,7 +11,7 @@ trap cleanup EXIT
 ./scripts/compose.sh exec -T postgres sh -c 'psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d agent_center_restore_check' <<'SQL'
 DO $$
 BEGIN
-  IF (SELECT count(*) FROM pg_class WHERE relname IN ('users','tenants','audit_events','agents','agent_enrollments','skills','profiles','diagnostics','diagnostic_plans','diagnostic_steps','agent_tasks','agent_task_attempts','diagnostic_conclusions','knowledge_items','prompts','knowledge_version_contents','prompt_version_contents','version_events','llm_providers','llm_models','llm_bindings','diagnostic_interpretations','interpretation_sources','conversation_settings','conversations','conversation_messages','conversation_events') AND relrowsecurity AND relforcerowsecurity) <> 27 THEN
+  IF (SELECT count(*) FROM pg_class WHERE relname IN ('users','tenants','audit_events','agents','agent_enrollments','skills','profiles','diagnostics','diagnostic_plans','diagnostic_steps','agent_tasks','agent_task_attempts','diagnostic_conclusions','knowledge_items','prompts','knowledge_version_contents','prompt_version_contents','version_events','llm_providers','llm_models','llm_bindings','diagnostic_interpretations','interpretation_sources','conversation_settings','conversations','conversation_messages','conversation_events','agent_operations') AND relrowsecurity AND relforcerowsecurity) <> 28 THEN
     RAISE EXCEPTION 'RLS de identidade não restaurado';
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'audit_immutable' AND NOT tgisinternal) THEN

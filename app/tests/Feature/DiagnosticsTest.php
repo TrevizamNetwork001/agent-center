@@ -284,7 +284,7 @@ class DiagnosticsTest extends IdentityTestCase
                 $this->assertSame('42501', $e->getCode());
             }
         }
-        $this->assertSame(27, (int) DB::selectOne("SELECT count(*) n FROM pg_class WHERE relnamespace='public'::regnamespace AND relrowsecurity AND relforcerowsecurity")->n);
+        $this->assertSame(28, (int) DB::selectOne("SELECT count(*) n FROM pg_class WHERE relnamespace='public'::regnamespace AND relrowsecurity AND relforcerowsecurity")->n);
     }
 
     public function test_offline_deadline_ends_without_invented_success(): void

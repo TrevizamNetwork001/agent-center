@@ -89,7 +89,7 @@ class ExecutionTests(unittest.TestCase):
         self.assertTrue(self.executor.accept(self.task, self.policy))
         self.wait()
         self.assertEqual([c[0] for c in self.calls], ["start", "result"])
-        self.assertEqual(self.calls[-1][1]["result"]["data"]["version"], "0.5.2")
+        self.assertEqual(self.calls[-1][1]["result"]["data"]["version"], "0.5.3")
         self.assertFalse(self.executor.accept(self.task, self.policy))
         self.assertEqual(self.journal.pending(), [])
         self.assertNotIn(
@@ -145,7 +145,10 @@ class ExecutionTests(unittest.TestCase):
                 self.wait()
             self.assertGreater(hb.successes, 20)
             self.assertLess(hb.max_gap, 0.2)
-            self.assertEqual(self.calls[-1][1]["result"]["error"], "execution_timeout")
+            self.assertEqual(
+                [data for op, data in self.calls if op == "result"][-1]["result"]["error"],
+                "execution_timeout",
+            )
         finally:
             self.stop.set()
             hb.join()
