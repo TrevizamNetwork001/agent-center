@@ -7,6 +7,7 @@ use App\Models\Agent;
 use App\Models\AgentEnrollment;
 use App\Models\AgentOperation;
 use App\Models\AuditEvent;
+use App\Web\OperationalSnapshot;
 use App\Web\Presentation;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -152,5 +153,20 @@ class AgentOperationsTest extends IdentityTestCase
         $this->context()->forUser($this->admin);
         $this->assertSame('FAILED', $o->fresh()->status);
         $this->assertSame('interrupted', $o->fresh()->error);
+    }
+
+    public function test_aggregate_online_count_requires_poll_known_version_and_reported_freeze(): void
+    {
+        $this->context()->forUser($this->admin);
+        $a = new Agent;
+        $a->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $this->a->id, 'name' => 'Presence fixture', 'hostname' => 'presence-lab', 'version' => '0.5.3', 'status' => 'active', 'token_hash' => hash('sha256', random_bytes(32)), 'capabilities' => [], 'metadata' => [], 'enrolled_at' => now(), 'last_heartbeat_at' => now(), 'last_poll_at' => now()])->save();
+        $snapshot = app(OperationalSnapshot::class);
+        $this->assertSame(0, $snapshot->get()['agents_online']);
+        $a->forceFill(['metadata' => ['telemetry' => ['device_operations_frozen' => true]], 'version' => '9.9.9'])->save();
+        $this->assertSame(0, $snapshot->get()['agents_online']);
+        $a->forceFill(['version' => '0.5.3'])->save();
+        $this->assertSame(1, $snapshot->get()['agents_online']);
+        $a->forceFill(['last_poll_at' => now()->subMinute()])->save();
+        $this->assertSame(0, $snapshot->get()['agents_online']);
     }
 }

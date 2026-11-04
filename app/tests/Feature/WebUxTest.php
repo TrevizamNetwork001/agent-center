@@ -33,7 +33,7 @@ class WebUxTest extends IdentityTestCase
         $this->context()->forUser($this->admin);
         app(Catalog::class)->ensure();
         $a = new Agent;
-        $a->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $this->a->id, 'name' => 'UX Agent A', 'hostname' => 'ux-agent-a', 'status' => 'active', 'version' => '0.5.2', 'token_hash' => hash('sha256', random_bytes(32)), 'capabilities' => ['agent_info', 'dns_lookup:v1', 'tcp_connect:v1', 'http_probe:v1'], 'metadata' => ['task_protocol' => 1], 'enrolled_at' => now(), 'last_heartbeat_at' => now()->subSeconds(5), 'last_poll_at' => now()->subSeconds(3)])->save();
+        $a->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $this->a->id, 'name' => 'UX Agent A', 'hostname' => 'ux-agent-a', 'status' => 'active', 'version' => '0.5.2', 'token_hash' => hash('sha256', random_bytes(32)), 'capabilities' => ['agent_info', 'dns_lookup:v1', 'tcp_connect:v1', 'http_probe:v1'], 'metadata' => ['task_protocol' => 1, 'telemetry' => ['device_operations_frozen' => true]], 'enrolled_at' => now(), 'last_heartbeat_at' => now()->subSeconds(5), 'last_poll_at' => now()->subSeconds(3)])->save();
         $this->agent = $a;
         $this->normal = $this->fixture('alpha.example.test', 'NORMAL');
         $this->failed = $this->fixture('beta.example.test', 'INDICIO_DE_FALHA');
@@ -107,7 +107,7 @@ class WebUxTest extends IdentityTestCase
 
     public function test_agents_and_detail_never_expose_hash_or_token(): void
     {
-        $this->actingAs($this->admin)->get('/agents')->assertOk()->assertSee('UX Agent A')->assertSee('Capabilities')->assertSee('ATENÇÃO')->assertDontSee($this->agent->token_hash);
+        $this->actingAs($this->admin)->get('/agents')->assertOk()->assertSee('UX Agent A')->assertSee('Capabilities')->assertSee('ONLINE')->assertDontSee($this->agent->token_hash);
         $this->get('/agents/'.$this->agent->id)->assertOk()->assertSee('Device freeze')->assertDontSee($this->agent->token_hash);
         $this->get('/agents?fragment=1')->assertOk()->assertHeader('X-AC-Fragment', 'agents-panel')->assertDontSee('Criar código de cadastro');
     }
