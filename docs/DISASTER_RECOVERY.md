@@ -1,48 +1,88 @@
-# Disaster Recovery
+# Disaster Recovery — RECOVERY-8
 
-Reconstrução começa do repositório novo e dos backups novos. Não depende de VPS, runtime ou banco anterior.
+**EXTERNAL BACKUP NOT CONFIGURED. DR NÃO CONCLUÍDO.** Existe recuperação local testada;
+não existe prova de sobrevivência à perda completa da VPS. Nenhum Agent real foi instalado.
+RPO 24h/RTO 4h são objetivos configuráveis ainda sem teste em servidor independente.
+Política e configuração do adaptador HTTPS: BACKUP_POLICY.md. Arquitetura/roles/TLS:
+PRODUCTION_HARDENING.md e DATABASE_ROLES.md. Git privado: GIT_REMOTE.md.
 
-## Backups desde o primeiro dia
+## Recuperação em host limpo
 
-Executar `./scripts/backup.sh`: dump PostgreSQL custom format validado com `pg_restore --list`, configs em tar.gz, hash SHA-256 e cópia do `.env` em diretório separado. Não registra conteúdo de secrets. Backup usa lock para evitar concorrência e arquivos 0600 em diretórios 0700; dumps também são confidenciais. O script captura schema e dados com snapshot consistente de pg_dump; não copia arquivos internos do volume.
+1. Provisionar host explicitamente autorizado, SO suportado, disco/RAM conforme inventário,
+Docker/Compose, Nginx, Certbot, OpenSSL, Python para tooling, NTP sincronizado e firewall
+mínimo. Não instalar PHP global. Não alterar outros serviços nem apontar DNS antes dos testes.
+2. Recuperar repositório do Git privado ou bundle externo. Verificar digest por registro
+confiável separado. `git clone ARQUIVO.bundle agent-center` e `git fsck --full`; conferir
+commit gravado no backup. Usar imagem/fonte compatível com migrations restauradas: produção
+RECOVERY-6 tem 27 tabelas RLS; checkout RECOVERY-7/8 tem 28. Não aplicar restore-check
+RECOVERY-7 sobre dump RECOVERY-6 e chamar a divergência de perda de dados.
+3. Obter a geração **do storage externo**, por credencial independente, incluindo CMS e
+seu digest registrado. Nunca usar um arquivo só localizado na VPS original como prova
+contra perda da VPS. Registrar geração, origem autorizada, hash, tamanho e duração sem secrets.
+4. Em ambiente protegido, recuperar certificado e chave privada destinatária do cofre
+separado. Descriptografar com `openssl cms -decrypt -binary -inform DER -in GERACAO.cms
+-recip CERTIFICADO.crt -inkey CHAVE_PRIVADA -out geracao.tar.gz`. Não colocar passphrase
+em argv. Manter temporários 0600 e diretórios 0700, sem screens/logs. Essa chave não deve
+ficar permanentemente na VPS recuperada.
+5. Inspecionar lista do tar antes de extrair em diretório vazio. Conferir `sha256sum -c
+config/GERACAO.sha256` a partir da raiz extraída. Recusar nomes absolutos, traversal,
+symlinks inesperados ou manifesto divergente. Preservar o original para investigação.
+6. Recuperar configuração e secrets da mesma geração. Restaurar GERACAO.env como .env
+0600, LLM master key/keyring e PKI PG nos caminhos documentados. Não gerar APP_KEY nova;
+isso perde acesso a payloads criptografados. Derivar envs mínimos via
+`python3 scripts/create-migrator-env.py`. Recuperar identidade/journal de Agents somente
+no host autorizado, sem clonar uma identidade simultaneamente.
+7. Restaurar CA pública, server.crt, server.key UID999/0600 e HBA. A chave assinadora fica
+fora do mount do PG. Validar SAN postgres/validade antes de subir. Renovar certificado
+vencido com CA recuperada/autorizada, sem desabilitar verify-full. Restaurar secrets LLM
+com proprietário UID33/0600 para web. Diretório secrets pai 0700 protege acesso no host.
+8. Subir apenas PostgreSQL em **volume novo**. Bootstrap recria admin/migrator/runtime
+sem senhas no Git. Não reaproveitar PGDATA de versão incompatível nem fazer down -v em
+volume existente. Verificar socket, SCRAM e `scripts/verify-pg-tls.sh` antes do restore.
+9. Em database vazio/isolado com owner migrator, restaurar custom dump com
+`pg_restore --no-owner --no-privileges --exit-on-error -U ADMIN --role MIGRATOR -d BANCO`.
+Credenciais somente por ambiente/arquivo privado; nomes reais vêm da configuração recuperada.
+Se o database inicial do bootstrap já contém objetos, criar outro e apontar clientes
+para ele após validação. Nunca executar sobre banco de produção existente.
+10. Reaplicar grants explícitos com db-grants.sh, respeitando allowlist de databases.
+Conferir FORCE RLS/policies, runtime sem ownership/DDL/BYPASSRLS, views security_invoker,
+triggers imutáveis e FKs compostas. Comparar contagens e identificadores esperados do
+manifesto privado, e testar isolamento tenant/no-context. `restore-check.sh` do commit
+correspondente automatiza o ensaio em database separado e o remove ao terminar.
+11. Restaurar app_storage da mesma janela, UID/GID33, modos restritos e diretórios
+framework necessários. Inspecionar/eliminar apenas caches de código incompatível por
+comando Artisan nativo. Não carregar sessões/jobs antigos sem revisar consequências.
+12. Revisar leases/generations/fencing e trabalhos desconhecidos antes de ligar writers.
+Manter Agents parados até conciliar estado; não reexecutar tarefas incertas automaticamente.
+Validar migrations com `migrate:status`; migration adicional só após revisão de compatibilidade,
+backup recuperado íntegro e rollback previsto. Não fazer rollback automático de schema/dados.
+13. Iniciar Laravel/FPM, queue worker e diagnostic-worker. Executar ready/live,
+queue-smoke.sh e deploy-precheck.sh. Confirmar progresso funcional, não só PID/container.
+14. Configurar vhost exclusivo, allowlist e HTTPS. Restaurar Certbot/renovação ou reemitir
+certificado após autorização do DNS e teste ACME. `nginx -t`, HTTP→HTTPS, SAN/validade,
+cookies e sessão/CSRF. Não copiar upstream legado nem expor PostgreSQL/FPM.
+15. Em tenant de laboratório autorizado, validar Agent API/enrollment com aprovação,
+heartbeat/poll, allowlist/freeze e leases/fencing. Ausência de Agent permanece ATENÇÃO,
+nunca ONLINE. Não instalar em host não autorizado nem tocar devices.
+16. Validar Diagnostics e Conversation determinísticos, Knowledge/Prompts/versionamento,
+LLM com chave recuperada e fallback seguro sem provider externo real, e auditoria
+imutável. Suíte Laravel/PostgreSQL e contratos cobrem esses caminhos em isolamento;
+registrar também leitura de dados restaurados e descriptografia real do keyring recuperado.
+17. Ativar monitor e timer de backup; gerar nova cópia externa criptografada e verificar
+com outra máquina. Confirmar retenção/imutabilidade e recepção de alerta externo.
+Trocar DNS somente após todos os critérios, preservando host/volume anterior para rollback.
+18. Registrar hora do último dado recuperado e duração completa; comparar com RPO/RTO.
+Conservar evidência sanitizada com origem externa, commit, hashes, resultados, falhas e
+responsável. Sem recuperação a partir da cópia externa não emitir RECOVERY-8 PASS.
 
-- `backups/database`: dumps; retenção local de 7 dias.
-- `backups/config`: configs, scripts, docs, template e referência do commit; retenção local de 7 dias.
-- `backups/secrets`: `.env` e APP_KEY, separados de configs/Git; retenção local de 7 dias.
-- Código: após o primeiro commit, cada backup inclui Git bundle com histórico em `backups/config`; enviar esse bundle também para fora da VPS. Pode ser recuperado com `git clone arquivo.bundle agent-center`. Repositório remoto privado mais espelho externo. Não há remoto disponível nesta entrega.
-- Futuro storage de uploads: adicionar backup consistente antes de implementar uploads. Atualmente não há conteúdo de usuário.
+## Ensaios desta fase e rollback
 
-Agendamento inicial preparado em `deploy/backup.cron.example`; instalar apenas o cron específico do projeto quando houver destino externo configurado. Nenhum cron preexistente é alterado. Rodar diariamente e antes de deploy; RPO alvo 24h; RTO alvo 4h, a medir em ensaio completo.
+Os testes desta VPS usam rede/volumes agent-center-recovery8 e database de restore
+separados; não alteram dados reais. Incluem TLS, recriação de containers, persistência,
+falha parcial, worker, dump/restore e bundle clone. Não equivalem a host limpo externo.
+A aplicação de produção mantém sua versão/schema; hardening TLS tem backup de config
+e rollback em backups/recovery8-before-tls. Serviços de outros projetos permanecem intactos.
 
-## Cópia externa obrigatória antes de produção
-
-Backup local sozinho não satisfaz recuperação de perda da VPS. Destino externo e credenciais não foram fornecidos; réplica automática NÃO está ativa. Não há garantia contra perda da VPS até concluir os passos abaixo.
-
-1. Prover armazenamento em outra conta/provedor ou máquina externa, com credencial de mínimo privilégio. Guardar chave de recuperação fora desta VPS.
-2. Criptografar dumps/configs/secrets antes do envio. `scripts/export-backup.sh <certificado-publico.pem> <diretorio-saida>` cria três arquivos CMS separados usando OpenSSL. Chave privada do destinatário fica exclusivamente fora da VPS. Arquivos criptografados também devem ficar fora do Git.
-3. Copiar os três arquivos criptografados para destino real com ferramenta aprovada (ex.: scp/SFTP ou object storage com versionamento e imutabilidade). Não inventar URL, conta ou credencial. Verificar tamanho/checksum do objeto recebido e alertar falhas.
-4. Retenção externa: 30 diários, 12 semanais e 12 mensais. Separar acesso aos secrets do acesso ao código/configs. Impedir que credencial desta VPS apague retenções externas imutáveis.
-5. Mensalmente testar descriptografia e restore isolado; trimestralmente ensaiar VPS nova e registrar duração. Alertar se não houver backup externo verificado em 24h. Somente apagar cópias antigas após confirmar retenção externa.
-
-## Restaurar
-
-1. Recuperar código do commit registrado, configs e `.env` da mesma janela. Descriptografar fora da VPS com `openssl cms -decrypt -binary -inform DER -in arquivo.cms -recip certificado.pem -inkey chave-privada.pem -out arquivo.tar.gz`; conferir os hashes.
-2. Na VPS nova, instalar dependências base e preparar diretório. Restaurar `.env` com 0600. Não regenerar APP_KEY de instalação com dados existentes, pois invalida criptografia/sessões.
-3. Subir PostgreSQL vazio; bootstrap recria roles usando os secrets. Não restaurar em banco que contém dados de produção. Criar database separado pelo usuário administrativo, com owner da aplicação e UTF8.
-4. Validar `pg_restore --list` e restaurar o dump em database separado com `pg_restore --no-owner --no-privileges --exit-on-error -U <admin> --role <usuario_app> -d <database_novo>`; `--role` garante ownership dos objetos pelo usuário da aplicação. O dump não inclui roles/senhas; elas vêm do bootstrap e do `.env`.
-5. Apontar DB_DATABASE para o banco restaurado, recriar web/worker, verificar migrations, `/health/live`, `/health/ready`, permissões e fila. Executar migrations adicionais apenas após revisar compatibilidade do commit.
-6. Somente liberar tráfego após validar. Preservar banco/volume anterior para rollback. Não executar restore destrutivo automaticamente.
-
-O backup local inicial e a restauração de ensaio são registrados em VALIDATION.md. A publicação externa depende de destino real; deve ser concluída antes de uso de produção.
-
-## RECOVERY-2
-
-Backup PostgreSQL administrativo inclui automaticamente agents, agent_enrollments, audit e schema completo com FORCE RLS. Runtime não possui os objetos; restore usa APP_DB_USER migrator como owner e scripts/db-grants.sh para restaurar concessões do runtime. scripts/restore-check.sh testa também leitura negada a runtime sem contexto, além de cinco tabelas protegidas e trigger imutável. Secrets de banco separados continuam no .env privado; .env.migrator pode ser regenerado sem imprimir valores.
-
-Backups do Agent (config, state/identity/journal e runtime/updater/previous) estão detalhados em AGENT_OPERATIONS.md. São confidenciais, não entram no Git e precisam de cópia externa criptografada. A entrega não inventa destino externo nem habilita réplica sem credenciais reais.
-
-## RECOVERY-3
-
-pg_dump integral inclui diagnostics, diagnostic_plans, diagnostic_steps, agent_tasks, agent_task_attempts, diagnostic_conclusions, profiles e skills, além de audit/agents/enrollment. Restore-check verifica 13 tabelas FORCE RLS, triggers imutáveis e role runtime sem owner/visibilidade sem contexto.
-
-Ao recuperar execução após desastre, manter Agents parados até verificar estado de leases. Não restaurar journal antigo sobre state mais novo; resultados desconhecidos não devem ser reexecutados automaticamente. Backups de /etc/agent-center-agent, /var/lib/agent-center-agent e runtime incluem identidade/leases e exigem destino externo privado e criptografado; credenciais nunca no Git. Backup local não substitui cópia fora da VPS.
+Secrets sem escrow externo, Git privado ausente, destino de backup ausente e receptor de
+alertas ausente continuam dependências concretas do operador. Não rotacionar APP_KEY,
+master key LLM, credenciais de Agent ou enrollment como atalho de recuperação.
