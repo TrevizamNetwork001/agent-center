@@ -208,7 +208,8 @@ autenticou, mas o envio real encontrou falha TLS; não desativar validação de 
 
 ### Transporte HTTPS de produção para R2
 
-O pacote continua sendo um único tar.gz.age criptografado antes do envio. PUT usa
+Novos pacotes são arquivos únicos tar.bz2.age, criptografados antes do envio.
+Objetos legados tar.gz.age continuam suportados para download. PUT usa
 /usr/bin/curl com IPv4, negociação HTTP/2 (fallback HTTPS1.1 permitido), sem Expect,
 TLS/CA/hostname verificados e tentativas limitadas para interrupções de transporte.
 Nenhuma opção insecure ou redirecionamento é habilitada. A URL assinada pelo SDK,
@@ -221,8 +222,7 @@ If-None-Match:* impede sobrescrever objetos. Mesmo HTTP200 ou um retorno perdido
 comprovam sucesso: HEAD deve conferir tamanho/metadata SHA-256 e GET completo deve
 conferir bytes e SHA-256 contra o ciphertext local. O recibo guarda apenas resultado
 sanitizado do transporte. O caminho SDK de PUT permanece opção técnica de laboratório;
-a UI fixa produção no padrão curl. O cliente de download continua SDK e o formato
-.tar.gz.age não mudou. Blocos/índices experimentais não foram promovidos à produção.
+a UI fixa produção no padrão curl. O cliente de download continua SDK e aceita .tar.bz2.age e o legado .tar.gz.age. Blocos/índices experimentais não foram promovidos à produção.
 Limites de transporte: conexão10s, tentativa300s, retry600s, processo950s e objeto5GiB.
 
 
@@ -231,3 +231,12 @@ A rotina automática foi comprovada em 2026-11-04T23:47:13.644987+00:00, geraç�
 Retenção externa/lock e receiver externo de alertas não foram configurados com as
 credenciais S3 de envio. Alertas locais e watcher permanecem ativos. Não confundir
 integridade de transferência com restauração ou custódia da chave verificadas.
+
+
+Por solicitação do operador, o novo arquivo completo usa nome datado UTC:
+agent-center-AAAA-MM-DD_HH-MM-SSZ-<nonce>.tar.bz2.age. O nonce evita colisões e
+sobrescritas em execuções concorrentes. Banco, configurações, secrets, dados persistentes,
+Git bundle e manifestos entram no mesmo TAR compactado por BZip2 e cifrado por age.
+A compactação usa tarfile/bz2 da biblioteca padrão Python, em stream direto para age,
+sem pacote global bzip2 e sem arquivo agregado em claro no disco. A identidade privada
+continua fora da VPS. A política diária/semanal/mensal mantém gerações anteriores.

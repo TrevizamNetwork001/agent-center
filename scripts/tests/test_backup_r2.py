@@ -88,6 +88,8 @@ class R2Tests(unittest.TestCase):
         # 2026-11-01 was both Sunday and first day of month.
         keys = r2.object_keys(self.config, '20261101T021500Z', 'a' * 32)
         self.assertEqual(len(keys), 3)
+        self.assertTrue(all(key.endswith('.tar.bz2.age') for key in keys))
+        self.assertTrue(all('agent-center-2026-11-01_02-15-00Z-' in key for key in keys))
         self.assertTrue(any('/monthly/' in key for key in keys))
         self.assertTrue(any('/weekly/' in key for key in keys))
         self.assertEqual(len(r2.object_keys(self.config, '20261104T021500Z')), 1)
@@ -200,10 +202,12 @@ class R2Tests(unittest.TestCase):
         ciphertext, _meta = next(iter(self.client.objects.values()))
         encrypted = self.root / 'remote.age'
         encrypted.write_bytes(ciphertext)
-        plaintext = self.root / 'decrypted.tar.gz'
+        plaintext = self.root / 'decrypted.tar.bz2'
         subprocess.run([str(age), '--decrypt', '-i', str(identity), '-o', str(plaintext), str(encrypted)],
                        check=True, stderr=subprocess.DEVNULL)
+        self.assertEqual(plaintext.read_bytes()[:3], b'BZh')
         with tarfile.open(plaintext) as archive:
+            self.assertEqual(set(archive.getnames()), set(r2.generation_members(self.root)[1]))
             self.assertTrue(any(name.startswith('secrets/') for name in archive.getnames()))
         encrypted.write_bytes(ciphertext[:-1] + bytes([ciphertext[-1] ^ 1]))
         tampered_output = self.root / 'unauthenticated.partial'
@@ -225,6 +229,18 @@ class R2Tests(unittest.TestCase):
         self.assertEqual(proof['source'], 'r2_download_only')
         with self.assertRaises(r2.BackupError):
             download_r2.download(self.config, {}, 'other-bucket/object.age', self.root / 'other')
+
+    def test_download_accepts_the_dated_bzip2_archive_and_keeps_legacy_compatibility(self):
+        data = b'synthetic remote age ciphertext'
+        digest = hashlib.sha256(data).hexdigest()
+        key = r2.object_keys(self.config, '20261104T021500Z')[0]
+        self.client.objects[key] = (data, {'sha256': digest})
+        output = self.root / 'dated-backup.tar.bz2.age'
+        with patch.object(download_r2, 'new_client', return_value=self.client):
+            proof = download_r2.download(self.config, {}, key, output)
+        self.assertEqual(output.read_bytes(), data)
+        self.assertTrue(proof['integrity'])
+        self.assertFalse(proof['independent_restore_verified'])
 
     def test_alert_preserves_missing_configuration_and_failure_before_generation(self):
         self.fixture()
