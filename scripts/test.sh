@@ -12,5 +12,5 @@ test_php() {
 }
 docker run --rm --network agent-center_backend --env-file .env.migrator -e DB_DATABASE=agent_center_test --mount type=bind,src="$PWD/app",dst=/var/www/html agent-center-tooling:foundation php artisan migrate --force
 ./scripts/db-grants.sh agent_center_test
-test_php vendor/bin/phpunit --display-warnings --fail-on-warning
+test_php vendor/bin/phpunit --display-warnings --fail-on-warning "$@"
 docker run --rm --network agent-center_backend --env-file .env.migrator -e DB_DATABASE=agent_center_test --mount type=bind,src="$PWD/app",dst=/var/www/html agent-center-tooling:foundation php artisan migrate:rollback --force

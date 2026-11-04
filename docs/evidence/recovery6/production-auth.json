@@ -1,0 +1,1 @@
+{"pass":true,"native_production_login":true,"mandatory_password_change":true,"dashboard_blocked_until_change":true,"secure_session":true,"csrf_logout":true,"no_password_changed_by_test":true}

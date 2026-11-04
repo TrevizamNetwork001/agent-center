@@ -13,3 +13,7 @@
 @media(max-width:760px){.topbar-context>span:first-of-type{display:none}.topbar-context>.tenant-context{display:block;border:0;padding:0;max-width:190px;font-size:10px}.sidebar nav a{min-height:38px}.user-menu{flex-shrink:0}}
 
 .mobile-identity{display:none}@media(max-width:760px){.account-menu .mobile-identity{display:block;font-size:11px;padding:8px 10px;margin:0;border-bottom:1px solid var(--line)}}
+
+.conversation-messages{display:grid;gap:1rem}.conversation-message{border:1px solid var(--border,#dce3eb);border-radius:10px;padding:1rem;min-width:0}.conversation-message[data-sender=user]{background:#f0f5ff}.conversation-message p{margin:.5rem 0}.conversation-message small{color:#5c6d80}[data-conversation-form] textarea{display:block;width:100%;box-sizing:border-box;resize:vertical}.conversation-steps{padding-left:1.3rem}
+
+.table-scroll{overflow-x:auto;max-width:100%}

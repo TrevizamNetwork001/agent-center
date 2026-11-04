@@ -1,0 +1,8 @@
+Laravel/PostgreSQL: OK (124 tests, 993 assertions)
+Pint: 157 files PASS
+Composer validate --strict: PASS
+Composer audit --locked: no advisories
+Frontend Vite build: PASS
+Isolated restore with key from backup: PASS
+Wrong key proof: rejected exit 1
+Agent runtime: unchanged 0.5.2

@@ -20,10 +20,14 @@ if git rev-parse --verify HEAD >/dev/null 2>&1; then
 fi
 cp .env "$backup_root/secrets/$stamp.env"
 if [ -f secrets/llm-master.key ]; then cp secrets/llm-master.key "$backup_root/secrets/$stamp.llm-master.key"; chmod 600 "$backup_root/secrets/$stamp.llm-master.key"; tar -czf "$backup_root/secrets/$stamp.llm-keyring.tar.gz" secrets; chmod 600 "$backup_root/secrets/$stamp.llm-keyring.tar.gz"; fi
+if [ -r /etc/letsencrypt/live/agent-center/privkey.pem ]; then
+  tar -chzf "$backup_root/secrets/$stamp.tls-agent-center.tar.gz" -C /etc/letsencrypt live/agent-center renewal/agent-center.conf
+  chmod 600 "$backup_root/secrets/$stamp.tls-agent-center.tar.gz"
+fi
 chmod 600 "$backup_root/database/$stamp.dump" "$backup_root/config/$stamp.tar.gz" "$backup_root/secrets/$stamp.env"
 sha256sum "$backup_root/database/$stamp.dump" "$backup_root/config/$stamp.tar.gz" > "$backup_root/config/$stamp.sha256"
 # Só remove arquivos deste backup, após concluir o novo conjunto. Janela local: 7 dias.
 find "$backup_root/database" -maxdepth 1 -type f -name '*.dump' -mtime +6 -delete
 find "$backup_root/config" -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.sha256' -o -name '*.commit' -o -name '*.bundle' \) -mtime +6 -delete
-find "$backup_root/secrets" -maxdepth 1 -type f \( -name '*.env' -o -name '*.llm-master.key' -o -name '*.llm-keyring.tar.gz' -o -name '*agent-state.tar.gz' \) -mtime +6 -delete
+find "$backup_root/secrets" -maxdepth 1 -type f \( -name '*.env' -o -name '*.llm-master.key' -o -name '*.llm-keyring.tar.gz' -o -name '*.tls-agent-center.tar.gz' -o -name '*agent-state.tar.gz' \) -mtime +6 -delete
 printf 'Backup local concluído: %s. Replicação externa deve ser verificada separadamente.\n' "$stamp"

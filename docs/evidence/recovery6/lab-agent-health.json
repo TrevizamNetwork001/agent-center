@@ -1,0 +1,8 @@
+{
+    "agent_version": "0.5.2",
+    "capabilities": 4,
+    "heartbeat_age_seconds": 19,
+    "poll_age_seconds": 1,
+    "active_tasks": 0,
+    "stale_leases": 0
+}

@@ -1,0 +1,21 @@
+{
+    "app_debug": false,
+    "app_url": "https:\/\/agente.trevizamnetwork.com.br",
+    "secure_session": true,
+    "http_only": true,
+    "same_site": "lax",
+    "tenants": [
+        {
+            "state": "ATEN\u00c7\u00c3O",
+            "database": true,
+            "worker": true,
+            "agents_total": 0,
+            "agents_online": 0,
+            "heartbeat_age": null,
+            "poll_age": null,
+            "active_tasks": 0,
+            "stale_leases": 0,
+            "conversation_enabled": false
+        }
+    ]
+}

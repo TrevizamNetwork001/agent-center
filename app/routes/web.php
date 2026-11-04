@@ -3,6 +3,7 @@
 use App\Http\Controllers\Agent\ManagementController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiagnosticCatalogController;
 use App\Http\Controllers\DiagnosticController;
@@ -80,4 +81,14 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->group(function 
     Route::post('/advanced/llm/models/{model}/defaults', [LlmController::class, 'defaults'])->whereUuid('model')->name('llm.defaults');
     Route::post('/advanced/llm/providers/{provider}/test', [LlmController::class, 'test'])->whereUuid('provider')->middleware('throttle:llm-call')->name('llm.test');
     Route::post('/diagnostics/{diagnostic}/interpret', [LlmController::class, 'interpret'])->whereUuid('diagnostic')->middleware('throttle:llm-call')->name('diagnostics.interpret');
+});
+
+Route::middleware(['auth', 'auth.session', 'password.changed'])->prefix('conversations')->group(function () {
+    Route::get('/', [ConversationController::class, 'index'])->name('conversations.index');
+    Route::post('/', [ConversationController::class, 'store'])->middleware('throttle:conversation-message')->name('conversations.store');
+    Route::put('/settings', [ConversationController::class, 'settings'])->name('conversations.settings');
+    Route::get('/{conversation}', [ConversationController::class, 'show'])->whereUuid('conversation')->name('conversations.show');
+    Route::post('/{conversation}/messages', [ConversationController::class, 'send'])->whereUuid('conversation')->middleware('throttle:conversation-message')->name('conversations.send');
+    Route::post('/{conversation}/sync', [ConversationController::class, 'sync'])->whereUuid('conversation')->middleware('throttle:conversation-sync')->name('conversations.sync');
+    Route::post('/{conversation}/interpret', [ConversationController::class, 'interpret'])->whereUuid('conversation')->middleware('throttle:llm-call')->name('conversations.interpret');
 });

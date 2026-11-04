@@ -1,0 +1,25 @@
+{
+  "pass": true,
+  "checks": [
+    "pending_target_same_conversation",
+    "actual_agent_dns_result",
+    "refresh_keeps_state",
+    "missing_capability_not_offered",
+    "natural_close",
+    "mobile_no_horizontal_overflow",
+    "mobile_history_no_horizontal_overflow",
+    "history_real_conversation",
+    "secure_httponly_samesite_session",
+    "native_logout_csrf",
+    "no_browser_errors"
+  ],
+  "screenshots": 6,
+  "viewports": [
+    "1366x768",
+    "390x844"
+  ],
+  "https": true,
+  "actual_agent": "0.5.2",
+  "target": "localhost",
+  "profile": "PROBLEMA_DNS"
+}

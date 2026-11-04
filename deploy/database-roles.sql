@@ -18,3 +18,6 @@ GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO :"runtime_user";
 SELECT format('GRANT SELECT, INSERT, UPDATE ON TABLE public.%I TO %I', tablename, :'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('knowledge_items','prompts','llm_providers','llm_models','llm_bindings') \gexec
 SELECT format('GRANT SELECT, INSERT ON TABLE public.%I TO %I', tablename, :'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('knowledge_version_contents','prompt_version_contents','version_events','diagnostic_interpretations','interpretation_sources') \gexec
 SELECT format('GRANT SELECT ON TABLE public.%I TO %I', viewname, :'runtime_user') FROM pg_views WHERE schemaname='public' AND viewname IN ('knowledge_versions','prompt_versions') \gexec
+
+SELECT format('GRANT SELECT, INSERT, UPDATE ON TABLE public.%I TO %I',tablename,:'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('conversations','conversation_settings') \gexec
+SELECT format('GRANT SELECT, INSERT ON TABLE public.%I TO %I',tablename,:'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('conversation_messages','conversation_events') \gexec

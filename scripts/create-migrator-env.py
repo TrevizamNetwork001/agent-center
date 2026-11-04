@@ -36,6 +36,7 @@ keys = {
     "APP_KEY",
     "APP_DEBUG",
     "APP_URL",
+    "TRUSTED_PROXY_CIDRS",
     "APP_LOCALE",
     "TZ",
     "LOG_CHANNEL",

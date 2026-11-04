@@ -1,0 +1,8 @@
+# Additive schema and conversation history must remain intact.
+services:
+  web:
+    image: agent-center-central:recovery6-rollback-0bc1379
+  worker:
+    image: agent-center-central:recovery6-rollback-0bc1379
+  diagnostic-worker:
+    image: agent-center-central:recovery6-rollback-0bc1379

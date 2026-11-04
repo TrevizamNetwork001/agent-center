@@ -4,10 +4,12 @@ namespace App\Providers;
 
 use App\Enums\Role;
 use App\Models\Agent;
+use App\Models\Conversation;
 use App\Models\Diagnostic;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Policies\AgentPolicy;
+use App\Policies\ConversationPolicy;
 use App\Policies\DiagnosticPolicy;
 use App\Policies\TenantPolicy;
 use App\Policies\UserPolicy;
@@ -34,6 +36,9 @@ class AppServiceProvider extends ServiceProvider
             return (new EloquentUserProvider($app['hash'], $config['model']))
                 ->withQuery(fn ($query) => $query->withoutGlobalScope(TenantScope::class));
         });
+        Gate::policy(Conversation::class, ConversationPolicy::class);
+        RateLimiter::for('conversation-message', fn ($r) => [Limit::perMinute(20)->by('conversation-user:'.$r->user()->id), Limit::perMinute(120)->by('conversation-tenant:'.app(TenantContext::class)->tenantId)]);
+        RateLimiter::for('conversation-sync', fn ($r) => Limit::perMinute(60)->by('conversation-sync:'.$r->user()->id));
         Gate::policy(Agent::class, AgentPolicy::class);
         Gate::define('manage-intelligence', fn (User $u) => (new AgentPolicy)->create($u));
         Gate::define('read-knowledge', fn (User $u) => (new AgentPolicy)->viewAny($u));

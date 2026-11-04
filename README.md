@@ -52,3 +52,7 @@ Experiência operacional com dashboard real, navegação por grupos, filtros de 
 ## RECOVERY-5
 
 [Knowledge versionado](docs/KNOWLEDGE.md), [Prompts/preview](docs/PROMPTS.md) e [LLM foundation](docs/LLM.md). Interpretação opcional não altera classificação, tasks ou estado técnico. Sem tools e com fallback determinístico.
+
+## Conversation Platform (RECOVERY-6)
+
+Conversa Web com estado, intenções determinísticas, Adaptive Tone automático, histórico e integração ao Task Engine. Ativação por tenant, desabilitada por padrão. Ver [Conversation Engine](docs/CONVERSATION_ENGINE.md) e [validação RECOVERY-6](docs/RECOVERY_6_VALIDATION.md). HTTPS com certificado válido e acesso restrito à VPS enquanto o backup externo não é configurado.

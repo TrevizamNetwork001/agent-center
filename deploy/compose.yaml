@@ -1,6 +1,6 @@
 name: agent-center
 x-app: &app
-  image: agent-center-central:recovery5
+  image: agent-center-central:recovery6
   build:
     context: ..
     dockerfile: deploy/php/Dockerfile
@@ -13,6 +13,7 @@ x-app: &app
     LLM_MASTER_KEY_FILE: /run/secrets/llm-master.key
     LLM_ALLOWED_HOSTS: ${LLM_ALLOWED_HOSTS:-}
     LLM_PREVIOUS_KEY_FILES: ${LLM_PREVIOUS_KEY_FILES:-}
+    TRUSTED_PROXY_CIDRS: ${TRUSTED_PROXY_CIDRS:-}
     APP_URL: ${APP_URL:-http://127.0.0.1:18083}
     APP_LOCALE: ${APP_LOCALE:-pt_BR}
     TZ: ${TZ:-Europe/Berlin}

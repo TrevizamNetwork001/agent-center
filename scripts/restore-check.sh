@@ -11,7 +11,7 @@ trap cleanup EXIT
 ./scripts/compose.sh exec -T postgres sh -c 'psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d agent_center_restore_check' <<'SQL'
 DO $$
 BEGIN
-  IF (SELECT count(*) FROM pg_class WHERE relname IN ('users','tenants','audit_events','agents','agent_enrollments','skills','profiles','diagnostics','diagnostic_plans','diagnostic_steps','agent_tasks','agent_task_attempts','diagnostic_conclusions','knowledge_items','prompts','knowledge_version_contents','prompt_version_contents','version_events','llm_providers','llm_models','llm_bindings','diagnostic_interpretations','interpretation_sources') AND relrowsecurity AND relforcerowsecurity) <> 23 THEN
+  IF (SELECT count(*) FROM pg_class WHERE relname IN ('users','tenants','audit_events','agents','agent_enrollments','skills','profiles','diagnostics','diagnostic_plans','diagnostic_steps','agent_tasks','agent_task_attempts','diagnostic_conclusions','knowledge_items','prompts','knowledge_version_contents','prompt_version_contents','version_events','llm_providers','llm_models','llm_bindings','diagnostic_interpretations','interpretation_sources','conversation_settings','conversations','conversation_messages','conversation_events') AND relrowsecurity AND relforcerowsecurity) <> 27 THEN
     RAISE EXCEPTION 'RLS de identidade não restaurado';
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'audit_immutable' AND NOT tgisinternal) THEN
@@ -42,7 +42,10 @@ UNION ALL SELECT 'llm_providers', count(*) FROM llm_providers
 UNION ALL SELECT 'llm_models', count(*) FROM llm_models
 UNION ALL SELECT 'llm_bindings', count(*) FROM llm_bindings
 UNION ALL SELECT 'diagnostic_interpretations', count(*) FROM diagnostic_interpretations
-UNION ALL SELECT 'interpretation_sources', count(*) FROM interpretation_sources;
+UNION ALL SELECT 'interpretation_sources', count(*) FROM interpretation_sources
+UNION ALL SELECT 'conversations', count(*) FROM conversations
+UNION ALL SELECT 'conversation_messages', count(*) FROM conversation_messages
+UNION ALL SELECT 'conversation_events', count(*) FROM conversation_events;
 SQL
 ./scripts/db-grants.sh agent_center_restore_check
 ./scripts/compose.sh exec -T postgres sh -c 'psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d agent_center_restore_check' <<'SQL'
@@ -50,12 +53,13 @@ SQL
 SET ROLE :"runtime_user";
 SELECT current_user AS restore_runtime_role, (SELECT count(*) FROM agents) AS agents_visible_without_context;
 DO $$ BEGIN
- IF EXISTS (SELECT 1 FROM diagnostics) OR EXISTS (SELECT 1 FROM agent_tasks) OR EXISTS (SELECT 1 FROM agents) THEN RAISE EXCEPTION 'RLS sem contexto falhou'; END IF;
+ IF EXISTS (SELECT 1 FROM conversations) OR EXISTS (SELECT 1 FROM conversation_messages) OR EXISTS (SELECT 1 FROM conversation_events) OR EXISTS (SELECT 1 FROM diagnostics) OR EXISTS (SELECT 1 FROM agent_tasks) OR EXISTS (SELECT 1 FROM agents) THEN RAISE EXCEPTION 'RLS sem contexto falhou'; END IF;
  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tableowner=current_user) THEN RAISE EXCEPTION 'Runtime possui tabelas'; END IF;
 END $$;
 SQL
 if [ -n "${LLM_RESTORE_MANIFEST:-}" ]; then
   [ -f "$LLM_RESTORE_MANIFEST" ] && [ -f "${LLM_RESTORE_KEY_FILE:?required}" ] || exit 1
-  docker run --rm --network agent-center_backend --env-file .env.runtime -e DB_DATABASE=agent_center_restore_check -e LLM_MASTER_KEY_FILE=/run/secrets/llm-master.key --mount type=bind,src="$PWD/scripts/lab/llm-restore-proof.php",dst=/restore-proof.php,readonly --mount type=bind,src="$LLM_RESTORE_MANIFEST",dst=/proof/manifest.json,readonly --mount type=bind,src="$LLM_RESTORE_KEY_FILE",dst=/run/secrets/llm-master.key,readonly agent-center-central:recovery5 php /restore-proof.php
+  proof_output=$(docker run --rm --network agent-center_backend --env-file .env.runtime -e DB_DATABASE=agent_center_restore_check -e LLM_MASTER_KEY_FILE=/run/secrets/llm-master.key --mount type=bind,src="$PWD/scripts/lab/llm-restore-proof.php",dst=/restore-proof.php,readonly --mount type=bind,src="$LLM_RESTORE_MANIFEST",dst=/proof/manifest.json,readonly --mount type=bind,src="$LLM_RESTORE_KEY_FILE",dst=/run/secrets/llm-master.key,readonly "${RESTORE_IMAGE:-agent-center-central:recovery6}" php /restore-proof.php)
+  case "$proof_output" in *'Isolated restore: data, versions, RLS context and AES-GCM secret PASS'*) printf '%s\n' "$proof_output";; *) echo 'Restore proof did not confirm PASS' >&2; exit 1;; esac
 fi
 echo 'Restore em database separado: PASS'
