@@ -316,3 +316,26 @@ Testes do ajuste:22 Python PASS, incluindo URL assinada nunca em argv, arquivos0
 parent0700, limpeza após timeout, rejeição de host/HTTP/redirect, e exigência de HEAD/GET
 mesmo com HTTP200. Ruff e compileall PASS. Teste anterior de escrita parcial não vira
 backup aprovado; somente recibos complete=true com hash conferido contam.
+
+
+### Rotina automática R2 comprovada — 2026-11-04T23:47:13.644987+00:00
+
+agent-center-backup.service executou a cadeia real completa com exit0/Resultsuccess,
+23:42:46Z–23:47:14Z: novo backup local, criptografia age, PUT, HEAD e GET integral.
+Geração 20261104T234246Z, ciphertext 35270893bytes, SHA256
+4811f1091aa5c40219ab53a20bc73bcfb1cf77e01bf28f84b6ebdc0869137087. Recibo complete=true; upload_completed/integrity_verified=true.
+Timers backup, UI e watch ativos. Cópia externa VERDE por prova real de upload e
+integridade; Laravel/worker/PG/Nginx saudáveis e HTTPSreadiness200. Nenhuma migration,
+credencial, chave privada de recuperação, Agent ou certificado foi alterado.
+
+Prova sanitizada: evidence/recovery8/closure/r2-production-automation-verified.json.
+Testes22 Python PASS; Ruff/compileall/diff-check/secret scan PASS. Código c7e351c
+(main) e51d16c0 (produção) enviado ao GitHub; clone limpo/fsck/hash de arquivos PASS.
+Snapshot de rollback em backups/native-transport-rollback-*/backup_r2.py; restaurar
+esse arquivo recupera o uploader anterior, preservando objetos e recibos.
+
+RECOVERY-8 BLOCKED: restauração independente a partir do R2, prova de custódia
+externa da identidade privada, retenção/BucketLock e alertas externos ainda pendentes.
+O upload integral e a automação estão comprovados; não declarar DR concluído.
+Objetos parciais cifrados de diagnósticos não são backups válidos e não foram apagados;
+devem seguir política de retenção autorizada quando configurada.

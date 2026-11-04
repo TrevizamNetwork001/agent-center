@@ -179,3 +179,11 @@ SHA-256, e só então usar a identidade age sob custódia externa para descripto
 A identidade privada nunca deve ser enviada à VPS original. O transporte curl é de
 PUT; GET e a prova de integridade continuam pelo SDK. Nenhuma restauração independente
 real foi realizada nesta validação, portanto integridade remota não equivale a DR PASS.
+
+
+Existe cópia real criptografada em R2 com HEAD e download integral verificados em
+2026-11-04T23:47:13.644987+00:00. O recibo privado da geração20261104T234246Z em
+backups/r2-receipts informa a chave do objeto; a prova pública sanitizada omite conta
+e credenciais. Ainda não houve recuperação em host independente autorizado nem
+descriptografia dos dados reais. Essa etapa permanece bloqueada sem acesso ao host
+de recuperação e à identidade sob custódia externa do operador.
