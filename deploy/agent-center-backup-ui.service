@@ -1,0 +1,10 @@
+[Unit]
+Description=Consume only authorized Laravel platform backup requests
+After=docker.service
+[Service]
+Type=oneshot
+ExecStart=/opt/agent-center/scripts/backup-ui-request.sh
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true

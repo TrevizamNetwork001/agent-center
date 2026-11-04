@@ -207,3 +207,6 @@ Pendências atuais: provisionar R2 e public recipient em terminal seguro; compro
 externa; aplicar/verificar retenção específica sem afetar outros objetos; upload+HEAD+GET
 real; host independente autorizado com privada recuperada fora da VPS; restore de todos
 os domínios/dados e alerta recebido fora do host. Sem isso, manter RECOVERY-8 BLOCKED.
+
+
+Painel R2: configuração criptografada cadastrada; HEAD do bucket autenticado. Upload encontrou SSLError, sem integridade remota comprovada. Imagem recovery8-r2-ui-save-status corrige navegação e confirmação persistente São Paulo, com atualização automática do status a cada10s preservando o formulário. Candidato0839cb5. Laravel5testes70assertions, Pint e Chromium isolado PASS. Rollback: Compose em backups/ui-save-rollback-*/compose.yaml e imagem recovery8-r2-ui-before-save-status; recriar somente web/worker/diagnostic-worker, sem migrations ou PG. Chave privada gerada apenas no navegador, biblioteca age-encryption0.3.1 empacotada localmente; download não enviado à Central. Custódia/restore independente/retention ainda pendentes.

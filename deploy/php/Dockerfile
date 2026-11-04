@@ -11,7 +11,8 @@ FROM base AS tooling
 
 FROM base AS production
 COPY app/ /var/www/html/
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader \
+RUN chmod -R a+rX /var/www/html \
+    && composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader \
     && chown -R www-data:www-data storage bootstrap/cache
 COPY deploy/php/zz-health.conf /usr/local/etc/php-fpm.d/zz-health.conf
 COPY deploy/php/production.ini /usr/local/etc/php/conf.d/production.ini

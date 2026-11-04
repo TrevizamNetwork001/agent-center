@@ -97,7 +97,7 @@ class R2Settings
     public function health(): array
     {
         $probe = json_decode(@file_get_contents(storage_path('framework/operations-probes.json')) ?: 'null', true);
-        $out = ['local' => 'ATENÇÃO', 'external' => 'ATENÇÃO'];
+        $out = ['local' => 'ATENÇÃO', 'external' => 'ATENÇÃO', 'message' => 'Aguardando observação atualizada do backup.'];
         if (! is_array($probe) || empty($probe['collected_at']) || CarbonImmutable::parse($probe['collected_at'])->lt(now()->subSeconds(90))) {
             return $out;
         }
@@ -107,6 +107,15 @@ class R2Settings
                     $out['local'] = $check['state'];
                 } elseif (($check['component'] ?? '') === 'backup_external') {
                     $out['external'] = $check['state'];
+                    $out['message'] = match ($check['reason'] ?? '') {
+                        'r2_precheck_in_progress', 'r2_backup_in_progress' => 'Preparando e criptografando o backup.',
+                        'r2_transfer_in_progress' => 'Enviando ao R2 e verificando a integridade. Aguarde a conclusão.',
+                        'r2_encrypted_upload_download_verified' => 'Envio ao R2 concluído e integridade conferida por download. Restauração independente ainda pendente.',
+                        'r2_ui_backup_failed', 'r2_backup_failed', 'r2_ui_bridge_unavailable' => 'Falha no backup externo. O envio não foi confirmado; é necessária verificação operacional.',
+                        'EXTERNAL BACKUP NOT CONFIGURED' => 'O envio externo ainda não foi configurado ou verificado.',
+                        'verified_backup_stale' => 'A cópia externa está atrasada. É necessária verificação operacional.',
+                        default => 'Aguardando comprovação atualizada do backup externo.',
+                    };
                 }
             }
         }
