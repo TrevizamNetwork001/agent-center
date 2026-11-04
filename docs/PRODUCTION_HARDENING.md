@@ -87,3 +87,6 @@ em laboratório até promoção revisada com os pré-requisitos de recuperação
 
 Referências: [libpq verify-full](https://www.postgresql.org/docs/17/libpq-ssl.html),
 [TLS servidor](https://www.postgresql.org/docs/17/ssl-tcp.html).
+
+Status log sanitizado tem rotação diária exclusiva, sete gerações, compressão adiada e
+nginx -s reopen. Timer agent-center-status-rotate; não altera logs de outros vhosts.

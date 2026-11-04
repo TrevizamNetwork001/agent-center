@@ -1,0 +1,41 @@
+{
+  "laravel": {
+    "tests": 135,
+    "assertions": 1100,
+    "tls": true,
+    "pass": true
+  },
+  "python": {
+    "tests": 52,
+    "uid": 65532,
+    "pass": true
+  },
+  "backup_https_lab": {
+    "tests": 4,
+    "pass": true,
+    "external_proof": false
+  },
+  "restore": {
+    "isolated": true,
+    "force_rls_tables": 28,
+    "aes_gcm": true,
+    "external_source": false
+  },
+  "compose_lifecycle": {
+    "isolated": true,
+    "pass": true
+  },
+  "external_backup": "EXTERNAL BACKUP NOT CONFIGURED",
+  "private_external_git": false,
+  "real_agent_deployed": false,
+  "health_regression_final": {
+    "tests": 1,
+    "assertions": 5,
+    "pass": true
+  },
+  "production_restore": {
+    "isolated": true,
+    "force_rls_tables": 27,
+    "pass": true
+  }
+}

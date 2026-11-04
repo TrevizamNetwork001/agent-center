@@ -1,0 +1,7 @@
+[Unit]
+Description=Rotate only the Agent Center sanitized Nginx status log
+[Service]
+Type=oneshot
+ExecStart=/opt/agent-center/deploy/nginx/host/rotate-agent-center-status.sh
+UMask=0027
+NoNewPrivileges=true

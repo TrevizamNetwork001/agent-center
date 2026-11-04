@@ -1,0 +1,8 @@
+TLS positive, wrong hostname, wrong CA, plaintext rejection and local socket: PASS
+TLS positive, wrong hostname, wrong CA, plaintext rejection and local socket: PASS
+TLS positive, wrong hostname, wrong CA, plaintext rejection and local socket: PASS
+TLS positive, wrong hostname, wrong CA, plaintext rejection and local socket: PASS
+Queue database → worker → cache: PASS
+TLS positive, wrong hostname, wrong CA, plaintext rejection and local socket: PASS
+Production configuration and PDO TLS: PASS
+Startup/stop/restart/recreate/volume/TLS/partial failure recovery: PASS

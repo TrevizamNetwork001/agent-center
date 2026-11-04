@@ -1,0 +1,6 @@
+[Unit]
+Description=Agent Center backup failure signal
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/logger -p daemon.err -t agent-center-backup BACKUP_FAILED_OR_EXTERNAL_NOT_CONFIGURED
+NoNewPrivileges=true

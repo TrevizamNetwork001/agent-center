@@ -1,0 +1,2 @@
+Only project agent-center-recovery8 containers/networks/volumes removed after validation.
+Production five containers remain healthy; unrelated projects preserved.

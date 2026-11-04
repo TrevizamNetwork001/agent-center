@@ -1,0 +1,1 @@
+TLS positive, wrong hostname, wrong CA, plaintext rejection and local socket: PASS

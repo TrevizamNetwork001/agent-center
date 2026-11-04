@@ -1,0 +1,13 @@
+[Unit]
+Description=Agent Center local and encrypted external backup
+After=docker.service network-online.target
+OnFailure=agent-center-backup-alert.service
+[Service]
+Type=oneshot
+ExecStart=/opt/agent-center/scripts/backup-run.sh
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/agent-center/backups
