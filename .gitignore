@@ -27,3 +27,5 @@ __pycache__/
 *.cms
 
 *.bundle
+
+/app/storage/app/platform-backups/

@@ -92,3 +92,5 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->prefix('convers
     Route::post('/{conversation}/sync', [ConversationController::class, 'sync'])->whereUuid('conversation')->middleware('throttle:conversation-sync')->name('conversations.sync');
     Route::post('/{conversation}/interpret', [ConversationController::class, 'interpret'])->whereUuid('conversation')->middleware('throttle:llm-call')->name('conversations.interpret');
 });
+
+require __DIR__.'/backups.php';
