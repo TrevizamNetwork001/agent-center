@@ -13,6 +13,7 @@ from . import __version__
 from .api import Client
 from .capabilities import self_check
 from .config import Config
+from .execution import Executor
 from .heartbeat import Heartbeat
 from .identity import Identity
 from .journal import Journal
@@ -97,6 +98,7 @@ class Runtime:
             raise StateError("unsafe_state_directory")
         lock = InstanceLock(self.config.state_dir / "instance.lock")
         journal = None
+        executor = None
         try:
             status_file = self.config.state_dir / "status.json"
             if status_file.exists():
@@ -108,7 +110,13 @@ class Runtime:
             self.heartbeat.start()
             journal = Journal(self.config.state_dir / "journal.sqlite3")
             self.status("RECOVERY")
-            pending = journal.recover()
+            journal.recover()
+            executor = Executor(
+                self.config,
+                journal,
+                Client(self.config.central_url, self.identity.token, self.config.timeout),
+                self.stop,
+            )
             self.status("CAPABILITIES")
             # Every outcome is retryable at the scheduling layer, including network down at boot.
             announced = False
@@ -118,20 +126,23 @@ class Runtime:
                     return 3
                 if not announced:
                     result = self.client.call(
-                        "capabilities", {"capabilities": list(self.capabilities)}
+                        "capabilities",
+                        {"capabilities": list(self.capabilities), "task_protocol": 1},
                     )
                     announced = result.ok and result.body.get("capabilities") == list(
                         self.capabilities
                     )
-                if pending:
-                    self.client.call("reconcile", {"executions": pending})
-                    # Hold remains hold; never replay an execution with unknown outcome.
+                executor.recover()
                 self.status("CLAIM")
-                result = self.poller.poll()
+                result = self.poller.poll(0 if executor.busy or journal.pending() else 1)
+                if executor.active_id in result.body.get("cancel_execution_ids", []):
+                    executor.cancel.set()
+                if result.ok and result.body.get("task") is not None:
+                    executor.accept(result.body["task"], self.poller.policy)
                 if result.status in (401, 403):
                     self.status("QUARANTINED")
                     return 3
-                online = self.poller.policy.valid and announced and result.body.get("task") is None
+                online = self.poller.policy.valid and announced
                 self.status("ONLINE" if online else "DEGRADED")
                 if logger and not online:
                     logger.warning("poll_unavailable")
@@ -142,6 +153,8 @@ class Runtime:
             self.stop.set()
             if self.heartbeat.ident:
                 self.heartbeat.join(timeout=2 * self.config.timeout + 2)
+            if executor:
+                executor.close()
             if journal:
                 journal.close()
             lock.close()
@@ -152,6 +165,7 @@ def main():
     parser.add_argument("--config", default="/etc/agent-center-agent/config.json")
     parser.add_argument("--self-check", action="store_true")
     parser.add_argument("--enroll", action="store_true")
+    parser.add_argument("--action-worker", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     os.umask(0o077)
     if sys.version_info < (3, 13):
@@ -172,6 +186,10 @@ def main():
     if os.geteuid() == 0:
         print('{"event":"startup_failed","reason":"root_forbidden"}')
         return 2
+    if args.action_worker:
+        from .action_worker import main as action_main
+
+        return action_main(args.config)
     logger, listener = configure()
     try:
         config = Config.load(Path(args.config))

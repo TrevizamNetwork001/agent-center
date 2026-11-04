@@ -1,4 +1,5 @@
 import ipaddress
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -17,6 +18,8 @@ class Config:
     timeout: float = 5
     device_operations_frozen: bool = True
     allowed_networks: tuple = ()
+    allowed_dns_names: tuple = ()
+    config_path: str = ""
 
     @classmethod
     def load(cls, path: Path):
@@ -63,6 +66,25 @@ class Config:
             if data.get("device_operations_frozen", True) is not True:
                 raise ValueError()
             nets = tuple(str(ipaddress.ip_network(v)) for v in data.get("allowed_networks", []))
-            return cls(url.rstrip("/"), *paths, *intervals, True, nets)
+            names = data.get("allowed_dns_names", [])
+            if (
+                not isinstance(names, list)
+                or len(names) > 100
+                or any(
+                    not isinstance(n, str)
+                    or not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9.-]{0,252}", n)
+                    for n in names
+                )
+            ):
+                raise ValueError()
+            return cls(
+                url.rstrip("/"),
+                *paths,
+                *intervals,
+                True,
+                nets,
+                tuple(n.lower().rstrip(".") for n in names),
+                str(path),
+            )
         except (KeyError, TypeError, ValueError) as exc:
             raise StateError("invalid_config") from exc

@@ -1,0 +1,6 @@
+@extends('layout')
+@section('content')<h1>Diagnóstico: {{$diagnostic->target}}</h1><p>{{$diagnostic->status}} @if($diagnostic->cancel_requested_at) · Cancelamento solicitado @endif</p>
+@if(in_array($diagnostic->status,['PENDING','RUNNING']))<p><a href="{{route('diagnostics.show',$diagnostic)}}">Atualizar progresso</a></p>@can('cancel',$diagnostic)<form method="post" action="{{route('diagnostics.cancel',$diagnostic)}}">@csrf<button>Cancelar</button></form>@endcan @endif
+@if($conclusion)<section class="card"><h2>{{$conclusion->classification}}</h2><p>{{$conclusion->summary}}</p><ul>@foreach($conclusion->next_steps as $next)<li>{{$next}}</li>@endforeach</ul></section>@endif
+@foreach($steps->groupBy('logical_group') as $group=>$items)<section class="card"><h2>{{$group}}</h2>@foreach($items as $s)<details><summary>{{$s->key}} · {{$s->status}}</summary><p>Início: {{$s->started_at ?? '—'}} · Fim: {{$s->finished_at ?? '—'}}</p>@if($s->error_code)<p>Erro: {{$s->error_code}}</p>@endif @if($s->result)<pre style="white-space:pre-wrap">{{json_encode($s->result,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE)}}</pre>@endif</details>@endforeach</section>@endforeach
+@if($plan)<details><summary>Plano utilizado · versão {{$plan->version}}</summary><p>Digest: <code>{{$plan->digest}}</code></p></details>@endif @endsection

@@ -1,6 +1,6 @@
 name: agent-center
 x-app: &app
-  image: agent-center-central:recovery2
+  image: agent-center-central:recovery3
   build:
     context: ..
     dockerfile: deploy/php/Dockerfile
@@ -102,6 +102,16 @@ services:
       timeout: 5s
       start_period: 30s
       retries: 5
+  diagnostic-worker:
+    <<: *app
+    command: [php, artisan, 'agent-center:diagnostic-worker']
+    stop_grace_period: 30s
+    healthcheck:
+      test: [CMD, php, artisan, 'agent-center:worker-health']
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
   nginx:
     image: nginxinc/nginx-unprivileged:stable-alpine@sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03
     user: '101:101'

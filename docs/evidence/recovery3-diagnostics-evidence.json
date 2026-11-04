@@ -1,0 +1,76 @@
+[
+    {
+        "id": "8228e7a9-c2cc-43aa-9600-afe68df8c862",
+        "status": "COMPLETED",
+        "conclusion": "NORMAL",
+        "steps": [
+            {
+                "key": "dns_a",
+                "status": "COMPLETED",
+                "result": {
+                    "ok": true,
+                    "data": {
+                        "error": null,
+                        "answers": [
+                            "127.0.0.1"
+                        ],
+                        "duration_ms": 5.1,
+                        "record_type": "A"
+                    }
+                }
+            },
+            {
+                "key": "dns_aaaa",
+                "status": "COMPLETED",
+                "result": {
+                    "ok": true,
+                    "data": {
+                        "error": null,
+                        "answers": [
+                            "::1"
+                        ],
+                        "duration_ms": 2.83,
+                        "record_type": "AAAA"
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "id": "e1a03daf-db18-4dfa-bf91-100638d23a9b",
+        "status": "COMPLETED",
+        "conclusion": "NORMAL",
+        "steps": [
+            {
+                "key": "dns_a",
+                "status": "COMPLETED",
+                "result": {
+                    "ok": true,
+                    "data": {
+                        "error": null,
+                        "answers": [
+                            "127.0.0.1"
+                        ],
+                        "duration_ms": 4.21,
+                        "record_type": "A"
+                    }
+                }
+            },
+            {
+                "key": "dns_aaaa",
+                "status": "COMPLETED",
+                "result": {
+                    "ok": true,
+                    "data": {
+                        "error": null,
+                        "answers": [
+                            "::1"
+                        ],
+                        "duration_ms": 3.17,
+                        "record_type": "AAAA"
+                    }
+                }
+            }
+        ]
+    }
+]

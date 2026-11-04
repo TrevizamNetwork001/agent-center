@@ -1,0 +1,6 @@
+# Data-preserving rollback: stop diagnostic-worker before applying this overlay.
+services:
+  web:
+    image: agent-center-central:recovery3-rollback-ada5edb
+  worker:
+    image: agent-center-central:recovery3-rollback-ada5edb

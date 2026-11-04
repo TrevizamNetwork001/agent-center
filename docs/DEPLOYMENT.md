@@ -59,3 +59,24 @@ Antes do primeiro deploy desta fase: prover RUNTIME_DB_USER/PASSWORD aleatórios
 Migrations não podem mais rodar como web/worker. Usar profile operations/migrator e reaplicar grants. Após migração, ativar imagem recovery2, aguardar health e validar login/Agent API. Unit Python foi validada, sem habilitação global automática; produção exige URL HTTPS/identidade fornecida pelo operador.
 
 Rollback de Central: imagem retida agent-center-central:recovery2-rollback-da20d9c. Reapontar somente web/worker e recriar com --no-build; preservar schema/roles atuais, sem down de migrations que apagaria Agents/enrollments/auditoria. Banco anterior só em restore separado com validação e troca explícita de database. Os dados do Agent não são restaurados indiscriminadamente ao trocar runtime; seguir AGENT_OPERATIONS.md.
+
+## RECOVERY-3 — deploy e rollback
+
+Validar imagem e suíte no lab antes. Backup com `./scripts/backup.sh`; preservar imagem anterior com `docker tag agent-center-central:recovery2 agent-center-central:recovery3-rollback-ada5edb`. Construir recovery3, executar migrator e db-grants, subir web/worker/diagnostic-worker; recarregar apenas Nginx do projeto para resolver novamente o upstream FPM. Verificar health web/ready e health do worker.
+
+```sh
+./scripts/compose.sh --profile operations run --rm --no-deps migrator
+./scripts/db-grants.sh
+./scripts/compose.sh up -d --no-deps --no-build web worker diagnostic-worker
+./scripts/compose.sh exec -T nginx nginx -s reload
+```
+
+Rollback preservando evidências:
+
+```sh
+./scripts/compose.sh stop diagnostic-worker
+./scripts/compose.sh -f deploy/rollback-recovery3.yaml up -d --no-deps --no-build web worker
+./scripts/compose.sh exec -T nginx nginx -s reload
+```
+
+Não remover volumes nem executar down de migrations em produção. Manter a nova imagem para investigação. Agents sem opt-in de protocolo continuam sem receber tarefas; para interromper Agents novos, parar serviços locais com procedimento autorizado. Nunca restaurar journal antigo sobre state atual.

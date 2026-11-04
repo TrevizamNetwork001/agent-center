@@ -44,3 +44,9 @@ Agents e enrollments usam scope, Policy e FORCE RLS. Busca anônima de enrollmen
 Eventos: agent.enrollment_created, agent.enrolled, agent.capabilities_updated, agent.revoked. UUIDs podem ser metadados validados; nenhum token/code/hash é registrado nos eventos. Heartbeat é timestamp/métrica, não um evento por request. Rotação de token não foi implementada; revogar e reenrolar gera identidade/token novos.
 
 UI: todos os papéis autenticados podem ver Agents do próprio contexto; somente platform_admin/tenant_admin criam enrollment ou revogam. Seleção de tenant por platform_admin é explícita. Requests web usam Auth/Session/CSRF nativos; Agent API é stateless, separada das sessões humanas.
+
+## RECOVERY-3 — tarefas negociadas
+
+Os oito endpoints mantêm caminhos e autenticação. Capabilities aceita task_protocol:1; claim exige task_protocol:1 e capacity 0/1. Clients sem opt-in continuam com task:null e tasks_enabled:false. Policy schema_version=1 acrescenta task_protocol=1 e habilita execução apenas no cliente opt-in.
+
+Claim retorna task_id, execution_id, generation, lease_token (uma vez), lease_seconds=45, renew_interval=10, timeout, capability e input. Poll inclui cancel_execution_ids. Start/renew/result usam os quatro campos de identidade/lease; result adiciona result estruturado. HTTP 409 rejeita attempt desconhecido/stale/expirado ou conflito. Status ok é confirmação; cancel_requested/cancel:true exige parar. Resultado equivalente já confirmado retorna duplicate:true. Reconcile retorna hold, cancel, expired, acknowledged ou resend_result; nunca libera reexecução. 422 indica payload fora do schema. Limites origin/enrollment/Agent permanecem 1200/10/120 por minuto.

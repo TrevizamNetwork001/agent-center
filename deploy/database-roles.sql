@@ -9,8 +9,8 @@ ALTER ROLE :"runtime_user" PASSWORD :'runtime_password' NOSUPERUSER NOCREATEDB N
 GRANT CONNECT ON DATABASE :"DBNAME" TO :"runtime_user";
 REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 GRANT USAGE ON SCHEMA public TO :"runtime_user";
-SELECT format('GRANT SELECT, INSERT, UPDATE ON TABLE public.%I TO %I', tablename, :'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('users','tenants','agents','agent_enrollments') \gexec
-SELECT format('GRANT SELECT, INSERT ON TABLE public.%I TO %I', tablename, :'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename='audit_events' \gexec
+SELECT format('GRANT SELECT, INSERT, UPDATE ON TABLE public.%I TO %I', tablename, :'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('users','tenants','agents','agent_enrollments','skills','profiles','diagnostics','diagnostic_steps','agent_tasks','agent_task_attempts') \gexec
+SELECT format('GRANT SELECT, INSERT ON TABLE public.%I TO %I', tablename, :'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('audit_events','diagnostic_plans','diagnostic_conclusions') \gexec
 SELECT format('GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.%I TO %I', tablename, :'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('sessions','cache','cache_locks','jobs','job_batches','failed_jobs','password_reset_tokens') \gexec
 SELECT format('GRANT SELECT ON TABLE public.migrations TO %I', :'runtime_user') WHERE to_regclass('public.migrations') IS NOT NULL \gexec
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO :"runtime_user";

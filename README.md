@@ -40,3 +40,7 @@ git push -u origin main
 ```
 
 Réplica externa de backup ainda depende de destino/chave reais. Procedimentos e retenção estão em DISASTER_RECOVERY.md; backup local não protege contra perda da VPS.
+
+## RECOVERY-3
+
+Diagnósticos determinísticos, seis Profiles e seis Skills fechadas, Task Engine com leases/fencing e worker funcional. Documentação: [Task Engine](docs/TASK_ENGINE.md), [Diagnósticos](docs/DIAGNOSTICS.md), [Profiles/Skills](docs/PROFILES_AND_SKILLS.md), [Saúde](docs/OPERATIONS_HEALTH.md), [Vendors desativados](docs/VENDOR_SKILLS_ROADMAP.md).

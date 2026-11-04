@@ -1,0 +1,6 @@
+{
+    "parallel_claim": "PASS",
+    "parallel_worker": "PASS",
+    "parallel_duplicate_result": "PASS",
+    "diagnostic_status": "CANCELLED"
+}

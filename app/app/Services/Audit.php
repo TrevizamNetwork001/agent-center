@@ -11,7 +11,7 @@ class Audit
 {
     public function record(string $event, ?User $actor = null, ?int $tenantId = null, ?string $entity = null, ?int $entityId = null, array $metadata = []): void
     {
-        if (! in_array($event, ['auth.login_success', 'auth.login_failed', 'auth.logout', 'auth.password_changed', 'user.created', 'user.updated', 'user.disabled', 'tenant.created', 'tenant.updated', 'agent.enrollment_created', 'agent.enrolled', 'agent.capabilities_updated', 'agent.revoked'], true)) {
+        if (! in_array($event, ['auth.login_success', 'auth.login_failed', 'auth.logout', 'auth.password_changed', 'user.created', 'user.updated', 'user.disabled', 'tenant.created', 'tenant.updated', 'agent.enrollment_created', 'agent.enrolled', 'agent.capabilities_updated', 'agent.revoked', 'diagnostic.created', 'diagnostic.started', 'diagnostic.cancel_requested', 'diagnostic.cancelled', 'diagnostic.completed', 'diagnostic.failed', 'profile.created', 'profile.updated', 'skill.enabled', 'skill.disabled'], true)) {
             throw new InvalidArgumentException('Evento não permitido.');
         }
         $safe = [];
@@ -27,7 +27,7 @@ class Audit
         if (in_array($metadata['status'] ?? null, ['active', 'disabled'], true)) {
             $safe['status'] = $metadata['status'];
         }
-        foreach (['agent_id', 'enrollment_id'] as $key) {
+        foreach (['agent_id', 'enrollment_id', 'diagnostic_id', 'profile_id', 'skill_id'] as $key) {
             if (isset($metadata[$key]) && is_string($metadata[$key]) && Str::isUuid($metadata[$key])) {
                 $safe[$key] = $metadata[$key];
             }

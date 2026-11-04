@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Agent;
 
 use App\Agent\AgentContext;
 use App\Agent\Protocol;
+use App\Diagnostics\Engine;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Agent\ProtocolRequest;
 use App\Models\Agent;
@@ -56,12 +57,13 @@ class ProtocolController extends Controller
         $a = $r->attributes->get('agent');
         $a->forceFill(['version' => $r->validated('version'), 'last_heartbeat_at' => now()])->save();
 
-        return response()->json(['status' => 'ok', 'policy' => Protocol::policy($a->id)]);
+        return response()->json(['status' => 'ok', 'policy' => Protocol::policy($a->id, ($a->metadata['task_protocol'] ?? 0) === 1)]);
     }
 
     public function capabilities(ProtocolRequest $r, Audit $audit)
     {
         $a = $r->attributes->get('agent');
+        $a->forceFill(['metadata' => [...($a->metadata ?? []), 'task_protocol' => $r->integer('task_protocol')]])->save();
         DB::transaction(function () use ($a, $r, $audit) {
             if ($a->capabilities !== $r->validated('capabilities')) {
                 $a->forceFill(['capabilities' => $r->validated('capabilities')])->save();
@@ -72,21 +74,34 @@ class ProtocolController extends Controller
         return response()->json(['status' => 'ok', 'capabilities' => $a->capabilities]);
     }
 
-    public function claim(ProtocolRequest $r)
+    public function claim(ProtocolRequest $r, Engine $engine)
     {
         $a = $r->attributes->get('agent');
-        $a->forceFill(['last_poll_at' => now()])->save();
+        $enabled = $r->integer('task_protocol') === 1 && ($a->metadata['task_protocol'] ?? 0) === 1;
+        $task = $engine->claim($a, $enabled ? $r->integer('capacity', 1) : 0);
 
-        return response()->json(['task' => null, 'policy' => Protocol::policy($a->id)]);
+        return response()->json(['task' => $task, 'policy' => Protocol::policy($a->id, $enabled), 'cancel_execution_ids' => $engine->activeCancellations($a)])->header('Cache-Control', 'no-store');
     }
 
-    public function unavailable(ProtocolRequest $r)
+    public function start(ProtocolRequest $r, Engine $engine)
     {
-        return response()->json(['error' => 'no_active_task', 'retryable' => false], 409);
+        return response()->json($engine->operation($r->attributes->get('agent'), 'start', $r->validated()));
     }
 
-    public function reconcile(ProtocolRequest $r)
+    public function renew(ProtocolRequest $r, Engine $engine)
     {
-        return response()->json(['executions' => array_map(fn ($e) => ['execution_id' => $e['execution_id'], 'disposition' => 'hold'], $r->validated('executions')), 'tasks_enabled' => false]);
+        return response()->json($engine->operation($r->attributes->get('agent'), 'renew', $r->validated()));
+    }
+
+    public function result(ProtocolRequest $r, Engine $engine)
+    {
+        return response()->json($engine->operation($r->attributes->get('agent'), 'result', $r->validated()));
+    }
+
+    public function reconcile(ProtocolRequest $r, Engine $engine)
+    {
+        $a = $r->attributes->get('agent');
+
+        return response()->json(['executions' => $engine->reconcile($a, $r->validated('executions')), 'tasks_enabled' => ($a->metadata['task_protocol'] ?? 0) === 1]);
     }
 }

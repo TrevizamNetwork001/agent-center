@@ -4,9 +4,11 @@ namespace App\Providers;
 
 use App\Enums\Role;
 use App\Models\Agent;
+use App\Models\Diagnostic;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Policies\AgentPolicy;
+use App\Policies\DiagnosticPolicy;
 use App\Policies\TenantPolicy;
 use App\Policies\UserPolicy;
 use App\Tenancy\TenantContext;
@@ -33,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
                 ->withQuery(fn ($query) => $query->withoutGlobalScope(TenantScope::class));
         });
         Gate::policy(Agent::class, AgentPolicy::class);
+        Gate::policy(Diagnostic::class, DiagnosticPolicy::class);
+        Gate::define('manage-diagnostic-catalog', fn (User $u) => (new AgentPolicy)->create($u));
         RateLimiter::for('agent-origin', fn ($r) => Limit::perMinute(1200)->by(hash('sha256', (string) $r->ip())));
         RateLimiter::for('agent-enrollment', fn ($r) => Limit::perMinute(10)->by(hash('sha256', (string) $r->ip())));
         RateLimiter::for('agent-api', fn ($r) => Limit::perMinute(120)->by($r->attributes->get('agent')->id));

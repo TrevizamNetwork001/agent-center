@@ -12,13 +12,13 @@ class Poller:
         self.last_success = None
         self.max_gap = 0.0
 
-    def poll(self):
-        result = self.client.call("claim", {})
+    def poll(self, capacity=1):
+        result = self.client.call("claim", {"task_protocol": 1, "capacity": capacity})
         if result.ok and "task" in result.body:
             self.policy = Policy.parse(
                 result.body.get("policy"), self.identity.agent_id, self.capabilities
             )
-            if self.policy.valid and result.body["task"] is None:
+            if self.policy.valid:
                 now = time.monotonic()
                 if self.last_success is not None:
                     self.max_gap = max(self.max_gap, now - self.last_success)

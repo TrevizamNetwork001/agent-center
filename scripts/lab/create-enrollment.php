@@ -4,7 +4,7 @@ $app=require getcwd().'/bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 $c=app(App\Tenancy\TenantContext::class);$c->apply(platform:true);
 try {
- $tenant=App\Models\Tenant::create(['name'=>'RECOVERY-2 LAB','slug'=>'recovery-2-lab','status'=>'active']);
+ $tenant=App\Models\Tenant::create(['name'=>'RECOVERY-3 LAB','slug'=>'recovery-3-lab','status'=>'active']);
  $user=new App\Models\User;$user->forceFill(['name'=>'Lab owner','email'=>'lab-owner@example.invalid','password'=>Illuminate\Support\Facades\Hash::make(bin2hex(random_bytes(32))),'tenant_id'=>$tenant->id,'role'=>'tenant_admin','status'=>'active','must_change_password'=>true])->save();
  $c->forUser($user);
  $id=(string)Illuminate\Support\Str::uuid();$code=$id.'.'.bin2hex(random_bytes(32));

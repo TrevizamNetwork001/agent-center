@@ -1,0 +1,1 @@
+{"version": "0.5.2", "state_schema": 1, "journal_schema": 1, "capabilities": ["agent_info", "dns_lookup:v1", "tcp_connect:v1", "http_probe:v1"], "device_operations_frozen": true}

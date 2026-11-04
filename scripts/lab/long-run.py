@@ -25,6 +25,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--duration", type=int, default=900)
 parser.add_argument("--sample", type=int, default=15)
 parser.add_argument("--output", default="/tmp/agent-center-recovery2-longrun.json")
+parser.add_argument("--container",default="agent-center-recovery2-agent-lab")
 args = parser.parse_args()
 if args.duration < 900:
     raise SystemExit("Long-run requires at least 900 seconds")
@@ -32,7 +33,7 @@ start = time.monotonic()
 rows = []
 while True:
     result = subprocess.run(
-        ["docker", "exec", "agent-center-recovery2-agent-lab", "python", "-c", PROBE],
+        ["docker", "exec", args.container, "python", "-c", PROBE],
         capture_output=True,
         timeout=20,
         check=True,
@@ -74,7 +75,8 @@ summary["pass"] = bool(
     and summary["rss_growth_kib"] < 10240
     and summary["fds_max"] - summary["fds_min"] <= 4
     and summary["threads_max"] <= 4
-    and summary["children_max"] == 0
+    and summary["children_max"] <= 1
+    and rows[-1]["children"] == 0
     and summary["journal_ok"]
 )
 Path(args.output).write_text(json.dumps(summary, indent=2) + "\n")

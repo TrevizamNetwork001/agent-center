@@ -30,3 +30,9 @@ Overlay opcional `deploy/compose.postgres-tls.yaml`: servidor ssl=on, clientes w
 `deploy/postgres/pg_hba.hostssl.example` rejeita hostnossl e usa SCRAM em hostssl. NÃO ativar esse exemplo sem testar backups/administração: local também usa SCRAM, então scripts locais precisarão de PGPASSWORD obtido do ambiente do container, sem argv/logs. A ativação deve ser uma mudança revisada com rollback da configuração anterior e teste de backup/restore antes de liberar tráfego. O overlay foi validado sintaticamente e não aplicado sem PKI.
 
 Não inventar certificados/domínio nem usar sslmode=disable ou desabilitar validação TLS para facilitar testes. Antes de produção ampliada, prover CA/certificados, testar verify-full/HOSTSSL e só então ativar o overlay.
+
+## RECOVERY-3 grants e isolamento
+
+Runtime: SELECT/INSERT/UPDATE em skills, profiles, diagnostics, diagnostic_steps, agent_tasks e agent_task_attempts; SELECT/INSERT apenas em diagnostic_plans/diagnostic_conclusions. Sem DELETE, DDL, ownership ou BYPASSRLS. Todas as oito tabelas têm ENABLE/FORCE RLS com tenant_id; FKs compostas amarram Agent/diagnóstico/step/task ao mesmo tenant. Não há bypass de platform_admin nas tabelas de domínio. Worker usa a mesma role runtime nesta fase; separação adicional por workload é evolução possível.
+
+Restore inclui schemas, índices, triggers, dados e policies; reaplicar scripts/db-grants.sh no destino. TLS prefer atual permanece; HOSTSSL/verify-full preparados exigem PKI final.

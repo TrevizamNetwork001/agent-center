@@ -336,7 +336,12 @@ class ActionContractTests(Base):
 
         with (
             patch("shutil.which", return_value="/usr/bin/known-probe"),
-            patch("subprocess.run", return_value=SimpleNamespace(returncode=0)) as process,
+            patch(
+                "subprocess.run",
+                return_value=SimpleNamespace(
+                    returncode=0, stdout=b"5 packets transmitted, 5 received, 0% packet loss\n"
+                ),
+            ) as process,
         ):
             policy = Policy(True, KNOWN)
             for capability in ["icmp_ping:v1", "traceroute:v1"]:

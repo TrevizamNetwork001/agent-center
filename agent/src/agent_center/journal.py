@@ -4,10 +4,10 @@ import threading
 from pathlib import Path
 
 EDGES = {
-    "claimed": {"executing", "uncertain"},
+    "claimed": {"executing", "uncertain", "completed"},
     "executing": {"result_pending", "uncertain"},
     "result_pending": {"completed", "uncertain"},
-    "uncertain": set(),
+    "uncertain": {"completed"},
     "completed": set(),
 }
 
@@ -56,6 +56,21 @@ class Journal:
         except Exception:
             self.transition(execution_id, "uncertain")
             return None
+
+    def store_result(self, execution_id, result):
+        encoded = json.dumps(result, sort_keys=True)
+        if len(encoded) > 65536:
+            raise ValueError("oversized_result")
+        with self.lock, self.db:
+            c = self.db.execute(
+                "UPDATE executions SET result=?,state='result_pending' WHERE id=? AND state='executing'",
+                (encoded, execution_id),
+            )
+            if c.rowcount:
+                self.db.execute(
+                    "INSERT INTO events(execution_id,state) VALUES(?,'result_pending')",
+                    (execution_id,),
+                )
 
     def result(self, execution_id):
         with self.lock:

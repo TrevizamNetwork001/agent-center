@@ -40,3 +40,9 @@ O backup local inicial e a restauração de ensaio são registrados em VALIDATIO
 Backup PostgreSQL administrativo inclui automaticamente agents, agent_enrollments, audit e schema completo com FORCE RLS. Runtime não possui os objetos; restore usa APP_DB_USER migrator como owner e scripts/db-grants.sh para restaurar concessões do runtime. scripts/restore-check.sh testa também leitura negada a runtime sem contexto, além de cinco tabelas protegidas e trigger imutável. Secrets de banco separados continuam no .env privado; .env.migrator pode ser regenerado sem imprimir valores.
 
 Backups do Agent (config, state/identity/journal e runtime/updater/previous) estão detalhados em AGENT_OPERATIONS.md. São confidenciais, não entram no Git e precisam de cópia externa criptografada. A entrega não inventa destino externo nem habilita réplica sem credenciais reais.
+
+## RECOVERY-3
+
+pg_dump integral inclui diagnostics, diagnostic_plans, diagnostic_steps, agent_tasks, agent_task_attempts, diagnostic_conclusions, profiles e skills, além de audit/agents/enrollment. Restore-check verifica 13 tabelas FORCE RLS, triggers imutáveis e role runtime sem owner/visibilidade sem contexto.
+
+Ao recuperar execução após desastre, manter Agents parados até verificar estado de leases. Não restaurar journal antigo sobre state mais novo; resultados desconhecidos não devem ser reexecutados automaticamente. Backups de /etc/agent-center-agent, /var/lib/agent-center-agent e runtime incluem identidade/leases e exigem destino externo privado e criptografado; credenciais nunca no Git. Backup local não substitui cópia fora da VPS.

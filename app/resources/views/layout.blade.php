@@ -9,6 +9,8 @@
 @can('viewAny', App\Models\Tenant::class)<a href="{{ route('tenants.index') }}">Tenants</a>@endcan
 @can('view-audit')<a href="{{ route('audit.index') }}">Auditoria</a>@endcan
 @can('viewAny', App\Models\Agent::class)<a href="{{ route('agents.index') }}">Agents</a>@endcan
+@can('viewAny', App\Models\Diagnostic::class)<a href="{{ route('diagnostics.index') }}">Diagnósticos</a>@endcan
+@can('manage-diagnostic-catalog')<a href="{{ route('diagnostic-catalog.index') }}">Profiles / Skills</a><a href="{{ route('operations') }}">Operação</a>@endcan
 <a href="{{ route('password.edit') }}">Senha</a>
 <form class="inline" method="post" action="{{ route('logout') }}">@csrf<button>Sair</button></form>
 @endauth</nav></header>

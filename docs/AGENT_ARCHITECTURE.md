@@ -50,3 +50,9 @@ Bearer é aleatório de 256 bits, com UUID identificador; Central guarda apenas 
 Unit hardened com usuário dedicado, NoNewPrivileges, filesystem somente leitura exceto State/Logs/RuntimeDirectory, PrivateTmp, proteção de kernel e capabilities vazias. Isso não torna o código seguro contra root/comprometimento do próprio usuário de serviço. Chaves/config/state/backup precisam continuar restritos ao operador.
 
 Referências: [Python sqlite3](https://docs.python.org/3.13/library/sqlite3.html), [PostgreSQL RLS](https://www.postgresql.org/docs/17/ddl-rowsecurity.html), [systemd.exec](https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html).
+
+## RECOVERY-3 — execução read-only
+
+Runtime 0.5.2 mantém schema1 de state/journal e acrescenta task_protocol1. Controle: BOOT → CONFIG → IDENTITY → RECOVERY → CAPABILITIES → CLAIM/ONLINE ou DEGRADED; lane independente: START → EXECUTE ↔ RENEW → RESULT → RECONCILE → IDLE. Journal executing é durável antes de START. Perda da resposta não autoriza ação; recovery fecha uncertain sem replay quando Central confirmar expiração. Resultado result_pending pode ser reenviado; ação nunca.
+
+Config acrescenta allowed_dns_names (nomes exatos), complementar a allowed_networks (CIDRs), ambos vazios por default. Estado de lease é privado, separado do journal. HTTP fixa IP autorizado com TLS/SNI do hostname original, sem redirects. Execução é subprocesso fixo separado da thread heartbeat e do polling; filhos encerrados por process group em timeout/cancel.

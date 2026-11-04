@@ -6,6 +6,7 @@ class Policy:
     valid: bool
     allowed: tuple = ()
     frozen: bool = True
+    tasks: bool = False
 
     @classmethod
     def parse(cls, raw, agent_id, capabilities):
@@ -18,7 +19,9 @@ class Policy:
             return cls(False)
         if (
             raw.get("device_operations_frozen", True) is not True
-            or raw.get("tasks_enabled", False) is not False
+            or raw.get("tasks_enabled", False) not in (True, False)
+            or raw.get("tasks_enabled", False) is True
+            and raw.get("task_protocol") != 1
         ):
             return cls(False)
         allowed = raw.get("allowed_capabilities", [])
@@ -31,7 +34,12 @@ class Policy:
                 not isinstance(v, str) or v.startswith("device_") for v in allowed
             ):
                 return cls(False)
-        return cls(True, tuple(v for v in allowed if v in capabilities))
+        return cls(
+            True,
+            tuple(v for v in allowed if v in capabilities),
+            True,
+            raw.get("tasks_enabled", False) is True,
+        )
 
 
 def authorize(name, policy, available):

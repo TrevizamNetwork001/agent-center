@@ -1,0 +1,20 @@
+{
+  "duration_seconds": 900.22,
+  "samples": 60,
+  "heartbeat_successes": 50,
+  "heartbeat_max_gap": 20.284052092931233,
+  "poll_successes": 187,
+  "poll_max_gap": 15.749610572005622,
+  "rss_min_kib": 29848,
+  "rss_max_kib": 30240,
+  "rss_growth_kib": 392,
+  "fds_min": 7,
+  "fds_max": 9,
+  "threads_max": 4,
+  "sockets_max": 1,
+  "children_max": 0,
+  "cpu_seconds": 1.62,
+  "journal_ok": true,
+  "journal_events_max": 16,
+  "pass": true
+}

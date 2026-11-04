@@ -41,7 +41,8 @@ atomic_write(
         "poll_interval": 5,
         "timeout": 5,
         "device_operations_frozen": True,
-        "allowed_networks": [],
+        "allowed_networks": ["127.0.0.0/8", "::1/128"],
+        "allowed_dns_names": ["localhost"],
     },
 )
 (lab / "enrollment.json").unlink()
