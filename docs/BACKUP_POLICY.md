@@ -224,3 +224,10 @@ sanitizado do transporte. O caminho SDK de PUT permanece opção técnica de lab
 a UI fixa produção no padrão curl. O cliente de download continua SDK e o formato
 .tar.gz.age não mudou. Blocos/índices experimentais não foram promovidos à produção.
 Limites de transporte: conexão10s, tentativa300s, retry600s, processo950s e objeto5GiB.
+
+
+A rotina automática foi comprovada em 2026-11-04T23:47:13.644987+00:00, geração
+20261104T234246Z: local/age/PUT/HEAD/GET/SHA256 PASS, exit0; timer diário ativo.
+Retenção externa/lock e receiver externo de alertas não foram configurados com as
+credenciais S3 de envio. Alertas locais e watcher permanecem ativos. Não confundir
+integridade de transferência com restauração ou custódia da chave verificadas.

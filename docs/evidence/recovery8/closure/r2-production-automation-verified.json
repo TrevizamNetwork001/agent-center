@@ -1,0 +1,48 @@
+{
+  "verified_at": "2026-11-04T23:47:13.644987+00:00",
+  "generation": "20261104T234246Z",
+  "scope": "production_agent_center_complete_backup",
+  "bucket": "agent-center",
+  "bytes": 35270893,
+  "sha256": "4811f1091aa5c40219ab53a20bc73bcfb1cf77e01bf28f84b6ebdc0869137087",
+  "complete": true,
+  "encryption": "age-v1",
+  "remote_objects_verified": 1,
+  "remote_head": true,
+  "full_remote_download": true,
+  "sha256_matches_local_ciphertext": true,
+  "transport": [
+    {
+      "client": "curl",
+      "exit_code": 0,
+      "http_status": 200,
+      "http_version": "1.1"
+    }
+  ],
+  "stages": {
+    "backup_executed": true,
+    "encrypted": true,
+    "external_key_custody_verified": false,
+    "independent_restore_verified": false,
+    "integrity_verified": true,
+    "retention_verified": false,
+    "upload_completed": true
+  },
+  "automated_service": {
+    "name": "agent-center-backup.service",
+    "result": "success",
+    "exit_code": 0,
+    "start": "2026-11-04T23:42:46Z",
+    "end": "2026-11-04T23:47:14Z"
+  },
+  "timers_active": [
+    "agent-center-backup.timer",
+    "agent-center-backup-ui.timer",
+    "agent-center-backup-watch.timer"
+  ],
+  "independent_restore_verified": false,
+  "retention_verified": false,
+  "external_key_custody_verified": false,
+  "existing_objects_deleted": false,
+  "global_recovery8": "BLOCKED_PENDING_EXTERNAL_DR_REQUIREMENTS"
+}
