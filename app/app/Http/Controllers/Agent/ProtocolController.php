@@ -7,6 +7,7 @@ use App\Agent\Protocol;
 use App\Diagnostics\Engine;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Agent\ProtocolRequest;
+use App\Models\Agent;
 use App\Services\Audit;
 use Illuminate\Support\Facades\DB;
 
@@ -24,28 +25,34 @@ class ProtocolController extends Controller
 
     public function heartbeat(ProtocolRequest $r)
     {
-        $a = $r->attributes->get('agent');
-        $metadata = $a->metadata ?? [];
-        if ($r->has('telemetry')) {
-            $metadata['telemetry'] = [...$r->validated('telemetry'), 'collected_at' => now()->toIso8601String()];
-        }
-        if (! isset($metadata['onboarding']['agent_ready']) && isset($metadata['onboarding']['credential_issued'])) {
-            $metadata['onboarding']['agent_ready'] = now()->toIso8601String();
-        }
-        $a->forceFill(['version' => $r->validated('version'), 'last_heartbeat_at' => now(), 'metadata' => $metadata])->save();
+        $a = DB::transaction(function () use ($r) {
+            $a = Agent::whereKey($r->attributes->get('agent')->id)->lockForUpdate()->firstOrFail();
+            $metadata = $a->metadata ?? [];
+            if ($r->has('telemetry')) {
+                $metadata['telemetry'] = [...$r->validated('telemetry'), 'collected_at' => now()->toIso8601String()];
+            }
+            if (! isset($metadata['onboarding']['agent_ready']) && isset($metadata['onboarding']['credential_issued'])) {
+                $metadata['onboarding']['agent_ready'] = now()->toIso8601String();
+            }
+            $a->forceFill(['version' => $r->validated('version'), 'last_heartbeat_at' => now(), 'metadata' => $metadata])->save();
+
+            return $a;
+        });
 
         return response()->json(['status' => 'ok', 'policy' => Protocol::policy($a->id, ($a->metadata['task_protocol'] ?? 0) === 1)]);
     }
 
     public function capabilities(ProtocolRequest $r, Audit $audit)
     {
-        $a = $r->attributes->get('agent');
-        $a->forceFill(['metadata' => [...($a->metadata ?? []), 'task_protocol' => $r->integer('task_protocol')]])->save();
-        DB::transaction(function () use ($a, $r, $audit) {
+        $a = DB::transaction(function () use ($r, $audit) {
+            $a = Agent::whereKey($r->attributes->get('agent')->id)->lockForUpdate()->firstOrFail();
+            $a->forceFill(['metadata' => [...($a->metadata ?? []), 'task_protocol' => $r->integer('task_protocol')]])->save();
             if ($a->capabilities !== $r->validated('capabilities')) {
                 $a->forceFill(['capabilities' => $r->validated('capabilities')])->save();
                 $audit->record('agent.capabilities_updated', null, $a->tenant_id, 'agent', null, ['agent_id' => $a->id]);
             }
+
+            return $a;
         });
 
         return response()->json(['status' => 'ok', 'capabilities' => $a->capabilities]);

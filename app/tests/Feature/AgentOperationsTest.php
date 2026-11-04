@@ -3,14 +3,19 @@
 namespace Tests\Feature;
 
 use App\Agent\Releases;
+use App\Http\Controllers\Agent\ProtocolController;
+use App\Http\Requests\Agent\ProtocolRequest;
 use App\Models\Agent;
 use App\Models\AgentEnrollment;
 use App\Models\AgentOperation;
 use App\Models\AuditEvent;
+use App\Services\Audit;
 use App\Web\OperationalSnapshot;
 use App\Web\Presentation;
 use Illuminate\Database\QueryException;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Tests\IdentityTestCase;
 
@@ -168,5 +173,30 @@ class AgentOperationsTest extends IdentityTestCase
         $this->assertSame(1, $snapshot->get()['agents_online']);
         $a->forceFill(['last_poll_at' => now()->subMinute()])->save();
         $this->assertSame(0, $snapshot->get()['agents_online']);
+    }
+
+    public function test_stale_authenticated_snapshot_cannot_overwrite_newer_metadata(): void
+    {
+        $this->context()->forUser($this->admin);
+        $a = new Agent;
+        $a->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $this->a->id, 'name' => 'Metadata fixture', 'hostname' => 'metadata-lab', 'version' => '0.5.3', 'status' => 'active', 'token_hash' => hash('sha256', random_bytes(32)), 'capabilities' => [], 'metadata' => ['task_protocol' => 0], 'enrolled_at' => now()])->save();
+        $stale = clone $a;
+        $a->forceFill(['metadata' => ['task_protocol' => 1, 'updater' => ['protocol' => 1]]])->save();
+        $request = function ($operation, $body) use ($stale) {
+            $r = ProtocolRequest::create('/api/v1/agent/'.$operation, 'POST', $body);
+            $route = (new Route('POST', '/api/v1/agent/'.$operation, fn () => null))->name('agent.'.$operation);
+            $r->setRouteResolver(fn () => $route);
+            $r->attributes->set('agent', $stale);
+            $r->setValidator(Validator::make($body, $r->rules()));
+
+            return $r;
+        };
+        $controller = app(ProtocolController::class);
+        $controller->heartbeat($request('heartbeat', ['version' => '0.5.3', 'telemetry' => ['device_operations_frozen' => true, 'rss_bytes' => 1024]]));
+        $this->assertSame(1, $a->fresh()->metadata['task_protocol']);
+        $this->assertSame(1, $a->fresh()->metadata['updater']['protocol']);
+        $controller->capabilities($request('capabilities', ['task_protocol' => 1, 'capabilities' => ['agent_info']]), app(Audit::class));
+        $this->assertSame(1024, $a->fresh()->metadata['telemetry']['rss_bytes']);
+        $this->assertSame(1, $a->fresh()->metadata['updater']['protocol']);
     }
 }
