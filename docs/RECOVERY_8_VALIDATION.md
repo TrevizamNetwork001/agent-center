@@ -276,3 +276,27 @@ foi corrigido com quebras de linha e imagem com código legível pelo usuário d
 
 RECOVERY-8 BLOCKED: upload/integridade R2 ainda não comprovados; custódia externa,
 restore em host independente, retenção e alertas externos aguardam validação.
+
+
+### Validação real do R2 solicitada pelo operador — 2026-11-05
+
+Credenciais cadastradas no painel foram usadas sem exibição. Bucket agent-center:
+PUT condicional, HEAD, GET integral e SHA-256 PASS para objetos sintéticos criptografados
+com age de243bytes e2097848bytes. Isso comprova escrita/leitura da conta autorizada,
+mas não é backup real de produção nem recuperação de desastre.
+
+Pacote de produção criptografado de35249103bytes não concluiu o upload: conexão TLS
+encerrada com SSLError/EOF. Reproduzido com streaming, remoção somente diagnóstica do
+cabeçalho Expect e envio em memória limitado. Multipart diagnóstico falhou na primeira
+parte de5242880bytes; somente seu upload multipart incompleto foi abortado, sem
+DeleteObject e sem alteração de objetos existentes. Teste isolado de6MiB em TLS1.2
+validado também falhou. Nenhuma dessas alternativas foi persistida em produção;
+TLS/CA/hostname continuaram verificados em todas as tentativas.
+
+O painel diferencia configuração salva e cópia externa NO-GO; a solicitação do botão
+foi consumida. Nenhum backup completo remoto foi comprovado. Evidência sanitizada:
+evidence/recovery8/closure/r2-real-transfer-validation.json.
+
+RECOVERY-8 BLOCKED: interrupção TLS em uploads maiores impede verificar a cópia real;
+retenção, custódia externa e restore independente continuam sem comprovação. Pequenos
+objetos de diagnóstico não substituem banco/secrets/storage reais nem autorizam PASS.
