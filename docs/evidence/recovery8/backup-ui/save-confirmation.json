@@ -1,0 +1,7 @@
+{
+  "pass": true,
+  "persistent_save_confirmation": true,
+  "automatic_progress_refresh": true,
+  "unsaved_form_preserved": true,
+  "scope": "isolated_synthetic_lab"
+}

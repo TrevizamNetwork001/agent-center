@@ -53,3 +53,9 @@ atuais, private keys/age identities, nomes proibidos e assinaturas de dump/bundl
 entram no GitHub. GitHub guarda código/histórico, nunca banco real ou backup sensível.
 
 Referência: [host keys SSH oficiais](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints).
+
+
+O painel R2 e sua chave privada não participam do Git: a configuração fica em
+ciphertext no storage persistente excluído de Git/imagens, e a identidade de
+recuperação permanece com o operador fora da VPS. JavaScript age é empacotado com
+package-lock reproduzível em deploy/browser-crypto; não há dependência de CDN.

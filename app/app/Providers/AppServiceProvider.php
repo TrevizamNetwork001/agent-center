@@ -36,6 +36,8 @@ class AppServiceProvider extends ServiceProvider
             return (new EloquentUserProvider($app['hash'], $config['model']))
                 ->withQuery(fn ($query) => $query->withoutGlobalScope(TenantScope::class));
         });
+        Gate::define('manage-platform-backups', fn (User $user) => $user->role === Role::PlatformAdmin && $user->status === 'active');
+        RateLimiter::for('platform-backups', fn ($request) => Limit::perMinute(6)->by('platform-backups:'.$request->user()->id));
         Gate::policy(Conversation::class, ConversationPolicy::class);
         RateLimiter::for('conversation-message', fn ($r) => [Limit::perMinute(20)->by('conversation-user:'.$r->user()->id), Limit::perMinute(120)->by('conversation-tenant:'.app(TenantContext::class)->tenantId)]);
         RateLimiter::for('conversation-sync', fn ($r) => Limit::perMinute(60)->by('conversation-sync:'.$r->user()->id));

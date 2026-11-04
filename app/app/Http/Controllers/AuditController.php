@@ -14,9 +14,9 @@ class AuditController extends Controller
         $f = $r->validated();
         $q = AuditEvent::query();
         if ($f['from'] ?? null) {
-            $q->where('created_at', '>=', CarbonImmutable::parse($f['from'])->startOfDay());
+            $q->where('created_at', '>=', CarbonImmutable::parse($f['from'], 'America/Sao_Paulo')->startOfDay()->utc()->toIso8601String());
         }if ($f['until'] ?? null) {
-            $q->where('created_at', '<', CarbonImmutable::parse($f['until'])->addDay()->startOfDay());
+            $q->where('created_at', '<', CarbonImmutable::parse($f['until'], 'America/Sao_Paulo')->addDay()->startOfDay()->utc()->toIso8601String());
         }
         if ($f['event'] ?? null) {
             $q->where('event_type', $f['event']);

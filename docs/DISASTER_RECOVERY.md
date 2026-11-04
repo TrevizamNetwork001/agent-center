@@ -151,3 +151,23 @@ privadas fora da VPS. Rotação adiciona destinatário novo e exige teste; não 
 chave antiga enquanto houver gerações dependentes. Recriptografia de gerações antigas,
 se autorizada, ocorre no ambiente independente e cria objetos novos; não sobrescrever
 nem excluir backups sob lock. Nenhuma rotação foi executada nesta tarefa.
+
+### Configuração salva pela UI
+
+Recuperar app_storage e o APP_KEY original restaura o ciphertext
+storage/app/platform-backups/r2.enc. O painel devolve somente flags de cadastro e os
+campos ficam vazios. Credenciais de leitura do R2 para baixar o primeiro backup precisam
+estar disponíveis fora da VPS (cofre/conta Cloudflare), pois o cadastro criptografado no
+backup não pode ser o único modo de acessá-lo. Export administrativo não devolve secrets
+em stdout e os temporários são root-only. A privada age continua exclusivamente fora da
+VPS; o painel recebe apenas o destinatário público. Instalação Windows oficial:
+`winget install --id FiloSottile.age`; gerar identidade no PC, guardar arquivo em cofre,
+usar age-keygen -y para copiar somente a pública. Não adicionar a privada ao GitHub/UI.
+
+
+Atualização do painel R2 (2026-11-05): a chave privada pode ser gerada e baixada
+no próprio navegador usando a biblioteca age padronizada; ela não é enviada à
+Central. Salvar mostra confirmação persistente com horário de São Paulo. O status
+do backup atualiza automaticamente sem substituir os campos em edição. Configuração
+salva e solicitação aceita não comprovam upload nem recuperação. A conexão ao bucket
+autenticou, mas o envio real encontrou falha TLS; não desativar validação de certificados.

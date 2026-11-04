@@ -32,7 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias(['password.changed' => RequirePasswordChange::class, 'agent.auth' => AuthenticateAgent::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->dontFlash(['body', 'receipt', 'code', 'token', 'lease_token', 'Authorization', 'api_key', 'secret', 'content', 'system_template', 'user_template']);
+        $exceptions->dontFlash(['private_key', 'r2_private_key', 'r2_account_id', 'r2_access_key_id', 'r2_secret_access_key', 'r2_recipient', 'r2_offsite_ack', 'body', 'receipt', 'code', 'token', 'lease_token', 'Authorization', 'api_key', 'secret', 'content', 'system_template', 'user_template']);
         $exceptions->report(function (QueryException $exception): void {
             // QueryException pode conter bindings sensíveis; registrar apenas SQLSTATE.
             Log::error('Database operation failed', ['sqlstate' => (string) $exception->getCode()]);

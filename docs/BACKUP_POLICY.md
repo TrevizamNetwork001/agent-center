@@ -165,3 +165,42 @@ Referências: [R2 S3](https://developers.cloudflare.com/r2/api/s3/api/),
 [tokens e escopo](https://developers.cloudflare.com/r2/api/tokens/),
 [Bucket Lock](https://developers.cloudflare.com/r2/buckets/bucket-locks/),
 [age](https://age-encryption.org/).
+
+### Painel administrativo R2
+
+A pedido do operador, credenciais também podem ser cadastradas em `/admin/backups`,
+via HTTPS e Laravel Auth/Session/CSRF/Gate. Acesso exclusivo a platform_admin ativo;
+tenant_admin de qualquer tenant, operator e viewer não podem ler, gravar ou solicitar.
+Este é um controle de infraestrutura global da instalação (backup de todos os tenants),
+sem criar recurso de domínio tenant nem conceder a um tenant exportação de outro.
+Cache/lock de solicitação usam namespace platform:backups; auditoria global mantém RLS.
+
+Account ID/Access Key ID/Secret Access Key ficam em arquivo autenticado e criptografado
+pelo Crypt nativo Laravel no volume persistente, fora de public/Git/imagem. API keys
+podem ser salvas antes da chave pública; campos em branco preservam valores anteriores.
+Nenhum valor cadastrado volta preenchido, em HTML, old_input ou auditoria. A privada age
+não tem campo de cadastro e é recusada. offsite_ack é declaração do operador, não prova
+automática de custódia/DR. APP_KEY existente permanece necessária para recuperar esse
+cadastro; não foi rotacionada. Backup de app_storage inclui o ciphertext.
+
+O botão de backup só libera solicitação estruturada após configuração completa. Gate,
+CSRF e rate limiting protegem o pedido; o processo web não executa shell e não recebe
+Docker socket ou privilégios de host. Timer administrativo consulta um booleano nativo
+Laravel Cache e mapeia exclusivamente para agent-center-backup.service; preserva pedido
+se já houver backup em andamento. Nenhum comando/argumento livre vem da UI.
+
+No job, comando Artisan executado por operador0:33 lê o ciphertext e exporta somente
+para /run/agent-center-r2-export, root0700/files0600; web33 não lê esse plaintext. O host
+copia para diretório temporário0700, usa o SDK/age já aprovado e remove temporários.
+Export nunca imprime credenciais. Não há shell originado dos campos nem conexão R2 no
+request que salva a configuração. UI é a fonte autoritativa quando existe; configuração
+incompleta falha explícita, sem voltar silenciosamente a credenciais CLI antigas.
+Transferência verificada continua distinta de retenção, custódia e restore independente.
+
+
+Atualização do painel R2 (2026-11-05): a chave privada pode ser gerada e baixada
+no próprio navegador usando a biblioteca age padronizada; ela não é enviada à
+Central. Salvar mostra confirmação persistente com horário de São Paulo. O status
+do backup atualiza automaticamente sem substituir os campos em edição. Configuração
+salva e solicitação aceita não comprovam upload nem recuperação. A conexão ao bucket
+autenticou, mas o envio real encontrou falha TLS; não desativar validação de certificados.

@@ -1,0 +1,1 @@
+@can('manage-platform-backups')<div class="nav-group"><p>PROTEGER</p><a href="{{route('backups.settings')}}" @if(request()->routeIs('backups.*')) aria-current="page" @endif><x-icon name="audit"/>Backups · R2</a></div>@endcan

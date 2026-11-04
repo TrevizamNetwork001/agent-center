@@ -207,3 +207,72 @@ Pendências atuais: provisionar R2 e public recipient em terminal seguro; compro
 externa; aplicar/verificar retenção específica sem afetar outros objetos; upload+HEAD+GET
 real; host independente autorizado com privada recuperada fora da VPS; restore de todos
 os domínios/dados e alerta recebido fora do host. Sem isso, manter RECOVERY-8 BLOCKED.
+
+## Solicitações durante a continuação — painel R2 e horário
+
+Operador pediu painel na aplicação para digitar dados R2 e corrigiu horário em /audit
+para America/Sao_Paulo. Implementados com Laravel nativo, sem alterar AGENTS.md/Agent,
+sem PHP/Python Central paralelo e sem migrations novas. Configuração de infraestrutura
+é global e somente platform_admin ativo acessa; testes com tenant_adminA/B, operator,
+viewer e anônimo negam leitura/escrita/solicitação. Secrets não retornam em HTML, campos,
+flash de validação, console ou auditoria. Crypt autenticado nativo protege armazenamento.
+
+É possível cadastrar API keys agora e acrescentar pub age depois; o botão de backup
+exige configuração completa/declaração de custódia. Declaração não vira DR verificado.
+Host executa só serviço fixo por solicitação Cache bool, sem Docker socket/root/shell
+no web. Export root0:33 em diretório0700/files0600; tentativa de leitura como web33 foi
+negada. Cópia/limpeza privada foi testada com credenciais sintéticas e SDKrun substituído
+por stub, sem qualquer chamada Cloudflare. UI CLI antiga só é fallback se não existe
+cadastro UI, nunca se o cadastro está incompleto ou falha.
+
+Testes:141 Laravel/1.154 assertions PASS (6 novos testes/54 assertions); Chromium candidato
+base produção passou cadastro com ciphertext, campos vazios pós-save, ausência de secrets,
+CSRF419, desktop/mobile sem overflow e filtro/horário SãoPaulo. Fixtures são sintéticas.
+Erro inicial do teste que alternava usuários sem limpar a sessão foi corrigido no harness,
+sem relaxar gates; fluxo real de roles permaneceu403. Fixture CLI foi corrigida para
+consulta administrativa explícita sob contexto de plataforma, sem desligar RLS.
+
+Imagem de produção agent-center-central:recovery8-r2-ui é derivada de recovery6+patchUI,
+commit candidato3c07ea1. Snapshot/rollback preparados, deploy pontual PASS,9 migrations e27RLS
+preservadas; Agent Operations e suas duas migrations continuam sem promoção. PostgreSQL,
+TLS/SCRAM/verify-full, fila funcional, Nginx/HTTPS e readiness revalidados. Nenhuma conta/senha
+foi criada ou resetada em produção. Nenhum arquivo/fonte/runtime de Agent alterado.
+
+Painel publicado em https://agente.trevizamnetwork.com.br/admin/backups; auditoria agora
+exibe horário de SãoPaulo e aplica filtros no mesmo fuso. Instantes originais/relógio/NTP
+preservados. Evidências sanitizadas em evidence/recovery8/backup-ui/.
+R2 real, custódia externa, retention e restore independente continuam pendentes até
+configuração/provas reais do operador. Não considerar UI publicada como RECOVERY-8 PASS.
+
+
+### Confirmação de salvamento e andamento do R2 — 2026-11-05
+
+A configuração de produção foi cadastrada pelo painel. Verificação somente por
+summary (booleanos): account/credentials/recipient/custody_attested/ready=true.
+Nenhum valor foi exibido. HEAD do bucket autorizado autenticou com TLS validado.
+O primeiro upload real falhou com SSLError. Autenticação aceita não comprova upload:
+backup externo continua sem prova de integridade. Verificação TLS permanece obrigatória.
+
+Imagem `agent-center-central:recovery8-r2-ui-save-status`, candidato `0839cb5`,
+publicada somente em web/worker/diagnostic-worker, sem migrations ou recriação do PG.
+Rollback: Compose anterior em backups/ui-save-rollback-*/compose.yaml e imagem
+recovery8-r2-ui-before-save-status. Aplicar o Compose anterior e recriar somente
+os três workloads; preservar storage, ciphertext de configuração e banco.
+
+O painel mostra confirmação persistente com saved_at em America/Sao_Paulo;
+campos vazios preservam valores. Fragmento autenticado atualiza somente o status a
+cada 10s, usando o mecanismo existente. O formulário em edição não é substituído.
+Mensagens de estágio vêm de allowlist, sem valores/erros externos arbitrários.
+Chromium isolado confirmou persistência após reload, polling e formulário preservado.
+Laravel: 5 testes / 70 assertions PASS; Pint dos 3 PHP alterados PASS;
+git diff --check PASS. Evidência: backup-ui/save-confirmation.json.
+
+Geração da identidade usa age-encryption0.3.1 empacotado localmente, sem CDN;
+a chave privada é baixada pelo navegador e nunca postada. Interoperabilidade com
+age1.2.1 e ausência de identidade em DOM/POST verificadas com chave sintética.
+O arquivo deve permanecer sob custódia externa do operador; declaração da UI não
+substitui prova de recuperação independente. O defeito de diretivas Blade adjacentes
+foi corrigido com quebras de linha e imagem com código legível pelo usuário do FPM.
+
+RECOVERY-8 BLOCKED: upload/integridade R2 ainda não comprovados; custódia externa,
+restore em host independente, retenção e alertas externos aguardam validação.

@@ -169,3 +169,38 @@ Autorização atual do destino: bucket agent-center; o helper recusa outro nome.
 automática no console não muda a região S3auto. A política R2 e a privada de recuperação
 não são criadas implicitamente pelo helper, e o backup diário não possui credencial de
 administração para editar retenção.
+
+### Deploy pontual autorizado — UI R2 e auditoria São Paulo
+
+Foi criado candidato a partir da produção b1b4bb9, com somente classes/routes/views de
+backup administrativo e conversão de exibição/filtros da auditoria. Commit candidato
+3c07ea1; imagem agent-center-central:recovery8-r2-ui (base de negócioRECOVERY-6).
+Não é promoção integral de Agent OperationsRECOVERY-7:9 migrations/27 tabelas FORCE RLS
+preservadas, sem qualquer diff em Agent ou migrations. Código principal testado possui
+as funcionalidades posteriores; a branch production-recovery8 preserva a implantação real.
+
+Antes do deploy: snapshot completo sem prune, imagem recovery6 preservada como
+recovery8-r2-ui-rollback, compose/commit salvos em backups/recovery8-ui-rollback-UTC.
+Somente web/worker/diagnostic-worker foram recriados. PostgreSQL/volume/TLS/secrets,
+Nginx/HTTPS e trusted proxies preservados. Precheck PDO/TLS/negative TLS/queue funcional,
+nginx -t e readiness passaram; timer de solicitações UI habilitado após imagem saudável.
+
+Rollback operacional: usar compose anterior do diretório de rollback e subir somente
+web/worker/diagnostic-worker --no-deps --no-build. Não executar migrations down, limpar
+app_storage nem apagar r2.enc. Caso já exista cadastro UI, manter uma imagem exportadora
+compatível para os jobs; a imagem recovery6 original não conhece o comando de exportação.
+Recuperar a configuração criptografada com o mesmo APP_KEY e voltar à imagem UI validada
+antes de considerar o backup externo operacional. Falha do export deve permanecer NO-GO.
+
+Auditoria `/audit`: exibição America/Sao_Paulo e filtros de dia convertidos em limites
+UTC com offset explícito para PostgreSQL. Não muda relógio/APP timezone, registros antigos,
+triggers imutáveis, NTP nem timezone do banco. Fronteira23:59:59SãoPaulo/02:59:59UTC passou
+em teste sem alterar o instante armazenado.
+
+
+Atualização do painel R2 (2026-11-05): a chave privada pode ser gerada e baixada
+no próprio navegador usando a biblioteca age padronizada; ela não é enviada à
+Central. Salvar mostra confirmação persistente com horário de São Paulo. O status
+do backup atualiza automaticamente sem substituir os campos em edição. Configuração
+salva e solicitação aceita não comprovam upload nem recuperação. A conexão ao bucket
+autenticou, mas o envio real encontrou falha TLS; não desativar validação de certificados.
