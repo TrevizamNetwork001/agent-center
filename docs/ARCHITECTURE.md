@@ -30,12 +30,12 @@ As redes são exclusivas do projeto Compose `agent-center`; backend é internal 
 
 ## Web, API e health
 
-Web usa middleware Laravel nativo. API está preparada como arquivo de rotas vazio, sem Agent API e sem autenticação alternativa. `/` apresenta somente identificação da fundação.
+Web usa middleware Laravel nativo. API está preparada como arquivo de rotas vazio, sem Agent API e sem autenticação alternativa. `/` redireciona ao dashboard protegido; identidade/RBAC/auditoria estão descritos em AUTH_AND_TENANCY.md.
 Health usa rotas stateless: live retorna 200 com processo Laravel ativo; ready executa `SELECT 1`, devolve 200 ou 503 genérico e não revela exceção/DSN/credenciais. Ambos proíbem cache.
 
 ## Multi-tenant e segurança futura
 
-Não há tabelas de domínio ou endpoints de negócio nesta fase. As migrations padrão Laravel de users, sessions, cache e jobs são infraestrutura, e não concedem acesso a tenants. Antes de qualquer módulo futuro, implementar tenant explícito em consultas, jobs, cache, sessões de autorização e Policies/Gates, com testes de isolamento cruzado. Não adotar implicitamente tenant único, superadmin irrestrito ou ID vindo do cliente como autorização.
+RECOVERY-1 adiciona tenants, identidade com roles explícitos e audit_events. Users, tenants e audit_events usam PostgreSQL FORCE RLS; scopes/Policies/FormRequests reforçam o isolamento. Sessions/cache/jobs permanecem infraestrutura nativa global. Antes de módulos futuros, carregar tenant explicitamente em consultas/jobs/cache e repetir testes de isolamento cruzado. Não adotar implicitamente tenant único, superadmin irrestrito ou ID vindo do cliente como autorização.
 
 Auth/Session/CSRF/Hash/Policies/Gates devem permanecer nativos. LLM nunca terá autoridade operacional. Skills exigem allowlist e execução validada; shell arbitrário é proibido. Nenhuma ação em device está autorizada nesta fase.
 

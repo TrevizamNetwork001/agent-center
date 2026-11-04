@@ -46,3 +46,7 @@ Antes de mudança: backup, commit/tag e guardar imagem corrente com tag específ
 Para parar esta fundação: `./scripts/compose.sh stop`; para remover somente containers/redes deste projeto: `./scripts/compose.sh down` (sem `-v`). Volumes e arquivos permanecem.
 Para desfazer uma atualização: voltar ao commit anterior, definir a imagem previamente retida no Compose e recriar apenas web/worker/nginx. Inspecionar migrations antes; não fazer rollback de schema automaticamente. Se houver incompatibilidade, restaurar backup em database/volume separado conforme DISASTER_RECOVERY.md e então trocar a configuração.
 A criação inicial não alterou serviços globais. A reversão mantém `/opt/agent-center`, `.env` e volumes para permitir recuperação; exclusão definitiva exige ação explícita do operador.
+
+## RECOVERY-1
+
+Consultar AUTH_AND_TENANCY.md para bootstrap interativo e rollback sem perda de auditoria. A UI atual usa Blade sem build JS; credenciais de administrador não são criadas automaticamente. Imagem de rollback: agent-center-central:recovery1-rollback-b1a2e9e.

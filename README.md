@@ -1,37 +1,39 @@
-# Agent Center — Recovery Foundation
+# Agent Center — RECOVERY-1
 
-Fundação nova da Central Laravel, sem legado e sem implementação do sistema completo.
-Leia [AGENTS.md](AGENTS.md) antes de alterar o projeto.
+Central Laravel com base de autenticação, multi-tenant, RBAC e auditoria. Fundação original: b1a2e9e.
+Leia [AGENTS.md](AGENTS.md) antes de alterar o projeto; esta fase foi autorizada explicitamente. Nenhum AGENTS.md foi alterado no RECOVERY-1.
 
-Arquitetura: Browser → Nginx → Laravel Central → PostgreSQL. Futuramente Central → Python Agent separado.
-FastAPI é proibido. Nenhum Agent, acesso a device ou módulo de domínio foi implementado.
+Browser → Nginx → Laravel Central → PostgreSQL. Python Agent permanece arquitetura futura, sem implementação. FastAPI é proibido.
 
-- [Inventário inicial](docs/INVENTORY.md)
-- [Arquitetura e limites](docs/ARCHITECTURE.md)
-- [Deploy, rollback e testes](docs/DEPLOYMENT.md)
+- [Identidade, roles, isolamento, bootstrap e auditoria](docs/AUTH_AND_TENANCY.md)
+- [Inventário da fundação](docs/INVENTORY.md)
+- [Arquitetura](docs/ARCHITECTURE.md)
+- [Deploy e rollback](docs/DEPLOYMENT.md)
 - [Backup e recuperação](docs/DISASTER_RECOVERY.md)
-- [Validações da entrega](docs/VALIDATION.md)
+- [Validação da fundação original](docs/VALIDATION.md)
+- [Validação RECOVERY-1](docs/RECOVERY_1_VALIDATION.md)
 
-HTTP local: http://127.0.0.1:18083. Health: `/health/live` e `/health/ready`.
-Nenhum serviço do host precisa ser substituído. PHP existe somente nos containers.
+HTTP somente local: http://127.0.0.1:18083/login. Usar túnel SSH para acesso remoto até configurar TLS. Não há conta ou senha padrão.
 
 ```sh
 cd /opt/agent-center
 ./scripts/compose.sh config --quiet
-./scripts/compose.sh up -d --build
+./scripts/compose.sh build web
+./scripts/compose.sh up -d postgres web
 ./scripts/compose.sh exec -T web php artisan migrate --force
-./scripts/compose.sh ps
-curl --fail http://127.0.0.1:18083/health/ready
+./scripts/compose.sh up -d --wait --wait-timeout 180
+./scripts/compose.sh exec web php artisan agent-center:create-admin
 ```
 
-O `.env` real, gerado localmente (0600), não é versionado. Para uma VPS futura, seguir DEPLOYMENT.md antes de subir o stack.
-A fundação não oferece login público nem endpoints de domínio. Multi-tenant é requisito bloqueante de toda evolução futura.
+O bootstrap é interativo, usa senha oculta e obriga troca no primeiro login. Conta real não é criada automaticamente. Para implantação/rollback completos, seguir a documentação antes de executar os comandos.
 
-Repositório remoto privado ainda não informado. Após criar o repositório e configurar credenciais:
+Health: `/health/live` e `/health/ready`. `.env` e backups reais ficam fora do Git. Banco, FPM e worker não são publicados. Serviços globais da VPS permanecem separados.
+
+Remoto privado não informado. Após prover repositório e credenciais reais:
 
 ```sh
 git remote add origin <URL_REAL_DO_REPOSITORIO_PRIVADO>
 git push -u origin main
 ```
 
-Não há URL inventada nem push executado.
+Réplica externa de backup ainda depende de destino/chave reais. Procedimentos e retenção estão em DISASTER_RECOVERY.md; backup local não protege contra perda da VPS.
