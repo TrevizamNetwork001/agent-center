@@ -119,3 +119,53 @@ Instalação específica: copiar vhost e access snippet aos destinos indicados, 
 Rollback: tag preservada `agent-center-central:recovery6-rollback-0bc1379`, overlay `deploy/rollback-recovery6.yaml`. Desabilitar Conversation no tenant, usar overlay somente nos serviços web/worker/diagnostic-worker, preservar schema/histórico/keys e reaplicar grants. Nunca migrate:rollback na produção. Manter gate HTTP(S) e revalidar sessão/health; o runtime anterior não contém a nova configuração de trusted proxies. Se necessário retornar acesso somente loopback com o env privado do backup pré-deploy; não publicar HTTP ao fazer rollback. Certificados e dados não devem ser removidos.
 
 Backups agora também incluem somente o certificado/material TLS deste projeto em arquivo privado separado. O restante do Let's Encrypt, certificados de outros sites e serviços da VPS não entram nesse pacote. Certificado pode ser reemitido após validar DNS/ACME; APP_KEY e master key de LLM precisam ser recuperadas do backup correto.
+
+## Continuação RECOVERY-8 — conciliação explícita
+
+Inventário detalhado: evidence/recovery8/closure/production-reconciliation.json.
+Base comum ff168b9. Produção em6bbb4ba/recovery6,9 migrations e27 tabelas FORCE RLS;
+fonte testada em82dcd2c antes desta continuação,11 migrations e28RLS. Branch GitHub
+production-recovery8 preserva a linha real; main contém a fonte RECOVERY-7/8 validada.
+Tooling de backup R2/age/alertas é instalado separadamente, sem promover a aplicação.
+
+Diferenças de schema: 2026_11_04_210000_agent_operations permite registered/pending,
+campos/receipt/aprovação de enrollment e FK composta; 2026_11_04_220000_agent_update_intents
+cria agent_operations com FORCE RLS, constraints e índice de uma operação ativa por Agent.
+Central nova contém Agent Operations/aprovação, novo protocolo e worker health funcional.
+Nenhum arquivo/fonte/runtime do Agent foi modificado nesta continuação.
+
+Plano de promoção, ainda não executado: snapshot novo com BACKUP_PRUNE_ENABLED=false,
+backupR2/readback e custódia externos verificados, ensaio independente, preservar imagem
+recovery6 e configuração atual, aplicar somente migrations Laravel revisadas pelo migrator,
+reaplicar grants allowlist, atualizar só Central/web/worker/diagnostic-worker, preservar
+PostgreSQL/TLS/HBA/volumes/secrets/trusted proxy e Nginx saudável. Não copiar .env de lab,
+não usar down -v e não mexer em Agent/hosts externos. Rodar contratos e deploy-precheck
+antes de liberar; rollback troca imagem/config e mantém dados/schema aditivo, jamais
+migrate:rollback em produção ou promoção de pending para active. Novas inscrições devem
+ficar suspensas durante rollback até revisão da compatibilidade do runtime antigo.
+
+O rollout de backup usa install-r2-tooling.sh do checkout revisado. Dependências ficam
+no próprio projeto, sem instalar pacotes globais. Timer diário existente seleciona R2
+apenas após configurar secrets/r2-backup.json. Watch horário e OnFailure registram etapas
+sanitizadas; receiver externo só após destino explícito. O helper interativo para o
+operador, **em SSH com TTY real**, é:
+
+```sh
+sudo python3 /opt/agent-center/scripts/configure-r2-backup.py
+```
+
+Account ID, bucket, jurisdição, prefixo autorizado, destinatário público e credenciais
+são digitados sem eco. Configurar public recipient exige privada já gerada/guardada fora
+da VPS. Não gerar a identidade privada aqui. O helper preserva configurações existentes;
+revisão/substituição deve ser feita por operador com acesso protegido, sem despejar conteúdo
+em logs. Não confundir essa configuração com prova de upload/retention/restore.
+
+Depois da configuração autorizada: iniciar o service específico agent-center-backup,
+verificar exit status, receipt privado, HEAD/GET/hash e alerta. Não enviar tokens em
+comandos ou chat. R2config faltante sai2; falha de transferência sai1; só local PASS
+não é external PASS. Não configurar bucket/policy global nem modificar outros buckets.
+
+Autorização atual do destino: bucket agent-center; o helper recusa outro nome. Localização
+automática no console não muda a região S3auto. A política R2 e a privada de recuperação
+não são criadas implicitamente pelo helper, e o backup diário não possui credencial de
+administração para editar retenção.

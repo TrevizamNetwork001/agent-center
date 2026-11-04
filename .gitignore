@@ -19,3 +19,11 @@ __pycache__/
 /agent/.ruff_cache/
 
 /secrets/
+
+/tools/
+
+*.agekey
+
+*.cms
+
+*.bundle
