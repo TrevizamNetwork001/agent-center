@@ -44,3 +44,11 @@ Procedimento em host autorizado:
 5. Retomar timer após comprovar estado estável. Nova operação exige novo precheck/aprovação.
 
 Não existe host de produção presumido. Sem um host autorizado, a evidência é exclusivamente de laboratório. Testes de Engine usam serviço controlado/injetado; não equivalem a validar systemd completo em Debian 13 real.
+
+Depois de recuperar o host e guardar evidências, um operador com acesso administrativo ao console pode encerrar somente a intenção interrompida:
+
+```sh
+php artisan agent-center:resolve-operation UUID_REAL --tenant=ID_REAL --host-reviewed
+```
+
+Comando valida tenant/UUID/estado, mantém evidência e registra `*_failed`/interrupted. Não troca runtime, não reinicia serviço e não autoriza replay. Só usar após revisão real do host; operações UNCERTAIN/RUNNING/PRECHECKING não são resolvidas automaticamente pelo painel. Operations Health sinaliza UNCERTAIN e claims sem conclusão por mais de 300s como NO-GO.

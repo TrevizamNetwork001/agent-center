@@ -139,4 +139,18 @@ class AgentOperationsTest extends IdentityTestCase
             $this->assertSame('23503', $e->getCode());
         }
     }
+
+    public function test_interrupted_operation_requires_explicit_host_review_and_exact_tenant(): void
+    {
+        $pending = $this->pending();
+        $this->context()->forUser($this->admin);
+        $o = new AgentOperation;
+        $o->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $this->a->id, 'agent_id' => $pending['agent_id'], 'requested_by' => $this->admin->id, 'kind' => 'update', 'status' => 'UNCERTAIN', 'from_version' => '0.5.2', 'release' => [], 'reason' => 'repair'])->save();
+        $this->artisan('agent-center:resolve-operation', ['operation' => $o->id, '--tenant' => $this->a->id])->assertExitCode(2);
+        $this->artisan('agent-center:resolve-operation', ['operation' => $o->id, '--tenant' => $this->b->id, '--host-reviewed' => true])->assertExitCode(1);
+        $this->artisan('agent-center:resolve-operation', ['operation' => $o->id, '--tenant' => $this->a->id, '--host-reviewed' => true])->assertExitCode(0);
+        $this->context()->forUser($this->admin);
+        $this->assertSame('FAILED', $o->fresh()->status);
+        $this->assertSame('interrupted', $o->fresh()->error);
+    }
 }

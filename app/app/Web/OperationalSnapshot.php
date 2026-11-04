@@ -5,6 +5,7 @@ namespace App\Web;
 use App\Diagnostics\WorkerHealth;
 use App\Jobs\OperationsPulse;
 use App\Models\Agent;
+use App\Models\AgentOperation;
 use App\Models\AgentTask;
 use App\Models\AgentTaskAttempt;
 use App\Models\Diagnostic;
@@ -70,6 +71,13 @@ class OperationalSnapshot
             $add('fencing_runtime', $bad === 0 ? 'VERDE' : 'NO-GO', 'active_attempt_generation_mismatch', ['mismatches' => $bad], 0);
         } catch (QueryException) {
             $add('fencing_runtime', 'NO-GO', 'fencing_probe_failed', ['mismatches' => null], 0);
+        }
+        try {
+            $held = AgentOperation::where('status', 'UNCERTAIN')->count();
+            $stalled = AgentOperation::whereIn('status', ['RUNNING', 'PRECHECKING'])->where('claimed_at', '<', now()->subSeconds(300))->count();
+            $add('agent_maintenance', $held + $stalled > 0 ? 'NO-GO' : 'VERDE', 'interrupted_or_stalled_operations', ['uncertain' => $held, 'stalled' => $stalled], 300);
+        } catch (QueryException) {
+            $add('agent_maintenance', 'NO-GO', 'maintenance_probe_failed', [], 300);
         }
         $v['checks'] = $checks;
         if (collect($checks)->contains('state', 'NO-GO')) {

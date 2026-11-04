@@ -8,6 +8,7 @@ use App\Http\Requests\Agent\EnrollmentRequest;
 use App\Models\Agent;
 use App\Models\AgentEnrollment;
 use App\Models\AgentOperation;
+use App\Models\AgentTask;
 use App\Models\AuditEvent;
 use App\Services\Audit;
 use App\Tenancy\TenantContext;
@@ -35,15 +36,17 @@ class ManagementController extends Controller
         Gate::authorize('view', $agent);
 
         $enrollment = AgentEnrollment::where('agent_id', $agent->id)->latest()->first();
+        $queuedTasks = AgentTask::where('agent_id', $agent->id)->where('status', 'QUEUED')->count();
+        $lastUpdate = AgentOperation::where('agent_id', $agent->id)->where('kind', 'update')->where('status', 'COMPLETED')->latest('finished_at')->first();
         $releases = app(Releases::class)->all();
         $operations = AgentOperation::where('agent_id', $agent->id)->latest()->limit(20)->get();
         $events = Gate::allows('view-audit') ? AuditEvent::where('metadata->agent_id', $agent->id)->with(['actor', 'tenant'])->latest('id')->limit(10)->get() : collect();
 
         if ($r->boolean('fragment')) {
-            return response()->view('agents.detail', compact('agent', 'events', 'releases', 'operations', 'enrollment'))->header('X-AC-Fragment', 'agent-detail');
+            return response()->view('agents.detail', compact('agent', 'events', 'releases', 'operations', 'enrollment', 'queuedTasks', 'lastUpdate'))->header('X-AC-Fragment', 'agent-detail');
         }
 
-        return view('agents.show', compact('agent', 'events', 'releases', 'operations', 'enrollment'));
+        return view('agents.show', compact('agent', 'events', 'releases', 'operations', 'enrollment', 'queuedTasks', 'lastUpdate'));
     }
 
     public function enrollment(EnrollmentRequest $r, TenantContext $c, Audit $audit)

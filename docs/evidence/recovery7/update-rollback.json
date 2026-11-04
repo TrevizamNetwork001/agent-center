@@ -1,0 +1,51 @@
+{
+    "agent_id": "2cffab22-5c46-499b-b4d7-7e32c3b72f41",
+    "version": "0.5.2",
+    "operations": [
+        {
+            "id": "3ca3710f-405b-41e7-9047-d62cef32bcaf",
+            "kind": "update",
+            "status": "FAILED",
+            "from": "0.5.2",
+            "to": "0.5.3",
+            "error": "precheck_failed",
+            "evidence": null,
+            "created_at": "2026-11-04T21:19:59+01:00",
+            "finished_at": "2026-11-04T21:20:03+01:00"
+        },
+        {
+            "id": "0fb84ab3-c0d0-492a-9be4-208d3b833e00",
+            "kind": "update",
+            "status": "COMPLETED",
+            "from": "0.5.2",
+            "to": "0.5.3",
+            "error": null,
+            "evidence": {
+                "backup": "0fb84ab3-c0d0-492a-9be4-208d3b833e00",
+                "sha256": "7f3923e2d3f62fb3593b5a557d3d40540f23c8a6e0fd44a3cbcf86d29788f794",
+                "version": "0.5.3",
+                "postcheck": true,
+                "freeze_preserved": true
+            },
+            "created_at": "2026-11-04T21:21:48+01:00",
+            "finished_at": "2026-11-04T21:21:55+01:00"
+        },
+        {
+            "id": "d2e48fa7-cea1-41ca-a6a9-4af3ab14fde5",
+            "kind": "rollback",
+            "status": "COMPLETED",
+            "from": "0.5.3",
+            "to": "0.5.2",
+            "error": null,
+            "evidence": {
+                "backup": "d2e48fa7-cea1-41ca-a6a9-4af3ab14fde5",
+                "sha256": "826fdabd43f8717abdb1e5c8735035027969257999b07b05ed606d73ff807ddc",
+                "version": "0.5.2",
+                "postcheck": true,
+                "freeze_preserved": true
+            },
+            "created_at": "2026-11-04T21:21:56+01:00",
+            "finished_at": "2026-11-04T21:22:03+01:00"
+        }
+    ]
+}

@@ -26,7 +26,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--duration", type=int, default=900)
 parser.add_argument("--sample", type=int, default=15)
 parser.add_argument("--output", default="/tmp/agent-center-recovery2-longrun.json")
-parser.add_argument("--container",default="agent-center-recovery2-agent-lab")
+parser.add_argument("--container", default="agent-center-recovery2-agent-lab")
 parser.add_argument("--worker-container")
 parser.add_argument("--queue-container")
 args = parser.parse_args()
@@ -44,11 +44,26 @@ while True:
     row = json.loads(result.stdout)
     row["timestamp_utc"] = datetime.now(timezone.utc).isoformat()
     if args.worker_container:
-        probe = subprocess.run(["docker", "exec", args.worker_container, "php", "artisan", "agent-center:worker-health"], capture_output=True, timeout=20)
+        probe = subprocess.run(
+            [
+                "docker",
+                "exec",
+                args.worker_container,
+                "php",
+                "artisan",
+                "agent-center:worker-health",
+            ],
+            capture_output=True,
+            timeout=20,
+        )
         row["worker_and_database_ok"] = probe.returncode == 0
     if args.queue_container:
         code = "require 'vendor/autoload.php'; $app=require 'bootstrap/app.php'; $app->make(Illuminate\\Contracts\\Console\\Kernel::class)->bootstrap(); $age=App\\Jobs\\OperationsPulse::age(); exit($age!==null && $age<90 ? 0:1);"
-        probe = subprocess.run(["docker", "exec", args.queue_container, "php", "-r", code], capture_output=True, timeout=20)
+        probe = subprocess.run(
+            ["docker", "exec", args.queue_container, "php", "-r", code],
+            capture_output=True,
+            timeout=20,
+        )
         row["queue_progress_ok"] = probe.returncode == 0
     row["elapsed"] = round(time.monotonic() - start, 2)
     rows.append(row)
@@ -89,8 +104,11 @@ summary["pass"] = bool(
     and summary["children_max"] <= 1
     and rows[-1]["children"] == 0
     and summary["journal_ok"]
-    and all(r["state"]["state"]=="ONLINE" for r in rows)
-    and all(r.get("worker_and_database_ok",True) and r.get("queue_progress_ok",True) for r in rows)
+    and all(r["state"]["state"] == "ONLINE" for r in rows)
+    and all(
+        r.get("worker_and_database_ok", True) and r.get("queue_progress_ok", True)
+        for r in rows
+    )
 )
 Path(args.output).write_text(json.dumps(summary, indent=2) + "\n")
 print(json.dumps(summary), flush=True)

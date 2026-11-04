@@ -136,6 +136,16 @@ def main():
                 ]
             )
             account = pwd.getpwnam("agent-center-agent")
+        for parent in (
+            root / "opt",
+            root / "etc",
+            root / "var",
+            root / "var/lib",
+            root / "var/log",
+        ):
+            if not parent.exists():
+                parent.mkdir(parents=True, mode=0o755)
+                parent.chmod(0o755)
         for path in (
             base,
             base / "runtime",
@@ -150,6 +160,9 @@ def main():
                 mode=0o755
                 if path in (base, base / "runtime", base / "releases", config)
                 else 0o700,
+            )
+            path.chmod(
+                0o755 if path in (base, base / "runtime", base / "releases", config) else 0o700
             )
         for name in (
             "updater.pyz",

@@ -1,0 +1,7 @@
+{
+  "result": "FAIL",
+  "reason": "A strict snapshot captured normal transient CLAIM at 885.71 seconds; no performance threshold was relaxed.",
+  "performance_thresholds_pass": true,
+  "all_workers_and_database_checks_pass": true,
+  "repeat_required": true
+}

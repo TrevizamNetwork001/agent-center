@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Fixed infrastructure probes. No commands or targets from browser/tenant input."""
+
 import argparse
 import collections
 import json
@@ -16,18 +17,60 @@ from pathlib import Path
 def collect():
     timestamp = datetime.now(timezone.utc).isoformat()
     rows = []
-    for component, container in [("nginx_external", "agent-center-nginx-1"), ("fpm_process", "agent-center-web-1")]:
+    for component, container in [
+        ("nginx_external", "agent-center-nginx-1"),
+        ("fpm_process", "agent-center-web-1"),
+    ]:
         try:
-            result = subprocess.run(["docker", "inspect", "--format", "{{.State.Health.Status}}", container], capture_output=True, check=True, timeout=10)
+            result = subprocess.run(
+                [
+                    "docker",
+                    "inspect",
+                    "--format",
+                    "{{.State.Health.Status}}",
+                    container,
+                ],
+                capture_output=True,
+                check=True,
+                timeout=10,
+            )
             healthy = result.stdout.strip() == b"healthy"
-            rows.append(dict(component=component, state="VERDE" if healthy else "NO-GO", reason="container_functional_health", timestamp=timestamp, values={"healthy": healthy}, limit=True))
+            rows.append(
+                dict(
+                    component=component,
+                    state="VERDE" if healthy else "NO-GO",
+                    reason="container_functional_health",
+                    timestamp=timestamp,
+                    values={"healthy": healthy},
+                    limit=True,
+                )
+            )
         except (OSError, subprocess.SubprocessError):
-            rows.append(dict(component=component, state="ATENÇÃO", reason="probe_unavailable", timestamp=timestamp, values={"healthy": None}, limit=True))
+            rows.append(
+                dict(
+                    component=component,
+                    state="ATENÇÃO",
+                    reason="probe_unavailable",
+                    timestamp=timestamp,
+                    values={"healthy": None},
+                    limit=True,
+                )
+            )
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
-    for component, path, expected in [("web_https", "/health/ready", 200), ("agent_api_external", "/api/v1/agent/enrollment-status", 422)]:
+    for component, path, expected in [
+        ("web_https", "/health/ready", 200),
+        ("agent_api_external", "/api/v1/agent/enrollment-status", 422),
+    ]:
         status = None
         try:
-            request = urllib.request.Request("https://agente.trevizamnetwork.com.br" + path, data=b"{}" if expected==422 else None, headers={"Accept":"application/json","Content-Type":"application/json"})
+            request = urllib.request.Request(
+                "https://agente.trevizamnetwork.com.br" + path,
+                data=b"{}" if expected == 422 else None,
+                headers={
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
+            )
             with opener.open(request, timeout=10) as response:
                 status = response.status
         except urllib.error.HTTPError as exc:
@@ -35,7 +78,16 @@ def collect():
             exc.close()
         except (OSError, urllib.error.URLError):
             pass
-        rows.append(dict(component=component, state="VERDE" if status==expected else "NO-GO", reason="https_status_probe", timestamp=timestamp, values={"http_status":status}, limit={"expected_status":expected}))
+        rows.append(
+            dict(
+                component=component,
+                state="VERDE" if status == expected else "NO-GO",
+                reason="https_status_probe",
+                timestamp=timestamp,
+                values={"http_status": status},
+                limit={"expected_status": expected},
+            )
+        )
     path = Path("/var/log/nginx/agent-center-status.log")
     counts = collections.Counter()
     if path.is_file():
@@ -43,13 +95,28 @@ def collect():
             for line in collections.deque(handle, maxlen=10000):
                 try:
                     stamp, status, _duration = line.split()
-                    if float(stamp) >= time.time()-300:
+                    if float(stamp) >= time.time() - 300:
                         counts["total"] += 1
-                        counts["errors"] += int(int(status)>=500)
+                        counts["errors"] += int(int(status) >= 500)
                 except ValueError:
                     pass
-    rate = counts["errors"]/counts["total"] if counts["total"] else None
-    rows.append(dict(component="http_error_rate", state="ATENÇÃO" if rate is None else ("NO-GO" if rate>0.05 else "VERDE"), reason="sanitized_status_log_5m" if rate is not None else "no_status_samples", timestamp=timestamp, values={"requests":counts["total"],"http_5xx":counts["errors"],"rate":rate}, limit={"max_rate":0.05,"window_seconds":300,"max_samples":10000}))
+    rate = counts["errors"] / counts["total"] if counts["total"] else None
+    rows.append(
+        dict(
+            component="http_error_rate",
+            state="ATENÇÃO" if rate is None else ("NO-GO" if rate > 0.05 else "VERDE"),
+            reason="sanitized_status_log_5m"
+            if rate is not None
+            else "no_status_samples",
+            timestamp=timestamp,
+            values={
+                "requests": counts["total"],
+                "http_5xx": counts["errors"],
+                "rate": rate,
+            },
+            limit={"max_rate": 0.05, "window_seconds": 300, "max_samples": 10000},
+        )
+    )
     return rows
 
 
@@ -60,12 +127,15 @@ def main():
     rows = collect()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     fd, path = tempfile.mkstemp(dir=args.output.parent, prefix=".operations-")
-    with os.fdopen(fd,"w") as stream:
-        json.dump({"collected_at":datetime.now(timezone.utc).isoformat(),"checks":rows},stream)
+    with os.fdopen(fd, "w") as stream:
+        json.dump(
+            {"collected_at": datetime.now(timezone.utc).isoformat(), "checks": rows},
+            stream,
+        )
         stream.flush()
         os.fsync(stream.fileno())
-    os.chmod(path,0o644)
-    os.replace(path,args.output)
+    os.chmod(path, 0o644)
+    os.replace(path, args.output)
 
 
 if __name__ == "__main__":

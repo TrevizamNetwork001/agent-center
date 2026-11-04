@@ -16,3 +16,9 @@ app/CLAUDE.md
 app/README.md
 
 secrets/
+app/storage/framework/*.json
+app/storage/framework/worker-heartbeat
+app/storage/framework/views/*.php
+app/storage/framework/sessions/*
+app/storage/framework/cache/data/*
+agent/dist/
