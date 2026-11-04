@@ -208,8 +208,111 @@ externa; aplicar/verificar retenção específica sem afetar outros objetos; upl
 real; host independente autorizado com privada recuperada fora da VPS; restore de todos
 os domínios/dados e alerta recebido fora do host. Sem isso, manter RECOVERY-8 BLOCKED.
 
+## Solicitações durante a continuação — painel R2 e horário
 
-Painel R2: configuração criptografada cadastrada; HEAD do bucket autenticado. Upload encontrou SSLError, sem integridade remota comprovada. Imagem recovery8-r2-ui-save-status corrige navegação e confirmação persistente São Paulo, com atualização automática do status a cada10s preservando o formulário. Candidato0839cb5. Laravel5testes70assertions, Pint e Chromium isolado PASS. Rollback: Compose em backups/ui-save-rollback-*/compose.yaml e imagem recovery8-r2-ui-before-save-status; recriar somente web/worker/diagnostic-worker, sem migrations ou PG. Chave privada gerada apenas no navegador, biblioteca age-encryption0.3.1 empacotada localmente; download não enviado à Central. Custódia/restore independente/retention ainda pendentes.
+Operador pediu painel na aplicação para digitar dados R2 e corrigiu horário em /audit
+para America/Sao_Paulo. Implementados com Laravel nativo, sem alterar AGENTS.md/Agent,
+sem PHP/Python Central paralelo e sem migrations novas. Configuração de infraestrutura
+é global e somente platform_admin ativo acessa; testes com tenant_adminA/B, operator,
+viewer e anônimo negam leitura/escrita/solicitação. Secrets não retornam em HTML, campos,
+flash de validação, console ou auditoria. Crypt autenticado nativo protege armazenamento.
+
+É possível cadastrar API keys agora e acrescentar pub age depois; o botão de backup
+exige configuração completa/declaração de custódia. Declaração não vira DR verificado.
+Host executa só serviço fixo por solicitação Cache bool, sem Docker socket/root/shell
+no web. Export root0:33 em diretório0700/files0600; tentativa de leitura como web33 foi
+negada. Cópia/limpeza privada foi testada com credenciais sintéticas e SDKrun substituído
+por stub, sem qualquer chamada Cloudflare. UI CLI antiga só é fallback se não existe
+cadastro UI, nunca se o cadastro está incompleto ou falha.
+
+Testes:141 Laravel/1.154 assertions PASS (6 novos testes/54 assertions); Chromium candidato
+base produção passou cadastro com ciphertext, campos vazios pós-save, ausência de secrets,
+CSRF419, desktop/mobile sem overflow e filtro/horário SãoPaulo. Fixtures são sintéticas.
+Erro inicial do teste que alternava usuários sem limpar a sessão foi corrigido no harness,
+sem relaxar gates; fluxo real de roles permaneceu403. Fixture CLI foi corrigida para
+consulta administrativa explícita sob contexto de plataforma, sem desligar RLS.
+
+Imagem de produção agent-center-central:recovery8-r2-ui é derivada de recovery6+patchUI,
+commit candidato3c07ea1. Snapshot/rollback preparados, deploy pontual PASS,9 migrations e27RLS
+preservadas; Agent Operations e suas duas migrations continuam sem promoção. PostgreSQL,
+TLS/SCRAM/verify-full, fila funcional, Nginx/HTTPS e readiness revalidados. Nenhuma conta/senha
+foi criada ou resetada em produção. Nenhum arquivo/fonte/runtime de Agent alterado.
+
+Painel publicado em https://agente.trevizamnetwork.com.br/admin/backups; auditoria agora
+exibe horário de SãoPaulo e aplica filtros no mesmo fuso. Instantes originais/relógio/NTP
+preservados. Evidências sanitizadas em evidence/recovery8/backup-ui/.
+R2 real, custódia externa, retention e restore independente continuam pendentes até
+configuração/provas reais do operador. Não considerar UI publicada como RECOVERY-8 PASS.
 
 
-R2 real validado: PUT/HEAD/GET/SHA256 de objetos sintéticos age243bytes e2097848bytes PASS, sem imprimir credenciais. Pacote completo35249103bytes falhou por SSLError/EOF. Streaming, sem Expect, memória limitada e multipart falharam; multipart incompleto próprio abortado, sem excluir objetos. TLS1.2 diagnóstico6MiB também falhou. Nenhuma alternativa de transporte persistida; TLS/CA/hostname verificados em todas as tentativas. Evidência: evidence/recovery8-r2-real-transfer-validation.json. Aplicação/worker/PG/Nginx saudáveis; health/ready200; configuração R2 pronta, pedido consumido, cópia externa NO-GO. RECOVERY-8 BLOCKED: upload real não comprovado; retenção/custódia/restore independente pendentes.
+### Confirmação de salvamento e andamento do R2 — 2026-11-05
+
+A configuração de produção foi cadastrada pelo painel. Verificação somente por
+summary (booleanos): account/credentials/recipient/custody_attested/ready=true.
+Nenhum valor foi exibido. HEAD do bucket autorizado autenticou com TLS validado.
+O primeiro upload real falhou com SSLError. Autenticação aceita não comprova upload:
+backup externo continua sem prova de integridade. Verificação TLS permanece obrigatória.
+
+Imagem `agent-center-central:recovery8-r2-ui-save-status`, candidato `0839cb5`,
+publicada somente em web/worker/diagnostic-worker, sem migrations ou recriação do PG.
+Rollback: Compose anterior em backups/ui-save-rollback-*/compose.yaml e imagem
+recovery8-r2-ui-before-save-status. Aplicar o Compose anterior e recriar somente
+os três workloads; preservar storage, ciphertext de configuração e banco.
+
+O painel mostra confirmação persistente com saved_at em America/Sao_Paulo;
+campos vazios preservam valores. Fragmento autenticado atualiza somente o status a
+cada 10s, usando o mecanismo existente. O formulário em edição não é substituído.
+Mensagens de estágio vêm de allowlist, sem valores/erros externos arbitrários.
+Chromium isolado confirmou persistência após reload, polling e formulário preservado.
+Laravel: 5 testes / 70 assertions PASS; Pint dos 3 PHP alterados PASS;
+git diff --check PASS. Evidência: backup-ui/save-confirmation.json.
+
+Geração da identidade usa age-encryption0.3.1 empacotado localmente, sem CDN;
+a chave privada é baixada pelo navegador e nunca postada. Interoperabilidade com
+age1.2.1 e ausência de identidade em DOM/POST verificadas com chave sintética.
+O arquivo deve permanecer sob custódia externa do operador; declaração da UI não
+substitui prova de recuperação independente. O defeito de diretivas Blade adjacentes
+foi corrigido com quebras de linha e imagem com código legível pelo usuário do FPM.
+
+RECOVERY-8 BLOCKED: upload/integridade R2 ainda não comprovados; custódia externa,
+restore em host independente, retenção e alertas externos aguardam validação.
+
+
+### Validação real do R2 solicitada pelo operador — 2026-11-05
+
+Credenciais cadastradas no painel foram usadas sem exibição. Bucket agent-center:
+PUT condicional, HEAD, GET integral e SHA-256 PASS para objetos sintéticos criptografados
+com age de243bytes e2097848bytes. Isso comprova escrita/leitura da conta autorizada,
+mas não é backup real de produção nem recuperação de desastre.
+
+Pacote de produção criptografado de35249103bytes não concluiu o upload: conexão TLS
+encerrada com SSLError/EOF. Reproduzido com streaming, remoção somente diagnóstica do
+cabeçalho Expect e envio em memória limitado. Multipart diagnóstico falhou na primeira
+parte de5242880bytes; somente seu upload multipart incompleto foi abortado, sem
+DeleteObject e sem alteração de objetos existentes. Teste isolado de6MiB em TLS1.2
+validado também falhou. Nenhuma dessas alternativas foi persistida em produção;
+TLS/CA/hostname continuaram verificados em todas as tentativas.
+
+O painel diferencia configuração salva e cópia externa NO-GO; a solicitação do botão
+foi consumida. Nenhum backup completo remoto foi comprovado. Evidência sanitizada:
+evidence/recovery8/closure/r2-real-transfer-validation.json.
+
+RECOVERY-8 BLOCKED: interrupção TLS em uploads maiores impede verificar a cópia real;
+retenção, custódia externa e restore independente continuam sem comprovação. Pequenos
+objetos de diagnóstico não substituem banco/secrets/storage reais nem autorizam PASS.
+
+
+### Correção do transporte R2
+
+A tentativa controlada com curl/IPv4/retry completou PUT200 HTTPS1.1 do pacote real
+criptografado de35250967bytes, SHA256
+c52ef54b4f3779a9da0b2a2adfff68eb936d30f236d7e204f19fb550507884f1.
+HEAD e download integral verificaram tamanho e hash. A causa específica de rede/TLS
+não foi atribuída sem prova; o resultado é compatibilidade de transporte comprovada.
+O ajuste mantém o formato age e a chave privada fora da VPS. Protótipo de divisão em
+blocos foi descartado após os testes reais, sem promoção ou mudança de formato.
+
+Testes do ajuste:22 Python PASS, incluindo URL assinada nunca em argv, arquivos0600,
+parent0700, limpeza após timeout, rejeição de host/HTTP/redirect, e exigência de HEAD/GET
+mesmo com HTTP200. Ruff e compileall PASS. Teste anterior de escrita parcial não vira
+backup aprovado; somente recibos complete=true com hash conferido contam.
