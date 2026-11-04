@@ -1,0 +1,116 @@
+name: agent-center
+x-app: &app
+  image: agent-center-central:foundation
+  build:
+    context: ..
+    dockerfile: deploy/php/Dockerfile
+    target: production
+  environment:
+    APP_NAME: ${APP_NAME:-Agent Center}
+    APP_ENV: ${APP_ENV:-production}
+    APP_KEY: ${APP_KEY:?required}
+    APP_DEBUG: 'false'
+    APP_URL: ${APP_URL:-http://127.0.0.1:18083}
+    APP_LOCALE: ${APP_LOCALE:-pt_BR}
+    TZ: ${TZ:-Europe/Berlin}
+    LOG_CHANNEL: stderr
+    LOG_LEVEL: warning
+    DB_CONNECTION: pgsql
+    DB_HOST: postgres
+    DB_PORT: '5432'
+    DB_DATABASE: ${POSTGRES_DB:?required}
+    DB_USERNAME: ${APP_DB_USER:?required}
+    DB_PASSWORD: ${APP_DB_PASSWORD:?required}
+    SESSION_DRIVER: database
+    SESSION_ENCRYPT: 'true'
+    SESSION_SECURE_COOKIE: ${SESSION_SECURE_COOKIE:-false}
+    CACHE_STORE: database
+    QUEUE_CONNECTION: database
+  restart: unless-stopped
+  init: true
+  security_opt: [no-new-privileges:true]
+  cap_drop: [ALL]
+  volumes:
+    - app_storage:/var/www/html/storage
+  networks: [backend]
+  depends_on:
+    postgres:
+      condition: service_healthy
+  logging:
+    driver: json-file
+    options: {max-size: '10m', max-file: '3'}
+services:
+  postgres:
+    image: postgres:17-bookworm@sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?required}
+      POSTGRES_USER: ${POSTGRES_USER:?required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
+      APP_DB_USER: ${APP_DB_USER:?required}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?required}
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=C.UTF-8 --auth-host=scram-sha-256'
+      TZ: ${TZ:-Europe/Berlin}
+      PGTZ: ${TZ:-Europe/Berlin}
+    command: [postgres, -c, timezone=Europe/Berlin, -c, log_statement=none]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-init.sh:/docker-entrypoint-initdb.d/10-app.sh:ro
+    networks: [backend]
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    logging:
+      driver: json-file
+      options: {max-size: '10m', max-file: '3'}
+  web:
+    <<: *app
+    healthcheck:
+      test: [CMD-SHELL, 'SCRIPT_NAME=/fpm-ping SCRIPT_FILENAME=/fpm-ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000 | grep -q pong']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  worker:
+    <<: *app
+    command: [php, artisan, queue:work, '--sleep=3', '--tries=3', '--timeout=60', '--max-time=3600']
+    stop_grace_period: 75s
+    healthcheck:
+      test: [CMD, php, -r, 'exit(is_file("storage/framework/worker-heartbeat") && time()-filemtime("storage/framework/worker-heartbeat") < 90 ? 0 : 1);']
+      interval: 20s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+  nginx:
+    image: nginxinc/nginx-unprivileged:stable-alpine@sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03
+    user: '101:101'
+    ports: ['127.0.0.1:${HTTP_PORT:-18083}:8080']
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../app/public:/var/www/html/public:ro
+    networks: [frontend, backend]
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      test: [CMD-SHELL, 'wget -q -O /dev/null http://127.0.0.1:8080/health/live']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: json-file
+      options: {max-size: '10m', max-file: '3'}
+volumes:
+  postgres_data:
+  app_storage:
+networks:
+  frontend:
+  backend:
+    internal: true

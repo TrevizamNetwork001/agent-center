@@ -1,0 +1,48 @@
+# Deploy e rollback
+
+## Pré-requisitos
+
+Linux com Git, Docker Engine/Compose plugin, curl, openssl, CA certificates, tar/gzip e flock. Não instalar PHP global. Inventário desta VPS feito antes de alterações; dependências já disponíveis. Não alterar serviços de outros projetos.
+
+## Primeiro deploy
+
+1. Criar `/opt/agent-center/{app,deploy,docs,agent,backups,scripts}` e obter este repositório.
+2. `umask 077; cp .env.example .env; chmod 600 .env`. Preencher POSTGRES_PASSWORD e APP_DB_PASSWORD com saídas independentes de `openssl rand -hex 32`; repetir APP_DB_PASSWORD em DB_PASSWORD. Gerar APP_KEY com prefixo `base64:` e saída de `openssl rand -base64 32`. Não imprimir nem colar os valores em logs.
+3. Manter APP_ENV=production, APP_DEBUG=false, DB_CONNECTION=pgsql. TZ=Europe/Berlin no banco/PHP/app. APP_URL deve refletir acesso real. `.env.example` é somente template.
+4. `./scripts/compose.sh config --quiet` (não imprimir config renderizada, pois contém secrets).
+5. `./scripts/compose.sh build web` e `./scripts/compose.sh up -d postgres web`.
+6. `./scripts/compose.sh exec -T web php artisan migrate --force`.
+7. `./scripts/compose.sh up -d --wait --wait-timeout 180`.
+8. Validar health e testes descritos abaixo; executar backup e réplica externa.
+
+O bootstrap do usuário da aplicação só roda quando o volume PostgreSQL está vazio. Alterar `.env` depois não troca senhas no banco existente; usar procedimento SQL controlado com backup e atualizar os consumidores. Não excluir volume para trocar credenciais.
+Não usar `docker compose down -v`, `docker system prune` ou comandos globais.
+
+## Validação
+
+```sh
+./scripts/compose.sh config --quiet
+./scripts/compose.sh ps
+./scripts/compose.sh exec -T web php artisan --version
+./scripts/compose.sh exec -T web php artisan migrate:status
+curl --fail http://127.0.0.1:18083/health/live
+curl --fail http://127.0.0.1:18083/health/ready
+./scripts/test.sh
+./scripts/queue-smoke.sh
+git diff --check
+./scripts/secret-scan.sh
+```
+
+Testes montam o `.env` real somente para leitura, com APP_ENV e database de teste sobrescritos explicitamente e DB_DATABASE fixado no phpunit.xml. Executam em container temporário do mesmo PHP com dependências de desenvolvimento do lockfile; não instalam pacotes dev no runtime. Readiness é testado também sob falha simulada do banco, com resposta genérica. Uma migration de teste executa e faz rollback em database separado, nunca no database de produção.
+
+## HTTPS futuro
+
+HTTP é local e sem dados de negócio. Para acesso remoto atual, usar túnel SSH: `ssh -L 18083:127.0.0.1:18083 usuario@host`.
+Após informar domínio e DNS, provisionar certificado e configurar proxy/TLS específico do projeto, sem substituir Nginx global. Atualizar APP_URL, SESSION_SECURE_COOKIE=true e proxies confiáveis explicitamente. Só ativar HSTS após HTTPS validado. Nenhum certificado ou domínio foi inventado.
+
+## Rollback
+
+Antes de mudança: backup, commit/tag e guardar imagem corrente com tag específica (`docker image tag agent-center-central:foundation agent-center-central:rollback-<COMMIT>`). Não remover imagem anterior até validar o novo deploy.
+Para parar esta fundação: `./scripts/compose.sh stop`; para remover somente containers/redes deste projeto: `./scripts/compose.sh down` (sem `-v`). Volumes e arquivos permanecem.
+Para desfazer uma atualização: voltar ao commit anterior, definir a imagem previamente retida no Compose e recriar apenas web/worker/nginx. Inspecionar migrations antes; não fazer rollback de schema automaticamente. Se houver incompatibilidade, restaurar backup em database/volume separado conforme DISASTER_RECOVERY.md e então trocar a configuração.
+A criação inicial não alterou serviços globais. A reversão mantém `/opt/agent-center`, `.env` e volumes para permitir recuperação; exclusão definitiva exige ação explícita do operador.

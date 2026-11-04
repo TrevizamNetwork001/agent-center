@@ -1,0 +1,16 @@
+.git
+.env
+.env.*
+backups
+app/.env
+app/.env.*
+app/vendor
+app/node_modules
+app/storage/logs/*
+app/bootstrap/cache/*.php
+docs
+app/tests
+app/.phpunit*
+app/AGENTS.md
+app/CLAUDE.md
+app/README.md

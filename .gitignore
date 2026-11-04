@@ -1,0 +1,14 @@
+/.env
+/.env.*
+!/.env.example
+/backups/*
+!/backups/.gitkeep
+/app/vendor/
+/app/node_modules/
+/app/.env
+/app/.env.*
+!/app/.env.example
+*.dump
+*.age
+*.pem
+*.key

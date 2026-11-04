@@ -1,0 +1,4 @@
+# Exemplo /etc/cron.d/agent-center-backup; instalar após configurar réplica externa.
+# Agendamento interpretado no timezone do host (Europe/Berlin).
+15 3 * * * root /opt/agent-center/scripts/backup.sh >> /opt/agent-center/backups/backup.log 2>&1
+# Configurar réplica criptografada e monitoramento externo em job específico.
