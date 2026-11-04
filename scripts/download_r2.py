@@ -4,12 +4,19 @@ import argparse
 import re
 from pathlib import Path
 
-from backup_r2 import ROOT, BackupError, atomic_json, load_config, new_client, verify_remote
+from backup_r2 import (
+    ROOT,
+    BackupError,
+    atomic_json,
+    load_config,
+    new_client,
+    verify_remote,
+)
 
 
 def download(config, credentials, key, output):
     if (not key.startswith(config['prefix'] + '/') or '..' in Path(key).parts
-            or not key.endswith('.tar.gz.age')):
+            or not key.endswith(('.tar.gz.age', '.tar.bz2.age'))):
         raise BackupError('object_outside_authorized_prefix')
     if output.exists() or output.with_suffix(output.suffix + '.proof.json').exists():
         raise BackupError('refusing_existing_recovery_output')
@@ -37,7 +44,7 @@ def main():
     try:
         config, credentials = load_config(args.config)
         download(config, credentials, args.key, args.output)
-    except Exception:
+    except Exception:  # noqa: BLE001 — provider exceptions may contain credentials.
         print('R2 download FAILED; no local fallback and no credentials logged.')
         return 1
     print('R2 ciphertext download and SHA-256: PASS. Decrypt/restore only in the authorized recovery environment.')

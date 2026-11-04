@@ -212,3 +212,10 @@ migration, dependência PHP ou recriação de containers/PG. Guardar backup_r2.p
 em backups/native-transport-rollback-<UTC>/ antes da troca. Rollback restaura esse
 script; o helper pode permanecer sem uso. Manter os recibos e arquivos cifrados remotos.
 Não executar nova geração enquanto agent-center-backup.service estiver ativo.
+
+
+Formato BZip2 solicitado pelo operador: instalar backup_r2.py e download_r2.py em
+conjunto. Requer biblioteca padrão Python com bz2 (disponível na VPS); não instala
+pacotes de sistema. Snapshot de ambos os scripts deve preceder a troca. Rollback pode
+restaurar o empacotador anterior; preservar downloader novo para recuperar tanto
+.tar.bz2.age quanto .tar.gz.age, além de todos os objetos/recibos existentes.

@@ -187,3 +187,21 @@ backups/r2-receipts informa a chave do objeto; a prova pública sanitizada omite
 e credenciais. Ainda não houve recuperação em host independente autorizado nem
 descriptografia dos dados reais. Essa etapa permanece bloqueada sem acesso ao host
 de recuperação e à identidade sob custódia externa do operador.
+
+
+### Arquivo completo BZip2 com data
+
+Novas gerações usam agent-center-AAAA-MM-DD_HH-MM-SSZ-<nonce>.tar.bz2.age (UTC).
+O único objeto contém o conjunto completo e é baixado pelo mesmo download_r2.py.
+No host de recuperação autorizado, com identidade recuperada fora da VPS original:
+
+```bash
+age --decrypt --identity /caminho/seguro/recovery.agekey --output recovered.tar.bz2 downloaded.tar.bz2.age
+mkdir -m 700 restored
+python3 -m tarfile --extract recovered.tar.bz2 restored --filter data
+```
+
+Verificar o manifesto SHA256 antes de restaurar o dump e aplicar permissões segundo
+os passos anteriores. O formato legado .tar.gz.age continua aceito pelo downloader;
+selecionar a extensão de saída correspondente. Descriptografar/extrair dados reais
+só no ambiente autorizado de recuperação; a VPS original não recebe a identidade.

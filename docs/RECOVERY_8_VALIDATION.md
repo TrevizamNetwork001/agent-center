@@ -339,3 +339,15 @@ externa da identidade privada, retenção/BucketLock e alertas externos ainda pe
 O upload integral e a automação estão comprovados; não declarar DR concluído.
 Objetos parciais cifrados de diagnósticos não são backups válidos e não foram apagados;
 devem seguir política de retenção autorizada quando configurada.
+
+
+### Arquivo único com data e BZ2 solicitado pelo operador
+
+Empacotador alterado para TAR/BZip2 padrão em stream direto para age. Novo nome:
+agent-center-AAAA-MM-DD_HH-MM-SSZ-<nonce>.tar.bz2.age. Não há arquivo agregado de banco,
+secrets ou configuração em claro no disco nem upload sem criptografia. O downloader
+aceita BZip2 novo e GZip legado. Nenhuma identidade privada foi criada na VPS.
+Laboratório:23 testes Python PASS, incluindo descriptografia de chave sintética,
+assinatura BZh, todos os membros esperados, tamper rejection e compatibilidade do
+novo nome no download; Ruff/compileall/diff-check PASS. Rotina real será revalidada
+antes de declarar o arquivo remoto completo disponível.

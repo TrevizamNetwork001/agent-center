@@ -9,6 +9,7 @@ import re
 import stat
 import subprocess
 import sys
+import tarfile
 import tempfile
 import uuid
 from datetime import UTC, datetime
@@ -156,19 +157,27 @@ def encrypt_generation(root, config, members, output):
     executable = root / 'tools/usr/bin/age'
     if not executable.is_file():
         raise BackupError('age_tool_missing')
-    producer = subprocess.Popen(['tar', '-czf', '-', '-C', str(root / 'backups'), '--', *members],
-                                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    # Standard BZip2 tar streamed directly into age: no plaintext aggregate is
+    # written to disk and no system bzip2 package is required.
+    encryptor = subprocess.Popen([str(executable), '--encrypt', '--recipients-file', str(recipient),
+                                  '--output', str(output)], stdin=subprocess.PIPE,
+                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
-        result = subprocess.run([str(executable), '--encrypt', '--recipients-file', str(recipient),
-                                 '--output', str(output)], stdin=producer.stdout,
-                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
-        producer.stdout.close()
-        if result.returncode or producer.wait():
+        with tarfile.open(fileobj=encryptor.stdin, mode='w|bz2') as archive:
+            for member in members:
+                archive.add(root / 'backups' / member, arcname=member, recursive=False)
+        encryptor.stdin.close()
+        if encryptor.wait():
             raise BackupError('authenticated_encryption_failed')
     finally:
-        if producer.poll() is None:
-            producer.kill()
-            producer.wait()
+        try:
+            if encryptor.stdin and not encryptor.stdin.closed:
+                encryptor.stdin.close()
+        except BrokenPipeError:
+            pass
+        if encryptor.poll() is None:
+            encryptor.kill()
+        encryptor.wait()
     output.chmod(0o600)
     with output.open('rb') as stream:
         digest = hashlib.file_digest(stream, 'sha256').hexdigest()
@@ -189,7 +198,7 @@ def object_keys(config, generation, unique=None):
     suffix = unique or uuid.uuid4().hex
     if not re.fullmatch(r'[a-f0-9]{32}', suffix):
         raise BackupError('invalid_object_nonce')
-    return [f"{config['prefix']}/{tier}/{generated:%Y/%m/%d}/{generation}-{suffix}.tar.gz.age"
+    return [f"{config['prefix']}/{tier}/{generated:%Y/%m/%d}/agent-center-{generated:%Y-%m-%d_%H-%M-%SZ}-{suffix}.tar.bz2.age"
             for tier in tiers_for(generated)]
 
 
@@ -273,7 +282,7 @@ def run(root, config, credentials):
     # No recovery identities are read, created or mounted by this program.
     with tempfile.TemporaryDirectory(prefix='r2-ciphertext-', dir=root / 'backups') as temporary:
         os.chmod(temporary, 0o700)
-        archive = Path(temporary) / (generation + '.tar.gz.age')
+        archive = Path(temporary) / (generation + '.tar.bz2.age')
         digest, size = encrypt_generation(root, config, members, archive)
         stages['encrypted'] = True
         status_update(root, 'ATENÇÃO', 'r2_transfer_in_progress', generation=generation,
@@ -289,11 +298,11 @@ def run(root, config, credentials):
             client.close()
     stages.update(upload_completed=True, integrity_verified=True)
     receipt = {'complete': True, 'generation': generation, 'bucket': config['bucket'], 'endpoint': config['endpoint'],
-                   'project': 'agent-center', 'encryption': 'age-v1', 'stages': stages, 'objects': proofs,
+                   'project': 'agent-center', 'encryption': 'age-v1', 'archive_format': 'tar.bz2', 'stages': stages, 'objects': proofs,
                    'sha256': digest, 'bytes': size, 'verified_at': timestamp()}
     atomic_json(receipt_path, receipt)
     status_update(root, 'VERDE', 'r2_encrypted_upload_download_verified', generation=generation,
-                  project='agent-center', sha256=digest, bytes=size, stages=stages,
+                  project='agent-center', sha256=digest, bytes=size, archive_format='tar.bz2', stages=stages,
                   retention_verified=False, restore_from_external_verified=False)
     print('R2 upload, HEAD and full download integrity: PASS; independent restore remains required.')
     return receipt
