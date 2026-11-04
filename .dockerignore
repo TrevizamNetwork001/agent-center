@@ -22,3 +22,5 @@ app/storage/framework/views/*.php
 app/storage/framework/sessions/*
 app/storage/framework/cache/data/*
 agent/dist/
+
+tools/

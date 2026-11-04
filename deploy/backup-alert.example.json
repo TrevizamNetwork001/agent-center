@@ -1,0 +1,4 @@
+{
+  "url": "https://AUTHORIZED-ADMINISTRATIVE-RECEIVER/backup-status",
+  "token_file": "/opt/agent-center/secrets/backup-alert.token"
+}

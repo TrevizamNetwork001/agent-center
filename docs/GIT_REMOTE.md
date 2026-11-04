@@ -1,26 +1,55 @@
-# Git remoto privado
+# GitHub privado — RECOVERY-8
 
-O origin inicial aponta para /opt/agent-center nesta VPS. É checkout local de produção,
-não remoto externo, não réplica independente e não deve receber push durante recuperação.
-Nenhuma URL privada externa autorizada foi encontrada. Não criar repositório público.
+Repositório autorizado e criado pelo operador:
+`https://github.com/TrevizamNetwork001/agent-center`.
 
-## Conexão pelo operador
+O operador confirmou **Privado**. Antes do primeiro push: acesso SSH autenticado ao
+repositório vazio, API anônima404 e varredura de todo histórico/árvores. A combinação de
+acesso autenticado e invisibilidade anônima sustenta a privacidade informada; o campo
+`private=true` da API autenticada não foi consultável pelo conector, sem repositórios
+liberados. Essa limitação está registrada na evidência, sem inventar metadados.
 
-1. Criar repositório **privado** na organização/conta autorizada, sem importar secrets.
-Escolher controle de acesso mínimo, MFA/SSO e proteção de branches. Fornecer URL exata
-sem token embutido e credencial de máquina restrita ao repositório.
-2. Conferir secret scan e histórico; .env, secrets, chaves, dumps, backups e agent/dist
-estão ignorados. Não git add -f nem inserir tokens em remotes/logs. Revogar um secret
-exposto exige plano próprio: apagar arquivo do HEAD não remove histórico.
-3. Preservar a referência local: `git remote rename origin production-local`.
-Depois `git remote add origin URL_PRIVADA_AUTORIZADA` (placeholder, não executar literalmente).
-4. Validar acesso com `git ls-remote origin`; confirmar privacidade pelo provedor.
-Enviar somente branch revisada: `git push -u origin NOME_DA_BRANCH_REVISADA`.
-Não usar --mirror/--force nem publicar refs extras sem revisar conteúdo.
-5. Em diretório/máquina independente, fazer clone do remoto, conferir HEAD contra o commit
-revisado e `git fsck --full`. Esse ensaio está bloqueado até URL/credencial autorizada.
+## Histórico e autenticação
 
-Backup local gera bundle --all e verifica integridade; clone independente local deve
-conferir HEAD/fsck. Bundle é parte do arquivo externo criptografado quando houver destino.
-Git externo não substitui dump, storage ou secrets; repo privado e backup em conta separada
-reduzem dependência do mesmo provedor. Não inventar URL nem confundir origin local com Git remoto.
+- `main`: linha RECOVERY-7/8, primeiro envio em82dcd2c, com todo histórico ancestral.
+- `production-recovery8`: preserva a linha implantada, inicialmente6bbb4ba.
+- `production-local`: nome reservado ao antigo origin local `/opt/agent-center`.
+- `origin`: GitHub via SSH443, mesmo owner/repo informado pelo operador.
+
+Deploy key Ed25519 exclusiva, com escrita somente neste repositório, cadastrada pelo
+operador. Privada em secrets/github-agent-center0600, fora do Git; host key pinada a
+partir da documentação oficial GitHub. core.sshCommand é configuração local deste
+checkout, sem alterar SSH/global de outros projetos. Não imprimir nem copiar a privada
+para GitHub; deploy keys recebem somente pública. Backups dessa identidade operacional
+precisam de criptografia. Ela não é a identidade age de recuperação.
+
+Primeiro push sem force, remote refs, clone limpo SSH, fsck e comparação integral de
+`rev-list main` passaram. Evidência: evidence/recovery8/closure/github-first-push.json.
+Commits novos desta continuação devem ter o mesmo readback ao final; o hash corrente
+remoto fica no relatório de fechamento. Não considerar somente adicionar origin como sucesso.
+
+## Recuperar em host autorizado
+
+Provisionar credencial de leitura independente pelo próprio GitHub. A chave da VPS
+não pode ser o único meio de recuperar a conta/repo após perder a VPS. Manter MFA,
+recuperação da conta e responsáveis fora do host. Em máquina nova:
+
+```sh
+git clone git@github.com:TrevizamNetwork001/agent-center.git agent-center
+cd agent-center
+git fsck --full
+git log --oneline -5
+```
+
+Comparar branch/HEAD e commit do backup. Se necessário obter
+`production-recovery8` para reconstruir o runtime implantado anteriormente. Não
+substituir main por essa branch antiga nem usar --mirror/--force.
+
+Antes de cada push: secret-scan.sh, audit-secret-history.py e diff --check. O scanner
+histórico verifica todas as árvores alcançáveis, incluindo arquivos removidos, secrets
+atuais, private keys/age identities, nomes proibidos e assinaturas de dump/bundle.
+É um controle adicional, não garantia universal de ausência de todos os padrões secretos.
+.env, secrets, dumps, bundles, arquivos criptografados e ferramentas vendorizadas não
+entram no GitHub. GitHub guarda código/histórico, nunca banco real ou backup sensível.
+
+Referência: [host keys SSH oficiais](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints).

@@ -1,6 +1,9 @@
 [Unit]
-Description=Agent Center backup failure signal
+Description=Agent Center sanitized backup stage and failure signal
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/logger -p daemon.err -t agent-center-backup BACKUP_FAILED_OR_EXTERNAL_NOT_CONFIGURED
+ExecStart=/usr/bin/python3 /opt/agent-center/scripts/backup-alert.py
 NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true

@@ -9,4 +9,7 @@ if ! ./scripts/backup.sh > backups/last-run.log 2>&1; then
   echo 'Agent Center local backup FAILED'
   exit 1
 fi
-python3 scripts/backup-external.py
+if [ -f secrets/r2-backup.json ]; then
+  exec python3 scripts/backup_r2.py
+fi
+exec python3 scripts/backup-external.py

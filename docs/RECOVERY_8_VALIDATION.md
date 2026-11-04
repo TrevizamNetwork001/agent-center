@@ -1,9 +1,10 @@
 # RECOVERY-8 — validação final
 
-**RECOVERY-8 BLOCKED: backup externo autorizado não configurado/verificado e nenhuma
-restauração em servidor independente a partir dessa cópia.** Git remoto privado,
-custódia externa de chaves e receptor externo de alertas também não foram fornecidos.
-Não existe Agent real autorizado. Não iniciar RECOVERY-9.
+**RECOVERY-8 BLOCKED: R2 ainda sem upload criptografado real/readback, custódia externa
+da chave e restauração em host independente autorizado não comprovados.** GitHub privado
+já recebeu código/histórico e passou clone independente. Retenção R2 e receiver externo
+de alerta ainda dependem de configuração/autorização. Nenhum Agent foi modificado ou
+implantado nesta continuação. Não iniciar RECOVERY-9.
 
 ## Inventário e escopo
 
@@ -145,3 +146,64 @@ Timers de backup/monitor/rotação ativos; alerta de backup externo ausente cont
 A aplicação/volumes/dados de produção e todos os outros projetos foram preservados.
 
 **Resultado permanece RECOVERY-8 BLOCKED. EXTERNAL BACKUP NOT CONFIGURED.**
+
+
+## Continuação — GitHub privado e Cloudflare R2
+
+O operador criou/confirmou privado `https://github.com/TrevizamNetwork001/agent-center`
+e autorizou deploy key exclusiva com escrita. O antigo origin local foi preservado como
+production-local. GitHub origin usa SSH443 com host key pinada. Primeiro push de main82dcd2c
+e production-recovery8/6bbb4ba, ls-remote, clone limpo e fsck passaram; histórico main
+comparado integralmente. Conta conectada é TrevizamNetwork001, mas o conector não tem
+repos liberados e respondeu404; por isso não se afirmou ter lido private=true na API.
+Privacidade confirmada pelo operador e corroborada por acesso SSH válido + API anônima404.
+Nada foi reescrito, não houve first-commit novo, force, mirror ou upload de banco/backups.
+
+Nova varredura percorreu16 commits/701 blobs e todas as árvores:0 secrets/assinaturas de
+backup e0 caminhos históricos proibidos antes do primeiro push. Evidências e novos
+commits são novamente verificados antes do envio final. A privada SSH fica em secrets
+fora do Git, não é chave age de recuperação e não concede administração da conta.
+
+Bucket **agent-center** criado pelo operador, privado, localização automática e Standard.
+Account ID, Access Key ID/Secret Access Key e public recipient age ainda não chegaram ao
+ambiente seguro. O helper já instalado em /opt recebe isso em TTY sem eco/argv/history,
+com arquivos0600 e sem sobrescrever configuração. Nenhum valor foi pedido no chat.
+Sem essa configuração não houve qualquer chamada real de escrita/listagem/exclusão R2.
+
+Implementado adaptador S3 boto3/SigV4/auto com dependências pinadas/hashes, TLS validado,
+allowlist do endpoint da conta/bucket/prefixo, age autenticado antes do PUT, nomes únicos,
+If-None-Match, HEAD+tamanho+SHAmetadata e GET integral. Download para recuperação só busca
+R2, sem fallback local; output existente/corrompido é recusado. Nenhuma privada age de
+produção foi gerada/importada na VPS. Testes usam apenas dados/chaves sintéticos temporários.
+Recibos locais não são prova de custódia/retention/restore. upload_completed/integrity
+são separados dessas etapas, que permanecem falsos sem provas próprias.
+
+Plano de lock/lifecycle por prefixo em deploy/r2-retention-plan.json; nenhum foi aplicado.
+Diários30/31 dias lock/expiração, semanais84/85 e mensais366/367, sem retenção indefinida.
+Credencial diária ObjectRW só no bucket, sem admin; essa permissão pode incluir delete,
+por isso o controle de retenção deve ficar em Bucket Lock administrado fora da VPS.
+Nenhum objeto/política existente é removido. Custos/capacidade precisam ser confirmados
+pelo tamanho real e orçamento, sem preços inventados.
+
+Tooling R2/age, helper, alertas por etapas e watch horário instalados sem trocar imagem,
+PHP/Central, schema, credenciais existentes ou Agent. O watcher sinaliza journal; receiver
+HTTPS opcional ainda não fornecido. Falha e atraso são NO-GO; ausência de configuração
+é explícita. A geração manual pré-deploy usa BACKUP_PRUNE_ENABLED=false para preservar
+todas as gerações existentes. Rotina local mantém retenção configurável em operação normal.
+
+Testes repetidos: Laravel135/1.100 assertions e Python52 PASS; testes de tooling (incluindo
+os4 anteriores) agora16 PASS. SDK testado com stubber, age real contra fixtures sintéticas,
+tamper/corrupção/metadata/permissões e alertas de falha/atraso. Isso **não é upload R2 real,
+criptografia de produção verificada, custódia externa nem restore independente**.
+Ruff/compileall/shell e verificações finais registradas no fechamento. Agent sem diff.
+
+Conciliação inventariada com base comumff168b9, produção6bbb4ba/recovery6/9migrations/27RLS,
+candidato82dcd2c/11migrations/28RLS. Duas migrations e mudanças Central identificadas em
+evidence/recovery8/closure/production-reconciliation.json. Snapshot/rollback são preparados;
+promoção da aplicação continua bloqueada até proteção externa e ensaio independente.
+Somente infraestrutura de backup segura foi aplicada. Detalhes em DEPLOYMENT.md.
+
+Pendências atuais: provisionar R2 e public recipient em terminal seguro; comprovar custódia
+externa; aplicar/verificar retenção específica sem afetar outros objetos; upload+HEAD+GET
+real; host independente autorizado com privada recuperada fora da VPS; restore de todos
+os domínios/dados e alerta recebido fora do host. Sem isso, manter RECOVERY-8 BLOCKED.

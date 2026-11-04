@@ -1,0 +1,31 @@
+{
+  "scope": "continuation_RECOVERY_8",
+  "laravel": {
+    "tests": 135,
+    "assertions": 1100,
+    "pass": true
+  },
+  "python": {
+    "tests": 52,
+    "pass": true,
+    "agent_modified": false
+  },
+  "backup_tooling": {
+    "tests": 16,
+    "pass": true,
+    "real_r2": false,
+    "test_identity_synthetic_only": true
+  },
+  "github_initial_push": {
+    "pass": true,
+    "head": "82dcd2c408d5f0683ae4538f096b132c4cf95560",
+    "clean_clone": true,
+    "full_main_history_equal": true
+  },
+  "r2_bucket_owner_reported": "agent-center",
+  "r2_credentials_configured": false,
+  "external_recipient_configured": false,
+  "independent_host_authorized": false,
+  "retention_applied": false,
+  "external_alert_receiver_configured": false
+}

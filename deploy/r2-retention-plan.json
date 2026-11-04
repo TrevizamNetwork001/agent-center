@@ -1,0 +1,14 @@
+{
+  "kind": "review_plan_not_api_payload",
+  "bucket": "OPERATOR_AUTHORIZED_BUCKET_REQUIRED",
+  "prefix": "OPERATOR_AUTHORIZED_EXCLUSIVE_PREFIX_REQUIRED",
+  "admin_credential_on_vps": false,
+  "rules": [
+    {"tier": "daily", "schedule": "every backup", "lock_days": 30, "lifecycle_expire_days": 31},
+    {"tier": "weekly", "schedule": "Sunday", "lock_days": 84, "lifecycle_expire_days": 85},
+    {"tier": "monthly", "schedule": "first day of month", "lock_days": 366, "lifecycle_expire_days": 367}
+  ],
+  "changes_applied": false,
+  "existing_objects_deleted": false,
+  "verification_required": ["read back bucket lock configuration", "read back matching lifecycle configuration", "verify token restricted to authorized bucket and no bucket administration", "record budget and remote ciphertext size"]
+}

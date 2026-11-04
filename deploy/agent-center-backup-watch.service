@@ -1,0 +1,9 @@
+[Unit]
+Description=Check Agent Center backup freshness and recovery evidence
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/agent-center/scripts/backup-alert.py --only-problems
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true

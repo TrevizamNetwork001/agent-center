@@ -1,0 +1,20 @@
+{
+  "repository": "https://github.com/TrevizamNetwork001/agent-center",
+  "branch": "main",
+  "head": "82dcd2c408d5f0683ae4538f096b132c4cf95560",
+  "operator_confirmed_private": true,
+  "anonymous_api_status": 404,
+  "authenticated_ssh_access": true,
+  "private_inferred_from_authenticated_access_and_anonymous_404": true,
+  "direct_api_private_field_verified": false,
+  "push": true,
+  "ls_remote": true,
+  "clean_clone": true,
+  "fsck": true,
+  "main_history_identical": true,
+  "remote_refs": [
+    "82dcd2c408d5f0683ae4538f096b132c4cf95560\trefs/heads/main",
+    "6bbb4ba34ab28f213ca7997227405efee1ed5bd0\trefs/heads/production-recovery8"
+  ],
+  "scope": "external_GitHub_code_only_no_database_or_backups"
+}

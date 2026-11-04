@@ -83,6 +83,71 @@ falha parcial, worker, dump/restore e bundle clone. Não equivalem a host limpo 
 A aplicação de produção mantém sua versão/schema; hardening TLS tem backup de config
 e rollback em backups/recovery8-before-tls. Serviços de outros projetos permanecem intactos.
 
-Secrets sem escrow externo, Git privado ausente, destino de backup ausente e receptor de
+No fechamento inicial faltavam escrow, Git privado e destino externo. Na continuação,
+GitHub privado já foi validado; escrow, R2 efetivo e receptor de
 alertas ausente continuam dependências concretas do operador. Não rotacionar APP_KEY,
 master key LLM, credenciais de Agent ou enrollment como atalho de recuperação.
+
+## Continuação — recuperar do GitHub e R2 sem arquivos da VPS original
+
+GitHub privado agora existe e o primeiro push/clone real passou. Banco/secrets/storage
+continuam sem prova externa enquanto faltar configuração R2 e custódia da chave. Um
+clone novo realizado **nesta VPS** não é teste em host independente.
+
+1. Fora desta VPS, em computador/host confiável autorizado, instalar age padrão. Gerar
+   `age-keygen -o agent-center-recovery.agekey`; proteger esse arquivo como segredo e
+   guardar uma segunda cópia em cofre independente. `age-keygen -y` desse arquivo emite
+   somente o destinatário público a provisionar na VPS. Nunca enviar a privada para cá,
+   chat, GitHub ou objeto R2 desprotegido. Somente fixtures sintéticas usam identidades
+   temporárias de teste aqui, apagadas ao final dos testes; não são chaves de produção.
+2. Provisionar conta GitHub e credencial de leitura/R2 de recuperação fora da VPS.
+   Obter clone privado e SDK/age pelos procedimentos versionados. Se a imagem Python
+   de tooling não existir, reconstruí-la do Dockerfile existente; não depende de estado
+   do Agent nem instala Agent. Alternativa de obtenção do ciphertext é o console R2
+   autorizado, sem publicar o objeto ou enviar plaintext a outro serviço.
+3. Criar config/credencial de recuperação0600 somente no host independente autorizado.
+   Preferir token Object Read restrito ao bucket agent-center. Obter a chave exata do
+   objeto pelo console/recibo externo; não depender de recibo localizado apenas na VPS.
+4. Executar no host de recuperação:
+
+```sh
+python3 scripts/download_r2.py --config CAMINHO_CONFIG_PRIVADA --key CHAVE_DO_OBJETO --output recuperacao.tar.gz.age
+```
+
+   O comando faz HEAD+GET do R2, verifica tamanho/hash e grava0600, recusa sobrescrita,
+   não usa cópia/cache de backup local e não recebe chave privada. A configuração contém
+   o endpoint real e o bucket autorizado. A proof.json local é prova de download, não
+   resultado automático de restore independente.
+5. Recuperar a identidade age do cofre, **nesse host autorizado**. Descriptografar para
+   arquivo parcial; só promover se a autenticação concluir com exit0:
+
+```sh
+umask 077
+age --decrypt -i CAMINHO_IDENTIDADE_FORA_DA_VPS --output recuperacao.tar.gz.partial recuperacao.tar.gz.age
+```
+
+   Após sucesso, renomear manualmente para recuperacao.tar.gz, inspecionar caminhos tar,
+   extrair em diretório vazio e conferir config/GERACAO.sha256. Jamais extrair stdout de
+   decrypt antes de confirmar exit0; descriptografia em streaming pode falhar ao final.
+6. Restaurar código/commit coerentes com runtime/schema gravados. Recuperar .env/APP_KEY,
+   master key LLM, PKI, storage e roles; seguir passos1–18 deste documento. Produção atual
+   é recovery6/schema27RLS; candidatoRECOVERY-7/8 tem duas migrations adicionais e28RLS.
+   Não confundir as linhas nem aplicar rollback de schema em banco real.
+7. No PG isolado validar migrations/RLS/grants, dados de autenticação, Knowledge/Prompts,
+   descriptografia LLM, Diagnostics/Conversation/auditoria. Registrar hashes/contagens
+   sanitizadas e comparações privadas. Nginx/HTTPS/worker/API/monitoramento devem passar
+   antes da troca de DNS. Não instalar Agent em host não autorizado.
+8. Registrar host autorizado, origem exclusivamenteR2, geração, commit GitHub, duração,
+   resultados e provas de custódia/retention/alerta. Só isso pode fechar o critério de DR;
+   testes locais sintéticos ou download feito nesta VPS não bastam.
+
+### Perda ou troca da chave
+
+Se todas as cópias privadas age forem perdidas, o destinatário público não recupera os
+backups. Não há senha administrativa que contorne a criptografia. Manter responsáveis,
+acesso ao cofre e duas cópias independentes testadas. Testar uma segunda identidade
+pública de recuperação é possível (até5 destinatários explícitos), mantendo todas as
+privadas fora da VPS. Rotação adiciona destinatário novo e exige teste; não retirar a
+chave antiga enquanto houver gerações dependentes. Recriptografia de gerações antigas,
+se autorizada, ocorre no ambiente independente e cria objetos novos; não sobrescrever
+nem excluir backups sob lock. Nenhuma rotação foi executada nesta tarefa.

@@ -1,0 +1,14 @@
+{
+  "/login": {
+    "status": 200,
+    "https": true
+  },
+  "/health/live": {
+    "status": 200,
+    "https": true
+  },
+  "/health/ready": {
+    "status": 200,
+    "https": true
+  }
+}

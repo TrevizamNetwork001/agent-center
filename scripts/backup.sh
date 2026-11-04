@@ -36,11 +36,12 @@ SQL
 
 tar -czf "$backup_root/config/$stamp.tar.gz" deploy scripts docs AGENTS.md README.md .env.example .gitignore .dockerignore
 host_files=()
-for file in etc/nginx/sites-available/agent-center.conf etc/nginx/snippets/agent-center-access.conf etc/nginx/conf.d/agent-center-observability.conf etc/logrotate.d/agent-center etc/systemd/system/agent-center-backup.service etc/systemd/system/agent-center-backup.timer etc/systemd/system/agent-center-backup-alert.service etc/systemd/system/agent-center-status-rotate.service etc/systemd/system/agent-center-status-rotate.timer etc/systemd/system/agent-center-operations.service etc/systemd/system/agent-center-operations.timer; do
+for file in etc/nginx/sites-available/agent-center.conf etc/nginx/snippets/agent-center-access.conf etc/nginx/conf.d/agent-center-observability.conf etc/logrotate.d/agent-center etc/systemd/system/agent-center-backup.service etc/systemd/system/agent-center-backup.timer etc/systemd/system/agent-center-backup-alert.service etc/systemd/system/agent-center-backup-watch.service etc/systemd/system/agent-center-backup-watch.timer etc/systemd/system/agent-center-status-rotate.service etc/systemd/system/agent-center-status-rotate.timer etc/systemd/system/agent-center-operations.service etc/systemd/system/agent-center-operations.timer; do
   if [ -f "/$file" ]; then host_files+=("$file"); fi
 done
 if [ "${#host_files[@]}" -gt 0 ]; then tar -czf "$backup_root/config/$stamp.host.tar.gz" -C / "${host_files[@]}"; fi
 if [ -d agent/dist ]; then tar -czf "$backup_root/storage/$stamp.agent-kit.tar.gz" agent/dist; fi
+if [ -f tools/backup-tools.json ]; then tar -czf "$backup_root/storage/$stamp.backup-tools.tar.gz" tools/usr/bin/age tools/backup-python tools/backup-tools.json; fi
 if git rev-parse --verify HEAD >/dev/null 2>&1; then
   git rev-parse HEAD > "$backup_root/config/$stamp.commit"
   git bundle create "$backup_root/config/$stamp.bundle" --all
@@ -61,10 +62,13 @@ chmod 600 "$backup_root/config/$stamp.sha256"
 (cd "$backup_root" && sha256sum -c "config/$stamp.sha256" >/dev/null)
 if [ -f "$backup_root/config/$stamp.bundle" ]; then git bundle verify "$backup_root/config/$stamp.bundle" >/dev/null 2>&1; fi
 # Só remove arquivos deste backup, após concluir o novo conjunto. Janela local: 7 dias.
+# Operators can take a pre-deploy snapshot without deleting any existing generation.
+if [ "${BACKUP_PRUNE_ENABLED:-true}" = true ]; then
 find "$backup_root/storage" -maxdepth 1 -type f -name '*.tar.gz' -mtime +"$retention_age" -delete
 find "$backup_root/database" -maxdepth 1 -type f -name '*.dump' -mtime +"$retention_age" -delete
 find "$backup_root/config" -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.runtime.json' -o -name '*.schema.json' -o -name '*.sha256' -o -name '*.commit' -o -name '*.bundle' \) -mtime +"$retention_age" -delete
 find "$backup_root/secrets" -maxdepth 1 -type f \( -name '*.environment.tar.gz' -o -name '*.env' -o -name '*.llm-master.key' -o -name '*.llm-keyring.tar.gz' -o -name '*.tls-agent-center.tar.gz' -o -name '*agent-state.tar.gz' \) -mtime +"$retention_age" -delete
+fi
 printf 'Backup local concluído: %s. Replicação externa deve ser verificada separadamente.\n' "$stamp"
 python3 - "$stamp" <<'STATUS'
 import json, os, sys

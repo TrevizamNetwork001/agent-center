@@ -82,3 +82,86 @@ Collector observa idade/status local e externo. Instalação/estado real estão 
 Um alerta só no journal não protege contra perda do host: encaminhamento a recebedor externo
 é pendência, sem enviar mensagens a terceiros não autorizados. Verificar timers diariamente,
 alertas e restore mensalmente. Não interpretar ausência de amostras como sucesso.
+
+## Continuação RECOVERY-8 — GitHub e Cloudflare R2
+
+Esta seção prevalece sobre a preparação HTTPS/WebDAV anterior. O operador criou o
+bucket privado **agent-center**, localização automática, classe Standard. Ainda faltam
+Account ID, credenciais e destinatário público no ambiente seguro; criar o bucket não
+comprova upload nem disaster recovery. `EXTERNAL BACKUP NOT CONFIGURED` permanece até
+configuração e readback reais.
+
+### Transporte e criptografia atuais
+
+`backup-run.sh` mantém a geração local já validada e seleciona `backup_r2.py` quando
+secrets/r2-backup.json existir. Uma configuração R2 inválida falha; não é substituída
+silenciosamente pelo adaptador antigo. `configure-r2-backup.py` exige TTY real, recebe
+campos sem eco, grava0600 em secrets0700 e recusa sobrescrita. Não colocar chaves em
+chat, argv, shell history, Git, prints ou logs. Nenhum token de administração é necessário
+no job diário. O helper não recebe nem gera chave privada age.
+
+O R2 usa endpoint HTTPS da conta validada, bucket exato, regiãoauto, SDK boto3 e SigV4;
+credenciais explícitas de arquivo, sem reutilizar IAM/credenciais de outros projetos.
+Lock de dependências com versões/hashes, age1.2.1 obtido do pacote oficial Debian e
+SHA-256 verificado. Ferramentas ficam em tools/ fora do Git/imagens da Central; podem ser
+reinstaladas por install-backup-tools.py. Esse bootstrap pressupõe Debianamd64, Docker
+e a imagem de tooling Python existente/reconstruída pelo Dockerfile versionado.
+
+Formato age v1, criptografia autenticada com destinatário público X25519, aplicado ao
+tar contendo dump, storage, secrets e manifestos **antes** de qualquer PUT. Somente
+recipients públicos são aceitos; identidades/passphrases/plugins SSH não são aceitos.
+A VPS não precisa da privada de descriptografia. CMS/WebDAV anterior não é usado como
+substituto de assinatura S3 nem como formato da rotina R2.
+
+Cada objeto recebe geraçãoUTC+UUID, prefixo exclusivo e If-None-Match:*. Não há código
+DELETE, alteração de bucket, lifecycle ou lock no uploader. HEAD verifica tamanho e
+metadata SHA-256 do ciphertext; GET integral recalcula o hash e os bytes. ETag não é
+tratado como SHA-256. R2 tem diferenças em checksums S3; o readback integral evita
+inferir integridade por um campo não suportado. Arquivo incompleto/corrompido falha.
+PUT único limitado a5GiB; exceder falha fechado e exige implementação/ensaio multipart
+antes de ampliar, sem uploads parciais abandonados. Recibos privados em backups/r2-receipts
+registram objetos e etapas; não há dados/config/manifestos sensíveis em objetos plaintext.
+
+### Credenciais e retenção
+
+Token R2 **Object Read & Write**, restrito ao bucket agent-center. Essa permissão nativa
+pode incluir exclusão de objetos; não afirmar que é uma credencial write-only. O código
+não exclui e Bucket Lock administrado separadamente é o controle para retenção. Não
+conceder Admin Read & Write ao job. Conta administrativa da política fica fora da VPS;
+recuperação deve usar credencial independente, preferencialmente Object Read apenas.
+
+Plano em deploy/r2-retention-plan.json é **plano de revisão**, não payload API aplicado:
+
+| Prefixo sob o prefixo exclusivo autorizado | Criação | Lock | Expiração planejada |
+|---|---|---|---|
+| daily/ | cada backup |30 dias |31 dias |
+| weekly/ | domingos |84 dias |85 dias |
+| monthly/ | primeiro dia do mês |366 dias |367 dias |
+
+São janelas de tempo, não limite exato de objetos. Snapshots manuais adicionais aumentam
+quantidade/custo. Estimar pelo tamanho real do ciphertext: aproximadamente30 diários,
+12 semanais e12–13 mensais, mais margem e snapshots pré-deploy. Confirmar orçamento e
+ocupação da conta antes de ativar políticas; não inventar preço ou capacidade disponível.
+A expiração fica após o lock; regra global/mais longa existente pode prevalecer. Rever
+regras atuais e preservar outros prefixos/buckets. Não aplicar lock indefinido ou regra
+sem prefixo. Nenhum objeto/regra existente é apagado nesta tarefa. Locks/lifecycle ainda
+não foram aplicados nem comprovados sem acesso/autorização administrativa ao bucket.
+
+### Alertas e provas separadas
+
+OnFailure continua nativo systemd. backup-alert.py distingue execução local, upload,
+integridade, retenção, custódia, restore independente, falha e atraso. Watch horário
+confere idade26h. Sem receiver autorizado, sinal fica somente no journal e isso é
+registrado como ALERT_RECEIVER_NOT_CONFIGURED. Opção HTTPS com token protegido está
+preparada em deploy/backup-alert.example.json, sem destinatário inventado nem mensagens
+para terceiros. Não há integração Telegram/WhatsApp.
+
+Sucesso de PUT/HEAD/GET torna a transferência íntegra; não torna retenção/custódia/restore
+VERDE. Esses campos permanecem falsos até provas próprias. Ausência de configuração é
+ATENÇÃO; falha real de transferência ou backup configurado atrasado é NO-GO. RPO24h e
+RTO4h continuam objetivos não medidos em recuperação independente.
+
+Referências: [R2 S3](https://developers.cloudflare.com/r2/api/s3/api/),
+[tokens e escopo](https://developers.cloudflare.com/r2/api/tokens/),
+[Bucket Lock](https://developers.cloudflare.com/r2/buckets/bucket-locks/),
+[age](https://age-encryption.org/).
