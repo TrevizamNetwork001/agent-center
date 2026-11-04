@@ -204,3 +204,23 @@ Central. Salvar mostra confirmação persistente com horário de São Paulo. O s
 do backup atualiza automaticamente sem substituir os campos em edição. Configuração
 salva e solicitação aceita não comprovam upload nem recuperação. A conexão ao bucket
 autenticou, mas o envio real encontrou falha TLS; não desativar validação de certificados.
+
+
+### Transporte HTTPS de produção para R2
+
+O pacote continua sendo um único tar.gz.age criptografado antes do envio. PUT usa
+/usr/bin/curl com IPv4, negociação HTTP/2 (fallback HTTPS1.1 permitido), sem Expect,
+TLS/CA/hostname verificados e tentativas limitadas para interrupções de transporte.
+Nenhuma opção insecure ou redirecionamento é habilitada. A URL assinada pelo SDK,
+válida por20min e restrita ao objeto/PUT/cabeçalhos esperados, fica apenas em arquivo
+0600 dentro de diretório0700 temporário; nunca em argv, Git ou logs. O curl ignora
+configurações pessoais (-q/--disable), usa somente essa configuração privada e não
+recebe a Secret Access Key. Respostas e arquivos temporários são removidos ao terminar.
+
+If-None-Match:* impede sobrescrever objetos. Mesmo HTTP200 ou um retorno perdido não
+comprovam sucesso: HEAD deve conferir tamanho/metadata SHA-256 e GET completo deve
+conferir bytes e SHA-256 contra o ciphertext local. O recibo guarda apenas resultado
+sanitizado do transporte. O caminho SDK de PUT permanece opção técnica de laboratório;
+a UI fixa produção no padrão curl. O cliente de download continua SDK e o formato
+.tar.gz.age não mudou. Blocos/índices experimentais não foram promovidos à produção.
+Limites de transporte: conexão10s, tentativa300s, retry600s, processo950s e objeto5GiB.

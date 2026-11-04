@@ -11,7 +11,7 @@ import subprocess
 import sys
 import tempfile
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -49,7 +49,7 @@ def atomic_json(path, data):
 
 
 def timestamp():
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def validate_config(config):
@@ -72,6 +72,8 @@ def validate_config(config):
         raise BackupError('exclusive_prefix_required')
     if config.get('region') != 'auto':
         raise BackupError('r2_region_auto_required')
+    if config.get('upload_transport', 'curl') not in ('curl', 'sdk'):
+        raise BackupError('invalid_upload_transport')
     return config
 
 
@@ -112,8 +114,8 @@ def generation_members(root):
     generation = manifest.stem
     if not re.fullmatch(r'\d{8}T\d{6}Z', generation):
         raise BackupError('invalid_generation')
-    generated = datetime.strptime(generation, '%Y%m%dT%H%M%SZ').replace(tzinfo=timezone.utc)
-    age = (datetime.now(timezone.utc) - generated).total_seconds()
+    generated = datetime.strptime(generation, '%Y%m%dT%H%M%SZ').replace(tzinfo=UTC)
+    age = (datetime.now(UTC) - generated).total_seconds()
     if age < 0 or age > 86400:
         raise BackupError('local_generation_stale')
     status = json.loads((root / 'backups/local-status.json').read_text())
@@ -159,7 +161,7 @@ def encrypt_generation(root, config, members, output):
     try:
         result = subprocess.run([str(executable), '--encrypt', '--recipients-file', str(recipient),
                                  '--output', str(output)], stdin=producer.stdout,
-                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
         producer.stdout.close()
         if result.returncode or producer.wait():
             raise BackupError('authenticated_encryption_failed')
@@ -183,7 +185,7 @@ def tiers_for(generated):
 
 
 def object_keys(config, generation, unique=None):
-    generated = datetime.strptime(generation, '%Y%m%dT%H%M%SZ').replace(tzinfo=timezone.utc)
+    generated = datetime.strptime(generation, '%Y%m%dT%H%M%SZ').replace(tzinfo=UTC)
     suffix = unique or uuid.uuid4().hex
     if not re.fullmatch(r'[a-f0-9]{32}', suffix):
         raise BackupError('invalid_object_nonce')
@@ -235,13 +237,21 @@ def upload(client, config, archive, generation, digest, size, progress=None):
         raise BackupError('single_put_limit_exceeded')
     proofs = []
     for key in object_keys(config, generation):
-        with archive.open('rb') as stream:
-            # UUID plus a conditional PUT prevents replacing any existing object.
-            client.put_object(Bucket=config['bucket'], Key=key, Body=stream,
-                              ContentLength=size, ContentType='application/octet-stream',
-                              Metadata={'sha256': digest, 'encryption': 'age-v1'},
-                              IfNoneMatch='*')
-        proofs.append(verify_remote(client, config['bucket'], key, digest, size))
+        transport = None
+        if config.get('upload_transport', 'curl') == 'curl':
+            from r2_native_transport import put
+            transport = put(client, config, archive, key, digest, size)
+        else:
+            with archive.open('rb') as stream:
+                # Diagnostic/laboratory SDK path; native HTTPS is production default.
+                client.put_object(Bucket=config['bucket'], Key=key, Body=stream,
+                                  ContentLength=size, ContentType='application/octet-stream',
+                                  Metadata={'sha256': digest, 'encryption': 'age-v1'},
+                                  IfNoneMatch='*')
+        proof = verify_remote(client, config['bucket'], key, digest, size)
+        if transport is not None:
+            proof['transport'] = transport
+        proofs.append(proof)
         if progress:
             progress(proofs)
     return proofs
@@ -269,18 +279,18 @@ def run(root, config, credentials):
         status_update(root, 'ATENÇÃO', 'r2_transfer_in_progress', generation=generation,
                       project='agent-center', stages=stages)
         def progress(proofs):
-            atomic_json(receipt_path, dict(generation=generation, bucket=config['bucket'],
-                        endpoint=config['endpoint'], stages=stages, objects=proofs,
-                        complete=False, sha256=digest, bytes=size))
+            atomic_json(receipt_path, {'generation': generation, 'bucket': config['bucket'],
+                        'endpoint': config['endpoint'], 'stages': stages, 'objects': proofs,
+                        'complete': False, 'sha256': digest, 'bytes': size})
         client = new_client(config, credentials)
         try:
             proofs = upload(client, config, archive, generation, digest, size, progress)
         finally:
             client.close()
     stages.update(upload_completed=True, integrity_verified=True)
-    receipt = dict(complete=True, generation=generation, bucket=config['bucket'], endpoint=config['endpoint'],
-                   project='agent-center', encryption='age-v1', stages=stages, objects=proofs,
-                   sha256=digest, bytes=size, verified_at=timestamp())
+    receipt = {'complete': True, 'generation': generation, 'bucket': config['bucket'], 'endpoint': config['endpoint'],
+                   'project': 'agent-center', 'encryption': 'age-v1', 'stages': stages, 'objects': proofs,
+                   'sha256': digest, 'bytes': size, 'verified_at': timestamp()}
     atomic_json(receipt_path, receipt)
     status_update(root, 'VERDE', 'r2_encrypted_upload_download_verified', generation=generation,
                   project='agent-center', sha256=digest, bytes=size, stages=stages,
@@ -301,7 +311,7 @@ def main():
     try:
         config, credentials = load_config(args.config)
         run(ROOT, config, credentials)
-    except Exception:
+    except Exception:  # noqa: BLE001 — SDK exceptions may contain credentials.
         previous = json.loads((ROOT / 'backups/external-status.json').read_text())
         stages = previous.get('stages', {})
         stages.update(upload_completed=False, integrity_verified=False)

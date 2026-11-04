@@ -171,3 +171,11 @@ Central. Salvar mostra confirmação persistente com horário de São Paulo. O s
 do backup atualiza automaticamente sem substituir os campos em edição. Configuração
 salva e solicitação aceita não comprovam upload nem recuperação. A conexão ao bucket
 autenticou, mas o envio real encontrou falha TLS; não desativar validação de certificados.
+
+
+O ajuste do transporte R2 não muda a restauração: localizar o objeto.tar.gz.age no
+recibo, usar scripts/download_r2.py no host de recuperação autorizado para HEAD/GET e
+SHA-256, e só então usar a identidade age sob custódia externa para descriptografar.
+A identidade privada nunca deve ser enviada à VPS original. O transporte curl é de
+PUT; GET e a prova de integridade continuam pelo SDK. Nenhuma restauração independente
+real foi realizada nesta validação, portanto integridade remota não equivale a DR PASS.

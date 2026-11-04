@@ -300,3 +300,19 @@ evidence/recovery8/closure/r2-real-transfer-validation.json.
 RECOVERY-8 BLOCKED: interrupção TLS em uploads maiores impede verificar a cópia real;
 retenção, custódia externa e restore independente continuam sem comprovação. Pequenos
 objetos de diagnóstico não substituem banco/secrets/storage reais nem autorizam PASS.
+
+
+### Correção do transporte R2
+
+A tentativa controlada com curl/IPv4/retry completou PUT200 HTTPS1.1 do pacote real
+criptografado de35250967bytes, SHA256
+c52ef54b4f3779a9da0b2a2adfff68eb936d30f236d7e204f19fb550507884f1.
+HEAD e download integral verificaram tamanho e hash. A causa específica de rede/TLS
+não foi atribuída sem prova; o resultado é compatibilidade de transporte comprovada.
+O ajuste mantém o formato age e a chave privada fora da VPS. Protótipo de divisão em
+blocos foi descartado após os testes reais, sem promoção ou mudança de formato.
+
+Testes do ajuste:22 Python PASS, incluindo URL assinada nunca em argv, arquivos0600,
+parent0700, limpeza após timeout, rejeição de host/HTTP/redirect, e exigência de HEAD/GET
+mesmo com HTTP200. Ruff e compileall PASS. Teste anterior de escrita parcial não vira
+backup aprovado; somente recibos complete=true com hash conferido contam.

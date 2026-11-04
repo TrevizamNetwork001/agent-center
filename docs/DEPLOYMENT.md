@@ -204,3 +204,11 @@ Central. Salvar mostra confirmação persistente com horário de São Paulo. O s
 do backup atualiza automaticamente sem substituir os campos em edição. Configuração
 salva e solicitação aceita não comprovam upload nem recuperação. A conexão ao bucket
 autenticou, mas o envio real encontrou falha TLS; não desativar validação de certificados.
+
+
+Para o uploader R2, instalar em conjunto scripts/backup_r2.py e
+scripts/r2_native_transport.py; /usr/bin/curl deve suportar HTTPS e HTTP/2. Não há
+migration, dependência PHP ou recriação de containers/PG. Guardar backup_r2.py anterior
+em backups/native-transport-rollback-<UTC>/ antes da troca. Rollback restaura esse
+script; o helper pode permanecer sem uso. Manter os recibos e arquivos cifrados remotos.
+Não executar nova geração enquanto agent-center-backup.service estiver ativo.

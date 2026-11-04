@@ -8,7 +8,7 @@ import sys
 import tarfile
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import patch
 
@@ -56,7 +56,8 @@ class R2Tests(unittest.TestCase):
         self.root = Path(self.temporary.name)
         self.config = {'account_id': '0' * 32,
                        'endpoint': 'https://' + '0' * 32 + '.r2.cloudflarestorage.com',
-                       'bucket': 'synthetic-lab-only', 'prefix': 'agent-center', 'region': 'auto'}
+                       'bucket': 'synthetic-lab-only', 'prefix': 'agent-center', 'region': 'auto',
+                       'upload_transport': 'sdk'}
         self.client = FakeS3()
 
     def tearDown(self):
@@ -102,6 +103,33 @@ class R2Tests(unittest.TestCase):
         self.assertEqual([request[0] for request in self.client.requests], ['PUT', 'HEAD', 'GET'])
         self.assertTrue(all(request[1] == self.config['bucket'] for request in self.client.requests))
 
+    def test_native_http_success_without_remote_object_does_not_pass(self):
+        archive = self.root / 'ciphertext.age'
+        archive.write_bytes(b'synthetic-ciphertext')
+        digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+        transport = {'client': 'curl', 'exit_code': 0, 'http_status': 200}
+        with (patch('r2_native_transport.put', return_value=transport),
+              self.assertRaises(KeyError)):
+            r2.upload(self.client, self.config | {'upload_transport': 'curl'}, archive,
+                      '20261104T021500Z', digest, archive.stat().st_size)
+
+    def test_native_lost_reply_passes_only_with_matching_complete_remote_readback(self):
+        archive = self.root / 'ciphertext.age'
+        data = b'synthetic-ciphertext'
+        archive.write_bytes(data)
+        digest = hashlib.sha256(data).hexdigest()
+        key = 'agent-center/daily/synthetic.tar.gz.age'
+        self.client.objects[key] = (data, {'sha256': digest})
+        transport = {'client': 'curl', 'exit_code': 35, 'http_status': 0}
+        with (patch('r2_native_transport.put', return_value=transport),
+              patch.object(r2, 'object_keys', return_value=[key])):
+            proof = r2.upload(self.client, self.config | {'upload_transport': 'curl'}, archive,
+                              '20261104T021500Z', digest, len(data))[0]
+        self.assertTrue(proof['integrity'])
+        self.assertTrue(proof['download'])
+        self.assertEqual(proof['transport']['exit_code'], 35)
+        self.assertEqual([request[0] for request in self.client.requests], ['HEAD', 'GET'])
+
     def test_corrupt_get_wrong_head_and_existing_file_never_pass(self):
         data = b'ciphertext'
         digest = hashlib.sha256(data).hexdigest()
@@ -123,7 +151,7 @@ class R2Tests(unittest.TestCase):
         self.assertEqual(output.read_bytes(), b'preserve-existing-file')
 
     def fixture(self):
-        stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+        stamp = datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')
         members = []
         for category in ['database', 'config', 'secrets', 'storage']:
             directory = self.root / 'backups' / category
@@ -133,7 +161,7 @@ class R2Tests(unittest.TestCase):
             members.append(hashlib.sha256(path.read_bytes()).hexdigest() + '  ' + str(path.relative_to(self.root / 'backups')))
         (self.root / 'backups/config' / (stamp + '.sha256')).write_text('\n'.join(members) + '\n')
         r2.atomic_json(self.root / 'backups/local-status.json',
-                       dict(state='VERDE', generation=stamp, project='agent-center', storage_included=True))
+                       {'state': 'VERDE', 'generation': stamp, 'project': 'agent-center', 'storage_included': True})
         return stamp
 
     def test_manifest_corruption_and_lab_scope_fail_before_upload(self):
@@ -146,7 +174,7 @@ class R2Tests(unittest.TestCase):
             r2.generation_members(self.root)
         (self.root / 'backups/database' / (stamp + '.fixture')).write_bytes(b'synthetic fixture: no production data')
         r2.atomic_json(self.root / 'backups/local-status.json',
-                       dict(state='VERDE', generation=stamp, project='lab-only', storage_included=True))
+                       {'state': 'VERDE', 'generation': stamp, 'project': 'lab-only', 'storage_included': True})
         with self.assertRaises(r2.BackupError):
             r2.generation_members(self.root)
 
@@ -180,7 +208,7 @@ class R2Tests(unittest.TestCase):
         encrypted.write_bytes(ciphertext[:-1] + bytes([ciphertext[-1] ^ 1]))
         tampered_output = self.root / 'unauthenticated.partial'
         result = subprocess.run([str(age), '--decrypt', '-i', str(identity), '-o', str(tampered_output), str(encrypted)],
-                                stderr=subprocess.DEVNULL)
+                                stderr=subprocess.DEVNULL, check=False)
         self.assertNotEqual(result.returncode, 0)
         # No corrupted plaintext is ever extracted or promoted to a restored archive.
 
@@ -226,8 +254,8 @@ class R2Tests(unittest.TestCase):
         from botocore.stub import Stubber
         client = r2.new_client(self.config, {'access_key_id': 'synthetic-access-only', 'secret_access_key': 'synthetic-secret-only'})
         with Stubber(client) as stub:
-            args = dict(Bucket=self.config['bucket'], Key='agent-center/new.age',
-                        Body=b'ciphertext', IfNoneMatch='*', Metadata={'sha256': 'a' * 64})
+            args = {'Bucket': self.config['bucket'], 'Key': 'agent-center/new.age',
+                        'Body': b'ciphertext', 'IfNoneMatch': '*', 'Metadata': {'sha256': 'a' * 64}}
             stub.add_response('put_object', {}, args)
             client.put_object(**args)
         client.close()
