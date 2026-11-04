@@ -30,3 +30,5 @@ O helper usa o receipt privado existente, inicia somente a unit deste Agent e ag
 Rate limit de origem, enrollment/status e Agent continua ativo. Row locks impedem consumo concorrente/replay. Queries de descoberta anônima usam apenas ID/hash exatos e limpam contexto em finally. Agents, enrollments e operações usam tenant scope, Policies e FORCE RLS; FKs compostas impedem referência ao Agent de outro tenant. Viewer/operator não aprovam. Eventos permanentes não incluem heartbeat, tokens, receipts ou hashes secretos.
 
 Lista e detalhe usam polling leve de 10s; pausa com página oculta, formulário em foco ou confirmação aberta. Erro preserva última evidência e identifica consulta não atualizada. Expiração e solicitação são visíveis, sem revelar códigos existentes.
+
+Antes de instalação real, incluir somente o IP do host autorizado no gate de recuperação do vhost e validar HTTPS/CA. A liberação do IP do navegador não libera automaticamente outro host de Agent.

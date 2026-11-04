@@ -3,10 +3,10 @@ Description=Agent Center fixed infrastructure health observations
 After=docker.service
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/python3 /opt/agent-center/scripts/collect-operations.py --output /opt/agent-center/app/storage/framework/operations-probes.json
+ExecStart=/usr/bin/python3 /opt/agent-center/scripts/collect-operations.py --output /var/lib/docker/volumes/agent-center_app_storage/_data/framework/operations-probes.json
 UMask=0022
 NoNewPrivileges=true
 ProtectSystem=strict
 ProtectHome=true
 PrivateTmp=true
-ReadWritePaths=/opt/agent-center/app/storage/framework
+ReadWritePaths=/var/lib/docker/volumes/agent-center_app_storage/_data/framework

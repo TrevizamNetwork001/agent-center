@@ -52,3 +52,5 @@ php artisan agent-center:resolve-operation UUID_REAL --tenant=ID_REAL --host-rev
 ```
 
 Comando valida tenant/UUID/estado, mantém evidência e registra `*_failed`/interrupted. Não troca runtime, não reinicia serviço e não autoriza replay. Só usar após revisão real do host; operações UNCERTAIN/RUNNING/PRECHECKING não são resolvidas automaticamente pelo painel. Operations Health sinaliza UNCERTAIN e claims sem conclusão por mais de 300s como NO-GO.
+
+Após conclusão do enrollment, backup externo verificado e autorização explícita para operações remotas nesse host, habilitar o companion com `systemctl enable --now agent-center-updater.timer`. Se a instalação terminou em aprovação pendente (exit 4), o opt-in passado ao instalador ainda não habilitou o timer; a retomada da identidade não ativa privilégios remotos implicitamente.

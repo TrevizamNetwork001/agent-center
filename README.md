@@ -1,7 +1,7 @@
-# Agent Center — RECOVERY-2
+# Agent Center — RECOVERY-7
 
-Central Laravel com identidade, tenants, RBAC/auditoria e Agent API v1. Python Agent reconstruído em 0.5.2; protocol/tasks operacionais permanecem bloqueados nesta fase. Base RECOVERY-1: da20d9c.
-Leia [AGENTS.md](AGENTS.md) antes de alterar o projeto; esta fase foi autorizada explicitamente. Nenhum AGENTS.md foi alterado no RECOVERY-2.
+Central Laravel/PostgreSQL com administração operacional de Agents, onboarding aprovado, Task Engine e runtime separado 0.5.3. Implementação validada em laboratório; destino externo de backup e implantação real permanecem pendentes. Ver docs/RECOVERY_7_VALIDATION.md.
+Leia [AGENTS.md](AGENTS.md) antes de alterar o projeto. O escopo RECOVERY-7 foi autorizado explicitamente; os AGENTS.md foram preservados.
 
 Browser → Nginx → Laravel Central → PostgreSQL. Python Agent é cliente separado, sem FastAPI/bridge.
 
@@ -15,7 +15,7 @@ Browser → Nginx → Laravel Central → PostgreSQL. Python Agent é cliente se
 - [Validação da fundação original](docs/VALIDATION.md)
 - [Validação RECOVERY-1](docs/RECOVERY_1_VALIDATION.md)
 
-HTTP somente local: http://127.0.0.1:18083/login. Usar túnel SSH para acesso remoto até configurar TLS. Não há conta ou senha padrão.
+HTTPS: https://agente.trevizamnetwork.com.br/ com gate por IP. HTTP de origem permanece em loopback. Não há conta ou senha padrão.
 
 ```sh
 cd /opt/agent-center
@@ -56,3 +56,9 @@ Experiência operacional com dashboard real, navegação por grupos, filtros de 
 ## Conversation Platform (RECOVERY-6)
 
 Conversa Web com estado, intenções determinísticas, Adaptive Tone automático, histórico e integração ao Task Engine. Ativação por tenant, desabilitada por padrão. Ver [Conversation Engine](docs/CONVERSATION_ENGINE.md) e [validação RECOVERY-6](docs/RECOVERY_6_VALIDATION.md). HTTPS com certificado válido e acesso restrito à VPS enquanto o backup externo não é configurado.
+
+## RECOVERY-7
+
+Código operacional reconstruído e validado em laboratório: onboarding com aprovação humana antes do bearer, runtime 0.5.3, instalador offline, inventário/presença, intenções controladas de update/rollback e observabilidade funcional. Ver [validação](docs/RECOVERY_7_VALIDATION.md), [onboarding](docs/AGENT_ONBOARDING.md), [operação](docs/AGENT_OPERATIONS.md) e [updates](docs/AGENT_UPDATES.md).
+
+Produção ainda não promovida para esta entrega. Backup externo autorizado e host real de Agent não identificados; não há disaster recovery completo nem Agent de produção ONLINE a declarar. Kit: agent/dist/recovery7-kit.tar.gz, hash externo em docs/evidence/recovery7/kit-archive.sha256. Nenhuma fase seguinte é iniciada.
