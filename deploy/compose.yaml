@@ -1,6 +1,6 @@
 name: agent-center
 x-app: &app
-  image: agent-center-central:recovery7
+  image: agent-center-central:recovery8
   build:
     context: ..
     dockerfile: deploy/php/Dockerfile
@@ -21,13 +21,15 @@ x-app: &app
     LOG_LEVEL: warning
     DB_CONNECTION: pgsql
     DB_HOST: postgres
+    DB_SSLMODE: verify-full
+    DB_SSLROOTCERT: /run/pg-tls/ca.crt
     DB_PORT: '5432'
     DB_DATABASE: ${POSTGRES_DB:?required}
     DB_USERNAME: ${RUNTIME_DB_USER:?required}
     DB_PASSWORD: ${RUNTIME_DB_PASSWORD:?required}
     SESSION_DRIVER: database
     SESSION_ENCRYPT: 'true'
-    SESSION_SECURE_COOKIE: ${SESSION_SECURE_COOKIE:-false}
+    SESSION_SECURE_COOKIE: ${SESSION_SECURE_COOKIE:-true}
     CACHE_STORE: database
     QUEUE_CONNECTION: database
   restart: unless-stopped
@@ -35,6 +37,7 @@ x-app: &app
   security_opt: [no-new-privileges:true]
   cap_drop: [ALL]
   volumes:
+    - ${PG_TLS_DIR:-../secrets/postgres}/ca.crt:/run/pg-tls/ca.crt:ro
     - app_storage:/var/www/html/storage
   networks: [backend]
   depends_on:
@@ -57,8 +60,9 @@ services:
       POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=C.UTF-8 --auth-host=scram-sha-256'
       TZ: ${TZ:-Europe/Berlin}
       PGTZ: ${TZ:-Europe/Berlin}
-    command: [postgres, -c, timezone=Europe/Berlin, -c, log_statement=none]
+    command: [postgres, -c, timezone=Europe/Berlin, -c, log_statement=none, -c, ssl=on, -c, ssl_min_protocol_version=TLSv1.2, -c, ssl_cert_file=/run/pg-tls/server.crt, -c, ssl_key_file=/run/pg-tls/server.key, -c, hba_file=/run/pg-tls/pg_hba.conf]
     volumes:
+      - ${PG_TLS_DIR:-../secrets/postgres}:/run/pg-tls:ro
       - postgres_data:/var/lib/postgresql/data
       - ./database-roles.sql:/opt/agent-center/database-roles.sql:ro
       - ./postgres-init.sh:/docker-entrypoint-initdb.d/10-app.sh:ro
@@ -66,7 +70,7 @@ services:
     restart: unless-stopped
     security_opt: [no-new-privileges:true]
     healthcheck:
-      test: [CMD-SHELL, 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      test: [CMD-SHELL, 'PGPASSWORD="$$POSTGRES_PASSWORD" PGSSLMODE=verify-full PGSSLROOTCERT=/run/pg-tls/ca.crt psql -h postgres -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -Atqc "SELECT ssl FROM pg_stat_ssl WHERE pid=pg_backend_pid()" | grep -qx t']
       interval: 10s
       timeout: 5s
       retries: 10
@@ -83,6 +87,8 @@ services:
       APP_KEY: ${APP_KEY:?required}
       DB_CONNECTION: pgsql
       DB_HOST: postgres
+      DB_SSLMODE: verify-full
+      DB_SSLROOTCERT: /run/pg-tls/ca.crt
       DB_PORT: '5432'
       DB_DATABASE: ${POSTGRES_DB:?required}
       DB_USERNAME: ${APP_DB_USER:?required}
@@ -93,6 +99,7 @@ services:
     <<: *app
     volumes:
       - app_storage:/var/www/html/storage
+      - ${PG_TLS_DIR:-../secrets/postgres}/ca.crt:/run/pg-tls/ca.crt:ro
       - ../secrets/llm-master.key:/run/secrets/llm-master.key:ro
     healthcheck:
       test: [CMD-SHELL, 'SCRIPT_NAME=/fpm-ping SCRIPT_FILENAME=/fpm-ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000 | grep -q pong']

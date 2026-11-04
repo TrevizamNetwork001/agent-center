@@ -1,0 +1,12 @@
+{
+  "scope": "production_readonly_login_and_invalid_csrf",
+  "pass": true,
+  "login": 200,
+  "csrf_without_token": 419,
+  "session": {
+    "secure": true,
+    "http_only": true,
+    "same_site": "Lax"
+  },
+  "desktop_mobile_no_overflow": true
+}

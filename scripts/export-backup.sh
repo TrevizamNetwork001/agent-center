@@ -8,7 +8,7 @@ recipient=$(realpath "$1")
 mkdir -p "$2"
 output=$(realpath "$2")
 chmod 700 "$output"
-for category in database config secrets; do
+for category in database config secrets storage; do
   tar -czf - -C backups "$category" | openssl cms -encrypt -binary -aes-256-cbc -outform DER -out "$output/$category-$(date -u +%Y%m%dT%H%M%SZ).cms" "$recipient"
 done
 echo 'Exportação criptografada concluída; envio e verificação externos ainda necessários.'

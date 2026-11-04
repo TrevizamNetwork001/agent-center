@@ -1,8 +1,6 @@
-# Review subnet, administrative backup transport and credentials BEFORE activation.
-# Local scripts must supply PGPASSWORD from the container environment under this policy.
-local all all scram-sha-256
+# Unix socket restricted to the container; preserves local backup/bootstrap scripts.
+local all all trust
 hostnossl all all 0.0.0.0/0 reject
 hostnossl all all ::/0 reject
 hostssl all all 0.0.0.0/0 scram-sha-256
 hostssl all all ::/0 scram-sha-256
-# Network is still private Compose backend; do not publish PostgreSQL ports.

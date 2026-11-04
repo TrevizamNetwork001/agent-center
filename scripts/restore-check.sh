@@ -59,7 +59,12 @@ END $$;
 SQL
 if [ -n "${LLM_RESTORE_MANIFEST:-}" ]; then
   [ -f "$LLM_RESTORE_MANIFEST" ] && [ -f "${LLM_RESTORE_KEY_FILE:?required}" ] || exit 1
-  proof_output=$(docker run --rm --network agent-center_backend --env-file .env.runtime -e DB_DATABASE=agent_center_restore_check -e LLM_MASTER_KEY_FILE=/run/secrets/llm-master.key --mount type=bind,src="$PWD/scripts/lab/llm-restore-proof.php",dst=/restore-proof.php,readonly --mount type=bind,src="$LLM_RESTORE_MANIFEST",dst=/proof/manifest.json,readonly --mount type=bind,src="$LLM_RESTORE_KEY_FILE",dst=/run/secrets/llm-master.key,readonly "${RESTORE_IMAGE:-agent-center-central:recovery6}" php /restore-proof.php)
+  proof_tls_dir=${PG_TLS_DIR:-$PWD/secrets/postgres}
+  proof_tls_args=()
+  if [ -f "$proof_tls_dir/ca.crt" ]; then
+    proof_tls_args=(--mount "type=bind,src=$proof_tls_dir/ca.crt,dst=/run/pg-tls/ca.crt,readonly" -e DB_SSLMODE=verify-full -e DB_SSLROOTCERT=/run/pg-tls/ca.crt)
+  fi
+  proof_output=$(docker run --rm --network "${COMPOSE_PROJECT_NAME:-agent-center}_backend" --env-file "${RUNTIME_ENV_FILE:-.env.runtime}" "${proof_tls_args[@]}" -e DB_DATABASE=agent_center_restore_check -e LLM_MASTER_KEY_FILE=/run/secrets/llm-master.key --mount type=bind,src="$PWD/scripts/lab/llm-restore-proof.php",dst=/restore-proof.php,readonly --mount type=bind,src="$LLM_RESTORE_MANIFEST",dst=/proof/manifest.json,readonly --mount type=bind,src="$LLM_RESTORE_KEY_FILE",dst=/run/secrets/llm-master.key,readonly "${RESTORE_IMAGE:-agent-center-central:recovery8}" php /restore-proof.php)
   case "$proof_output" in *'Isolated restore: data, versions, RLS context and AES-GCM secret PASS'*) printf '%s\n' "$proof_output";; *) echo 'Restore proof did not confirm PASS' >&2; exit 1;; esac
 fi
 echo 'Restore em database separado: PASS'

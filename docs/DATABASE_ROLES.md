@@ -40,3 +40,14 @@ Restore inclui schemas, índices, triggers, dados e policies; reaplicar scripts/
 ## RECOVERY-5
 
 Dez tabelas adicionais FORCE RLS (total 23). Runtime SELECT/INSERT/UPDATE em knowledge_items, prompts, llm_providers, llm_models e llm_bindings; SELECT/INSERT somente em payloads versionados, version_events, diagnostic_interpretations e interpretation_sources. Views knowledge_versions/prompt_versions recebem SELECT e security_invoker=true, preservando RLS do caller. Sem DELETE, owner ou BYPASSRLS. FKs compostas impedem vínculos entre tenants.
+
+
+## RECOVERY-8 — estado que supera a preparação anterior
+
+TLS obrigatório foi aplicado em produção preservando a imagem RECOVERY-6/schema27RLS;
+checkout/lab têm28. As menções históricas a prefer/overlay opcional acima não descrevem
+o estado atual. Base Compose exige ssl=on, hostssl SCRAM, rejeição plaintext e todos os
+clientes verify-full/sslrootcert explícito. PKI interna SAN postgres, chave UID999/0600;
+CA assinadora fora do mount. Socket local trust dentro do container preservado para
+bootstrap/backup. Testes positivos/negativos e recriação passaram. Detalhes/rollback em
+PRODUCTION_HARDENING.md e RECOVERY_8_VALIDATION.md. Roles/grants/ownership não mudaram.

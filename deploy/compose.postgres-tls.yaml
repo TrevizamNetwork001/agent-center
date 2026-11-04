@@ -1,21 +1,5 @@
-# Optional, NOT activated without PKI. Certificate must include DNS:postgres SAN.
+# Compatibility overlay. RECOVERY-8 already requires TLS in the base Compose.
+# Do not use old optional overlays: all five application workloads inherit verify-full.
 services:
   postgres:
-    command: [postgres, -c, timezone=Europe/Berlin, -c, log_statement=none, -c, ssl=on, -c, ssl_cert_file=/run/pg-tls/server.crt, -c, ssl_key_file=/run/pg-tls/server.key, -c, hba_file=/run/pg-tls/pg_hba.conf]
-    volumes:
-      - ${PG_TLS_DIR:?provide root-controlled PKI directory}:/run/pg-tls:ro
-  web:
-    environment:
-      DB_SSLMODE: verify-full
-      DB_SSLROOTCERT: /run/pg-tls/ca.crt
-    volumes: ['${PG_TLS_DIR:?required}/ca.crt:/run/pg-tls/ca.crt:ro']
-  worker:
-    environment:
-      DB_SSLMODE: verify-full
-      DB_SSLROOTCERT: /run/pg-tls/ca.crt
-    volumes: ['${PG_TLS_DIR:?required}/ca.crt:/run/pg-tls/ca.crt:ro']
-  migrator:
-    environment:
-      DB_SSLMODE: verify-full
-      DB_SSLROOTCERT: /run/pg-tls/ca.crt
-    volumes: ['${PG_TLS_DIR:?required}/ca.crt:/run/pg-tls/ca.crt:ro']
+    command: [postgres, -c, timezone=Europe/Berlin, -c, log_statement=none, -c, ssl=on, -c, ssl_min_protocol_version=TLSv1.2, -c, ssl_cert_file=/run/pg-tls/server.crt, -c, ssl_key_file=/run/pg-tls/server.key, -c, hba_file=/run/pg-tls/pg_hba.conf]

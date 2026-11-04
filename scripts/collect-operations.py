@@ -20,6 +20,9 @@ def collect():
     for component, container in [
         ("nginx_external", "agent-center-nginx-1"),
         ("fpm_process", "agent-center-web-1"),
+        ("postgresql_container", "agent-center-postgres-1"),
+        ("queue_container", "agent-center-worker-1"),
+        ("diagnostic_container", "agent-center-diagnostic-worker-1"),
     ]:
         try:
             result = subprocess.run(
@@ -59,7 +62,7 @@ def collect():
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
     for component, path, expected in [
         ("web_https", "/health/ready", 200),
-        ("agent_api_external", "/api/v1/agent/enrollment-status", 422),
+        ("agent_api_external", "/api/v1/agent/enroll", 422),
     ]:
         status = None
         try:
@@ -117,6 +120,28 @@ def collect():
             limit={"max_rate": 0.05, "window_seconds": 300, "max_samples": 10000},
         )
     )
+    root = Path(__file__).resolve().parents[1]
+    for component, filename in [('backup_local', 'local-status.json'),
+                                ('backup_external', 'external-status.json')]:
+        state, reason, age = 'ATENÇÃO', 'evidence_unavailable', None
+        try:
+            data = json.loads((root / 'backups' / filename).read_text())
+            state, reason = data['state'], data['reason']
+            if state not in ('VERDE', 'ATENÇÃO', 'NO-GO'):
+                raise ValueError('invalid_state')
+            if state == 'VERDE' and data.get('project') != 'agent-center':
+                state, reason = 'ATENÇÃO', 'production_scope_unproven'
+            if state == 'VERDE':
+                checked = datetime.fromisoformat(data['checked_at']).timestamp()
+                generation = datetime.strptime(data['generation'], '%Y%m%dT%H%M%SZ').replace(tzinfo=timezone.utc).timestamp()
+                age = time.time() - min(checked, generation)
+                if age < 0 or age > 26 * 3600:
+                    state, reason = 'NO-GO', 'verified_backup_stale'
+        except (OSError, ValueError, KeyError, TypeError):
+            state, reason = 'ATENÇÃO', 'evidence_unavailable'
+        rows.append(dict(component=component, state=state, reason=reason,
+                         timestamp=timestamp, values={'age_seconds': age},
+                         limit={'max_age_seconds': 26 * 3600}))
     return rows
 
 

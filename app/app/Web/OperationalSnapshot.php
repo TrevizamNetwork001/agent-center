@@ -48,18 +48,25 @@ class OperationalSnapshot
         };
         $add('laravel_web', 'VERDE', 'authenticated_request_completed', ['request' => true], null);
         $add('postgresql', $v['database'] ? 'VERDE' : 'NO-GO', $v['database'] ? 'select_1_succeeded' : 'database_unavailable', ['select_1' => $v['database']], 1);
+        try {
+            $tls = (bool) DB::selectOne('SELECT ssl FROM pg_stat_ssl WHERE pid=pg_backend_pid()')->ssl;
+            $verified = config('database.connections.pgsql.sslmode') === 'verify-full' && is_readable(config('database.connections.pgsql.sslrootcert') ?? '');
+            $add('postgresql_tls', $tls && $verified ? 'VERDE' : 'ATENÇÃO', 'connection_tls_and_client_verification', ['tls' => $tls, 'verify_full' => $verified], true);
+        } catch (\Throwable) {
+            $add('postgresql_tls', 'ATENÇÃO', 'tls_evidence_unavailable', [], true);
+        }
         $add('diagnostic_worker', $v['worker'] ? 'VERDE' : 'NO-GO', $v['worker'] ? 'functional_loop_recent' : 'missing_or_stalled_functional_loop', WorkerHealth::evidence(), 15);
         $add('laravel_queue_worker', $queueAge !== null && $queueAge < 90 ? 'VERDE' : 'NO-GO', $queueAge === null ? 'no_completed_health_job' : ($queueAge < 90 ? 'health_job_completed' : 'health_job_stale'), ['completed_job_age_seconds' => $queueAge], 90);
         $add('task_engine', $v['stale'] === 0 && $v['worker'] ? 'VERDE' : 'NO-GO', 'active_expired_leases', ['active' => $v['active'], 'expired' => $v['stale'], 'failures_today' => $v['failed']], 0);
         $add('agents', $v['agents_total'] > 0 && $v['agents_total'] === $v['agents_online'] && ! $v['missing_poll'] && ($v['poll_age'] ?? PHP_INT_MAX) < 30 ? 'VERDE' : 'ATENÇÃO', 'heartbeat_and_poll_coverage', ['total' => $v['agents_total'], 'online' => $v['agents_online'], 'oldest_heartbeat_seconds' => $v['heartbeat_age'], 'oldest_poll_seconds' => $v['poll_age'], 'missing_heartbeat' => $v['missing_heartbeat'], 'missing_poll' => $v['missing_poll']], ['heartbeat_seconds' => 60, 'poll_seconds' => 30]);
         // No service/process access from Laravel; explicitly expose missing coverage.
-        foreach (['nginx_external', 'fpm_process', 'agent_api_external', 'http_error_rate'] as $component) {
+        foreach (['nginx_external', 'fpm_process', 'agent_api_external', 'http_error_rate', 'web_https', 'backup_local', 'backup_external', 'postgresql_container', 'queue_container', 'diagnostic_container'] as $component) {
             $add($component, 'ATENÇÃO', 'independent_probe_unavailable', ['observed' => null], null);
         }
         $observed = json_decode(@file_get_contents(storage_path('framework/operations-probes.json')) ?: 'null', true);
         if (is_array($observed) && isset($observed['collected_at']) && CarbonImmutable::parse($observed['collected_at'])->gt(now()->subSeconds(90))) {
             foreach ($observed['checks'] ?? [] as $check) {
-                if (! in_array($check['component'] ?? null, ['nginx_external', 'fpm_process', 'web_https', 'agent_api_external', 'http_error_rate'], true) || ! in_array($check['state'] ?? null, ['VERDE', 'ATENÇÃO', 'NO-GO'], true)) {
+                if (! in_array($check['component'] ?? null, ['nginx_external', 'fpm_process', 'web_https', 'agent_api_external', 'http_error_rate', 'backup_local', 'backup_external', 'postgresql_container', 'queue_container', 'diagnostic_container'], true) || ! in_array($check['state'] ?? null, ['VERDE', 'ATENÇÃO', 'NO-GO'], true)) {
                     continue;
                 }
                 $checks = array_values(array_filter($checks, fn ($old) => $old['component'] !== $check['component']));

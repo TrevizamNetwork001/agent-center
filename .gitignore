@@ -19,3 +19,6 @@ __pycache__/
 /agent/.ruff_cache/
 
 /secrets/
+
+*.cms
+*.bundle

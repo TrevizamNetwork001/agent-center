@@ -21,6 +21,26 @@ use Tests\IdentityTestCase;
 
 class AgentOperationsTest extends IdentityTestCase
 {
+    public function test_missing_external_backup_and_probe_coverage_cannot_be_green(): void
+    {
+        $path = storage_path('framework/operations-probes.json');
+        @unlink($path);
+        $this->context()->forUser($this->admin);
+        $snapshot = app(OperationalSnapshot::class)->get();
+        $checks = collect($snapshot['checks'])->keyBy('component');
+        $this->assertSame('ATENÇÃO', $checks['backup_external']['state']);
+        $this->assertSame('ATENÇÃO', $checks['web_https']['state']);
+        $this->assertSame('ATENÇÃO', $checks['backup_local']['state']);
+        $this->assertNotSame('VERDE', $snapshot['state']);
+        file_put_contents($path, json_encode(['collected_at' => now()->subMinutes(2)->toIso8601String(), 'checks' => [['component' => 'backup_external', 'state' => 'VERDE']]]));
+        try {
+            $checks = collect(app(OperationalSnapshot::class)->get()['checks'])->keyBy('component');
+            $this->assertSame('ATENÇÃO', $checks['backup_external']['state']);
+        } finally {
+            @unlink($path);
+        }
+    }
+
     private function pending(): array
     {
         $r = $this->actingAs($this->admin)->post('/agents/enrollments', ['name' => 'Expected Agent'])->assertOk();
