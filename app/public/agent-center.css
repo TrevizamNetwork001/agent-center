@@ -17,3 +17,14 @@
 .conversation-messages{display:grid;gap:1rem}.conversation-message{border:1px solid var(--border,#dce3eb);border-radius:10px;padding:1rem;min-width:0}.conversation-message[data-sender=user]{background:#f0f5ff}.conversation-message p{margin:.5rem 0}.conversation-message small{color:#5c6d80}[data-conversation-form] textarea{display:block;width:100%;box-sizing:border-box;resize:vertical}.conversation-steps{padding-left:1.3rem}
 
 .table-scroll{overflow-x:auto;max-width:100%}
+
+/* Network Operations Workspace: shared surfaces, explicit accessible themes. */
+.sidebar{background:#111e34;border-color:#24334b;color:#dce6f7}.sidebar .brand{color:#f4f7ff}.sidebar .brand small,.sidebar .nav-group>p,.sidebar-foot small{color:#a1b2cd}.sidebar .nav-group>a{color:#cfdbed}.sidebar .nav-group>a:hover{background:#20324e;color:#fff}.sidebar .nav-group>a[aria-current=page]{background:#293f65;color:#e6edff}.sidebar-foot{border-color:#30405a;color:#c8d6ea}
+:root[data-theme=dark]{color-scheme:dark;--bg:#0d1422;--surface:#172236;--ink:#e5edf9;--muted:#afbdd2;--line:#35455f;--blue:#a9c4ff;--blue-soft:#253c60;--green:#9de1bf;--green-bg:#153d30;--amber:#f5d18c;--amber-bg:#42351e;--red:#ffb0b7;--red-bg:#49252e}
+[data-theme=dark] .topbar,[data-theme=dark] .account-menu>div,[data-theme=dark] .icon-button,[data-theme=dark] .health-item,[data-theme=dark] dialog{background:var(--surface);color:var(--ink)}
+[data-theme=dark] input,[data-theme=dark] select,[data-theme=dark] textarea,[data-theme=dark] pre{background:#111b2d;color:var(--ink);border-color:var(--line)}
+[data-theme=dark] .card,[data-theme=dark] .metric{background:var(--surface);color:var(--ink)}
+[data-theme=dark] .result-banner[data-tone=warn]{background:var(--amber-bg);border-color:var(--amber)}
+[data-theme=dark] .result-banner[data-tone=neutral]{background:var(--surface)}
+.topbar-context{min-width:0;flex-wrap:wrap}.tenant-context{overflow-wrap:anywhere}.user-menu{flex-shrink:0}
+@media(max-width:760px){.topbar{height:auto;min-height:64px;padding-block:10px;flex-wrap:wrap}.topbar-context{flex:1}.user-menu [data-theme-toggle]{font-size:10px;padding:7px}.tenant-context{font-size:9px!important}}

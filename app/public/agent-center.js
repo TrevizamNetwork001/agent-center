@@ -1,5 +1,15 @@
 (() => {
 'use strict';
+const themeButton=document.querySelector('[data-theme-toggle]');
+const userKey=document.body.dataset.themeUser;
+const themeKey='agent-center.theme.'+(userKey||'guest');
+const systemTheme=window.matchMedia('(prefers-color-scheme: dark)');
+let theme='system';
+try{const saved=localStorage.getItem(themeKey);if(['light','dark','system'].includes(saved))theme=saved;}catch{}
+function applyTheme(){document.documentElement.dataset.theme=theme==='system'?(systemTheme.matches?'dark':'light'):theme;if(themeButton)themeButton.textContent='Tema: '+({system:'sistema',light:'claro',dark:'escuro'}[theme]);}
+applyTheme();systemTheme.addEventListener('change',applyTheme);
+themeButton?.addEventListener('click',()=>{theme=({system:'light',light:'dark',dark:'system'}[theme]);try{localStorage.setItem(themeKey,theme);}catch{}applyTheme();});
+
 const toggle=document.querySelector('[data-nav-toggle]');
 function closeNav(){if(document.body.classList.contains('nav-open')&&document.querySelector('#sidebar')?.contains(document.activeElement))toggle?.focus();document.body.classList.remove('nav-open');toggle?.setAttribute('aria-expanded','false');}
 toggle?.addEventListener('click',()=>{const open=document.body.classList.toggle('nav-open');toggle.setAttribute('aria-expanded',String(open));});
