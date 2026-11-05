@@ -1,0 +1,1 @@
+{"bucket": "agent-center", "ciphertext_and_metadata_bytes": 150016541, "code": "AccessDenied", "http_status": 403, "lifecycle_readable": false, "object_count_in_project_prefix": 36, "objects_deleted": false, "oldest_object_at": "2026-11-04T23:19:24.035000+00:00", "policy_changed": false, "read_only": true}

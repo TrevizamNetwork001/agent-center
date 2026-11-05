@@ -212,3 +212,27 @@ do GitHub privado e comparar seu commit com o inventário incluído no backup, a
 de aplicar migrations. A branch main contém mudanças de laboratório cuja conciliação
 com produção é uma operação separada. A exportação local em backups/export é uma
 cópia cifrada manual, baixada do R2; não comprova restauração em host independente.
+
+
+### Host independente reservado para etapa futura por decisão do operador
+
+O operador pediu adiar o host independente e destiná-lo futuramente a testes e
+implantações. Nenhum IP, provedor, chave de acesso ou orçamento foi inventado.
+Nenhum ambiente externo foi provisionado e nenhum dado real foi enviado a terceiros
+adicionais. A chave privada age foi declarada guardada fora da VPS; ela não foi
+recebida nem utilizada nesta VPS. O teste independente continua NOT EXECUTED.
+
+Quando o host for explicitamente autorizado, usar funções separadas de staging e DR:
+primeiro clonar o GitHub privado por credencial própria de leitura, validar commits e
+subir testes com dados sintéticos; em uma execução de recuperação autorizada, baixar
+novamente o objeto.tar.bz2.age do R2, conferirSHA256 do recibo, usar a identidade do
+cofre externo e restaurar banco/configuração em rede privada. Não reutilizar o arquivo
+local da VPS original como fonte. Validar TLS/SCRAM/verify-full, migrations, FORCE RLS,
+auth, Knowledge/Prompts/LLM, Diagnostics/Conversation/auditoria e backup antes de receber
+tráfego. A restauração com dados reais exige autorização de host e de tratamento desses
+dados; os testes sintéticos não contam como prova de recuperação da cópia real.
+
+Staging futuro não terá deploy automático em produção nem Agent em host sem autorização.
+Uma promoção futura exige código/artefato imutável, relatório de testes, snapshot e
+rollback, atualização controlada de schema e validação operacional. RPO/RTO continuam
+objetivos configuráveis, sem medição efetiva até esse teste independente.

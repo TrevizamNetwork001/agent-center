@@ -219,3 +219,32 @@ conjunto. Requer biblioteca padrão Python com bz2 (disponível na VPS); não in
 pacotes de sistema. Snapshot de ambos os scripts deve preceder a troca. Rollback pode
 restaurar o empacotador anterior; preservar downloader novo para recuperar tanto
 .tar.bz2.age quanto .tar.gz.age, além de todos os objetos/recibos existentes.
+
+
+### Promoção da Central validada
+
+Candidato formado da branch de produção, copiando apenas a árvore Laravel aprovada,
+exceto AGENTS.md, grants de agent_operations e healthcheck funcional de fila. Fontes
+Python do Agent e configurações Nginx/PG saudáveis são preservados. PostgreSQL não
+é recriado. Snapshot externo de rollback20261105T001315Z foi concluído antes de promover.
+
+Sequência: parar somente workers; migrator com credencial própria aplica as duas
+migrations; aplicar grants mínimos; iniciar web/worker/diagnostic-worker com imagem
+candidata; validar PDO/TLS/RLS/health/queue e13fontes Operations. Rollback usa Compose
+anterior e a imagem recovery8-r2-ui-save-status, preservando colunas/tabela adicionadas,
+configuração criptografada e volumes. Nunca migrations down em produção.
+
+Para reinstalar backups a partir de checkout de revisão, instalar o tooling antes de
+ativar rotinas. Os scripts de instalação agora incluem r2_native_transport.py,
+backup_ui.py, backup-ui-request.sh e os timersUI/watch; não executar um uploader sem
+esses módulos. Não substituir configurações Nginx ou TLS saudáveis por defaults de lab.
+
+
+Publicação confirmada nesta continuação: commit7d6bbc0/image recovery8-final, schema11
+migrations/28 FORCE RLS. Workers usam healthcheck de job realmente concluído. R2 e
+APP_KEY preservados; backup posterior deve incluir artefatos aprovados e unitsUI reais.
+Rollback: docker compose --env-file .env -f deploy/compose.yaml -f
+backups/central-reconcile-<UTC>/rollback-services.yaml up -d --no-deps --no-build --wait
+web worker diagnostic-worker. O overlay usa somente imagens/healthcheck e mantém os
+caminhos relativos do Compose base corretos; não executar snapshot de Compose isolado
+com caminhos resolvidos contra o diretório de backups. Manter schema aditivo.

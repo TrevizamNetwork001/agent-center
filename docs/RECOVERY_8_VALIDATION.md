@@ -368,3 +368,60 @@ evidence/recovery8/closure/r2-single-dated-bzip2-verified.json.
 download com GZip legado. O envio segue automático por timer diário.
 RECOVERY-8 BLOCKED: restauração independente com identidade externa, comprovação de
 custódia, retenção/BucketLock e alertas externos continuam pendentes.
+
+
+### Fechamento adicional — conciliação validada
+
+Operador declarou nesta continuação possuir a identidade privada age sob custódia
+fora da VPS. Declaração registrada; nenhuma chave foi solicitada pelo chat nem trazida
+à VPS. Uso real dessa identidade ainda depende de host independente autorizado.
+
+Suite atual:141 Laravel/1175 assertions PASS,52 Python Agent read-only PASS,23 backup
+PASS. Um teste TLS de LLM inicialmente falhou porque a fixture encerrava o listener
+após handshake rejeitado; corrigida somente a fixture para manter listener limitado
+por15s, sem relaxar validação TLS da Central. Reteste específico3/15 e suite completa
+passaram. Pint da fixture, bash syntax, TLS negativo/positivo, fila funcional, Nginx e
+timers passaram. Não houve mudança nos fontes do Agent.
+
+Cópia do dump real da geração20261105T001315Z restaurada no projeto privado de laboratório
+agent-center-backup-ui e migrada9→11/27→28 FORCE RLS. Fingerprints de auth, Knowledge,
+Prompts, Conversations e providers preservados. Runtime sem superuser/BYPASSRLS/CREATE
+nem ownership; leitura sem tenant retorna zero. Banco temporário removido. Isto é
+compatibilidade na mesma VPS, NÃO disaster recovery independente.
+
+GET lifecycle com credencial S3 diária retornou403; Bucket Lock/lifecycle não verificáveis
+sem autorização administrativa apropriada. Fragmentos por prefixo preparados, sem PUT ou
+DELETE de política. Host independente e receiver de alertas externos não fornecidos.
+
+Correções de reprodução: instaladores incluem uploader curl, bridge/UI e timers; falha
+do backup deixa de ser mascarada por ||true. Backup passa a incluir unitsUI reais e
+artefatos aprovados estacionados em artifacts/agentkit, fora do Git e das imagens.
+
+
+### Publicação autorizada e concluída nesta VPS
+
+O operador confirmou a publicação nesta VPS e adiou apenas o teste independente.
+Central publicada no commit7d6bbc0, imagem agent-center-central:recovery8-final,
+IDsha256:6c4a87e5d7b0306853f1b339c4f1d5a6443a1995e679e51e9b6c781bc38d5745.
+Migrações11, FORCE RLS28, Agents0, agent_operations0, users1. Runtime sem superuser,
+BYPASSRLS, CREATE no public e sem tabelas próprias. Banco e Nginx não foram recriados.
+PDO verify-full, testes TLS negativos, fila funcional, containers saudáveis,
+HTTPSready/login200 e redirectHTTP308 passaram. Operations permanece ATENÇÃO com
+Agents ausentes; não existe Agent ONLINE inventado. Configuração R2 continua pronta.
+
+Rollback operacional em backups/central-reconcile-*/rollback-services.yaml, sobre
+base deploy/compose.yaml, aponta para imagem anterior e healthcheck anterior do worker;
+volumes e schema aditivo são preservados. Snapshot externo anterior20261105T001315Z
+confirmado íntegro antes de aplicar as duas migrations. Nenhum migrations down foi usado.
+
+Artefatos0.5.3 aprovados foram preservados em artifacts/agentkit/0.5.3 e seus hashes
+conferidos com manifest/catalog/tested installer. O backup agora os cobre. Fontes do
+Agent e AGENTS.md não mudaram, e nenhum Agent/unit de execução foi instalado em host.
+Alertas locais e watcher funcionam; receiver externo não configurado. Bucket admin GET
+retornou403 e nenhum PUT/DELETE de política foi tentado. Planos finitos por prefixo
+estão preparados e não aplicados. A declaração de custódia externa está registrada;
+uso real da identidade só no futuro host autorizado.
+
+RECOVERY-8 BLOCKED: teste de restauração independente adiado pelo operador;
+retenção/BucketLock ainda não verificáveis sem acesso administrativo apropriado e
+recebedor externo de alertas não fornecido. RPO/RTO efetivos não são declarados.

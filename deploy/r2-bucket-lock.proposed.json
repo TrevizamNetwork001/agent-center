@@ -1,0 +1,35 @@
+{
+  "kind": "merge_rule_fragments_only_not_api_payload",
+  "bucket": "agent-center",
+  "preserve_all_existing_rules": true,
+  "rules_to_add": [
+    {
+      "id": "agent-center-daily-30d",
+      "enabled": true,
+      "prefix": "agent-center/daily/",
+      "condition": {
+        "type": "Age",
+        "maxAgeSeconds": 2592000
+      }
+    },
+    {
+      "id": "agent-center-weekly-84d",
+      "enabled": true,
+      "prefix": "agent-center/weekly/",
+      "condition": {
+        "type": "Age",
+        "maxAgeSeconds": 7257600
+      }
+    },
+    {
+      "id": "agent-center-monthly-366d",
+      "enabled": true,
+      "prefix": "agent-center/monthly/",
+      "condition": {
+        "type": "Age",
+        "maxAgeSeconds": 31622400
+      }
+    }
+  ],
+  "applied": false
+}

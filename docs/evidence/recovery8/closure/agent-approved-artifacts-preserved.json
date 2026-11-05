@@ -1,0 +1,10 @@
+{
+  "version": "0.5.3",
+  "artifact_sha256": "7f3923e2d3f62fb3593b5a557d3d40540f23c8a6e0fd44a3cbcf86d29788f794",
+  "all_existing_manifest_members_verified": true,
+  "installer_matches_tested_source": true,
+  "stored_for_authorized_future_use": true,
+  "agent_installed_on_any_host": false,
+  "agent_source_modified": false,
+  "file_count": 13
+}
