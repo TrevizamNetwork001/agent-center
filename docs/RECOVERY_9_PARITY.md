@@ -7,8 +7,8 @@ Continuação de bf54d1a. Referência histórica: briefing do operador e documen
 | Autenticação, logout, senha obrigatória, sessões/CSRF | IMPLEMENTED / RECOVERED | AuthenticationTest | app/app/Http/Controllers/AuthController.php |
 | Tenants, usuários, RBAC, policies/gates e isolamento/RLS | IMPLEMENTED / RECOVERED | TenantIsolationTest; AuthorizationTest | app/app/Tenancy; app/app/Policies; deploy/database-roles.sql |
 | Enrollment, cadastro, aprovação e revogação | IMPLEMENTED / RECOVERED | AgentApiTest; AgentOperationsTest | app/app/Http/Controllers/Agent |
-| Heartbeat, polling, capabilities e presença | IMPLEMENTED / RECOVERED | AgentApiTest; WebUxTest | app/app/Agents; app/app/Web/OperationalSnapshot.php |
-| Versão, atualização, rollback, fencing e logs sanitizados | IMPLEMENTED / RECOVERED | AgentOperationsTest | app/app/Agents; docs/AGENT_OPERATIONS.md |
+| Heartbeat, polling, capabilities e presença | IMPLEMENTED / RECOVERED | AgentApiTest; WebUxTest | app/app/Agent; app/app/Web/OperationalSnapshot.php |
+| Versão, atualização, rollback, fencing e logs sanitizados | IMPLEMENTED / RECOVERED | AgentOperationsTest | app/app/Agent; docs/AGENT_OPERATIONS.md |
 | Diagnostics, targets e classificação determinística | IMPLEMENTED / RECOVERED | DiagnosticsTest; WebUxTest | app/app/Diagnostics |
 | Task Engine, leases, fencing, recovery e cancelamento | IMPLEMENTED / RECOVERED | DiagnosticsTest | app/app/Diagnostics/Engine.php |
 | Profiles, Skills, allowlist e fixtures | IMPLEMENTED / RECOVERED | DiagnosticsTest; WebUxTest | app/app/Diagnostics/Catalog.php |

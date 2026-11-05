@@ -1,0 +1,22 @@
+{
+  "archive_format": "tar.bz2",
+  "backend": "r2",
+  "bytes": 57995116,
+  "checked_at": "2026-11-05T11:51:05.501191+00:00",
+  "generation": "20261105T114815Z",
+  "project": "agent-center",
+  "reason": "r2_encrypted_upload_download_verified",
+  "restore_from_external_verified": false,
+  "retention_verified": false,
+  "sha256": "dd631674772ff41b21e060361e6bb1187a9cfa3ddf85a925af89eee54bcf408f",
+  "stages": {
+    "backup_executed": true,
+    "encrypted": true,
+    "external_key_custody_verified": false,
+    "independent_restore_verified": false,
+    "integrity_verified": true,
+    "retention_verified": false,
+    "upload_completed": true
+  },
+  "state": "VERDE"
+}

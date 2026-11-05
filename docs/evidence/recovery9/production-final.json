@@ -1,0 +1,17 @@
+{
+  "selected_domain_records_unchanged_after_rollback_and_browser_smoke": true,
+  "migrations": 11,
+  "force_rls": 28,
+  "agents": 0,
+  "conversation_enabled_tenants": 0,
+  "assets": {
+    "agent-center.css": {
+      "matches_candidate": true,
+      "sha256": "d1e6c3b7dbda20c1a4234ff9d8986293fd3821961327e04cb1ce94c8b0205b37"
+    },
+    "agent-center.js": {
+      "matches_candidate": true,
+      "sha256": "092567f171fa60c4027232407b389d3e2663bde86e58a42f20d878f8afe4556b"
+    }
+  }
+}

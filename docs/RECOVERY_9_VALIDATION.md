@@ -1,6 +1,6 @@
 # RECOVERY-9 — validação
 
-Estado desta revisão documental: publicação concluída, fechamento de Git/R2 em andamento. Não emitir PASS até evidências finais abaixo serem seladas.
+**RECOVERY-9 PASS** no escopo documentado e autorizado. Produção publicada, testes e backup R2 de fechamento verificados; lacunas históricas sem evidência e pendências RECOVERY-8 continuam explicitamente preservadas.
 
 ## Escopo e paridade
 
@@ -12,13 +12,13 @@ Continuação de bf54d1a, sem novas subfases. Matrizes em RECOVERY_9_PARITY.md e
 - Test runner atualizado para aceitar explicitamente container/rede/envs do laboratório; createdb recusa base existente e cleanup remove somente base criada pelo runner. Papel runtime sem superuser/bypass/ownership. Não executado contra banco de produção.
 - Primeira rodada: três falhas/um erro por timezone PostgreSQL UTC e SESSION_ENCRYPT ausente no laboratório. Corrigidos para configuração coerente Europe/Berlin e sessões cifradas. Segunda: novo teste alternava usuários sem limpar sessão; corrigido o harness usando flushSession, mantendo auth.session intacto. Rodada final integral PASS.
 - Pint: 176 arquivos PASS. Composer validate --strict e audit PASS, zero advisories retornados.
-- Frontend: npm ci + Vite build PASS; package-lock criado para dependências já existentes. Primeira tentativa npm ci sem lock falhou; corrigida com geração do lock e repetição.
+- Frontend: npm ci + Vite build da pipeline existente PASS; painel usa assets public locais, também verificados no Chromium; package-lock criado para dependências já existentes. Primeira tentativa npm ci sem lock falhou; corrigida com geração do lock e repetição.
 - Chromium real: 313 verificações em 19 telas × quatro viewports × dois temas; 12 renders adicionais de plataforma/tenants/backups. Capturas desktop/mobile, forms, tabelas, modal, erro e loading em evidence/recovery9/screenshots/.
 - Teclado: primeira Tab alcança skip link, Enter leva ao conteúdo; Escape fecha sidebar. Harness anterior de foco após click no body falhou por posição de navegação; teste corrigido e repetido em rodada específica, sem alteração de proteção.
 - Interações adicionais: sete checks PASS, incluindo erro de login, sistema escuro como padrão, persistência de tema por usuário, loading aria-busy e falha de refresh preservando conteúdo.
 - Contraste calculado em superfícies opacas de cinco telas por tema: 20 achados iniciais, zero após correção. Não é certificação integral de acessibilidade.
 - Browser inicial de laboratório apontou assets não servidos pelo router PHP de teste; adotado scripts/lab/router.php existente, sem alteração de aplicação para mascarar o problema.
-- Bash/JS syntax, diff check, secret scan de índice e histórico executados. Ruff não aplicável: nenhum Python versionado alterado. Scanner histórico: 43 commits/876 blobs, zero correspondências na rodada pré-fechamento; scanner básico não prova ausência universal de secrets.
+- Bash/JS syntax, diff check, secret scan de índice e histórico executados. Ruff não aplicável: nenhum Python versionado alterado. Scanner histórico do checkout com branches: 43 commits/876 blobs na rodada inicial; scan posterior da linha de produção com secrets atuais: 27 commits/818 blobs, zero correspondências e zero caminhos históricos proibidos. Scanner básico não prova ausência universal de secrets.
 
 ## Produção e rollback
 
@@ -39,3 +39,15 @@ Validação web de produção usa login público e sessão temporária nativa La
 ## Pendências deliberadas fora desta fase
 
 RECOVERY-8 permanece BLOCKED: restore em VPS independente, retenção/Bucket Lock administrativo e destino de alertas externos adiados. Nenhum foi resolvido ou reaberto. Agent real/self-update continuam sem autorização de instalação; apenas implementação e laboratório verificados. Capabilities antigas não documentadas e módulos sem evidência continuam explicitados na matriz, sem promessa de recuperação integral.
+
+## Fechamento de Git e evidências
+
+Branches de entrega: recovery9 e production-recovery8 (linha operacional existente, sem criação de subfase). Hash remoto b92f7a6730298c7c2b5793394cb0ab57b312b120 confirmado para ambos antes do selo final. main foi preservada; para inspecionar/restaurar esta entrega usar explicitamente recovery9 ou production-recovery8. Clone limpo do GitHub com checkout recovery9, fsck --full e HEAD idêntico passou na mesma VPS; não equivale a restore independente.
+
+Commit de UI daeac69; pin de imagem 3f0fab5; precheck de assets 75aaf03; documentação/screenshots 06284a0; normalização b92f7a6. Revisão OCI da aplicação permanece 3f0fab5 mesmo quando documentação/tooling avançam.
+
+95 screenshots PNG reais; resumo em evidence/recovery9/browser-summary.json. production-final.json confirmou novamente contagens/schema/flags e fingerprint dos registros selecionados após rollback e smoke; os bytes CSS/JS por HTTPS coincidem com o candidato. Laboratório descartável RECOVERY-9 encerrado, sem remover qualquer laboratório preexistente ou volume de produção.
+
+Backup de fechamento comprovado: geração **20261105T114815Z**, **57995116 bytes**, SHA-256 **dd631674772ff41b21e060361e6bb1187a9cfa3ddf85a925af89eee54bcf408f**; age/PUT/HEAD/GET integral PASS. Evidência r2-closure-verified.json conserva os indicadores de restore/retention não verificados. O selo documental posterior é sincronizado e incluído em uma geração adicional; recibo operacional mais recente permanece em backups/external-status.json e backups/r2/ (fora do Git).
+
+Riscos residuais: ausência de Agent real/autoupdate em host autorizado; Conversation permanece desabilitada por tenant em produção; capacidades históricas sem evidência não recuperadas; preferência de tema local ao navegador; auditoria de contraste automatizada não é certificação WCAG integral; três pendências externas RECOVERY-8 adiadas. Nenhuma delas é apresentada como concluída. Nenhuma próxima fase iniciada.

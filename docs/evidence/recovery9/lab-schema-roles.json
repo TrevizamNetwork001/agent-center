@@ -1,0 +1,8 @@
+{
+  "migrations": 11,
+  "force_rls": 28,
+  "runtime_superuser": false,
+  "runtime_bypassrls": false,
+  "runtime_owns_tables": 0,
+  "runtime_schema_create": false
+}
