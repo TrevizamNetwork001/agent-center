@@ -1,0 +1,12 @@
+{
+  "pass": true,
+  "checks": [
+    "first_tab_skip_link",
+    "invalid_login_error",
+    "system_dark_default",
+    "per_user_theme_persisted",
+    "skip_link_keyboard_enters_main",
+    "loading_busy",
+    "refresh_failure_keeps_content"
+  ]
+}

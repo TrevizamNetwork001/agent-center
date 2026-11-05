@@ -1,0 +1,30 @@
+{
+  "pass": true,
+  "checks": [
+    "login_200_tls_verified",
+    "/dashboard:200",
+    "/agents:200",
+    "/diagnostics:200",
+    "/diagnostics/history:200",
+    "/diagnostics/create:200",
+    "/profiles:200",
+    "/skills:200",
+    "/knowledge:200",
+    "/advanced/prompts:200",
+    "/advanced/llm:200",
+    "/audit:200",
+    "/users:200",
+    "/tenants:200",
+    "/admin/backups:200",
+    "/operations:200",
+    "/conversations:200",
+    "1366:light:theme_overflow_pass",
+    "1366:dark:theme_overflow_pass",
+    "390:light:theme_overflow_pass",
+    "390:dark:theme_overflow_pass",
+    "temporary_native_session_logout"
+  ],
+  "scope": "production_get_smoke_native_temporary_session_no_password_reset",
+  "business_forms_submitted": false,
+  "production_screenshots": false
+}

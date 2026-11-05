@@ -1,0 +1,109 @@
+Installing dependencies from lock file (including require-dev)
+Verifying lock file contents can be installed on current platform.
+Nothing to install, update or remove
+Generating optimized autoload files
+> Illuminate\Foundation\ComposerScripts::postAutoloadDump
+> @php artisan package:discover --ansi
+
+   INFO  Discovering packages.  
+
+  laravel/pail .......................................................... DONE
+  laravel/pao ........................................................... DONE
+  laravel/tinker ........................................................ DONE
+  nesbot/carbon ......................................................... DONE
+  nunomaduro/collision .................................................. DONE
+  nunomaduro/termwind ................................................... DONE
+
+80 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+
+   INFO  Preparing database.  
+
+  Creating migration table ...................................... 43.59ms DONE
+
+   INFO  Running migrations.  
+
+  0001_01_01_000000_create_users_table .......................... 49.66ms DONE
+  0001_01_01_000001_create_cache_table .......................... 48.98ms DONE
+  0001_01_01_000002_create_jobs_table ........................... 57.55ms DONE
+  2026_11_04_160000_create_identity_and_audit .................. 106.23ms DONE
+  2026_11_04_170000_create_agents_and_enrollments ............... 60.20ms DONE
+  2026_11_04_180000_create_diagnostic_engine .................... 60.47ms DONE
+  2026_11_04_190000_add_operational_read_indexes ................. 8.38ms DONE
+  2026_11_04_200000_create_knowledge_and_llm .................... 76.39ms DONE
+  2026_11_04_210000_agent_operations ............................ 11.57ms DONE
+  2026_11_04_210000_create_conversation_platform ................ 40.25ms DONE
+  2026_11_04_220000_agent_update_intents ........................ 16.57ms DONE
+
+SET
+SET
+ALTER ROLE
+GRANT
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+PHPUnit 12.5.43 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.27
+Configuration: /var/www/html/phpunit.xml
+
+...............................................................  63 / 142 ( 44%)
+............................................................... 126 / 142 ( 88%)
+................                                                142 / 142 (100%)
+
+Time: 00:55.606, Memory: 64.50 MB
+
+OK (142 tests, 1187 assertions)
+
+   INFO  Rolling back migrations.  
+
+  2026_11_04_220000_agent_update_intents ........................ 28.58ms DONE
+  2026_11_04_210000_create_conversation_platform ................ 26.88ms DONE
+  2026_11_04_210000_agent_operations ............................ 17.41ms DONE
+  2026_11_04_200000_create_knowledge_and_llm .................... 57.64ms DONE
+  2026_11_04_190000_add_operational_read_indexes ................ 14.52ms DONE
+  2026_11_04_180000_create_diagnostic_engine .................... 50.47ms DONE
+  2026_11_04_170000_create_agents_and_enrollments ................ 8.43ms DONE
+  2026_11_04_160000_create_identity_and_audit ................... 29.91ms DONE
+  0001_01_01_000002_create_jobs_table ........................... 37.17ms DONE
+  0001_01_01_000001_create_cache_table .......................... 13.80ms DONE
+  0001_01_01_000000_create_users_table .......................... 21.05ms DONE
+

@@ -1,0 +1,1259 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "name": "native_login",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-dashboard-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-dashboard-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-agents-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-agents-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-agent-detail-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-agent-detail-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-diagnostics-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-diagnostics-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-create-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-history-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-history-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-result-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-result-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-progress-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-progress-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-profiles-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-profiles-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-skills-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-skills-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-knowledge-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-knowledge-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-knowledge-create-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-knowledge-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-prompts-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-prompts-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-prompt-create-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-prompt-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-llm-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-llm-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-audit-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-audit-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-users-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-users-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-operations-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-operations-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-conversation-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-light-conversation-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-dashboard-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-dashboard-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-agents-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-agents-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-agent-detail-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-agent-detail-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-diagnostics-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-diagnostics-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-create-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-history-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-history-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-result-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-result-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-progress-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-progress-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-profiles-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-profiles-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-skills-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-skills-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-knowledge-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-knowledge-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-knowledge-create-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-knowledge-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-prompts-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-prompts-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-prompt-create-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-prompt-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-llm-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-llm-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-audit-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-audit-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-users-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-users-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-operations-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-operations-overflow",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-conversation-200",
+      "pass": true
+    },
+    {
+      "name": "desktop-dark-conversation-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-dashboard-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-dashboard-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-agents-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-agents-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-agent-detail-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-agent-detail-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-diagnostics-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-diagnostics-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-create-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-history-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-history-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-result-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-result-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-progress-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-progress-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-profiles-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-profiles-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-skills-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-skills-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-knowledge-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-knowledge-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-knowledge-create-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-knowledge-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-prompts-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-prompts-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-prompt-create-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-prompt-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-llm-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-llm-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-audit-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-audit-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-users-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-users-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-operations-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-operations-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-light-conversation-200",
+      "pass": true
+    },
+    {
+      "name": "wide-light-conversation-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-dashboard-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-dashboard-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-agents-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-agents-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-agent-detail-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-agent-detail-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-diagnostics-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-diagnostics-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-create-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-history-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-history-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-result-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-result-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-progress-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-progress-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-profiles-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-profiles-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-skills-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-skills-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-knowledge-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-knowledge-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-knowledge-create-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-knowledge-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-prompts-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-prompts-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-prompt-create-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-prompt-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-llm-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-llm-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-audit-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-audit-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-users-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-users-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-operations-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-operations-overflow",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-conversation-200",
+      "pass": true
+    },
+    {
+      "name": "wide-dark-conversation-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-dashboard-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-dashboard-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-agents-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-agents-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-agent-detail-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-agent-detail-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-diagnostics-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-diagnostics-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-create-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-history-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-history-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-result-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-result-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-progress-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-progress-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-profiles-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-profiles-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-skills-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-skills-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-knowledge-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-knowledge-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-knowledge-create-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-knowledge-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-prompts-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-prompts-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-prompt-create-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-prompt-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-llm-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-llm-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-audit-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-audit-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-users-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-users-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-operations-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-operations-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-conversation-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-light-conversation-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-dashboard-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-dashboard-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-agents-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-agents-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-agent-detail-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-agent-detail-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-diagnostics-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-diagnostics-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-create-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-history-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-history-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-result-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-result-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-progress-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-progress-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-profiles-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-profiles-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-skills-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-skills-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-knowledge-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-knowledge-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-knowledge-create-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-knowledge-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-prompts-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-prompts-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-prompt-create-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-prompt-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-llm-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-llm-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-audit-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-audit-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-users-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-users-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-operations-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-operations-overflow",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-conversation-200",
+      "pass": true
+    },
+    {
+      "name": "tablet-dark-conversation-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-dashboard-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-dashboard-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-agents-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-agents-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-agent-detail-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-agent-detail-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-diagnostics-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-diagnostics-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-create-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-history-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-history-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-result-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-result-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-progress-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-progress-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-profiles-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-profiles-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-skills-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-skills-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-knowledge-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-knowledge-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-knowledge-create-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-knowledge-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-prompts-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-prompts-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-prompt-create-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-prompt-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-llm-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-llm-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-audit-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-audit-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-users-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-users-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-operations-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-operations-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-conversation-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-light-conversation-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-dashboard-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-dashboard-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-agents-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-agents-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-agent-detail-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-agent-detail-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-diagnostics-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-diagnostics-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-create-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-history-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-history-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-result-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-result-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-progress-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-progress-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-profiles-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-profiles-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-skills-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-skills-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-knowledge-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-knowledge-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-knowledge-create-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-knowledge-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-prompts-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-prompts-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-prompt-create-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-prompt-create-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-llm-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-llm-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-audit-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-audit-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-users-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-users-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-operations-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-operations-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-conversation-200",
+      "pass": true
+    },
+    {
+      "name": "mobile-dark-conversation-overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile_nav_open",
+      "pass": true
+    },
+    {
+      "name": "mobile_nav_escape",
+      "pass": true
+    },
+    {
+      "name": "cancel_dialog",
+      "pass": true
+    },
+    {
+      "name": "conversation_flag_disabled",
+      "pass": true
+    },
+    {
+      "name": "theme_reload_persistence",
+      "pass": true
+    },
+    {
+      "name": "keyboard_focus",
+      "pass": true
+    },
+    {
+      "name": "no_javascript_errors",
+      "pass": true
+    },
+    {
+      "name": "logout",
+      "pass": true
+    }
+  ],
+  "scope": "isolated_postgresql_synthetic_fixtures",
+  "external_requests_blocked": true
+}

@@ -1,0 +1,30 @@
+{
+  "deployed": true,
+  "revision": "3f0fab51548735b1ad472894cf64c14ba38225fb",
+  "image": "agent-center-central:recovery9",
+  "pre_backup": "20261105T113903Z",
+  "snapshot": "recovery9-deploy-20261105T114333Z",
+  "schema": {
+    "migrations": 11,
+    "force_rls": 28,
+    "agents": 0,
+    "enabled": 0,
+    "users": 1,
+    "tenants": 1
+  },
+  "domain_data_unchanged": true,
+  "services_recreated": [
+    "web",
+    "worker",
+    "diagnostic-worker"
+  ],
+  "postgres_recreated": false,
+  "nginx_recreated": false,
+  "agent_changed": false,
+  "migrations_executed": false,
+  "readiness": 200,
+  "rollback_exercised": true,
+  "rollback_reason": "public_assets_403_from_checkout_umask_0077",
+  "correction": "only_public_css_js_mode_0644",
+  "redeployed": true
+}

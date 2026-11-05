@@ -1,11 +1,41 @@
 # RECOVERY-9 — validação
 
-RECOVERY-9 BLOCKED: auditoria comportamental completa, suíte Laravel/PostgreSQL, Chromium autenticado, screenshots e publicação ainda não concluídos. Este é um checkpoint incompleto, não fechamento aprovado.
+Estado desta revisão documental: publicação concluída, fechamento de Git/R2 em andamento. Não emitir PASS até evidências finais abaixo serem seladas.
 
-Produção inspecionada: container web usa agent-center-central:recovery8-final, revisão OCI 7d6bbc02f4ea0d122e103ab77a37ca983184f225. Documentação de deploy registra schema 11 migrations/28 FORCE RLS; não foi feita nova consulta SQL nesta fase. Não presumir que HEAD documental seja revisão da imagem.
+## Escopo e paridade
 
-Nenhuma alteração de produção nesta fase. Candidato visual não publicado. Sem instalação de Agent, acesso a device ou diagnósticos externos. RECOVERY-8 permanece BLOCKED com três pendências externas adiadas pelo operador; elas não são gates artificiais desta fase.
+Continuação de bf54d1a, sem novas subfases. Matrizes em RECOVERY_9_PARITY.md e RECOVERY_9_VISUAL.md. Funcionalidades de backend existentes foram preservadas e revalidadas, sem reescrita. Nenhuma migration, código de Agent ou AGENTS.md alterado. Nenhum device acessado, diagnóstico externo disparado ou flag habilitada globalmente.
 
-Verificações novas: inventário estático de arquivos. Suíte Laravel, PostgreSQL/RLS, Agent API, Task Engine, Diagnostics, Knowledge, Prompts, LLM fallback, Conversation, RBAC, isolamento, Operations, testes frontend, Chromium, Pint e Composer validate/audit NÃO executados novamente. Ruff não aplicável: nenhum Python versionado alterado.
+## Testes executados
 
-Rollback do candidato: reverter somente commit de apresentação em checkout, sem banco/migrations. Antes de deploy: snapshot, backup remoto atual verificado, rollback de imagem/Compose e autorização de publicação concreta; esses passos não foram executados nesta fase. GitHub e novo backup R2 de fechamento ainda não atualizados. Não emitir PASS.
+- Laravel completo em PostgreSQL isolado: **142 testes, 1.187 assertions PASS**, incluindo migrations up/down, RLS/tenant isolation, autenticação/CSRF, RBAC, Agent API/operations, Task Engine/leases/fencing/recovery, Diagnostics/Profiles/Skills, Knowledge/Prompts, LLM fallback/segredos/proveniência, Conversation/Adaptive Tone, auditoria e Operations Health.
+- Test runner atualizado para aceitar explicitamente container/rede/envs do laboratório; createdb recusa base existente e cleanup remove somente base criada pelo runner. Papel runtime sem superuser/bypass/ownership. Não executado contra banco de produção.
+- Primeira rodada: três falhas/um erro por timezone PostgreSQL UTC e SESSION_ENCRYPT ausente no laboratório. Corrigidos para configuração coerente Europe/Berlin e sessões cifradas. Segunda: novo teste alternava usuários sem limpar sessão; corrigido o harness usando flushSession, mantendo auth.session intacto. Rodada final integral PASS.
+- Pint: 176 arquivos PASS. Composer validate --strict e audit PASS, zero advisories retornados.
+- Frontend: npm ci + Vite build PASS; package-lock criado para dependências já existentes. Primeira tentativa npm ci sem lock falhou; corrigida com geração do lock e repetição.
+- Chromium real: 313 verificações em 19 telas × quatro viewports × dois temas; 12 renders adicionais de plataforma/tenants/backups. Capturas desktop/mobile, forms, tabelas, modal, erro e loading em evidence/recovery9/screenshots/.
+- Teclado: primeira Tab alcança skip link, Enter leva ao conteúdo; Escape fecha sidebar. Harness anterior de foco após click no body falhou por posição de navegação; teste corrigido e repetido em rodada específica, sem alteração de proteção.
+- Interações adicionais: sete checks PASS, incluindo erro de login, sistema escuro como padrão, persistência de tema por usuário, loading aria-busy e falha de refresh preservando conteúdo.
+- Contraste calculado em superfícies opacas de cinco telas por tema: 20 achados iniciais, zero após correção. Não é certificação integral de acessibilidade.
+- Browser inicial de laboratório apontou assets não servidos pelo router PHP de teste; adotado scripts/lab/router.php existente, sem alteração de aplicação para mascarar o problema.
+- Bash/JS syntax, diff check, secret scan de índice e histórico executados. Ruff não aplicável: nenhum Python versionado alterado. Scanner histórico: 43 commits/876 blobs, zero correspondências na rodada pré-fechamento; scanner básico não prova ausência universal de secrets.
+
+## Produção e rollback
+
+Antes: recovery8-final / revisão OCI 7d6bbc0. Consulta real confirmou 11 migrations, 28 tabelas FORCE RLS, zero Agents e zero tenants com Conversation habilitada.
+Backup pré-deploy **20261105T113903Z**, 35.550.554 bytes, age/PUT/HEAD/GET/SHA256 verificados. Snapshot privado **backups/recovery9-deploy-20261105T114333Z** com assets, Compose, revisão anterior e overlay de rollback.
+
+Publicada imagem **agent-center-central:recovery9**, revisão OCI **3f0fab51548735b1ad472894cf64c14ba38225fb**. Somente web/worker/diagnostic-worker recriados. PostgreSQL/Nginx não recriados, nenhuma migration executada. Contagens e fingerprint dos registros de usuários/tenants/Knowledge/Prompts/providers/Conversation preservados no deploy; isso não é restore independente nem comparação de todos os bytes do banco.
+
+Falha real detectada no smoke: assets públicos 403 porque umask0077 do snapshot foi herdada pelo git checkout. Executado rollback real para imagem recovery8-final e assets anteriores; republicação com CSS/JS0644. Precheck agora valida leitura e HTTP dos assets através do Nginx sem privilégios. Secrets mantêm permissões restritas.
+Rollback manual: docker compose --env-file .env -f deploy/compose.yaml -f backups/recovery9-deploy-20261105T114333Z/rollback.yaml up -d --no-deps --no-build --wait web worker diagnostic-worker; restaurar somente os dois assets públicos do snapshot, preservando 0644. Não executar migrations down nem remover volumes. Overlay deve permanecer em futuras recriações enquanto operando em rollback.
+
+Operations Health lido após publicação: ATENÇÃO coerente com ausência de Agents. Web, PG/TLS, fila funcional, worker diagnóstico, Task Engine, HTTPS, Nginx, integridade de backup e fencing VERDE. Não declarar sistema com Agent ONLINE. Evidências sanitizadas em production-health.json/deployment.json.
+
+Smoke Chromium de produção: **22 checks PASS** (login HTTPS público; 16 rotas autenticadas; dashboard sem Agent; Conversation desabilitada; desktop/mobile e ambos os temas; logout da sessão temporária). Precheck real PASS: TLS válido, hostname/CA errados e plaintext rejeitados, socket local preservado, PDO verify-full, job fila→worker→cache, worker diagnóstico e assets servidos por Nginx.
+
+Validação web de produção usa login público e sessão temporária nativa Laravel de conta existente para GETs autenticados; não foi fornecida senha do operador, não houve reset/criação de usuário nem submissão de formulários de negócio. Login com senha/erro/CSRF/logout foi exercitado no laboratório sintético.
+
+## Pendências deliberadas fora desta fase
+
+RECOVERY-8 permanece BLOCKED: restore em VPS independente, retenção/Bucket Lock administrativo e destino de alertas externos adiados. Nenhum foi resolvido ou reaberto. Agent real/self-update continuam sem autorização de instalação; apenas implementação e laboratório verificados. Capabilities antigas não documentadas e módulos sem evidência continuam explicitados na matriz, sem promessa de recuperação integral.
