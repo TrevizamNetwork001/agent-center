@@ -236,3 +236,10 @@ Staging futuro não terá deploy automático em produção nem Agent em host sem
 Uma promoção futura exige código/artefato imutável, relatório de testes, snapshot e
 rollback, atualização controlada de schema e validação operacional. RPO/RTO continuam
 objetivos configuráveis, sem medição efetiva até esse teste independente.
+
+
+## Fechamento definitivo — dependência externa de restore
+
+Restore independente NÃO EXECUTADO. Necessários host isolado autorizado e identidade age entregue diretamente ao operador nesse host por canal seguro, nunca pelo chat ou VPS original.
+Usar clone do GitHub privado e download direto do R2; proibir fontes locais da VPS, inclusive envs, volumes e bundles locais. Não publicar portas na internet.
+Registrar origem/commit, objeto/hash, descriptografia e manifestos antes do restore. Conferir schema real: 11 migrations e 28 tabelas esperadas; divergência deve falhar, nunca completar com fontes da VPS. Validar FORCE RLS, usuários/tenants, Agents, Diagnostics, Profiles/Skills, Knowledge, Prompts, secrets LLM, Conversation, auditoria, Laravel, worker e health/readiness com evidências sanitizadas. Ausência de chave/host mantém bloqueio; testes históricos não substituem essa execução.

@@ -280,3 +280,15 @@ SHA2560521d75340e6fc1e8259db4196a118422cebae911ac99ef81931d9576f4432af. A geraç
 estacionados em artifacts/agentkit, além de banco, storage, configurações e secrets.
 Retenção/BucketLock e alerta externo continuam sem prova; monitor local não substitui
 entrega externa. O teste independente foi explicitamente adiado pelo operador.
+
+
+## Fechamento definitivo — proposta administrativa não aplicada
+
+Somente bucket agent-center. Sem acesso administrativo Cloudflare comprovado nesta sessão; configuração atual de lock/lifecycle não foi lida. Credencial S3 de upload não comprova permissão administrativa.
+No painel Cloudflare: R2 Object Storage → agent-center → Settings → Bucket Lock rules e Object lifecycle rules. Antes de salvar, exportar regras existentes e confirmar prefixos reais, orçamento e autorização específica. Não substituir regras existentes.
+Proposta: prefixos exclusivos daily/ (lock 30 dias, expiração 31), weekly/ (84/85), monthly/ (366/367). Seleção semanal domingo e mensal dia 1 precisa ser implementada/autorizada no produtor: lifecycle não cria cópias nem classifica objetos automaticamente. Não aplicar esses prefixos ficticiamente aos objetos atuais. Não mover/sobrescrever/excluir backups existentes.
+Com tamanho observado de 35,55 MB, 31+13+13 gerações representam cerca de 2,03 GB sem crescimento; confirmar volume real, duplicação e orçamento antes de aplicar. Custos não verificados. Readback administrativo e tentativa controlada de exclusão prematura de fixture autorizada ainda necessários.
+Referências: https://developers.cloudflare.com/r2/buckets/bucket-locks/ e https://developers.cloudflare.com/r2/buckets/object-lifecycles/ . Lock protege contra exclusão prematura e prevalece sobre lifecycle; alteração administrativa continua exigindo autorização específica.
+
+Alerta simples existente: scripts/backup-alert.py e watcher, receiver HTTPS opcional via secrets/backup-alert.json fora do Git. Não há receiver configurado. Preparar destino administrativo e token autorizado sem inventar valores; usar payload sanitizado. Exigir cobertura e recebimento externo de falha de backup, upload, atraso, integridade e restore de verificação. O script atual sinaliza integridade/restore como estados, mas não comprova evento de tentativa de restore falhada; essa cobertura permanece não verificada. Não declarar PASS com journal local ou fixture.
+Rollback desta continuação: reverter somente o commit documental; nenhum ajuste operacional foi aplicado.
