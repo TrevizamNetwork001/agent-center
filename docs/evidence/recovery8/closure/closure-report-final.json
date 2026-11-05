@@ -1,0 +1,55 @@
+{
+  "status": "RECOVERY-8 BLOCKED",
+  "completed": {
+    "production_published": true,
+    "runtime_revision": "7d6bbc02f4ea0d122e103ab77a37ca983184f225",
+    "migrations": 11,
+    "force_rls_tables": 28,
+    "github_private_code_and_history": true,
+    "github_clean_clone_fsck": true,
+    "scheduled_backup_active_and_tested": true,
+    "real_r2_encrypted_backup": true,
+    "remote_head_and_complete_get_sha256": true,
+    "archive_format": "tar.bz2.age",
+    "r2_generation": "20261105T003005Z",
+    "r2_verified_at": "2026-11-05T00:35:14.844803+00:00",
+    "ciphertext_bytes": 35549938,
+    "ciphertext_sha256": "0521d75340e6fc1e8259db4196a118422cebae911ac99ef81931d9576f4432af",
+    "filename": "agent-center-2026-11-05_00-30-05Z-6a08078c2d2844c491166422d2aca630.tar.bz2.age",
+    "upload_transport": {
+      "client": "curl",
+      "exit_code": 0,
+      "http_status": 200,
+      "http_version": "1.1"
+    },
+    "local_alerts_and_watcher": true,
+    "agent_0_5_3_approved_artifacts_preserved": true,
+    "agent_source_changed": false,
+    "agent_host_installed": false
+  },
+  "tests": {
+    "laravel": 141,
+    "laravel_assertions": 1175,
+    "python_agent_readonly": 52,
+    "backup_tooling": 23,
+    "tls_pg_positive_and_negatives": true,
+    "nginx": true,
+    "queue_functional": true,
+    "chromium": true,
+    "secret_scan": true,
+    "diff_check": true
+  },
+  "operator_confirmations": {
+    "private_age_identity_kept_outside_vps": true,
+    "independent_test_deferred": true,
+    "vps_publication_authorized": true
+  },
+  "not_verified": {
+    "independent_restore": "DEFERRED_BY_OPERATOR",
+    "retention_and_bucket_lock": "S3_ADMIN_GET_403_NO_ADMIN_ACCESS_PROVIDED",
+    "external_alert_delivery": "AUTHORIZED_RECEIVER_NOT_PROVIDED"
+  },
+  "private_identity_imported_to_original_vps": false,
+  "production_data_decrypted_on_original_vps": false,
+  "rpo_rto_achieved_claimed": false
+}

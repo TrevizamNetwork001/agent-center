@@ -272,3 +272,11 @@ Referências oficiais: https://developers.cloudflare.com/r2/buckets/bucket-locks
 https://developers.cloudflare.com/r2/buckets/object-lifecycles/ . Locks prevalecem sobre
 lifecycle; as expirações propostas excedem a duração do lock. Política de retenção não
 foi aplicada implicitamente pelo cadastro das credenciais no painel Laravel.
+
+
+Backup posterior à conciliação publicado e verificado em2026-11-05T00:35:14.844803+00:00:
+geração20261105T003005Z, schema11/28, 35549938bytes,
+SHA2560521d75340e6fc1e8259db4196a118422cebae911ac99ef81931d9576f4432af. A geração inclui unitsUI reais e os artefatos aprovados
+estacionados em artifacts/agentkit, além de banco, storage, configurações e secrets.
+Retenção/BucketLock e alerta externo continuam sem prova; monitor local não substitui
+entrega externa. O teste independente foi explicitamente adiado pelo operador.
