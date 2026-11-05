@@ -28,3 +28,28 @@
 [data-theme=dark] .result-banner[data-tone=neutral]{background:var(--surface)}
 .topbar-context{min-width:0;flex-wrap:wrap}.tenant-context{overflow-wrap:anywhere}.user-menu{flex-shrink:0}
 @media(max-width:760px){.topbar{height:auto;min-height:64px;padding-block:10px;flex-wrap:wrap}.topbar-context{flex:1}.user-menu [data-theme-toggle]{font-size:10px;padding:7px}.tenant-context{font-size:9px!important}}
+
+:root[data-theme=light]{color-scheme:light}
+[data-theme=dark] label,[data-theme=dark] th,[data-theme=dark] .thresholds,[data-theme=dark] .conversation-message small{color:var(--muted)}
+[data-theme=dark] th,[data-theme=dark] .chip,[data-theme=dark] .form-note,[data-theme=dark] .conversation-message[data-sender=user]{background:#202f49;color:var(--ink);border-color:var(--line)}
+[data-theme=dark] .badge-neutral{background:#29374b;color:#cfdaeb;border-color:var(--line)}
+[data-theme=dark] .operational{background:var(--green-bg);border-color:#3a6e58}
+[data-theme=dark] .operational[data-state="ATENÇÃO"]{background:var(--amber-bg);border-color:#8d7140}
+[data-theme=dark] .operational[data-state="NO-GO"]{background:var(--red-bg);border-color:#97525e}
+[data-theme=dark] .button-secondary:hover{background:#293c5b}
+[data-theme=dark] .button{background:#315dbb;color:#fff}
+[data-theme=dark] .button-secondary{background:var(--surface);color:var(--ink)}
+[data-theme=dark] .button-danger{background:#a02e40;color:#fff}
+[data-theme=dark] td,[data-theme=dark] .mini-list li,[data-theme=dark] .step-row,[data-theme=dark] .conversation-message{border-color:var(--line)}
+[data-theme=dark] .avatar{background:#2b4163;color:#dce7ff}
+[data-theme=dark] .progress-track{background:#35455f}
+[data-theme=dark] .step-index{color:var(--muted);border-color:var(--line)}
+.card,.metric,.catalog-card,.health-item{min-width:0}.card h2{line-height:1.4}.table-scroll:focus-visible{outline:3px solid var(--blue)}
+.user-menu [data-theme-toggle]{white-space:nowrap;font-size:11px;min-height:36px}
+@media(max-width:760px){.topbar-context>.tenant-context{max-width:140px}.sidebar{top:0;height:100dvh;padding-top:25px}.nav-open .sidebar{box-shadow:0 0 0 100vmax #070d1c88}.nav-toggle{z-index:21}.nav-open .nav-toggle{position:fixed;left:205px;top:16px}.nav-open .topbar{position:relative;z-index:22}}
+[data-theme=dark] .brand-mark{background:#315dbb;color:white}
+th{color:#5c6d80}
+[data-theme=dark] button,[data-theme=dark] .skip-link{background:#315dbb;color:#fff}
+[data-theme=dark] .button-secondary,[data-theme=dark] .icon-button{background:var(--surface);color:var(--ink)}
+[data-theme=dark] .button-text{background:transparent;color:var(--blue)}
+[data-theme=dark] .button-danger{background:#a02e40;color:white}

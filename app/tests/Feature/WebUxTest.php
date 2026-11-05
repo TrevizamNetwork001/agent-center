@@ -62,6 +62,20 @@ class WebUxTest extends IdentityTestCase
         return $d;
     }
 
+    public function test_workspace_navigation_preserves_role_boundaries_and_tenant_context(): void
+    {
+        $this->actingAs($this->admin)->get('/dashboard')->assertOk()
+            ->assertSee('TENANT CONTEXT')->assertSee('data-theme-toggle', false)
+            ->assertSee(route('profiles.index'), false)->assertSee(route('llm.index'), false);
+        $this->flushSession();
+        $this->actingAs($this->viewer)->get('/dashboard')->assertOk()
+            ->assertSee(route('knowledge.index'), false)->assertDontSee(route('llm.index'), false)
+            ->assertDontSee(route('backups.settings'), false);
+        $this->flushSession();
+        $this->actingAs($this->platform)->get('/dashboard')->assertOk()
+            ->assertSee('PLATFORM CONTEXT')->assertSee(route('backups.settings'), false);
+    }
+
     public function test_dashboard_real_counts_recent_and_tenant_context(): void
     {
         $this->actingAs($this->admin)->get('/dashboard')->assertOk()->assertSee('Estado operacional')->assertSee('UX Agent A')->assertSee('alpha.example.test')->assertViewHas('health', fn ($h) => $h['agents_online'] === 1 && $h['agents_total'] === 1 && $h['today'] === 1 && $h['indications'] === 0 && $h['state'] === 'ATENÇÃO');
