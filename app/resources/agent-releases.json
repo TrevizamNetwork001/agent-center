@@ -1,0 +1,36 @@
+[
+  {
+    "version": "0.5.3",
+    "sha256": "7f3923e2d3f62fb3593b5a557d3d40540f23c8a6e0fd44a3cbcf86d29788f794",
+    "artifact": "agent.pyz",
+    "compatibility": "Debian 12/13; Linux CPython 3.13; state/journal schema 1",
+    "date": "2026-11-04T20:38:55.580671+00:00",
+    "status": "available",
+    "changelog": "Human-approved onboarding, operational telemetry and allowlisted pre-staged update/rollback companion.",
+    "git_ref": "cb9dcef5af1eab10908d38247f5b6b86900bbf89",
+    "device_operations_frozen": true,
+    "tested_capabilities": [
+      "agent_info",
+      "dns_lookup:v1",
+      "tcp_connect:v1",
+      "http_probe:v1"
+    ]
+  },
+  {
+    "version": "0.5.2",
+    "sha256": "826fdabd43f8717abdb1e5c8735035027969257999b07b05ed606d73ff807ddc",
+    "device_operations_frozen": true,
+    "artifact": "agent-0.5.2.pyz",
+    "compatibility": "Linux CPython >=3.13; state/journal schema 1",
+    "date": "2026-11-04",
+    "status": "available",
+    "changelog": "Baseline rebuilt from recovered Git source ff168b9; not an artifact from the lost VPS.",
+    "git_ref": "ff168b9",
+    "tested_capabilities": [
+      "agent_info",
+      "dns_lookup:v1",
+      "tcp_connect:v1",
+      "http_probe:v1"
+    ]
+  }
+]

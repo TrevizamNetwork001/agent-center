@@ -8,3 +8,8 @@ routes.php
 routes.scanned.php
 schedule-*
 services.json
+
+/diagnostic-worker.json
+/operations-probes.json
+/queue-progress.json
+/worker-heartbeat

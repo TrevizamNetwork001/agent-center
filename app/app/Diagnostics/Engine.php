@@ -3,6 +3,7 @@
 namespace App\Diagnostics;
 
 use App\Models\Agent;
+use App\Models\AgentOperation;
 use App\Models\AgentTask;
 use App\Models\AgentTaskAttempt;
 use App\Models\Diagnostic;
@@ -175,9 +176,13 @@ class Engine
 
     public function claim(Agent $agent, int $capacity = 1): ?array
     {
+
         return DB::transaction(function () use ($agent, $capacity) {
             $agent = Agent::whereKey($agent->id)->lockForUpdate()->firstOrFail();
             $agent->forceFill(['last_poll_at' => $this->clock()])->save();
+            if (AgentOperation::where('agent_id', $agent->id)->whereNotIn('status', ['COMPLETED', 'FAILED'])->exists()) {
+                return null;
+            }
             if (! $capacity || $agent->revoked_at || AgentTask::where('agent_id', $agent->id)->whereIn('status', ['CLAIMED', 'RUNNING'])->exists()) {
                 return null;
             }

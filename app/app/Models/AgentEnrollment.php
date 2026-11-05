@@ -15,11 +15,11 @@ class AgentEnrollment extends Model
 
     protected $guarded = ['*'];
 
-    protected $hidden = ['secret_hash'];
+    protected $hidden = ['secret_hash', 'receipt_hash'];
 
     protected function casts(): array
     {
-        return ['expires_at' => 'datetime', 'consumed_at' => 'datetime'];
+        return ['expires_at' => 'datetime', 'consumed_at' => 'datetime', 'requested_at' => 'datetime', 'approved_at' => 'datetime', 'credential_issued_at' => 'datetime'];
     }
 
     protected static function booted(): void

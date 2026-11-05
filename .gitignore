@@ -20,12 +20,15 @@ __pycache__/
 
 /secrets/
 
+*.cms
+*.bundle
+
 /tools/
 
 *.agekey
 
-*.cms
-
-*.bundle
-
 /app/storage/app/platform-backups/
+
+/deploy/browser-crypto/node_modules/
+
+/artifacts/agentkit/

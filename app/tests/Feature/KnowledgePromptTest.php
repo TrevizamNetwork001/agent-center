@@ -52,7 +52,7 @@ class KnowledgePromptTest extends IntelligenceTestCase
             } catch (QueryException $e) {
                 $this->assertSame('42501', $e->getCode());
             }
-        }$this->assertSame(27, (int) DB::selectOne("SELECT count(*) n FROM pg_class WHERE relnamespace='public'::regnamespace AND relforcerowsecurity")->n);
+        }$this->assertSame(28, (int) DB::selectOne("SELECT count(*) n FROM pg_class WHERE relnamespace='public'::regnamespace AND relforcerowsecurity")->n);
     }
 
     public function test_prompt_versioning_preview_unknown_variables_and_no_recursive_interpolation(): void

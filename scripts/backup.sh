@@ -36,11 +36,12 @@ SQL
 
 tar -czf "$backup_root/config/$stamp.tar.gz" deploy scripts docs AGENTS.md README.md .env.example .gitignore .dockerignore
 host_files=()
-for file in etc/nginx/sites-available/agent-center.conf etc/nginx/snippets/agent-center-access.conf etc/nginx/conf.d/agent-center-observability.conf etc/logrotate.d/agent-center etc/systemd/system/agent-center-backup.service etc/systemd/system/agent-center-backup.timer etc/systemd/system/agent-center-backup-alert.service etc/systemd/system/agent-center-backup-watch.service etc/systemd/system/agent-center-backup-watch.timer etc/systemd/system/agent-center-status-rotate.service etc/systemd/system/agent-center-status-rotate.timer etc/systemd/system/agent-center-operations.service etc/systemd/system/agent-center-operations.timer; do
+for file in etc/nginx/sites-available/agent-center.conf etc/nginx/snippets/agent-center-access.conf etc/nginx/conf.d/agent-center-observability.conf etc/logrotate.d/agent-center etc/systemd/system/agent-center-backup.service etc/systemd/system/agent-center-backup.timer etc/systemd/system/agent-center-backup-alert.service etc/systemd/system/agent-center-backup-watch.service etc/systemd/system/agent-center-backup-watch.timer etc/systemd/system/agent-center-backup-ui.service etc/systemd/system/agent-center-backup-ui.timer etc/systemd/system/agent-center-status-rotate.service etc/systemd/system/agent-center-status-rotate.timer etc/systemd/system/agent-center-operations.service etc/systemd/system/agent-center-operations.timer; do
   if [ -f "/$file" ]; then host_files+=("$file"); fi
 done
 if [ "${#host_files[@]}" -gt 0 ]; then tar -czf "$backup_root/config/$stamp.host.tar.gz" -C / "${host_files[@]}"; fi
 if [ -d agent/dist ]; then tar -czf "$backup_root/storage/$stamp.agent-kit.tar.gz" agent/dist; fi
+if [ -d artifacts/agentkit ]; then tar -czf "$backup_root/storage/$stamp.staged-agent-kits.tar.gz" artifacts/agentkit; fi
 if [ -f tools/backup-tools.json ]; then tar -czf "$backup_root/storage/$stamp.backup-tools.tar.gz" tools/usr/bin/age tools/backup-python tools/backup-tools.json; fi
 if git rev-parse --verify HEAD >/dev/null 2>&1; then
   git rev-parse HEAD > "$backup_root/config/$stamp.commit"

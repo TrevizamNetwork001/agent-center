@@ -35,7 +35,17 @@ class Presentation
 
     public static function agentStatus($a): string
     {
-        return $a->revoked_at || $a->status === 'revoked' ? 'REVOKED' : ($a->last_heartbeat_at && $a->last_heartbeat_at->gt(now()->subSeconds(60)) ? 'ONLINE' : 'OFFLINE');
+        if ($a->revoked_at || $a->status === 'revoked') {
+            return 'REVOKED';
+        }
+        if (in_array($a->status, ['registered', 'pending'], true)) {
+            return 'ATENÇÃO';
+        }
+        if (! $a->last_heartbeat_at || $a->last_heartbeat_at->lte(now()->subSeconds(60))) {
+            return 'OFFLINE';
+        }
+
+        return ! $a->last_poll_at || $a->last_poll_at->lte(now()->subSeconds(30)) || ($a->metadata['telemetry']['device_operations_frozen'] ?? null) !== true || ! in_array($a->version, ['0.5.2', '0.5.3'], true) ? 'ATENÇÃO' : 'ONLINE';
     }
 
     public static function groupStatus($steps): string

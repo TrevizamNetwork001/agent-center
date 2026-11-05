@@ -18,6 +18,14 @@ class WorkerHealth
         rename($tmp, self::path());
     }
 
+    public static function evidence(): array
+    {
+        $v = json_decode(@file_get_contents(self::path()) ?: 'null', true);
+        $gap = is_array($v) && isset($v['loop_ns']) ? (hrtime(true) - $v['loop_ns']) / 1e9 : null;
+
+        return ['loop_age_seconds' => $gap !== null && $gap >= 0 ? $gap : null, 'iterations' => is_int($v['iterations'] ?? null) ? $v['iterations'] : null, 'progress' => is_int($v['progress'] ?? null) ? $v['progress'] : null, 'same_boot' => is_array($v) && ($v['boot_id'] ?? '') === trim(file_get_contents('/proc/sys/kernel/random/boot_id'))];
+    }
+
     public static function healthy(bool $local = false): bool
     {
         $v = json_decode(@file_get_contents(self::path()) ?: 'null', true);
