@@ -351,3 +351,20 @@ Laboratório:23 testes Python PASS, incluindo descriptografia de chave sintétic
 assinatura BZh, todos os membros esperados, tamper rejection e compatibilidade do
 novo nome no download; Ruff/compileall/diff-check PASS. Rotina real será revalidada
 antes de declarar o arquivo remoto completo disponível.
+
+
+### Arquivo único BZip2 real comprovado — 2026-11-04T23:58:11.413110+00:00
+
+Arquivo: agent-center-2026-11-04_23-53-48Z-634819546dfe488ab4f9625459ae81cf.tar.bz2.age
+Tamanho: 35449867bytes. SHA256: 22608c775fd143962444bbb987e4be1f31952676997e13d9b2598a7f4255ded6
+A rotina completa terminou exit0 às23:58:12Z. Recibo complete=true com um único objeto,
+formato tar.bz2 e criptografia age-v1, PUT200, HEAD/GET e checksum integral PASS.
+Uma cópia cifrada foi baixada de novo do R2 pelo downloader para backups/export,
+modo0600 e diretório0700, com provaSHA correspondente. Nenhuma chave privada foi usada
+na VPS e nenhum dado real foi descriptografado. Evidência sanitizada:
+evidence/recovery8/closure/r2-single-dated-bzip2-verified.json.
+
+23 testes Python, Ruff, compileall e diff-check PASS. Mantida compatibilidade de
+download com GZip legado. O envio segue automático por timer diário.
+RECOVERY-8 BLOCKED: restauração independente com identidade externa, comprovação de
+custódia, retenção/BucketLock e alertas externos continuam pendentes.

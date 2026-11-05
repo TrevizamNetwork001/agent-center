@@ -1,0 +1,34 @@
+{
+  "generation": "20261104T235348Z",
+  "verified_at": "2026-11-04T23:58:11.413110+00:00",
+  "filename": "agent-center-2026-11-04_23-53-48Z-634819546dfe488ab4f9625459ae81cf.tar.bz2.age",
+  "bytes": 35449867,
+  "sha256": "22608c775fd143962444bbb987e4be1f31952676997e13d9b2598a7f4255ded6",
+  "archive_format": "tar.bz2",
+  "encryption": "age-v1",
+  "single_complete_remote_object": true,
+  "remote_head": true,
+  "full_remote_download": true,
+  "local_copy_downloaded_from_r2": true,
+  "local_copy_mode": "0o600",
+  "transport": {
+    "client": "curl",
+    "exit_code": 0,
+    "http_status": 200,
+    "http_version": "1.1"
+  },
+  "automated_service_exit": 0,
+  "service_finished_at": "2026-11-04T23:58:12Z",
+  "stages": {
+    "backup_executed": true,
+    "encrypted": true,
+    "external_key_custody_verified": false,
+    "independent_restore_verified": false,
+    "integrity_verified": true,
+    "retention_verified": false,
+    "upload_completed": true
+  },
+  "independent_restore_verified": false,
+  "retention_verified": false,
+  "external_key_custody_verified": false
+}

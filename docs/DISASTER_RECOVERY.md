@@ -205,3 +205,10 @@ Verificar o manifesto SHA256 antes de restaurar o dump e aplicar permissões seg
 os passos anteriores. O formato legado .tar.gz.age continua aceito pelo downloader;
 selecionar a extensão de saída correspondente. Descriptografar/extrair dados reais
 só no ambiente autorizado de recuperação; a VPS original não recebe a identidade.
+
+
+Para reproduzir a versão operacional comprovada, obter a branch production-recovery8
+do GitHub privado e comparar seu commit com o inventário incluído no backup, antes
+de aplicar migrations. A branch main contém mudanças de laboratório cuja conciliação
+com produção é uma operação separada. A exportação local em backups/export é uma
+cópia cifrada manual, baixada do R2; não comprova restauração em host independente.
