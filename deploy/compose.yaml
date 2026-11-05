@@ -1,6 +1,6 @@
 name: agent-center
 x-app: &app
-  image: agent-center-central:recovery8-final
+  image: agent-center-central:recovery9
   build:
     context: ..
     dockerfile: deploy/php/Dockerfile
