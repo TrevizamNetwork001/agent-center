@@ -1,5 +1,19 @@
 # RECOVERY-8 — validação final
 
+## Situação final desta continuação
+
+**RECOVERY-8 BLOCKED** — teste independente adiado pelo operador; retenção/BucketLock
+sem evidência administrativa e receiver externo de alertas não fornecido.
+
+Publicação desta VPS concluída: imagem recovery8-final/revision7d6bbc0,11 migrations e
+28 FORCE RLS. GitHub privado com histórico, branches e clone/fsck comprovados. Backup
+BZ2 único cifrado real pós-publicação: geração20261105T003005Z, 35549938bytes,
+HEAD/GET/SHA256 PASS em2026-11-05T00:35:14.844803+00:00. A configuração foi preservada, a fila está
+funcional, PostgreSQL/Nginx não foram recriados, e não houve implantação de Agent.
+Custódia age externa declarada pelo operador; identidade não recebida nesta VPS.
+Fontes detalhadas em evidence/recovery8/closure/closure-report-final.json. Seções
+anteriores abaixo são histórico cronológico, inclusive falhas já corrigidas.
+
 **RECOVERY-8 BLOCKED: R2 ainda sem upload criptografado real/readback, custódia externa
 da chave e restauração em host independente autorizado não comprovados.** GitHub privado
 já recebeu código/histórico e passou clone independente. Retenção R2 e receiver externo
