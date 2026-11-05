@@ -1,0 +1,32 @@
+{
+  "archive_format": "tar.bz2",
+  "backend": "r2",
+  "bytes": 58002039,
+  "checked_at": "2026-11-05T12:02:16.269793+00:00",
+  "generation": "20261105T115208Z",
+  "project": "agent-center",
+  "reason": "r2_encrypted_upload_download_verified",
+  "restore_from_external_verified": false,
+  "retention_verified": false,
+  "sha256": "53ef3a486e8762f94dfe601184070763718ad7b2dd18acbb53467edd45d23fa5",
+  "stages": {
+    "backup_executed": true,
+    "encrypted": true,
+    "external_key_custody_verified": false,
+    "independent_restore_verified": false,
+    "integrity_verified": true,
+    "retention_verified": false,
+    "upload_completed": true
+  },
+  "state": "VERDE",
+  "transport": {
+    "client": "curl",
+    "exit_code": 0,
+    "http_status": 200,
+    "http_version": "1.1"
+  },
+  "backed_up_checkout": "0f9f772afdcf56b00c1b032573f2244da5595f42",
+  "previous_attempt_failed": true,
+  "previous_failure": "r2_ui_backup_failed; specific cause not established",
+  "retry": "same local generation; new ciphertext object nonce; no overwrite/delete; native transport unchanged"
+}
