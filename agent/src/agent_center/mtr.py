@@ -20,10 +20,10 @@ class MtrError(ValueError):
     pass
 
 
-def bounded(command, timeout):
+def bounded(command, timeout, cancel=None):
     # Drain both pipes while the child runs; never accumulate arbitrary output or deadlock.
     with subprocess.Popen(
-        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=ENV
+        command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=ENV
     ) as child:
         streams = selectors.DefaultSelector()
         for stream in (child.stdout, child.stderr):
@@ -33,6 +33,8 @@ def bounded(command, timeout):
         end = time.monotonic() + timeout
         try:
             while streams.get_map():
+                if cancel is not None and cancel():
+                    raise MtrError("cancelled")
                 if time.monotonic() >= end:
                     raise MtrError("execution_timeout")
                 for key, _ in streams.select(min(0.1, max(0, end - time.monotonic()))):
@@ -43,7 +45,10 @@ def bounded(command, timeout):
                         output[key.fileobj].extend(data)
                         if sum(map(len, output.values())) > LIMIT:
                             raise MtrError("mtr_output_limit")
-            child.wait(timeout=max(0.01, end - time.monotonic()))
+            try:
+                child.wait(timeout=max(0.01, end - time.monotonic()))
+            except subprocess.TimeoutExpired:
+                raise MtrError("execution_timeout") from None
             return child.returncode, bytes(output[child.stdout]), bytes(output[child.stderr])
         finally:
             streams.close()
@@ -194,7 +199,7 @@ def parse(raw, target, cycles, max_hops):
         raise MtrError("mtr_invalid_output") from None
 
 
-def collect(args, networks, dns_names):
+def collect(args, networks, dns_names, cancel=None, deadline=None):
     started = time.monotonic()
     host = authorize(args, networks, dns_names)
     if os.geteuid() == 0:
@@ -218,7 +223,8 @@ def collect(args, networks, dns_names):
     if args["protocol"] == "tcp":
         command += ["--tcp", "--port", "443"]
     command += ["--", host]
-    rc, raw, stderr = bounded(command, max(0.1, 18 - (time.monotonic() - started)))
+    end = deadline if deadline is not None else started + 18
+    rc, raw, stderr = bounded(command, max(0.01, end - time.monotonic()), cancel=cancel)
     if rc:
         if any(
             word in stderr.lower() for word in (b"permission denied", b"operation not permitted")
@@ -241,7 +247,7 @@ def collect(args, networks, dns_names):
     }
 
 
-def ready():
+def raw_ready():
     """Never advertise live collection with the default empty capability bounding set."""
     try:
         if os.geteuid() == 0:
@@ -255,3 +261,9 @@ def ready():
         return True
     except (OSError, ValueError, subprocess.SubprocessError):
         return False
+
+
+def ready():
+    from .mtr_client import ready as helper_ready
+
+    return helper_ready()

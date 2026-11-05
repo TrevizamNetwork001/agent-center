@@ -1,0 +1,13 @@
+[Unit]
+Description=Agent Center restricted MTR socket
+[Socket]
+ListenStream=/run/agent-center-mtr.sock
+SocketUser=agent-center-agent
+SocketGroup=agent-center-agent
+SocketMode=0600
+Accept=yes
+MaxConnections=2
+Backlog=2
+RemoveOnStop=yes
+[Install]
+WantedBy=sockets.target

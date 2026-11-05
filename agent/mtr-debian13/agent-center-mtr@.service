@@ -1,0 +1,46 @@
+[Unit]
+Description=Agent Center restricted MTR executor
+[Service]
+Type=exec
+User=agent-center-mtr
+Group=agent-center-mtr
+ExecStart=/usr/bin/python3 -I /opt/agent-center-mtr/helper.pyz
+StandardInput=socket
+StandardOutput=null
+StandardError=null
+LoadCredential=local-policy:/etc/agent-center-agent/config.json
+LoadCredential=ceiling:/etc/agent-center-mtr/policy.json
+StateDirectory=agent-center-mtr
+StateDirectoryMode=0700
+UMask=0077
+WorkingDirectory=/
+Environment=PATH=/usr/bin:/usr/sbin:/bin:/sbin
+NoNewPrivileges=yes
+CapabilityBoundingSet=CAP_NET_RAW
+AmbientCapabilities=CAP_NET_RAW
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+RestrictNamespaces=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+RestrictRealtime=yes
+SystemCallArchitectures=native
+SystemCallFilter=~@mount @reboot @swap @module @obsolete @debug @cpu-emulation
+RuntimeMaxSec=20
+TimeoutStopSec=1
+KillMode=control-group
+SendSIGKILL=yes
+TasksMax=8
+MemoryMax=64M
+CPUQuota=25%
+LimitNOFILE=64

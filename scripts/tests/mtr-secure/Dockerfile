@@ -1,0 +1,2 @@
+FROM debian:13
+RUN apt-get update && apt-get install -y --no-install-recommends python3 systemd mtr-tiny libcap2-bin iproute2 util-linux procps && rm -rf /var/lib/apt/lists/* && useradd -u 987 -M -d /nonexistent -s /usr/sbin/nologin agent-center-agent && useradd -u 988 -M -d /nonexistent -s /usr/sbin/nologin agent-center-mtr && mkdir -p /var/lib/agent-center-mtr && chown 988:988 /var/lib/agent-center-mtr
