@@ -65,3 +65,9 @@ No fechamento, a branch production-recovery8 acompanha somente a promoção oper
 aprovada da Central; main preserva o desenvolvimento testado e a implementação anterior
 do Agent0.5.3. A conciliação não modifica arquivos agent/ nem instala Agent. Ao restaurar,
 respeitar commit/schema do manifesto e o catálogo de artefatos aprovados, com SHA-256.
+
+
+A promoção autorizada da Central é7d6bbc0 na branch production-recovery8, com imagem
+recovery8-final e metadata OCI revision correspondente. O código Laravel e as migrations
+foram conciliados com a main testada; os arquivos agent/ foram preservados. Artefatos
+aprovados ficam fora do Git, entram no backup R2 cifrado e mantêm SHA do catálogo.

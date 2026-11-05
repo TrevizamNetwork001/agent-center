@@ -396,3 +396,32 @@ DELETE de política. Host independente e receiver de alertas externos não forne
 Correções de reprodução: instaladores incluem uploader curl, bridge/UI e timers; falha
 do backup deixa de ser mascarada por ||true. Backup passa a incluir unitsUI reais e
 artefatos aprovados estacionados em artifacts/agentkit, fora do Git e das imagens.
+
+
+### Publicação autorizada e concluída nesta VPS
+
+O operador confirmou a publicação nesta VPS e adiou apenas o teste independente.
+Central publicada no commit7d6bbc0, imagem agent-center-central:recovery8-final,
+IDsha256:6c4a87e5d7b0306853f1b339c4f1d5a6443a1995e679e51e9b6c781bc38d5745.
+Migrações11, FORCE RLS28, Agents0, agent_operations0, users1. Runtime sem superuser,
+BYPASSRLS, CREATE no public e sem tabelas próprias. Banco e Nginx não foram recriados.
+PDO verify-full, testes TLS negativos, fila funcional, containers saudáveis,
+HTTPSready/login200 e redirectHTTP308 passaram. Operations permanece ATENÇÃO com
+Agents ausentes; não existe Agent ONLINE inventado. Configuração R2 continua pronta.
+
+Rollback operacional em backups/central-reconcile-*/rollback-services.yaml, sobre
+base deploy/compose.yaml, aponta para imagem anterior e healthcheck anterior do worker;
+volumes e schema aditivo são preservados. Snapshot externo anterior20261105T001315Z
+confirmado íntegro antes de aplicar as duas migrations. Nenhum migrations down foi usado.
+
+Artefatos0.5.3 aprovados foram preservados em artifacts/agentkit/0.5.3 e seus hashes
+conferidos com manifest/catalog/tested installer. O backup agora os cobre. Fontes do
+Agent e AGENTS.md não mudaram, e nenhum Agent/unit de execução foi instalado em host.
+Alertas locais e watcher funcionam; receiver externo não configurado. Bucket admin GET
+retornou403 e nenhum PUT/DELETE de política foi tentado. Planos finitos por prefixo
+estão preparados e não aplicados. A declaração de custódia externa está registrada;
+uso real da identidade só no futuro host autorizado.
+
+RECOVERY-8 BLOCKED: teste de restauração independente adiado pelo operador;
+retenção/BucketLock ainda não verificáveis sem acesso administrativo apropriado e
+recebedor externo de alertas não fornecido. RPO/RTO efetivos não são declarados.

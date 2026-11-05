@@ -1,31 +1,39 @@
 {
-  "scope": "continuation_RECOVERY_8",
   "laravel": {
-    "tests": 135,
-    "assertions": 1100,
+    "tests": 141,
+    "assertions": 1175,
     "pass": true
   },
-  "python": {
+  "python_agent": {
     "tests": 52,
     "pass": true,
-    "agent_modified": false
+    "readonly": true,
+    "source_modified": false
   },
   "backup_tooling": {
-    "tests": 16,
-    "pass": true,
-    "real_r2": false,
-    "test_identity_synthetic_only": true
+    "tests": 23,
+    "pass": true
   },
-  "github_initial_push": {
-    "pass": true,
-    "head": "82dcd2c408d5f0683ae4538f096b132c4cf95560",
-    "clean_clone": true,
-    "full_main_history_equal": true
+  "tls_pg_positive_and_negatives": true,
+  "pdo_verify_full": true,
+  "queue_functional": true,
+  "nginx_config_test": true,
+  "https_ready": 200,
+  "https_login": 200,
+  "http_redirect": 308,
+  "chromium_persistent_status_and_form_preservation": true,
+  "production": {
+    "commit": "7d6bbc02f4ea0d122e103ab77a37ca983184f225",
+    "image": "agent-center-central:recovery8-final",
+    "migrations": 11,
+    "force_rls_tables": 28,
+    "agent_count": 0
   },
-  "r2_bucket_owner_reported": "agent-center",
-  "r2_credentials_configured": false,
-  "external_recipient_configured": false,
-  "independent_host_authorized": false,
-  "retention_applied": false,
-  "external_alert_receiver_configured": false
+  "external_backup_real_verified": true,
+  "github_private_owner_confirmed": true,
+  "operator_attests_external_age_custody": true,
+  "independent_restore": "DEFERRED_BY_OPERATOR",
+  "retention": "UNVERIFIED_S3_BUCKET_ADMIN_GET_403",
+  "alerts": "LOCAL_VERIFIED_EXTERNAL_RECEIVER_NOT_CONFIGURED",
+  "recovery8": "BLOCKED"
 }

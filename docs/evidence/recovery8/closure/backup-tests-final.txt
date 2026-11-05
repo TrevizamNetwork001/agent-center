@@ -1,0 +1,30 @@
+test_complete_encrypt_transfer_readback_and_offline_decrypt (test_backup_external.BackupTests.test_complete_encrypt_transfer_readback_and_offline_decrypt) ... ok
+test_https_no_userinfo_query_or_http (test_backup_external.BackupTests.test_https_no_userinfo_query_or_http) ... ok
+test_private_config_permissions (test_backup_external.BackupTests.test_private_config_permissions) ... ok
+test_readback_detects_corruption_and_wrong_ca (test_backup_external.BackupTests.test_readback_detects_corruption_and_wrong_ca) ... ok
+test_alert_marks_overdue_external_backup_critical (test_backup_r2.R2Tests.test_alert_marks_overdue_external_backup_critical) ... ok
+test_alert_preserves_missing_configuration_and_failure_before_generation (test_backup_r2.R2Tests.test_alert_preserves_missing_configuration_and_failure_before_generation) ... ok
+test_conditional_upload_head_and_complete_get (test_backup_r2.R2Tests.test_conditional_upload_head_and_complete_get) ... ok
+test_corrupt_get_wrong_head_and_existing_file_never_pass (test_backup_r2.R2Tests.test_corrupt_get_wrong_head_and_existing_file_never_pass) ... ok
+test_daily_weekly_monthly_prefixes_and_unique_objects (test_backup_r2.R2Tests.test_daily_weekly_monthly_prefixes_and_unique_objects) ... ok
+test_download_accepts_the_dated_bzip2_archive_and_keeps_legacy_compatibility (test_backup_r2.R2Tests.test_download_accepts_the_dated_bzip2_archive_and_keeps_legacy_compatibility) ... ok
+test_download_uses_remote_and_cannot_read_other_prefixes (test_backup_r2.R2Tests.test_download_uses_remote_and_cannot_read_other_prefixes) ... ok
+test_manifest_corruption_and_lab_scope_fail_before_upload (test_backup_r2.R2Tests.test_manifest_corruption_and_lab_scope_fail_before_upload) ... ok
+test_native_http_success_without_remote_object_does_not_pass (test_backup_r2.R2Tests.test_native_http_success_without_remote_object_does_not_pass) ... ok
+test_native_lost_reply_passes_only_with_matching_complete_remote_readback (test_backup_r2.R2Tests.test_native_lost_reply_passes_only_with_matching_complete_remote_readback) ... ok
+test_private_files_reject_public_permissions_and_symlinks (test_backup_r2.R2Tests.test_private_files_reject_public_permissions_and_symlinks) ... ok
+test_r2_endpoint_account_bucket_and_prefix_are_restricted (test_backup_r2.R2Tests.test_r2_endpoint_account_bucket_and_prefix_are_restricted) ... ok
+test_real_age_authenticated_encryption_decrypt_and_tamper_detection (test_backup_r2.R2Tests.test_real_age_authenticated_encryption_decrypt_and_tamper_detection) ... ok
+test_sdk_exception_cannot_expose_credentials_in_status_or_output (test_backup_r2.R2Tests.test_sdk_exception_cannot_expose_credentials_in_status_or_output) ... ok
+test_sdk_serializes_conditional_put_without_network (test_backup_r2.R2Tests.test_sdk_serializes_conditional_put_without_network) ... ok
+test_redirect_wrong_host_and_http_are_rejected_before_transport (test_r2_native_transport.NativeTransportTests.test_redirect_wrong_host_and_http_are_rejected_before_transport) ... ok
+test_signed_url_stays_in_private_file_and_cleanup_is_guaranteed (test_r2_native_transport.NativeTransportTests.test_signed_url_stays_in_private_file_and_cleanup_is_guaranteed) ... ok
+test_timeout_also_removes_private_signed_configuration (test_r2_native_transport.NativeTransportTests.test_timeout_also_removes_private_signed_configuration) ... ok
+test_transport_failure_is_returned_without_provider_stderr_or_success_claim (test_r2_native_transport.NativeTransportTests.test_transport_failure_is_returned_without_provider_stderr_or_success_claim) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 1.702s
+
+OK
+External encrypted upload and complete readback: PASS; external restore still required.
+R2 upload, HEAD and full download integrity: PASS; independent restore remains required.

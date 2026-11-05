@@ -1,0 +1,137 @@
+{
+  "production_commit": "7d6bbc02f4ea0d122e103ab77a37ca983184f225",
+  "runtime_image": "agent-center-central:recovery8-final",
+  "image_id": "sha256:6c4a87e5d7b0306853f1b339c4f1d5a6443a1995e679e51e9b6c781bc38d5745",
+  "image_revision": "7d6bbc02f4ea0d122e103ab77a37ca983184f225",
+  "schema_and_roles": {
+    "migrations": 11,
+    "force_rls": 28,
+    "users": 1,
+    "agents": 0,
+    "new_operation_rows": 0,
+    "runtime_superuser": false,
+    "runtime_bypassrls": false,
+    "runtime_owns_tables": 0,
+    "runtime_schema_create": false
+  },
+  "health": {
+    "queue_age": 20.192182307,
+    "diagnostic_worker": true,
+    "backup": {
+      "local": "VERDE",
+      "external": "VERDE",
+      "message": "Envio ao R2 conclu\u00eddo e integridade conferida por download. Restaura\u00e7\u00e3o independente ainda pendente."
+    },
+    "settings_ready": true,
+    "operations_state": "ATEN\u00c7\u00c3O",
+    "checks": [
+      {
+        "component": "postgresql_tls",
+        "state": "VERDE",
+        "reason": "connection_tls_and_client_verification",
+        "timestamp": "2026-11-05T01:28:19+01:00",
+        "values": {
+          "tls": true,
+          "verify_full": true
+        },
+        "limit": true
+      },
+      {
+        "component": "diagnostic_worker",
+        "state": "VERDE",
+        "reason": "functional_loop_recent",
+        "timestamp": "2026-11-05T01:28:19+01:00",
+        "values": {
+          "loop_age_seconds": 1.511544993,
+          "iterations": 56,
+          "progress": 0,
+          "same_boot": true
+        },
+        "limit": 15
+      },
+      {
+        "component": "laravel_queue_worker",
+        "state": "VERDE",
+        "reason": "health_job_completed",
+        "timestamp": "2026-11-05T01:28:19+01:00",
+        "values": {
+          "completed_job_age_seconds": 20.176887543
+        },
+        "limit": 90
+      },
+      {
+        "component": "agents",
+        "state": "ATEN\u00c7\u00c3O",
+        "reason": "heartbeat_and_poll_coverage",
+        "timestamp": "2026-11-05T01:28:19+01:00",
+        "values": {
+          "total": 0,
+          "online": 0,
+          "oldest_heartbeat_seconds": null,
+          "oldest_poll_seconds": null,
+          "missing_heartbeat": 0,
+          "missing_poll": 0
+        },
+        "limit": {
+          "heartbeat_seconds": 60,
+          "poll_seconds": 30
+        }
+      },
+      {
+        "component": "backup_local",
+        "state": "VERDE",
+        "reason": "generation_integrity_verified",
+        "timestamp": "2026-11-05T00:27:54.790832+00:00",
+        "values": {
+          "age_seconds": 880.2418687343597
+        },
+        "limit": {
+          "max_age_seconds": 93600
+        }
+      },
+      {
+        "component": "backup_external",
+        "state": "VERDE",
+        "reason": "r2_encrypted_upload_download_verified",
+        "timestamp": "2026-11-05T00:27:54.790832+00:00",
+        "values": {
+          "age_seconds": 880.2420606613159
+        },
+        "limit": {
+          "max_age_seconds": 93600
+        }
+      },
+      {
+        "component": "fencing_runtime",
+        "state": "VERDE",
+        "reason": "active_attempt_generation_mismatch",
+        "timestamp": "2026-11-05T01:28:19+01:00",
+        "values": {
+          "mismatches": 0
+        },
+        "limit": 0
+      },
+      {
+        "component": "agent_maintenance",
+        "state": "VERDE",
+        "reason": "interrupted_or_stalled_operations",
+        "timestamp": "2026-11-05T01:28:19+01:00",
+        "values": {
+          "uncertain": 0,
+          "stalled": 0
+        },
+        "limit": 300
+      }
+    ]
+  },
+  "postgres_recreated": false,
+  "nginx_recreated": false,
+  "agent_python_source_changed": false,
+  "agent_installed": false,
+  "rollback_image": "agent-center-central:recovery8-r2-ui-save-status",
+  "predeployment_external_generation": "20261105T001315Z",
+  "independent_restore": "DEFERRED_BY_OPERATOR",
+  "private_age_custody": "ATTESTED_BY_OPERATOR_NOT_IMPORTED",
+  "retention": "UNVERIFIED_ADMIN_ACCESS_REQUIRED",
+  "external_alert_receiver": "NOT_CONFIGURED"
+}

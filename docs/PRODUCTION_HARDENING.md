@@ -83,8 +83,10 @@ GitHub privado e backup cifrado BZip2 no R2 foram comprovados por clone, HEAD/GE
 SHA-256. Restauração fora do host e políticas administrativas de retenção ainda não
 foram comprovadas; portanto não existe DR completo. Monitor de falha em journal
 é sinal local; recebedor externo precisa ser fornecido. Não há Agent real autorizado.
-A aplicação nova e sua ampliação do Operations Health permanecem preparadas/testadas
-em laboratório até promoção revisada com os pré-requisitos de recuperação.
+A Central e o Operations Health foram promovidos após snapshot externo e validação
+isolada do dump real. O schema tem11 migrations/28 FORCE RLS; o worker exige progresso
+de job real. Restauração independente foi adiada pelo operador; Agents permanecem
+ausentes e com ATENÇÃO. Nenhum runtime Python do Agent foi modificado ou implantado.
 
 Referências: [libpq verify-full](https://www.postgresql.org/docs/17/libpq-ssl.html),
 [TLS servidor](https://www.postgresql.org/docs/17/ssl-tcp.html).

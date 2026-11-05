@@ -238,3 +238,13 @@ Para reinstalar backups a partir de checkout de revisão, instalar o tooling ant
 ativar rotinas. Os scripts de instalação agora incluem r2_native_transport.py,
 backup_ui.py, backup-ui-request.sh e os timersUI/watch; não executar um uploader sem
 esses módulos. Não substituir configurações Nginx ou TLS saudáveis por defaults de lab.
+
+
+Publicação confirmada nesta continuação: commit7d6bbc0/image recovery8-final, schema11
+migrations/28 FORCE RLS. Workers usam healthcheck de job realmente concluído. R2 e
+APP_KEY preservados; backup posterior deve incluir artefatos aprovados e unitsUI reais.
+Rollback: docker compose --env-file .env -f deploy/compose.yaml -f
+backups/central-reconcile-<UTC>/rollback-services.yaml up -d --no-deps --no-build --wait
+web worker diagnostic-worker. O overlay usa somente imagens/healthcheck e mantém os
+caminhos relativos do Compose base corretos; não executar snapshot de Compose isolado
+com caminhos resolvidos contra o diretório de backups. Manter schema aditivo.
