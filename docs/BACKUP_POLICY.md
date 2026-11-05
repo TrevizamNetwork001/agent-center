@@ -240,3 +240,35 @@ Git bundle e manifestos entram no mesmo TAR compactado por BZip2 e cifrado por a
 A compactação usa tarfile/bz2 da biblioteca padrão Python, em stream direto para age,
 sem pacote global bzip2 e sem arquivo agregado em claro no disco. A identidade privada
 continua fora da VPS. A política diária/semanal/mensal mantém gerações anteriores.
+
+
+### Fechamento — retenção no bucket autorizado
+
+Destino comprovado: bucket agent-center, prefixo exclusivo agent-center/. A credencial
+S3 diária retornou403 AccessDenied ao GET da configuração de lifecycle; não foi tentado
+PUT/DELETE de política. Não há token administrativo de bucket fornecido. A leitura de
+objetos do próprio prefixo funciona. Portanto a retenção e o Bucket Lock permanecem
+NÃO VERIFICADOS; nenhuma política remota foi substituída ou objeto removido.
+
+Plano concreto para o proprietário em Cloudflare → R2 → agent-center → Settings:
+
+| Prefixo | Bucket lock por idade | Expiração lifecycle |
+| --- | --- | --- |
+| agent-center/daily/ | 30 dias | 31 dias |
+| agent-center/weekly/ | 84 dias | 85 dias |
+| agent-center/monthly/ | 366 dias | 367 dias |
+
+Adicionar as regras por prefixo, preservando todas as regras existentes e a limpeza
+padrão de multipart incompleto. Não usar prefixo vazio nem retenção indefinida. Os
+fragmentos em deploy/r2-bucket-lock.proposed.json e r2-lifecycle.proposed.json NÃO são
+payloads substitutivos: revisar/mesclar a configuração atual primeiro. A aplicação
+dessas regras requer acesso administrativo fora da credencial usada pelo backup diário.
+Não realizar remoções nesta tarefa. Antes de ativar expiração, revisar objetos elegíveis;
+a proteção por lock deve ser lida de volta e confirmada primeiro. Validar por leitura da
+configuração; não testar DELETE em objetos existentes. Ainda falta leitura autenticada
+das duas políticas e confirmação do escopo do token antes de marcar retention_verified.
+
+Referências oficiais: https://developers.cloudflare.com/r2/buckets/bucket-locks/ e
+https://developers.cloudflare.com/r2/buckets/object-lifecycles/ . Locks prevalecem sobre
+lifecycle; as expirações propostas excedem a duração do lock. Política de retenção não
+foi aplicada implicitamente pelo cadastro das credenciais no painel Laravel.

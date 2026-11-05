@@ -79,8 +79,9 @@ preferir corrigir a PKI. Nunca down -v, restore ou rollback migration em produç
 
 ## Riscos residuais
 
-Sem destino externo, perda desta VPS ainda perde os backups locais. Sem clone remoto
-privado ou restauração fora do host não existe DR completo. Monitor de falha em journal
+GitHub privado e backup cifrado BZip2 no R2 foram comprovados por clone, HEAD/GET e
+SHA-256. Restauração fora do host e políticas administrativas de retenção ainda não
+foram comprovadas; portanto não existe DR completo. Monitor de falha em journal
 é sinal local; recebedor externo precisa ser fornecido. Não há Agent real autorizado.
 A aplicação nova e sua ampliação do Operations Health permanecem preparadas/testadas
 em laboratório até promoção revisada com os pré-requisitos de recuperação.

@@ -1,0 +1,29 @@
+{
+  "scope": "isolated_same_vps_compatibility_only",
+  "independent_disaster_restore": false,
+  "real_production_data_sent_to_additional_provider": false,
+  "source_generation": "20261105T001315Z",
+  "before": {
+    "migrations": 9,
+    "force_rls": 27,
+    "agents": 0,
+    "users": 1
+  },
+  "after": {
+    "migrations": 11,
+    "force_rls": 28,
+    "agents": 0,
+    "users": 1
+  },
+  "auth_knowledge_prompts_conversations_provider_rows_unchanged": true,
+  "runtime": {
+    "superuser": false,
+    "bypassrls": false,
+    "schema_create": false,
+    "own_tables": 0,
+    "operations_without_context": 0,
+    "agents_without_context": 0
+  },
+  "pass": true,
+  "isolated_database_removed": true
+}

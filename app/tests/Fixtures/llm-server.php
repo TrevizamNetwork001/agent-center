@@ -7,11 +7,17 @@ $server = stream_socket_server('tls://127.0.0.1:0', $errno, $error, STREAM_SERVE
 if (! $server) {
     exit(2);
 }file_put_contents($dir.'/port', explode(':', stream_socket_get_name($server, false))[1]);
-for ($n = 0; $n < 2; $n++) {
-    $conn = @stream_socket_accept($server, 5);
+// A rejected TLS handshake must not close the listener before libcurl
+// completes its failure path. Keep a bounded listener until test teardown.
+$deadline = microtime(true) + 15;
+$n = 0;
+while ($n < 2 && microtime(true) < $deadline) {
+    $conn = @stream_socket_accept($server, min(5, max(0.01, $deadline - microtime(true))));
     if (! $conn) {
-        break;
-    }stream_set_timeout($conn, 3);
+        continue;
+    }
+    $n++;
+    stream_set_timeout($conn, 3);
     $length = 0;
     while (($line = fgets($conn)) !== false && trim($line) !== '') {
         if (str_starts_with(strtolower($line), 'content-length:')) {

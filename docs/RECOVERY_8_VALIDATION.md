@@ -368,3 +368,31 @@ evidence/recovery8/closure/r2-single-dated-bzip2-verified.json.
 download com GZip legado. O envio segue automático por timer diário.
 RECOVERY-8 BLOCKED: restauração independente com identidade externa, comprovação de
 custódia, retenção/BucketLock e alertas externos continuam pendentes.
+
+
+### Fechamento adicional — conciliação validada
+
+Operador declarou nesta continuação possuir a identidade privada age sob custódia
+fora da VPS. Declaração registrada; nenhuma chave foi solicitada pelo chat nem trazida
+à VPS. Uso real dessa identidade ainda depende de host independente autorizado.
+
+Suite atual:141 Laravel/1175 assertions PASS,52 Python Agent read-only PASS,23 backup
+PASS. Um teste TLS de LLM inicialmente falhou porque a fixture encerrava o listener
+após handshake rejeitado; corrigida somente a fixture para manter listener limitado
+por15s, sem relaxar validação TLS da Central. Reteste específico3/15 e suite completa
+passaram. Pint da fixture, bash syntax, TLS negativo/positivo, fila funcional, Nginx e
+timers passaram. Não houve mudança nos fontes do Agent.
+
+Cópia do dump real da geração20261105T001315Z restaurada no projeto privado de laboratório
+agent-center-backup-ui e migrada9→11/27→28 FORCE RLS. Fingerprints de auth, Knowledge,
+Prompts, Conversations e providers preservados. Runtime sem superuser/BYPASSRLS/CREATE
+nem ownership; leitura sem tenant retorna zero. Banco temporário removido. Isto é
+compatibilidade na mesma VPS, NÃO disaster recovery independente.
+
+GET lifecycle com credencial S3 diária retornou403; Bucket Lock/lifecycle não verificáveis
+sem autorização administrativa apropriada. Fragmentos por prefixo preparados, sem PUT ou
+DELETE de política. Host independente e receiver de alertas externos não fornecidos.
+
+Correções de reprodução: instaladores incluem uploader curl, bridge/UI e timers; falha
+do backup deixa de ser mascarada por ||true. Backup passa a incluir unitsUI reais e
+artefatos aprovados estacionados em artifacts/agentkit, fora do Git e das imagens.

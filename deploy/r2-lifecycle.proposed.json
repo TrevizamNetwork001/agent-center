@@ -1,0 +1,38 @@
+{
+  "kind": "merge_rule_fragments_only_not_api_payload",
+  "bucket": "agent-center",
+  "preserve_all_existing_rules": true,
+  "rules_to_add": [
+    {
+      "ID": "agent-center-daily-31d",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "agent-center/daily/"
+      },
+      "Expiration": {
+        "Days": 31
+      }
+    },
+    {
+      "ID": "agent-center-weekly-85d",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "agent-center/weekly/"
+      },
+      "Expiration": {
+        "Days": 85
+      }
+    },
+    {
+      "ID": "agent-center-monthly-367d",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "agent-center/monthly/"
+      },
+      "Expiration": {
+        "Days": 367
+      }
+    }
+  ],
+  "applied": false
+}

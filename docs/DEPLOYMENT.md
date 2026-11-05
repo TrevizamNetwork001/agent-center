@@ -219,3 +219,22 @@ conjunto. Requer biblioteca padrão Python com bz2 (disponível na VPS); não in
 pacotes de sistema. Snapshot de ambos os scripts deve preceder a troca. Rollback pode
 restaurar o empacotador anterior; preservar downloader novo para recuperar tanto
 .tar.bz2.age quanto .tar.gz.age, além de todos os objetos/recibos existentes.
+
+
+### Promoção da Central validada
+
+Candidato formado da branch de produção, copiando apenas a árvore Laravel aprovada,
+exceto AGENTS.md, grants de agent_operations e healthcheck funcional de fila. Fontes
+Python do Agent e configurações Nginx/PG saudáveis são preservados. PostgreSQL não
+é recriado. Snapshot externo de rollback20261105T001315Z foi concluído antes de promover.
+
+Sequência: parar somente workers; migrator com credencial própria aplica as duas
+migrations; aplicar grants mínimos; iniciar web/worker/diagnostic-worker com imagem
+candidata; validar PDO/TLS/RLS/health/queue e13fontes Operations. Rollback usa Compose
+anterior e a imagem recovery8-r2-ui-save-status, preservando colunas/tabela adicionadas,
+configuração criptografada e volumes. Nunca migrations down em produção.
+
+Para reinstalar backups a partir de checkout de revisão, instalar o tooling antes de
+ativar rotinas. Os scripts de instalação agora incluem r2_native_transport.py,
+backup_ui.py, backup-ui-request.sh e os timersUI/watch; não executar um uploader sem
+esses módulos. Não substituir configurações Nginx ou TLS saudáveis por defaults de lab.

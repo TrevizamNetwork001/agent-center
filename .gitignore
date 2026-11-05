@@ -30,3 +30,5 @@ __pycache__/
 /app/storage/app/platform-backups/
 
 /deploy/browser-crypto/node_modules/
+
+/artifacts/agentkit/

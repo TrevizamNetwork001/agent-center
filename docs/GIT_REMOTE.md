@@ -59,3 +59,9 @@ O painel R2 e sua chave privada não participam do Git: a configuração fica em
 ciphertext no storage persistente excluído de Git/imagens, e a identidade de
 recuperação permanece com o operador fora da VPS. JavaScript age é empacotado com
 package-lock reproduzível em deploy/browser-crypto; não há dependência de CDN.
+
+
+No fechamento, a branch production-recovery8 acompanha somente a promoção operacional
+aprovada da Central; main preserva o desenvolvimento testado e a implementação anterior
+do Agent0.5.3. A conciliação não modifica arquivos agent/ nem instala Agent. Ao restaurar,
+respeitar commit/schema do manifesto e o catálogo de artefatos aprovados, com SHA-256.

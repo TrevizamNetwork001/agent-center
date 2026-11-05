@@ -28,3 +28,5 @@ tools/
 app/storage/app/platform-backups/
 
 deploy/browser-crypto/node_modules/
+
+/artifacts/agentkit/
