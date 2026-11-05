@@ -1,0 +1,48 @@
+Diagnostic performance review — 2026-11-05
+
+Authority/scope:
+Read root and app AGENTS.md. The explicit current user task authorizes maintenance of existing diagnostics while retaining Laravel/PostgreSQL/native auth, tenant isolation, device freeze, no arbitrary shell, no device access, no RAG and no local Agent-policy changes. Later steering requested prepared MTR/tcpdump/Nmap skills, reference research and a clearer installer guide with light/dark themes. Prepared execution contracts remain disabled; only bounded, stateless MTR JSON analysis is available in the Central. No offensive commands from the supplied pentest reference are enabled.
+
+Baseline:
+SITE_NAO_ABRE google.com on teste, diagnostic 607569b5-1466-4251-aad4-8bd5363b62db. Created 18:05:28 -03, planned/start 18:05:30, complete 18:07:13. Existing displayed duration 103 s excludes two seconds before planning. Full request-to-conclusion elapsed 105 s. Probe durations sum 4421.93 ms (4.42193 s). The current historical timestamps have second precision; one-way transport, Python startup, exact polling boundaries and server handling cannot be retroactively separated reliably.
+
+Proven 48-second gap:
+DNS AAAA recorded 18:05:44; TCP queued 18:05:45 and started 18:06:32. Between them, six tasks from two other diagnostics ran: DNS profile A 18:05:47–48, AAAA 18:05:53–55, TCP DNS 18:06:00–03, UDP DNS 18:06:07–09; latency profile A 18:06:14–17, AAAA 18:06:27–29. Global FIFO chose these already queued first-wave tasks ahead of the newly unblocked TCP task. The Agent intentionally has one execution lane, polls at a configured five-second cadence, and does not wake its next-claim loop on a result. The worker advances plans about every two seconds. The 48 s is queue/coordination, not a 48-second TCP connect.
+
+Corrections:
+- Keep one active task/attempt lane, Agent row mutex, diagnostic/task/attempt locks, generation fencing, 45 s leases, renew rules, retries and immutable result digest semantics.
+- Fair dispatch between runnable diagnostics by last_dispatched_at; FIFO per diagnostic by creation time, bounded candidate list. No dependency reordering; no parallel probes introduced.
+- After normalized, fenced and durable result acceptance, advance that diagnostic in the same transaction. Successor readiness and terminal conclusion no longer require a later worker tick. Duplicate results return before timing/transition changes.
+- The first Central-only measurement retained Agent 0.6.0 and recorded 116.535 s total despite reducing the DNS barrier → TCP gap from 48 s to 23.614 s. Timestamped idle gaps and the unconditional fixed poll sleep proved the Agent-side cause. A subsequent minimal 0.6.1 change signals isolated-lane completion to the main scheduler, joins the finished lane before advertising capacity, preserves failed-poll backoff/journal recovery, and retains configured idle polling and a default two-second minimum dispatch cadence. Configuration, target policies, systemd privileges, six capability identifiers and execution fencing are unchanged. The update follows the native digest-pinned panel workflow.
+
+Instrumentation:
+- Nullable JSON performance columns on diagnostics, steps, attempts; additive high-resolution last_dispatched_at. No historical evidence rewrite, invented backfill or new RLS table.
+- PostgreSQL clock_timestamp() encoded UTC with microseconds for request creation, planning start/end, enqueue, claim receipt/lock/assignment, accepted start, result receipt/recording, predecessor result → successor enqueue, completion and worker ticks.
+- Attempt snapshots record preceding claim poll, capacity, queued count and generation. API structured logs record monotonic handling time and receive/response-prepared wall time for authenticated claim/start/result/renew, agent/tenant IDs only; never bodies, headers, tokens or lease values.
+- Worker health adds actual work duration and loop start/end while keeping its sleep and liveness thresholds.
+- Probe duration is reported by the Agent and distinct from server start→result window. No claim that residual elapsed time is all queueing or that independent host clocks measure one-way latency.
+
+Presentation:
+- Total request-to-conclusion duration and effective reported probe sum shown separately; partial/missing measurements explicit.
+- IP addresses and probe duration separated; test-specific DNS/TCP/HTTPS/ICMP/route evidence. JSON only inside technical details.
+- HTTP 301 remains a valid HTTPS response with explicit untested redirect destination. Skipped/blocked/completed remain distinct.
+- Legacy records show available probe timings without invented detailed timestamps.
+
+Prepared skills:
+MTR: primary manual/security sources, Debian, Cloudflare, AWS, complementary StreetHosting guides; own bounded protocol/cycle/TTL contract. Numeric JSON analyzer rejects malformed, inconsistent or hostname-based hops, distinguishes destination absence and intermediate-only loss, labels short samples and RTT standard deviation honestly. No network commands from report input and no raw report storage.
+Tcpdump: exact target/interface/filter contract and duration/count/byte bounds; metadata-only design, no raw PCAP publishing or broad capture.
+Nmap: single target, explicit small port list, limited TCP connect plan; no NSE, brute-force, OS/evasion scans or automatic subnet expansion. Binary redistribution not added.
+Capabilities mtr:v1/packet_capture:v1/port_scan:v1 are prepared in the tenant catalog only, disabled and server-side non-enableable until a compatible executor/prerequisite design is delivered. Existing Agent API capability list remains unchanged. No claim of active MTR/capture/scanning on teste.
+
+Installer guide:
+Responsive editorial sections, navigation, separate prerequisites/commands/approval/daily management/advanced repair, copy command and persistent light/dark/system preference. Installer script, kit and hashes unchanged. Only exact public /instalar/guide.js is added to public distribution routes; admin ACL remains unchanged.
+
+Validation:
+Complete Central regression 219 tests / 1728 assertions. Final focused suite 9 tests / 73 assertions plus real separate-process claim and worker/result concurrency checks; schema up/down tested on disposable PostgreSQL. Two harness issues (import ordering, seeded enrolled_at) and a data-preserving rollback check were corrected; final rollback succeeds without deleting prepared skill records or bypassing forced RLS.
+18 responsive/theme screenshots, no overflow or JS exceptions; typed probe layout, hidden raw JSON, 301 scope, installer anchors/copy/theme tested. Existing live-refresh regression passed. Final stage/runtime hashes and health verified at release.
+
+Publication/rollback:
+Back up changed source, runtime files, compose, host vhost and database schema. Apply additive Laravel migration as migrator with bounded lock/statement timeouts before new code; build persistent image, atomically patch live web code respecting directory ownership and verify hashes; clear views/routes; gracefully recreate only project workers. Add only the exact installer theme script to host public distribution allowlist.
+On failure restore source/runtime/compose/vhost and workers; keep additive performance columns and disabled prepared skills in production so collected timings/data survive. Do not run destructive down migrations in production. Down migrations are tested only on a disposable database; the expanded skill capability allowlist intentionally remains if preparation data may exist. No unrelated service is changed. The justified 0.6.1 runtime rollout uses normal authorized update precheck/backup/postcheck.
+
+Final real matched-load validation, phase timings and health are recorded separately in the release evidence/report.

@@ -1,0 +1,19 @@
+@php($settings = \App\Agent\ManagedSettings::current($agent))
+@php($ack = $agent->metadata['telemetry']['settings_revision'] ?? 0)
+<section class="card" id="agent-network">
+<div class="section-head"><div><div class="eyebrow">CONEXÃO E CONFIGURAÇÕES</div><h2>IPs do Agent</h2></div><span class="chip">Revisão {{$settings['revision']}} · {{$ack === $settings['revision'] ? 'Recebida pelo Agent' : 'Aguardando confirmação do Agent'}}</span></div>
+<p>Autorize os IPs de saída da máquina do cliente para acessar a Central. A credencial do Agent também é obrigatória.</p>
+<dl class="key-values"><div><dt>Último IP de origem observado</dt><dd class="mono">{{$agent->last_seen_ip ?? 'Aguardando contato'}}</dd></div><div><dt>IPs locais informados pela máquina</dt><dd class="mono">{{implode(', ', $agent->metadata['telemetry']['local_addresses'] ?? []) ?: 'Aguardando inventário'}}</dd></div><div><dt>Servidores DNS da máquina</dt><dd class="mono">{{implode(', ', $agent->metadata['telemetry']['dns_resolvers'] ?? []) ?: 'Aguardando inventário'}}</dd></div><div><dt>Última revisão recebida</dt><dd>{{$ack ?: 'Ainda não confirmada'}} @if(version_compare($agent->version,'0.6.0','<')) · Atualize o Agent para receber configurações pelo painel.@endif</dd></div></dl>
+@if(isset($agent->metadata['pending_source_ip']))<p class="feedback error">Um contato com credencial válida foi bloqueado a partir de <strong class="mono">{{$agent->metadata['pending_source_ip']}}</strong>. Confira se pertence ao cliente e, se autorizado, acrescente o IP abaixo.</p>@endif
+@can('revoke',$agent)@if($agent->status==='active' && !$agent->revoked_at)
+<form data-preserve-edits method="post" action="{{route('agents.settings.update',$agent)}}" data-confirm="Salvar os IPs e enviar a configuração? Remover o IP usado pela máquina bloqueará sua comunicação até a ACL ser corrigida.">
+@csrf @method('PUT')<input type="hidden" name="revision" value="{{$settings['revision']}}">
+<label for="source-ips">IPs autorizados do cliente<textarea id="source-ips" name="source_ips" rows="3" required spellcheck="false" aria-describedby="source-ips-help">{{old('source_ips',implode("\n",$settings['source_ips']))}}</textarea><small id="source-ips-help">Um IPv4 ou IPv6 por linha, até 16. Inclua os dois se a máquina alternar entre IPv4 e IPv6. Com NAT, use o IP de saída para a internet.</small></label>
+<details data-detail-key="diagnostic-targets"><summary>Destinos permitidos nos diagnósticos</summary><p class="muted">Estes são os destinos dos testes, separados dos IPs que acessam a Central. A política local do Agent continua sendo respeitada.</p>
+<input type="hidden" name="auto_public_targets" value="0"><label><input type="checkbox" name="auto_public_targets" value="1" @checked(old('auto_public_targets',$settings['auto_public_targets']))> Permitir testes nos destinos públicos solicitados pelo painel</label>
+<label for="allowed-networks">Redes adicionais para testes<textarea id="allowed-networks" name="allowed_networks" rows="3" spellcheck="false" placeholder="192.168.10.0/24">{{old('allowed_networks',implode("\n",$settings['allowed_networks']))}}</textarea><small>Uma rede CIDR por linha. Adicione somente redes que este Agent pode testar.</small></label>
+<label for="allowed-dns">Domínios adicionais<textarea id="allowed-dns" name="allowed_dns_names" rows="2" spellcheck="false" placeholder="servidor.exemplo.com">{{old('allowed_dns_names',implode("\n",$settings['allowed_dns_names']))}}</textarea></label>
+</details>
+<p class="muted">A ACL de origem é aplicada na Central ao salvar. Os ajustes dos diagnósticos são enviados no próximo heartbeat, normalmente em até 20 segundos, e usados nas próximas tarefas. Não é necessário reiniciar para aplicar.</p><div class="actions"><button>Salvar e enviar ao Agent</button><a href="{{route('agents.show',$agent)}}#agent-network">Descartar alterações</a></div>
+</form>@endif @endcan
+</section>

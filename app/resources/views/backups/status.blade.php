@@ -1,0 +1,6 @@
+@if($settings['saved_at'])
+<div class="feedback success" role="status" data-r2-saved><strong>Configuração R2 salva.</strong> Último salvamento: <time datetime="{{$settings['saved_at']}}">{{\Carbon\CarbonImmutable::parse($settings['saved_at'])->timezone('America/Sao_Paulo')->format('d/m/Y H:i:s')}} (São Paulo)</time>.<p>Os campos ficam vazios por segurança. Seus dados cadastrados continuam salvos. Salvar a configuração não confirma o envio do backup.</p></div>
+@else
+<div class="feedback" role="status">Configuração R2 ainda não salva.</div>
+@endif
+<section class="card"><h2>Situação da proteção</h2><ul class="mini-list"><li><strong>Backup local</strong><span class="chip">{{$health['local']}}</span></li><li><strong>Cópia externa verificada</strong><span class="chip">{{$health['external']}}</span></li><li><strong>Credenciais R2</strong><span>{{$settings['credentials']?'Cadastradas com criptografia':'Aguardando cadastro'}}</span></li><li><strong>Chave pública de recuperação</strong><span>{{$settings['recipient']?'Cadastrada':'Pendente'}}</span></li></ul><p role="status">{{$health['message']}}</p><p class="form-note">A recuperação completa exige uma restauração em ambiente independente. Retenção e custódia externa devem ser comprovadas separadamente.</p></section>

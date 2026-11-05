@@ -1,0 +1,635 @@
+[
+  {
+    "name": "tudo_ok",
+    "profile": "SITE_LENTO",
+    "evidence": {
+      "dns_a": {
+        "ok": true,
+        "data": {
+          "answers": [
+            "127.0.0.1"
+          ],
+          "record_type": "A",
+          "duration_ms": 2
+        }
+      },
+      "dns_aaaa": {
+        "ok": true,
+        "data": {
+          "answers": [],
+          "record_type": "AAAA",
+          "duration_ms": 2,
+          "error": "nodata"
+        }
+      },
+      "tcp": {
+        "ok": true,
+        "data": {
+          "connected": true,
+          "duration_ms": 4
+        }
+      },
+      "https": {
+        "ok": true,
+        "data": {
+          "status": 200,
+          "tls": true,
+          "duration_ms": 50,
+          "resolved_ip": "127.0.0.1"
+        }
+      }
+    },
+    "expected": "NORMAL",
+    "cancelled": false
+  },
+  {
+    "name": "dns_falha",
+    "profile": "SITE_LENTO",
+    "evidence": {
+      "dns_a": {
+        "ok": false,
+        "error": "dns_failed"
+      },
+      "dns_aaaa": {
+        "ok": false,
+        "error": "dns_failed"
+      },
+      "tcp": {},
+      "https": {}
+    },
+    "expected": "INDICIO_DE_FALHA",
+    "cancelled": false
+  },
+  {
+    "name": "tcp_falha",
+    "profile": "SITE_LENTO",
+    "evidence": {
+      "dns_a": {
+        "ok": true,
+        "data": {
+          "answers": [
+            "127.0.0.1"
+          ],
+          "record_type": "A",
+          "duration_ms": 2
+        }
+      },
+      "dns_aaaa": {
+        "ok": true,
+        "data": {
+          "answers": [],
+          "record_type": "AAAA",
+          "duration_ms": 2,
+          "error": "nodata"
+        }
+      },
+      "tcp": {
+        "ok": true,
+        "data": {
+          "connected": false,
+          "duration_ms": 3000,
+          "error": "timeout"
+        }
+      },
+      "https": {}
+    },
+    "expected": "INDICIO_DE_FALHA",
+    "cancelled": false
+  },
+  {
+    "name": "https_500",
+    "profile": "SITE_LENTO",
+    "evidence": {
+      "dns_a": {
+        "ok": true,
+        "data": {
+          "answers": [
+            "127.0.0.1"
+          ],
+          "record_type": "A",
+          "duration_ms": 2
+        }
+      },
+      "dns_aaaa": {
+        "ok": true,
+        "data": {
+          "answers": [],
+          "record_type": "AAAA",
+          "duration_ms": 2,
+          "error": "nodata"
+        }
+      },
+      "tcp": {
+        "ok": true,
+        "data": {
+          "connected": true,
+          "duration_ms": 4
+        }
+      },
+      "https": {
+        "ok": true,
+        "data": {
+          "status": 500,
+          "tls": true,
+          "duration_ms": 20,
+          "resolved_ip": "127.0.0.1"
+        }
+      }
+    },
+    "expected": "INDICIO_DE_FALHA",
+    "cancelled": false
+  },
+  {
+    "name": "https_lento",
+    "profile": "SITE_LENTO",
+    "evidence": {
+      "dns_a": {
+        "ok": true,
+        "data": {
+          "answers": [
+            "127.0.0.1"
+          ],
+          "record_type": "A",
+          "duration_ms": 2
+        }
+      },
+      "dns_aaaa": {
+        "ok": true,
+        "data": {
+          "answers": [],
+          "record_type": "AAAA",
+          "duration_ms": 2,
+          "error": "nodata"
+        }
+      },
+      "tcp": {
+        "ok": true,
+        "data": {
+          "connected": true,
+          "duration_ms": 4
+        }
+      },
+      "https": {
+        "ok": true,
+        "data": {
+          "status": 200,
+          "tls": true,
+          "duration_ms": 2500,
+          "resolved_ip": "127.0.0.1"
+        }
+      }
+    },
+    "expected": "INDICIO_DE_FALHA",
+    "cancelled": false
+  },
+  {
+    "name": "icmp_bloqueado",
+    "profile": "SITE_LENTO",
+    "evidence": {
+      "dns_a": {
+        "ok": true,
+        "data": {
+          "answers": [
+            "127.0.0.1"
+          ],
+          "record_type": "A",
+          "duration_ms": 2
+        }
+      },
+      "dns_aaaa": {
+        "ok": true,
+        "data": {
+          "answers": [],
+          "record_type": "AAAA",
+          "duration_ms": 2,
+          "error": "nodata"
+        }
+      },
+      "tcp": {
+        "ok": true,
+        "data": {
+          "connected": true,
+          "duration_ms": 4
+        }
+      },
+      "https": {
+        "ok": true,
+        "data": {
+          "status": 200,
+          "tls": true,
+          "duration_ms": 50,
+          "resolved_ip": "127.0.0.1"
+        }
+      },
+      "ping": {
+        "ok": false,
+        "error": "timeout"
+      }
+    },
+    "expected": "NORMAL",
+    "cancelled": false
+  },
+  {
+    "name": "traceroute_incompleto",
+    "profile": "SITE_LENTO",
+    "evidence": {
+      "dns_a": {
+        "ok": true,
+        "data": {
+          "answers": [
+            "127.0.0.1"
+          ],
+          "record_type": "A",
+          "duration_ms": 2
+        }
+      },
+      "dns_aaaa": {
+        "ok": true,
+        "data": {
+          "answers": [],
+          "record_type": "AAAA",
+          "duration_ms": 2,
+          "error": "nodata"
+        }
+      },
+      "tcp": {
+        "ok": true,
+        "data": {
+          "connected": true,
+          "duration_ms": 4
+        }
+      },
+      "https": {
+        "ok": true,
+        "data": {
+          "status": 200,
+          "tls": true,
+          "duration_ms": 50,
+          "resolved_ip": "127.0.0.1"
+        }
+      },
+      "trace": {
+        "ok": true,
+        "data": {
+          "hops": [],
+          "reached_destination": false,
+          "duration_ms": 5000
+        }
+      }
+    },
+    "expected": "NORMAL",
+    "cancelled": false
+  },
+  {
+    "name": "agent_timeout",
+    "profile": "SITE_LENTO",
+    "evidence": {
+      "dns_a": {
+        "ok": true,
+        "data": {
+          "answers": [
+            "127.0.0.1"
+          ],
+          "record_type": "A",
+          "duration_ms": 2
+        }
+      },
+      "dns_aaaa": {
+        "ok": true,
+        "data": {
+          "answers": [],
+          "record_type": "AAAA",
+          "duration_ms": 2,
+          "error": "nodata"
+        }
+      },
+      "tcp": {
+        "ok": true,
+        "data": {
+          "connected": true,
+          "duration_ms": 4
+        }
+      },
+      "https": {
+        "ok": false,
+        "error": "execution_timeout"
+      }
+    },
+    "expected": "ERRO_DE_EXECUCAO",
+    "cancelled": false
+  },
+  {
+    "name": "ipv4_ok_ipv6_falha",
+    "profile": "SITE_LENTO",
+    "evidence": {
+      "dns_a": {
+        "ok": true,
+        "data": {
+          "answers": [
+            "127.0.0.1"
+          ],
+          "record_type": "A",
+          "duration_ms": 2
+        }
+      },
+      "dns_aaaa": {
+        "ok": false,
+        "error": "dns_failed"
+      },
+      "tcp": {
+        "ok": true,
+        "data": {
+          "connected": true,
+          "duration_ms": 4
+        }
+      },
+      "https": {
+        "ok": true,
+        "data": {
+          "status": 200,
+          "tls": true,
+          "duration_ms": 50,
+          "resolved_ip": "127.0.0.1"
+        }
+      }
+    },
+    "expected": "INDICIO_DE_FALHA",
+    "cancelled": false
+  },
+  {
+    "name": "target_invalido",
+    "profile": "SITE_LENTO",
+    "evidence": {},
+    "expected": "INCONCLUSIVO",
+    "invalid_target": "https://user:pass@example.test"
+  },
+  {
+    "name": "cancelado",
+    "profile": "SITE_LENTO",
+    "evidence": {
+      "dns_a": {
+        "ok": true,
+        "data": {
+          "answers": [
+            "127.0.0.1"
+          ],
+          "record_type": "A",
+          "duration_ms": 2
+        }
+      },
+      "dns_aaaa": {
+        "ok": true,
+        "data": {
+          "answers": [],
+          "record_type": "AAAA",
+          "duration_ms": 2,
+          "error": "nodata"
+        }
+      },
+      "tcp": {
+        "ok": true,
+        "data": {
+          "connected": true,
+          "duration_ms": 4
+        }
+      },
+      "https": {
+        "ok": true,
+        "data": {
+          "status": 200,
+          "tls": true,
+          "duration_ms": 50,
+          "resolved_ip": "127.0.0.1"
+        }
+      }
+    },
+    "expected": "INCONCLUSIVO",
+    "cancelled": true
+  },
+  {
+    "name": "tls_falha",
+    "profile": "SITE_LENTO",
+    "evidence": {
+      "dns_a": {
+        "ok": true,
+        "data": {
+          "answers": [
+            "127.0.0.1"
+          ],
+          "record_type": "A",
+          "duration_ms": 2
+        }
+      },
+      "dns_aaaa": {
+        "ok": true,
+        "data": {
+          "answers": [],
+          "record_type": "AAAA",
+          "duration_ms": 2,
+          "error": "nodata"
+        }
+      },
+      "tcp": {
+        "ok": true,
+        "data": {
+          "connected": true,
+          "duration_ms": 4
+        }
+      },
+      "https": {
+        "ok": false,
+        "error": "tls_failed"
+      }
+    },
+    "expected": "INDICIO_DE_FALHA",
+    "cancelled": false
+  },
+  {
+    "name": "google_youtube_ok",
+    "profile": "GOOGLE_YOUTUBE",
+    "evidence": {
+      "dns_a": {
+        "ok": true,
+        "data": {
+          "answers": [
+            "127.0.0.1"
+          ],
+          "record_type": "A",
+          "duration_ms": 2
+        }
+      },
+      "dns_aaaa": {
+        "ok": true,
+        "data": {
+          "answers": [],
+          "record_type": "AAAA",
+          "duration_ms": 2,
+          "error": "nodata"
+        }
+      },
+      "tcp": {
+        "ok": true,
+        "data": {
+          "connected": true,
+          "duration_ms": 4
+        }
+      },
+      "https": {
+        "ok": true,
+        "data": {
+          "status": 200,
+          "tls": true,
+          "duration_ms": 50,
+          "resolved_ip": "127.0.0.1"
+        }
+      }
+    },
+    "expected": "NORMAL",
+    "cancelled": false
+  },
+  {
+    "name": "conteudo_lento_ok",
+    "profile": "CONTEUDO_LENTO",
+    "evidence": {
+      "dns_a": {
+        "ok": true,
+        "data": {
+          "answers": [
+            "127.0.0.1"
+          ],
+          "record_type": "A",
+          "duration_ms": 2
+        }
+      },
+      "dns_aaaa": {
+        "ok": true,
+        "data": {
+          "answers": [],
+          "record_type": "AAAA",
+          "duration_ms": 2,
+          "error": "nodata"
+        }
+      },
+      "tcp": {
+        "ok": true,
+        "data": {
+          "connected": true,
+          "duration_ms": 4
+        }
+      },
+      "https": {
+        "ok": true,
+        "data": {
+          "status": 200,
+          "tls": true,
+          "duration_ms": 50,
+          "resolved_ip": "127.0.0.1"
+        }
+      }
+    },
+    "expected": "NORMAL",
+    "cancelled": false
+  },
+  {
+    "name": "site_nao_abre_ok",
+    "profile": "SITE_NAO_ABRE",
+    "evidence": {
+      "dns_a": {
+        "ok": true,
+        "data": {
+          "answers": [
+            "127.0.0.1"
+          ],
+          "record_type": "A",
+          "duration_ms": 2
+        }
+      },
+      "dns_aaaa": {
+        "ok": true,
+        "data": {
+          "answers": [],
+          "record_type": "AAAA",
+          "duration_ms": 2,
+          "error": "nodata"
+        }
+      },
+      "tcp": {
+        "ok": true,
+        "data": {
+          "connected": true,
+          "duration_ms": 4
+        }
+      },
+      "https": {
+        "ok": true,
+        "data": {
+          "status": 200,
+          "tls": true,
+          "duration_ms": 50,
+          "resolved_ip": "127.0.0.1"
+        }
+      }
+    },
+    "expected": "NORMAL",
+    "cancelled": false
+  },
+  {
+    "name": "dns_a_ok_aaaa_nodata",
+    "profile": "PROBLEMA_DNS",
+    "evidence": {
+      "dns_a": {
+        "ok": true,
+        "data": {
+          "answers": [
+            "127.0.0.1"
+          ],
+          "record_type": "A",
+          "duration_ms": 2
+        }
+      },
+      "dns_aaaa": {
+        "ok": true,
+        "data": {
+          "answers": [],
+          "record_type": "AAAA",
+          "duration_ms": 2,
+          "error": "nodata"
+        }
+      }
+    },
+    "expected": "NORMAL"
+  },
+  {
+    "name": "perda_zero",
+    "profile": "PERDA_LATENCIA",
+    "evidence": {
+      "ping": {
+        "ok": true,
+        "data": {
+          "sent": 5,
+          "received": 5,
+          "loss_percent": 0,
+          "avg_ms": 10,
+          "duration_ms": 50
+        }
+      }
+    },
+    "expected": "NORMAL"
+  },
+  {
+    "name": "perda_total",
+    "profile": "PERDA_LATENCIA",
+    "evidence": {
+      "ping": {
+        "ok": true,
+        "data": {
+          "sent": 5,
+          "received": 0,
+          "loss_percent": 100,
+          "duration_ms": 5000
+        }
+      }
+    },
+    "expected": "INDICIO_DE_FALHA"
+  }
+]

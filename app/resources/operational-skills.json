@@ -1,0 +1,278 @@
+[
+  {
+    "schema_version": 1,
+    "version": 1,
+    "reviewed_at": "2026-11-05",
+    "execution_enabled": false,
+    "status": "prepared",
+    "availability": "Preparada; executor remoto ainda não habilitado. Cadastro da skill não instala ferramenta nem altera a política local.",
+    "authorization": [
+      "Administrador define o escopo; operador executa somente alvo e parâmetros explicitamente autorizados.",
+      "Exigir capability própria, versão compatível e teste de pré-requisitos no Agent; sem fallback para shell ou outra sonda.",
+      "Usar token do Agent, tenant, fencing, lease e idempotência nativos.",
+      "Não modificar interfaces, regras de firewall ou equipamentos."
+    ],
+    "key": "mtr",
+    "title": "MTR · qualidade da rota",
+    "summary": "Mede respostas e variação de RTT por salto, em coleta finita ICMP/TCP/UDP.",
+    "capability": "mtr:v1",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target"
+      ],
+      "properties": {
+        "target": {
+          "type": "string",
+          "format": "ip"
+        },
+        "protocol": {
+          "enum": [
+            "icmp",
+            "tcp",
+            "udp"
+          ]
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "family": {
+          "enum": [
+            4,
+            6
+          ]
+        },
+        "cycles": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "max_hops": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        }
+      }
+    },
+    "workflow": [
+      "Escolher protocolo conforme o sintoma. Para serviço HTTPS, MTR TCP porta 443 complementa o teste TCP/TLS/HTTP, sem substituí-lo.",
+      "Resolver o nome uma vez, validar o IP pela política local e fixar o destino; não permitir nome/argumento começar por opção.",
+      "Executar mtr-tiny em JSON, sem DNS reverso nem ASN, com ciclos, TTL, taxa e tempo limite definidos. Ambiente fixo, removendo MTR_OPTIONS e MTR_PACKET e sem sudo.",
+      "Validar versão/patches do pacote e permissões do mtr-packet. Não enfraquecer o sandbox ou conceder capabilities automaticamente.",
+      "Normalizar salto, IP, ciclos enviados, perda de resposta, RTT médio/mínimo/máximo/desvio, protocolo, porta e chegada ao destino. Guardar JSON bruto só nos detalhes técnicos.",
+      "Marcar coleta expirada/parcial como inconclusiva; não completar relatório truncado com dados inventados."
+    ],
+    "interpretation": [
+      "Começar pelo destino efetivamente alcançado. Perda de resposta num salto intermediário, sem persistência nos seguintes, não comprova perda de tráfego encaminhado.",
+      "Perda ou aumento de RTT persistente até o destino é indício a confirmar; não localiza sozinho o equipamento culpado. Há efeitos de caminho de volta, balanceamento ECMP e amostra finita.",
+      "??? significa ausência de resposta à sonda. Destino sem resposta pode refletir filtro; correlacionar com TCP/TLS/HTTP e não declarar indisponibilidade automaticamente.",
+      "Desvio padrão de RTT não é uma medição universal de jitter de aplicações.",
+      "5 a 10 ciclos servem para triagem breve; não sustentam a mesma confiança estatística de uma coleta longa. Coletas de 100 ciclos exigem outra operação com duração e autorização próprias.",
+      "IPv4 e IPv6 são caminhos diferentes e devem ter resultados separados. Um sentido de teste não revela toda a rota de retorno."
+    ],
+    "limits": [
+      "Um destino; até 16 saltos; até 10 ciclos; intervalo mínimo 1 s; timeout até 20 s.",
+      "Sem ASN/DNS externo, modo contínuo, caminhos de helper vindos do usuário ou parâmetros livres.",
+      "Não alterar classificação dos perfis atuais com perda intermediária isolada."
+    ],
+    "sources": [
+      {
+        "title": "Manual MTR · Debian",
+        "url": "https://manpages.debian.org/trixie/mtr-tiny/mtr.8.en.html"
+      },
+      {
+        "title": "Projeto MTR · segurança do helper",
+        "url": "https://github.com/traviscross/mtr/blob/master/SECURITY"
+      },
+      {
+        "title": "Cloudflare · interpretação do MTR",
+        "url": "https://www.cloudflare.com/learning/network-layer/what-is-mtr/"
+      },
+      {
+        "title": "AWS · perda, latência e ECMP",
+        "url": "https://repost.aws/articles/ARYuHnu150R9ahMl-2hNNEVw/diagnosing-packet-loss-and-latency-with-mtr"
+      },
+      {
+        "title": "StreetHosting · guia operacional complementar",
+        "url": "https://streethosting.com.br/guias/infraestrutura/usar-mtr-diagnosticar-rede"
+      },
+      {
+        "title": "Debian · contexto de CVE-2025-49809",
+        "url": "https://security-tracker.debian.org/tracker/CVE-2025-49809"
+      },
+      {
+        "title": "StreetHosting · traceroute e limites de interpretação",
+        "url": "https://streethosting.com.br/guias/infraestrutura/traceroute-diagnosticar-rota"
+      },
+      {
+        "title": "StreetHosting · latência, variação e perda",
+        "url": "https://streethosting.com.br/guias/infraestrutura/ping-jitter-packet-loss-diferenca"
+      }
+    ],
+    "example": "mtr --tcp --port 443 --report --json --report-cycles 5 --no-dns --max-ttl 16 --interval 1 <IP_AUTORIZADO>"
+  },
+  {
+    "schema_version": 1,
+    "version": 1,
+    "reviewed_at": "2026-11-05",
+    "execution_enabled": false,
+    "status": "prepared",
+    "availability": "Preparada; executor remoto ainda não habilitado. Cadastro da skill não instala ferramenta nem altera a política local.",
+    "authorization": [
+      "Administrador define o escopo; operador executa somente alvo e parâmetros explicitamente autorizados.",
+      "Exigir capability própria, versão compatível e teste de pré-requisitos no Agent; sem fallback para shell ou outra sonda.",
+      "Usar token do Agent, tenant, fencing, lease e idempotência nativos.",
+      "Não modificar interfaces, regras de firewall ou equipamentos."
+    ],
+    "key": "tcpdump",
+    "title": "tcpdump · análise de pacotes",
+    "summary": "Captura limitada e filtrada, com análise de metadados de transporte.",
+    "capability": "packet_capture:v1",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target"
+      ],
+      "properties": {
+        "target": {
+          "type": "string",
+          "format": "ip"
+        },
+        "interface": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "protocol": {
+          "enum": [
+            "tcp",
+            "udp",
+            "icmp"
+          ]
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 15
+        },
+        "packet_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    "workflow": [
+      "Confirmar interface inventariada e um IP de escopo autorizado; construir filtro BPF a partir de campos tipados, sem expressão livre.",
+      "Captura requer pré-requisitos específicos de privilégio. O executor atual do Agent não os anuncia; não elevar seu serviço automaticamente.",
+      "Usar modo numérico, não promíscuo e coleta finita com watchdog de duração, contagem e bytes; contagem de pacotes sozinha não limita duração se não houver tráfego.",
+      "No modo inicial, retornar somente metadados validados: horário, direção, IP/porta, protocolo, flags TCP e comprimento. Não publicar linhas arbitrárias, payload ASCII/hex ou credenciais.",
+      "Não persistir PCAP bruto neste modo. Uma coleta PCAP futura exige fluxo separado, autorização, acesso restrito por tenant, expiração e auditoria.",
+      "Distinguir pacotes capturados, aceitos pelo filtro e descartados pelo kernel."
+    ],
+    "interpretation": [
+      "SYN sem resposta é uma observação local; não prova sozinho onde ocorreu o bloqueio. RST e ICMP unreachable têm significados distintos.",
+      "Retransmissões e ausência de resposta dependem do ponto de observação, amostra e captura; não representam automaticamente perda em toda a rede.",
+      "Checksum aparentemente incorreto na saída pode ser efeito de offload. Não classificar como defeito sem correlação.",
+      "Truncar snaplen não garante retirar dados de aplicação. Privacidade depende de não publicar/persistir bytes brutos e da normalização explícita."
+    ],
+    "limits": [
+      "Um IP; uma interface aprovada; uma porta quando aplicável; até 15 s; até 100 pacotes; limite de bytes obrigatório.",
+      "Proibir -A/-X/-XX, -z, -E, -F, monitor mode, interface any e arquivo/caminho fornecido pelo usuário.",
+      "Não iniciar captura geral nem incluir tráfego de outros clientes."
+    ],
+    "sources": [
+      {
+        "title": "Manual tcpdump · Debian",
+        "url": "https://manpages.debian.org/trixie/tcpdump/tcpdump.8.en.html"
+      },
+      {
+        "title": "Filtro de captura · libpcap",
+        "url": "https://manpages.debian.org/trixie/libpcap0.8/pcap-filter.7.en.html"
+      }
+    ],
+    "example": "Exemplo conceitual, com watchdog externo: tcpdump -nn -p -q -i <INTERFACE_APROVADA> -c 100 \"host <IP_AUTORIZADO> and tcp port 443\""
+  },
+  {
+    "schema_version": 1,
+    "version": 1,
+    "reviewed_at": "2026-11-05",
+    "execution_enabled": false,
+    "status": "prepared",
+    "availability": "Preparada; executor remoto ainda não habilitado. Cadastro da skill não instala ferramenta nem altera a política local.",
+    "authorization": [
+      "Administrador define o escopo; operador executa somente alvo e parâmetros explicitamente autorizados.",
+      "Exigir capability própria, versão compatível e teste de pré-requisitos no Agent; sem fallback para shell ou outra sonda.",
+      "Usar token do Agent, tenant, fencing, lease e idempotência nativos.",
+      "Não modificar interfaces, regras de firewall ou equipamentos."
+    ],
+    "key": "nmap",
+    "title": "Nmap · portas de serviço",
+    "summary": "Verificação pontual de portas TCP em alvo autorizado, quando necessária.",
+    "capability": "port_scan:v1",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target"
+      ],
+      "properties": {
+        "target": {
+          "type": "string",
+          "format": "ip"
+        },
+        "ports": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535
+          }
+        }
+      }
+    },
+    "workflow": [
+      "Confirmar um único IP autorizado e até oito portas relevantes ao chamado; não expandir alvo em CIDR, lista de hosts ou descoberta automática.",
+      "Usar TCP connect sem privilégios, modo numérico, sem descoberta adicional, com taxa, retries e timeout limitados.",
+      "Normalizar saída estruturada de forma segura, sem DTD/entidades externas e sem repassar texto de serviço não validado.",
+      "Apresentar estados open, closed, filtered e, quando aplicável a outros modos futuros, open|filtered como estados diferentes.",
+      "Verificar condições de instalação e distribuição do Nmap antes de embuti-lo num instalador comercial; não distribuir seu binário nesta entrega."
+    ],
+    "interpretation": [
+      "Porta aberta comprova aceitação TCP no escopo testado, não saúde da aplicação, validação TLS ou ausência de vulnerabilidade.",
+      "Filtered e open|filtered expressam limitações da resposta observada e não comprovam abertura ou fechamento.",
+      "Sem resposta não é sinônimo de host desligado; correlacionar com as sondas e a política aplicável."
+    ],
+    "limits": [
+      "Um IP; até oito portas; TCP connect; no máximo 10 sondas/s; até 15 s; retry limitado.",
+      "Sem scripts NSE, -A, detecção de SO, spoofing, evasão, varredura aleatória ou ampliação de rede.",
+      "Executar apenas quando útil; não substituir o teste TCP 443 simples por uma varredura automática."
+    ],
+    "sources": [
+      {
+        "title": "Nmap · técnicas de varredura",
+        "url": "https://nmap.org/book/man-port-scanning-techniques.html"
+      },
+      {
+        "title": "Nmap · referência de opções",
+        "url": "https://nmap.org/book/man-briefoptions.html"
+      },
+      {
+        "title": "Nmap · uso e distribuição",
+        "url": "https://nmap.org/book/man-legal.html"
+      }
+    ],
+    "example": "nmap -sT -Pn -n -p 443 --max-retries 1 --max-rate 10 --host-timeout 15s <IP_AUTORIZADO>"
+  }
+]

@@ -1,0 +1,47 @@
+openapi: 3.1.0
+info:
+  title: Agent Center managed-settings contract
+  version: 0.6.0
+paths:
+  /agents/{agent}/settings:
+    put:
+      summary: Save a tenant administrator's Agent settings and queue delivery
+      description: Native web-session authentication and CSRF token required; AgentPolicy administrator permission and tenant isolation enforced. Origin ACL is effective immediately; diagnostic configuration is acknowledged by subsequent heartbeat telemetry.
+      parameters:
+        - in: path
+          name: agent
+          required: true
+          schema: {type: string, format: uuid}
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [revision, source_ips, auto_public_targets, _token]
+              properties:
+                _token: {type: string}
+                revision: {type: integer, minimum: 1, maximum: 2147483646}
+                source_ips: {type: string, maxLength: 1024, description: '1–16 exact IP addresses separated by whitespace; CIDRs not accepted.'}
+                auto_public_targets: {enum: ['0', '1']}
+                allowed_networks: {type: string, maxLength: 2048, description: Up to 32 CIDRs}
+                allowed_dns_names: {type: string, maxLength: 25500, description: Up to 100 hostnames}
+      responses:
+        '302': {description: Redirect to saved Agent; unauthenticated browser redirects to login}
+        '403': {description: Insufficient role or revoked/disabled access}
+        '404': {description: Agent not present in active tenant}
+        '409': {description: Stale revision or unavailable Agent}
+        '419': {description: Missing or invalid CSRF token}
+        '422': {description: Invalid input for a JSON-accepting request; browser redirects with field errors}
+components:
+  schemas:
+    AgentSettings:
+      type: object
+      additionalProperties: false
+      required: [revision, source_ips, auto_public_targets, allowed_networks, allowed_dns_names]
+      properties:
+        revision: {type: integer, minimum: 1, maximum: 2147483647}
+        source_ips: {type: array, maxItems: 16, items: {type: string, format: ip}}
+        auto_public_targets: {type: boolean}
+        allowed_networks: {type: array, maxItems: 32, items: {type: string}}
+        allowed_dns_names: {type: array, maxItems: 100, items: {type: string}}

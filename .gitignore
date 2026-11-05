@@ -1,0 +1,8 @@
+
+app/vendor/
+app/.env*
+app/storage/
+app/bootstrap/cache/
+artifacts/
+__pycache__/
+*.pyc

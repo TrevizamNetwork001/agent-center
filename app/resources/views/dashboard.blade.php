@@ -1,0 +1,3 @@
+@extends('layout')
+@section('title','Visão geral')
+@section('content')<div class="page-header"><div><div class="eyebrow">NOC INTELLIGENCE</div><h1>Visão geral</h1><p>O essencial para observar, investigar e decidir.</p></div>@can('create',App\Models\Diagnostic::class)<a class="button" href="{{route('diagnostics.create')}}"><x-icon name="plus"/>Novo diagnóstico</a>@endcan</div><div id="dashboard-panel" @if($tenant) data-live-panel data-tenant="{{app(\App\Tenancy\TenantContext::class)->tenantId}}" data-interval="10000" @endif>@include('dashboard.content')</div>@if($tenant)@include('shared.refresh',['panel'=>'dashboard-panel'])@endif @endsection

@@ -1,0 +1,3 @@
+@extends('layout')
+@section('title','Código de cadastro do Agent')
+@section('content')<div class="card form-card"><h1>Código de cadastro do Agent</h1><p>Informe este código no instalador da máquina Linux do provedor. Ele pode ser usado uma única vez e não será exibido novamente.</p><p>Prazo de validade: {{$expiresMinutes ?? 15}} minutos.</p><pre>{{ $code }}</pre><p><a class="button" href="/instalar/">Abrir instalação e passo a passo</a></p><p>Após o envio, confira a máquina no painel e clique em Aceitar Agent. Mantenha o instalador aberto até concluir o cadastro.</p><a href="{{ route('agents.index') }}">Voltar para Agents</a></div>@endsection
