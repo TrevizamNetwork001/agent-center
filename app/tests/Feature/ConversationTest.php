@@ -254,7 +254,7 @@ class ConversationTest extends IdentityTestCase
         }$this->assertSame(Intent::Close, $d->detect('não precisa mais', State::Completed));
         $this->assertSame(Intent::Target, $d->detect('youtube.com', State::Target));
         $this->assertSame(Intent::Continue, $d->detect('mas continua travando', State::Completed));
-        $this->assertCount(12, Intent::cases());
+        $this->assertCount(13, Intent::cases());
     }
 
     public function test_message_limit_rate_limit_and_immutable_payload(): void
@@ -324,5 +324,34 @@ class ConversationTest extends IdentityTestCase
         $this->assertSame('DIAGNOSTIC_RUNNING', $c->state);
         $this->assertSame(1, Diagnostic::count());
         $this->assertSame('CONTEUDO_LENTO', app(IntentDetector::class)->profile('Testa conteúdo lento'));
+    }
+
+    public function test_mtr_request_preserves_profile_target_and_prior_diagnostic(): void
+    {
+        $c = $this->say($this->conversation(), 'Testa google.com');
+        $c = $this->finish($c);
+        $prior = $c->current_diagnostic_id;
+        $profile = $c->current_profile_id;
+        $c = $this->say($c, 'Faz um teste de rota também.');
+        $this->assertSame('WAITING_FOR_CONFIRMATION', $c->state);
+        $this->assertSame($prior, $c->current_diagnostic_id);
+        $c = $this->say($c, 'sim');
+        $d = Diagnostic::findOrFail($c->current_diagnostic_id);
+        $this->assertSame($profile, $d->profile_id);
+        $this->assertSame('google.com', $d->target);
+        $this->assertTrue($d->context['mtr_requested']);
+        $this->assertSame($prior, $d->context['related_diagnostic_id']);
+        $this->assertContains($prior, $c->context_json['diagnostic_ids']);
+    }
+
+    public function test_mtr_unavailable_explains_and_creates_no_extra_diagnostic(): void
+    {
+        $this->agent->forceFill(['capabilities' => ['agent_info', 'dns_lookup:v1', 'tcp_connect:v1', 'http_probe:v1']])->save();
+        $c = $this->say($this->conversation(), 'Testa google.com');
+        $c = $this->finish($c);
+        $count = Diagnostic::count();
+        $c = $this->say($c, 'Faz um MTR mais completo.');
+        $this->assertSame($count, Diagnostic::count());
+        $this->assertStringContainsString('MTR indisponível', ConversationMessage::latest('sequence')->first()->body);
     }
 }

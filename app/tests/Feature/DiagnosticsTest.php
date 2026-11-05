@@ -79,10 +79,10 @@ class DiagnosticsTest extends IdentityTestCase
 
     public function test_catalog_closed_and_planner_snapshot_digest_and_waves(): void
     {
-        $this->assertSame(9, Skill::count());
-        $this->assertSame(6, Profile::count());
+        $this->assertSame(10, Skill::count());
+        $this->assertSame(8, Profile::count());
         app(Catalog::class)->ensure();
-        $this->assertSame(9, Skill::count());
+        $this->assertSame(10, Skill::count());
         $d = $this->diagnostic();
         app(Engine::class)->tick();
         $plan = DiagnosticPlan::sole();

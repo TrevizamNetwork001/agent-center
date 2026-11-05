@@ -3,6 +3,8 @@
     <span class="evidence-status">Bloqueado por política · teste não executado</span>
 @elseif($step->status==='SKIPPED')
     <span class="evidence-status">Verificação dispensada neste diagnóstico</span>
+@elseif($step->capability==='mtr_path_analysis:v1' && isset($d['hops']))
+    @include('diagnostics.mtr-path', ['analysis'=>app(\App\Diagnostics\MtrPath::class)->analyze($d, $plan->document['thresholds']??[])])
 @elseif($step->capability==='dns_lookup:v1')
     <div class="probe-result"><strong>DNS {{$d['record_type']??($step->definition['input']['record_type']??'')}}</strong><div class="probe-addresses">@forelse($d['answers']??[] as $address)<code>{{$address}}</code>@empty<span>Sem respostas disponíveis</span>@endforelse</div></div>
     @if(isset($d['transport']))<span class="probe-meta">{{strtoupper($d['transport'])}} · resolvedor {{$d['resolver']}}:53 · RCODE {{$d['rcode']}}</span>@if($d['truncated'])<span>Resposta truncada · confira o teste TCP</span>@endif @endif

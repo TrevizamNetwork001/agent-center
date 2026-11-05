@@ -21,12 +21,12 @@ class Classifier
         $internal = false;
         $failure = false;
         foreach ($evidence as $key => $result) {
-            if (! in_array($key, $required, true)) {
+            if (! in_array($key, $required, true) && ! (($thresholds['mtr_requested'] ?? false) && in_array($key, ['mtr_icmp', 'mtr_tcp'], true))) {
                 continue;
             }
             $error = $result['error'] ?? $result['data']['error'] ?? null;
             $blocked = $blocked || $error === 'policy_denied';
-            $internal = $internal || in_array($error, ['internal_error', 'action_failed', 'execution_timeout', 'lease_lost'], true);
+            $internal = $internal || in_array($error, ['internal_error', 'action_failed', 'execution_timeout', 'lease_lost', 'mtr_not_installed', 'mtr_unsupported', 'mtr_invalid_input', 'mtr_invalid_output', 'mtr_output_limit', 'mtr_permission_denied', 'mtr_execution_failed'], true);
             $failure = $failure || in_array($error, ['dns_failed', 'timeout', 'connection_refused', 'tls_failed', 'unreachable'], true);
         }
         $complete = $required !== [] && collect($required)->every(fn ($key) => ($evidence[$key]['ok'] ?? false) === true);
@@ -53,6 +53,25 @@ class Classifier
             }
             $success = $complete && $dns && $tcp && ($http['status'] ?? 0) >= 200 && ($http['status'] ?? 500) < 400 && ($http['tls'] ?? false) === true;
         }
+        $paths = [];
+        foreach (['mtr_icmp', 'mtr_tcp'] as $key) {
+            if (($evidence[$key]['ok'] ?? false) === true) {
+                $paths[$key] = app(MtrPath::class)->analyze($evidence[$key]['data'], $thresholds);
+            }
+        }
+        if (str_starts_with($profile, 'MTR_')) {
+            $key = $profile === 'MTR_TCP' ? 'mtr_tcp' : 'mtr_icmp';
+            $pathClass = $paths[$key]['classification'] ?? 'INCONCLUSIVO';
+            $success = $complete && $dns && $pathClass === 'NORMAL';
+            $failure = $pathClass === 'INDICIO_DE_FALHA';
+        }
+        $failure = $failure || collect($paths)->contains(fn ($p) => $p['classification'] === 'INDICIO_DE_FALHA');
+        if (($thresholds['mtr_requested'] ?? false) && ! str_starts_with($profile, 'MTR_') && count($paths) < 2) {
+            $success = false;
+        }
+        if (($thresholds['mtr_requested'] ?? false) && collect($paths)->contains(fn ($p) => $p['classification'] === 'INCONCLUSIVO')) {
+            $success = false;
+        }
         $class = $cancelled || $executionError ? 'INCONCLUSIVO' : ($internal ? 'ERRO_DE_EXECUCAO' : ($failure ? 'INDICIO_DE_FALHA' : ($success && ! $blocked ? 'NORMAL' : 'INCONCLUSIVO')));
         $summary = match ($class) {
             'NORMAL' => self::NORMAL,
@@ -73,6 +92,13 @@ class Classifier
         };
         if ($class === 'NORMAL' && ($http['status'] ?? 0) >= 300) {
             $next[] = 'O servidor retornou um redirecionamento. O destino do redirecionamento não foi testado.';
+        }
+
+        foreach ($paths as $path) {
+            $next[] = $path['summary'];
+        }
+        if (isset($paths['mtr_icmp'], $paths['mtr_tcp']) && ! $paths['mtr_icmp']['destination_reached'] && $paths['mtr_tcp']['destination_reached']) {
+            $next[] = 'TCP/443 respondeu enquanto ICMP não confirmou o destino: isso é compatível com tratamento distinto das sondas. Não prova falha do serviço nem que ambos percorreram a mesma rota.';
         }
 
         return ['classification' => $class, 'summary' => $summary, 'evidence' => $original, 'next_steps' => $next];

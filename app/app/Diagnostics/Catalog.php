@@ -12,9 +12,9 @@ use Illuminate\Support\Str;
 
 class Catalog
 {
-    public const PROFILES = ['SITE_LENTO' => 'Site lento', 'PROBLEMA_DNS' => 'Problema DNS', 'SITE_NAO_ABRE' => 'Site não abre', 'PERDA_LATENCIA' => 'Perda / Latência', 'GOOGLE_YOUTUBE' => 'Google / YouTube', 'CONTEUDO_LENTO' => 'Conteúdo lento'];
+    public const PROFILES = ['SITE_LENTO' => 'Site lento', 'PROBLEMA_DNS' => 'Problema DNS', 'SITE_NAO_ABRE' => 'Site não abre', 'PERDA_LATENCIA' => 'Perda / Latência', 'GOOGLE_YOUTUBE' => 'Google / YouTube', 'CONTEUDO_LENTO' => 'Conteúdo lento', 'MTR_ICMP' => 'Caminho MTR · ICMP', 'MTR_TCP' => 'Caminho MTR · TCP/443'];
 
-    public const SKILLS = ['agent_info' => ['agent_info', 'Informações do Agent', 5], 'dns_lookup' => ['dns_lookup:v1', 'DNS', 8], 'tcp_connect' => ['tcp_connect:v1', 'TCP 443', 5], 'http_probe' => ['http_probe:v1', 'HTTPS', 8], 'icmp_ping' => ['icmp_ping:v1', 'Latência', 15], 'traceroute' => ['traceroute:v1', 'Rota', 15]];
+    public const SKILLS = ['agent_info' => ['agent_info', 'Informações do Agent', 5], 'dns_lookup' => ['dns_lookup:v1', 'DNS', 8], 'tcp_connect' => ['tcp_connect:v1', 'TCP 443', 5], 'http_probe' => ['http_probe:v1', 'HTTPS', 8], 'icmp_ping' => ['icmp_ping:v1', 'Latência', 15], 'traceroute' => ['traceroute:v1', 'Rota', 15], 'mtr_path' => ['mtr_path_analysis:v1', 'Caminho MTR', 20]];
 
     public function ensure(): void
     {
@@ -25,7 +25,7 @@ class Catalog
             foreach (self::SKILLS as $key => [$cap,$name,$timeout]) {
                 if (! Skill::where('key', $key)->exists()) {
                     $s = new Skill;
-                    $s->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $tenant, 'key' => $key, 'display_name' => $name, 'capability' => $cap, 'timeout' => $timeout, 'enabled' => true, 'safe' => true, 'version' => 1, 'input_schema' => ['type' => 'object', 'additionalProperties' => false, 'required' => $key === 'agent_info' ? [] : ['target'], 'properties' => ['target' => ['type' => 'string', 'maxLength' => 253], 'record_type' => ['enum' => ['A', 'AAAA']], 'transport' => ['enum' => ['udp', 'tcp']], 'resolver' => ['type' => 'string', 'format' => 'ip'], 'port' => ['const' => 443], 'url' => ['type' => 'string', 'maxLength' => 512]]], 'output_schema' => $this->outputSchema($cap)])->save();
+                    $s->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $tenant, 'key' => $key, 'display_name' => $name, 'capability' => $cap, 'timeout' => $timeout, 'enabled' => true, 'safe' => true, 'version' => 1, 'input_schema' => $key === 'mtr_path' ? MtrPath::inputSchema() : ['type' => 'object', 'additionalProperties' => false, 'required' => $key === 'agent_info' ? [] : ['target'], 'properties' => ['target' => ['type' => 'string', 'maxLength' => 253], 'record_type' => ['enum' => ['A', 'AAAA']], 'transport' => ['enum' => ['udp', 'tcp']], 'resolver' => ['type' => 'string', 'format' => 'ip'], 'port' => ['const' => 443], 'url' => ['type' => 'string', 'maxLength' => 512]]], 'output_schema' => $this->outputSchema($cap)])->save();
                     app(Audit::class)->record('skill.enabled', tenantId: $tenant, entity: 'skill', metadata: ['skill_id' => $s->id]);
                 }
             }
@@ -57,7 +57,7 @@ class Catalog
             foreach (self::PROFILES as $key => $name) {
                 if (! Profile::where('key', $key)->exists()) {
                     $p = new Profile;
-                    $p->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $tenant, 'key' => $key, 'display_name' => $name, 'description' => $key === 'GOOGLE_YOUTUBE' ? 'DNS e conectividade HTTPS ao alvo informado; não mede reprodução de vídeo.' : 'Diagnóstico limitado às evidências das etapas executadas.', 'version' => 1, 'enabled' => true, 'definition' => ['required_target' => true, 'slow_ms' => 2000, 'loss_percent' => 10, 'latency_ms' => 150, 'trace_on_failure' => true, 'optional_icmp' => true]])->save();
+                    $p->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $tenant, 'key' => $key, 'display_name' => $name, 'description' => $key === 'GOOGLE_YOUTUBE' ? 'DNS e conectividade HTTPS ao alvo informado; não mede reprodução de vídeo.' : 'Diagnóstico limitado às evidências das etapas executadas.', 'version' => 1, 'enabled' => true, 'definition' => ['required_target' => true, 'slow_ms' => 2000, 'loss_percent' => 10, 'latency_ms' => 150, 'trace_on_failure' => true, 'optional_icmp' => true, 'mtr_threshold_version' => 1, 'mtr_min_cycles' => 5, 'mtr_loss_percent' => 0, 'mtr_rtt_increase_ms' => 50, 'mtr_rtt_ratio' => 2]])->save();
                     app(Audit::class)->record('profile.created', tenantId: $tenant, entity: 'profile', metadata: ['profile_id' => $p->id]);
                 }
             }
@@ -66,6 +66,9 @@ class Catalog
 
     public function outputSchema(string $cap): array
     {
+        if ($cap === 'mtr_path_analysis:v1') {
+            return MtrPath::schema();
+        }
         $number = ['type' => 'number', 'minimum' => 0, 'maximum' => 60000];
         $ip = ['type' => 'string', 'format' => 'ip'];
         $properties = match ($cap) {

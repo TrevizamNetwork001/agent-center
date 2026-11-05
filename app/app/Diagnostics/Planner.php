@@ -43,6 +43,9 @@ class Planner
         $add = function ($key, $skill, $wave, $optional = false, $condition = 'always', $record = null) use (&$steps, $skills, $capabilities, $t) {
             $s = $skills[$skill];
             $input = ['target' => $t['host']];
+            if ($skill === 'mtr_path') {
+                $input += ['destination' => $t['host'], 'protocol' => $key === 'mtr_tcp' ? 'tcp' : 'icmp', 'cycles' => 5, 'max_hops' => 16, 'interval' => 1];
+            }
             if ($record) {
                 $input['record_type'] = $record;
             }if ($skill === 'tcp_connect') {
@@ -65,7 +68,9 @@ class Planner
             }
         }
         $network = $t['literal'] ? 'always' : 'dns_ok';
-        if ($profile->key === 'PERDA_LATENCIA') {
+        if (in_array($profile->key, ['MTR_ICMP', 'MTR_TCP'], true)) {
+            $add($profile->key === 'MTR_TCP' ? 'mtr_tcp' : 'mtr_icmp', 'mtr_path', 2, false, $network);
+        } elseif ($profile->key === 'PERDA_LATENCIA') {
             $add('ping', 'icmp_ping', 2, false, $network);
             $add('trace', 'traceroute', 3, true, 'trace_needed');
         } elseif ($profile->key !== 'PROBLEMA_DNS') {
@@ -75,7 +80,12 @@ class Planner
             $add('trace', 'traceroute', 5, true, 'trace_needed');
         }
 
-        return ['schema_version' => 1, 'profile' => $profile->key, 'profile_version' => $profile->version, 'target' => $t, 'thresholds' => [...$profile->definition, 'trace_requested' => ($context['trace_requested'] ?? false) === true, 'target_literal' => $t['literal'], 'required_steps' => array_values(array_column(array_filter($steps, fn ($step) => ! $step['optional']), 'key'))], 'steps' => $steps];
+        if (! str_starts_with($profile->key, 'MTR_') && $profile->key !== 'PROBLEMA_DNS' && ($context['mtr_requested'] ?? false) === true) {
+            $add('mtr_icmp', 'mtr_path', 6, false, $network);
+            $add('mtr_tcp', 'mtr_path', 7, false, $network);
+        }
+
+        return ['schema_version' => 1, 'profile' => $profile->key, 'profile_version' => $profile->version, 'target' => $t, 'thresholds' => [...['mtr_threshold_version' => 1, 'mtr_min_cycles' => 5, 'mtr_loss_percent' => 0, 'mtr_rtt_increase_ms' => 50, 'mtr_rtt_ratio' => 2], ...$profile->definition, 'trace_requested' => ($context['trace_requested'] ?? false) === true, 'target_literal' => $t['literal'], 'mtr_requested' => ($context['mtr_requested'] ?? false) === true, 'required_steps' => array_values(array_column(array_filter($steps, fn ($step) => ! $step['optional']), 'key'))], 'steps' => $steps];
     }
 
     public function condition(string $condition, array $evidence, array $thresholds): bool

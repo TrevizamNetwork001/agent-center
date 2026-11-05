@@ -7,7 +7,7 @@ use Illuminate\Validation\ValidationException;
 
 class Normalizer
 {
-    public const ERRORS = ['timeout', 'dns_failed', 'nodata', 'connection_refused', 'tls_failed', 'unreachable', 'policy_denied', 'action_failed', 'internal_error', 'cancelled', 'lease_lost', 'execution_timeout'];
+    public const ERRORS = ['timeout', 'dns_failed', 'nodata', 'connection_refused', 'tls_failed', 'unreachable', 'policy_denied', 'action_failed', 'internal_error', 'cancelled', 'lease_lost', 'execution_timeout', 'mtr_not_installed', 'mtr_unsupported', 'mtr_invalid_input', 'mtr_invalid_output', 'mtr_output_limit', 'mtr_permission_denied', 'mtr_execution_failed', 'mtr_rate_limited'];
 
     public function normalize(string $cap, array $r): array
     {
@@ -28,6 +28,9 @@ class Normalizer
         $d = $r['data'] ?? null;
         if (! is_array($d)) {
             $fail();
+        }
+        if ($cap === 'mtr_path_analysis:v1') {
+            return ['ok' => true, 'data' => app(MtrPath::class)->validate($d)];
         }
         $fields = match ($cap) {
             'dns_lookup:v1' => ['answers', 'record_type', 'duration_ms', 'error', 'transport', 'resolver', 'rcode', 'truncated'],'tcp_connect:v1' => ['connected', 'duration_ms', 'error'],'http_probe:v1' => ['status', 'tls', 'duration_ms', 'resolved_ip', 'error'],'icmp_ping:v1' => ['sent', 'received', 'loss_percent', 'min_ms', 'avg_ms', 'max_ms', 'duration_ms', 'error'],'traceroute:v1' => ['hops', 'reached_destination', 'duration_ms', 'error'],'agent_info' => ['version', 'hostname', 'python', 'device_operations_frozen'],default => []

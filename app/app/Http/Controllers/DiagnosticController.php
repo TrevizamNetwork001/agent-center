@@ -60,7 +60,7 @@ class DiagnosticController extends Controller
 
     public function store(DiagnosticRequest $r, Engine $engine)
     {
-        $d = $engine->create(Profile::findOrFail($r->validated('profile_id')), Agent::findOrFail($r->validated('agent_id')), $r->validated('target'), $r->user(), ['trace_requested' => $r->boolean('trace_requested')]);
+        $d = $engine->create(Profile::findOrFail($r->validated('profile_id')), Agent::findOrFail($r->validated('agent_id')), $r->validated('target'), $r->user(), ['trace_requested' => $r->boolean('trace_requested'), 'mtr_requested' => $r->boolean('mtr_requested')]);
 
         return redirect()->route('diagnostics.show', $d);
     }

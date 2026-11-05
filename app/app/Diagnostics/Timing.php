@@ -54,7 +54,7 @@ class Timing
             if ($step->result !== null) {
                 $expected++;
             }
-            $n = $step->result['data']['duration_ms'] ?? null;
+            $n = $step->result['data']['duration_ms'] ?? $step->result['data']['total_duration_ms'] ?? null;
             if (is_numeric($n) && is_finite((float) $n) && $n >= 0) {
                 $ms += (float) $n;
                 $count++;

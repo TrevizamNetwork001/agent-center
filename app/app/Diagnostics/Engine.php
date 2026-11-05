@@ -50,7 +50,7 @@ class Engine
 
         return DB::transaction(function () use ($p, $a, $target, $u, $context) {
             $d = new Diagnostic;
-            $d->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => app(TenantContext::class)->tenantId, 'profile_id' => $p->id, 'agent_id' => $a->id, 'created_by' => $u->id, 'target' => $target, 'performance' => ['requested_at' => $this->stamp()], 'context' => ['trace_requested' => ($context['trace_requested'] ?? false) === true], 'status' => 'PENDING'])->save();
+            $d->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => app(TenantContext::class)->tenantId, 'profile_id' => $p->id, 'agent_id' => $a->id, 'created_by' => $u->id, 'target' => $target, 'performance' => ['requested_at' => $this->stamp()], 'context' => ['trace_requested' => ($context['trace_requested'] ?? false) === true, 'mtr_requested' => ($context['mtr_requested'] ?? false) === true, 'related_diagnostic_id' => $context['related_diagnostic_id'] ?? null], 'status' => 'PENDING'])->save();
             $this->audit('diagnostic.created', $d, $u);
 
             return $d;
@@ -238,6 +238,9 @@ class Engine
 
                     continue;
                 }
+                if ($task->capability === 'mtr_path_analysis:v1' && AgentTask::where('agent_id', $agent->id)->where('capability', 'mtr_path_analysis:v1')->where('started_at', '>', $this->clock()->subSeconds(10))->exists()) {
+                    continue;
+                }
                 $now = $this->clock();
                 $token = bin2hex(random_bytes(32));
                 $generation = $task->generation + 1;
@@ -285,6 +288,12 @@ class Engine
                 if ($result['ok'] && $task->capability === 'http_probe:v1') {
                     abort_unless(@inet_pton($result['data']['resolved_ip']) === @inet_pton($task->input['target']), 422, 'target_mismatch');
                 }
+                if ($result['ok'] && $task->capability === 'mtr_path_analysis:v1') {
+                    foreach (['destination', 'protocol', 'cycles'] as $field) {
+                        abort_unless($result['data'][$field] === $task->input[$field], 422, 'mtr_input_mismatch');
+                    }
+                    abort_unless(@inet_pton($result['data']['resolved_ip']) === @inet_pton($task->input['target']), 422, 'target_mismatch');
+                }
                 $digest = Digest::hash($result);
                 if (in_array($a->status, ['COMPLETED', 'FAILED']) && $a->result_digest) {
                     abort_unless(hash_equals($a->result_digest, $digest), 409, 'result_conflict');
@@ -322,7 +331,7 @@ class Engine
 
                 return ['status' => 'ok', 'lease_seconds' => self::LEASE_SECONDS];
             }
-            $this->mark($a, ['result_received_at' => $received, 'result_recorded_at' => $this->stamp(), 'probe_duration_ms' => $result['data']['duration_ms'] ?? null]);
+            $this->mark($a, ['result_received_at' => $received, 'result_recorded_at' => $this->stamp(), 'probe_duration_ms' => $result['data']['duration_ms'] ?? $result['data']['total_duration_ms'] ?? null]);
             $this->mark(DiagnosticStep::findOrFail($task->step_id), ['result_received_at' => $received, 'result_recorded_at' => $this->stamp()]);
             $status = $result['ok'] ? 'COMPLETED' : 'FAILED';
             $a->forceFill(['status' => $status, 'result_digest' => $digest, 'finished_at' => $now])->save();

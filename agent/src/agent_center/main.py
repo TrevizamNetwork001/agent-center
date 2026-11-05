@@ -11,7 +11,7 @@ from pathlib import Path
 
 from . import __version__
 from .api import Client
-from .capabilities import self_check
+from .capabilities import available, self_check
 from .config import Config
 from .execution import Executor
 from .heartbeat import Heartbeat
@@ -46,7 +46,8 @@ class Runtime:
     def __init__(self, config, identity, client_factory=Client):
         self.config, self.identity = config, identity
         self.stop = threading.Event()
-        self.capabilities = self_check()
+        self_check()
+        self.capabilities = available()
         # Independent clients; never share journal, file locks or a connection with heartbeat.
         self.heartbeat = Heartbeat(
             client_factory(config.central_url, identity.token, config.timeout),

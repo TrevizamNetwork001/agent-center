@@ -21,7 +21,7 @@ class OperationalSkillsTest extends IdentityTestCase
     {
         $this->context()->forUser($this->admin);
         app(Catalog::class)->ensure();
-        $this->assertSame(9, Skill::count());
+        $this->assertSame(10, Skill::count());
         foreach (['mtr', 'tcpdump', 'nmap'] as $key) {
             $this->context()->forUser($this->admin);
             $s = Skill::where('key', $key)->sole();

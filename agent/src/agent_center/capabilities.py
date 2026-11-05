@@ -9,7 +9,7 @@ import subprocess
 import time
 import urllib.parse
 
-from . import __version__
+from . import __version__, mtr
 from .dns_transport import query as dns_query
 from .policy import authorize
 
@@ -20,6 +20,7 @@ KNOWN = (
     "tcp_connect:v1",
     "traceroute:v1",
     "http_probe:v1",
+    mtr.CAPABILITY,
 )
 
 
@@ -27,13 +28,18 @@ def available():
     return tuple(
         v
         for v in KNOWN
-        if v not in ("icmp_ping:v1", "traceroute:v1")
-        or shutil.which("ping" if v == "icmp_ping:v1" else "traceroute")
+        if (v != mtr.CAPABILITY or mtr.ready())
+        and (
+            v not in ("icmp_ping:v1", "traceroute:v1")
+            or shutil.which("ping" if v == "icmp_ping:v1" else "traceroute")
+        )
     )
 
 
 def self_check():
-    caps = available()
+    # Legacy updater validates this six-capability self-check contract.
+    # Extension negotiation uses the normal capabilities endpoint.
+    caps = tuple(c for c in available() if c != mtr.CAPABILITY)
     assert len(caps) == len(set(caps)) and set(caps) <= set(KNOWN)
     assert all(callable(HANDLERS[c]) for c in caps)
     return caps
@@ -233,7 +239,7 @@ def http(args, networks):
         conn.close()
 
 
-HANDLERS = dict(zip(KNOWN, (info, ping, dns, tcp, trace, http), strict=True))
+HANDLERS = dict(zip(KNOWN, (info, ping, dns, tcp, trace, http, mtr.collect), strict=True))
 
 
 def public_ip(value):
@@ -263,6 +269,8 @@ def execute(name, args, policy, networks=(), dns_names=(), auto_public=False):
     try:
         if not isinstance(args, dict):
             raise ValueError()
+        if name == mtr.CAPABILITY:
+            return {"ok": True, "data": mtr.collect(args, networks, dns_names)}
         if name == "dns_lookup:v1" and args.get("record_type") is not None:
             if args.get("target", "").lower().rstrip(".") not in dns_names and not (
                 auto_public and public_name(args.get("target"))
@@ -289,6 +297,8 @@ def execute(name, args, policy, networks=(), dns_names=(), auto_public=False):
                 address = ipaddress.ip_address(args["target"])
                 networks = (*networks, str(address) + ("/32" if address.version == 4 else "/128"))
         return {"ok": True, "data": HANDLERS[name](args, networks)}
+    except mtr.MtrError as error:
+        return {"ok": False, "error": str(error)}
     except TargetNotAllowed:
         return {"ok": False, "error": "policy_denied"}
     except ssl.SSLError:

@@ -80,7 +80,7 @@ class Engine
             $this->synchronize($c);
             $det = app(IntentDetector::class);
             $intent = $det->detect($body, State::from($c->state));
-            if (in_array($c->state, ['CLOSED', 'CANCELLED'], true) && in_array($intent, [Intent::Start, Intent::Another, Intent::Target], true)) {
+            if (in_array($c->state, ['CLOSED', 'CANCELLED'], true) && in_array($intent, [Intent::Start, Intent::Another, Intent::Target, Intent::Path], true)) {
                 $c = $this->create($i, (string) Str::uuid(), $c->context_json['agent_id'] ?? null);
             }
             abort_if($c->sequence >= config('conversation.max_messages'), 422, 'Limite desta conversa alcançado. Abra uma nova conversa.');
@@ -110,7 +110,26 @@ class Engine
                     $this->transition($c, State::Closed, 'closed');
                     $this->reply($c, $prefix.'Por nada. Conversa encerrada.');
                 }
-            } elseif (preg_match('/\b(mtr|ssh|huawei|bgp|shell|nmap|iperf)\b|device_/i', $safe)) {
+            } elseif ($intent === Intent::Path) {
+                $target = $det->target($safe) ?? $c->current_target;
+                $agent = Agent::where('status', 'active')->whereNull('revoked_at')->find($c->context_json['agent_id'] ?? null);
+                if (! $target || ! $agent || ! in_array('mtr_path_analysis:v1', $agent->capabilities ?? [], true)) {
+                    $this->reply($c, 'MTR indisponível neste Agent ou alvo ainda não informado. Nenhuma coleta de caminho foi iniciada.');
+                } elseif ($state === State::Running) {
+                    $this->reply($c, 'O diagnóstico atual continua. Ao concluir, solicite o MTR; as evidências serão preservadas.');
+                } else {
+                    $profile = $c->context_json['last_profile'] ?? 'SITE_LENTO';
+                    if ($profile === 'PROBLEMA_DNS') {
+                        $this->reply($c, 'O Profile DNS não inclui MTR. Selecione Caminho MTR para outro diagnóstico; as evidências DNS permanecem preservadas.');
+                        $c->save();
+
+                        return $c;
+                    }
+                    $c->context_json = [...$c->context_json, 'pending' => ['profile' => $profile, 'target' => $target, 'mtr_requested' => true]];
+                    $this->transition($c, State::Confirmation, 'execution_confirmation');
+                    $this->reply($c, 'Confirma coleta MTR ICMP e TCP/443 no alvo '.$target.'? Profile e evidências anteriores serão preservados. A política local deve autorizar o destino.');
+                }
+            } elseif (preg_match('/\b(ssh|huawei|bgp|shell|nmap|iperf)\b|device_/i', $safe)) {
                 $this->reply($c, 'Essa operação não está disponível. Nenhuma Skill ou tarefa foi executada.');
             } elseif ($intent === Intent::Confirm && ($c->context_json['confirm_cancel'] ?? false)) {
                 $this->cancel($c, $i);
@@ -134,7 +153,7 @@ class Engine
                 }
             } elseif ($intent === Intent::Confirm && $state === State::Confirmation && isset($c->context_json['pending'])) {
                 $p = $c->context_json['pending'];
-                $this->start($c, $i, $p['profile'], $p['target'], $prefix);
+                $this->start($c, $i, $p['profile'], $p['target'], $prefix, ($p['mtr_requested'] ?? false) === true);
             } elseif ($intent === Intent::Start || $intent === Intent::Another || $intent === Intent::Target) {
                 $target = $det->target($safe);
                 $profile = $intent === Intent::Target && $state === State::Target ? ($c->context_json['requested_profile'] ?? 'SITE_LENTO') : $det->profile($safe);
@@ -175,7 +194,7 @@ class Engine
         return ! collect($plan['steps'])->contains(fn ($s) => ! $s['optional'] && ! $s['available']);
     }
 
-    private function start(Conversation $c, Identity $i, string $profile, string $target, string $prefix): void
+    private function start(Conversation $c, Identity $i, string $profile, string $target, string $prefix, bool $mtr = false): void
     {
         Gate::forUser($i->user)->authorize('create', Diagnostic::class);
         app(Catalog::class)->ensure();
@@ -188,13 +207,13 @@ class Engine
 
             return;
         }
-        $plan = app(Planner::class)->plan($p, $target, $a->capabilities);
-        if (collect($plan['steps'])->contains(fn ($s) => ! $s['optional'] && ! $s['available'])) {
+        $plan = app(Planner::class)->plan($p, $target, $a->capabilities, ['mtr_requested' => $mtr]);
+        if (collect($plan['steps'])->contains(fn ($s) => (! $s['optional'] || $mtr && $s['capability'] === 'mtr_path_analysis:v1') && ! $s['available'])) {
             $this->reply($c, 'As Skills necessárias não estão disponíveis neste Agent/Profile. Nenhuma execução foi criada.');
 
             return;
         }
-        $d = app(Tasks::class)->create($p, $a, $target, $i->user);
+        $d = app(Tasks::class)->create($p, $a, $target, $i->user, ['mtr_requested' => $mtr, 'related_diagnostic_id' => $c->current_diagnostic_id]);
         $history = $c->context_json['diagnostic_ids'] ?? [];
         $history[] = $d->id;
         $c->forceFill(['current_profile_id' => $p->id, 'current_diagnostic_id' => $d->id, 'current_target' => $target, 'context_json' => ['agent_id' => $a->id, 'last_profile' => $p->key, 'diagnostic_ids' => array_slice($history, -100)]]);
