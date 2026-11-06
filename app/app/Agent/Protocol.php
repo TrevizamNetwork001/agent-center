@@ -9,9 +9,25 @@ class Protocol
 {
     public const VERSIONS = ['0.5.2', '0.5.3', '0.5.4', '0.5.5', '0.5.6', '0.5.7', '0.5.8', '0.5.9', '0.6.0', '0.6.1', '0.6.2'];
 
+    public const MTR_CONTRACT_VERSION = '2026.11.06.1';
+
     public const INSTALLER_VERSION = '0.6.1';
 
     public const CAPABILITIES = ['agent_info', 'icmp_ping:v1', 'dns_lookup:v1', 'tcp_connect:v1', 'traceroute:v1', 'http_probe:v1', 'mtr_path_analysis:v1'];
+
+    public static function mtrAvailable(Agent $agent): bool
+    {
+        return $agent->status === 'active' && ! $agent->revoked_at
+            && in_array($agent->version, self::VERSIONS, true)
+            && version_compare($agent->version ?? '0.0.0', '0.6.2', '>=')
+            && in_array('mtr_path_analysis:v1', $agent->capabilities ?? [], true)
+            && is_string($agent->metadata['mtr_capability_confirmed_at'] ?? null);
+    }
+
+    public static function executionCapabilities(Agent $agent): array
+    {
+        return array_values(array_filter($agent->capabilities ?? [], fn ($cap) => $cap !== 'mtr_path_analysis:v1' || self::mtrAvailable($agent)));
+    }
 
     public static function supportsDownloads(Agent $agent): bool
     {

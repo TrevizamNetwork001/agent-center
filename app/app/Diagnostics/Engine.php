@@ -2,6 +2,7 @@
 
 namespace App\Diagnostics;
 
+use App\Agent\Protocol;
 use App\Models\Agent;
 use App\Models\AgentOperation;
 use App\Models\AgentTask;
@@ -98,7 +99,7 @@ class Engine
             if (! $p || ! $p->enabled || ! $a || $a->deleted_at || $a->revoked_at || $a->status !== 'active') {
                 $d->forceFill(['error_code' => ! $p || ! $p->enabled ? 'profile_unavailable' : 'agent_unavailable'])->save();
             } else {
-                $doc = app(Planner::class)->plan($p, $d->target, $a->capabilities, [...($d->context ?? []), 'agent_version' => $a->version, 'dns_resolvers' => $a->metadata['telemetry']['dns_resolvers'] ?? []]);
+                $doc = app(Planner::class)->plan($p, $d->target, Protocol::executionCapabilities($a), [...($d->context ?? []), 'agent_version' => $a->version, 'dns_resolvers' => $a->metadata['telemetry']['dns_resolvers'] ?? []]);
                 $plan = new DiagnosticPlan;
                 $plan->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $d->tenant_id, 'diagnostic_id' => $d->id, 'version' => 1, 'digest' => Digest::hash($doc), 'document' => $doc, 'created_at' => $now])->save();
                 foreach ($doc['steps'] as $s) {
@@ -232,7 +233,7 @@ class Engine
                 if ($task->status !== 'QUEUED') {
                     continue;
                 }
-                if (! in_array($task->capability, $agent->capabilities, true)) {
+                if (! in_array($task->capability, Protocol::executionCapabilities($agent), true)) {
                     $task->forceFill(['status' => 'FAILED', 'finished_at' => $this->clock()])->save();
                     DiagnosticStep::whereKey($task->step_id)->update(['status' => 'BLOCKED', 'error_code' => 'capability_unavailable', 'finished_at' => $this->clock()]);
 

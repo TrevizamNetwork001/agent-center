@@ -12,9 +12,12 @@ use App\Diagnostics\MtrPath;
 use App\Diagnostics\Normalizer;
 use App\Diagnostics\Planner;
 use App\Models\Agent;
+use App\Models\AgentTask;
 use App\Models\DiagnosticConclusion;
+use App\Models\DiagnosticStep;
 use App\Models\Profile;
 use App\Models\Skill;
+use App\Web\OperationalSnapshot;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -103,7 +106,7 @@ class MtrPathTest extends IdentityTestCase
         $this->context()->forUser($this->admin);
         app(Catalog::class)->ensure();
         $agent = new Agent;
-        $agent->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $this->a->id, 'name' => 'MTR lab', 'hostname' => 'mtr-lab', 'status' => 'active', 'version' => '0.6.2', 'token_hash' => hash('sha256', random_bytes(32)), 'capabilities' => ['mtr_path_analysis:v1'], 'metadata' => ['task_protocol' => 1], 'enrolled_at' => now()])->save();
+        $agent->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $this->a->id, 'name' => 'MTR lab', 'hostname' => 'mtr-lab', 'status' => 'active', 'version' => '0.6.2', 'token_hash' => hash('sha256', random_bytes(32)), 'capabilities' => ['mtr_path_analysis:v1'], 'metadata' => ['task_protocol' => 1, 'mtr_capability_confirmed_at' => now()->toIso8601String()], 'enrolled_at' => now()])->save();
         $engine = app(Engine::class);
         $diagnostic = $engine->create(Profile::where('key', 'MTR_TCP')->sole(), $agent, '8.8.8.8', $this->admin);
         $engine->tick();
@@ -131,5 +134,32 @@ class MtrPathTest extends IdentityTestCase
         $this->assertTrue($engine->operation($agent, 'result', $payload)['duplicate']);
         $this->assertSame('COMPLETED', $diagnostic->fresh()->status);
         $this->assertSame('NORMAL', DiagnosticConclusion::where('diagnostic_id', $diagnostic->id)->sole()->classification);
+    }
+
+    public function test_agent061_or_unconfirmed_capability_never_enqueues_mtr(): void
+    {
+        $this->context()->forUser($this->admin);
+        app(Catalog::class)->ensure();
+        foreach ([['0.6.1', true], ['0.6.2', false]] as [$version,$confirmed]) {
+            $a = new Agent;
+            $a->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $this->a->id, 'name' => 'Pending MTR', 'hostname' => 'pending-mtr', 'status' => 'active', 'version' => $version, 'token_hash' => hash('sha256', random_bytes(32)), 'capabilities' => ['mtr_path_analysis:v1'], 'metadata' => ['task_protocol' => 1, 'mtr_capability_confirmed_at' => $confirmed ? now()->toIso8601String() : null], 'enrolled_at' => now()])->save();
+            $d = app(Engine::class)->create(Profile::where('key', 'MTR_TCP')->sole(), $a, '8.8.8.8', $this->admin);
+            app(Engine::class)->tick();
+            $this->assertSame(0, AgentTask::where('diagnostic_id', $d->id)->count());
+            $this->assertSame('BLOCKED', DiagnosticStep::where('diagnostic_id', $d->id)->sole()->status);
+            $this->assertSame('INCONCLUSIVO', DiagnosticConclusion::where('diagnostic_id', $d->id)->sole()->classification);
+        }
+    }
+
+    public function test_operations_counts_both_supported_agent_versions_online(): void
+    {
+        $this->context()->forUser($this->admin);
+        foreach (['0.6.1', '0.6.2'] as $version) {
+            $a = new Agent;
+            $a->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $this->a->id, 'name' => 'Online version', 'hostname' => 'online-version', 'status' => 'active', 'version' => $version, 'token_hash' => hash('sha256', random_bytes(32)), 'capabilities' => ['agent_info'], 'metadata' => ['task_protocol' => 1, 'telemetry' => ['device_operations_frozen' => true]], 'enrolled_at' => now(), 'last_heartbeat_at' => now(), 'last_poll_at' => now()])->save();
+        }
+        $snapshot = app(OperationalSnapshot::class)->get();
+        $this->assertSame(2, $snapshot['agents_online']);
+        $this->assertSame(2, $snapshot['agents_total']);
     }
 }

@@ -47,7 +47,7 @@ class ProtocolController extends Controller
     {
         $a = DB::transaction(function () use ($r, $audit) {
             $a = Agent::whereKey($r->attributes->get('agent')->id)->lockForUpdate()->firstOrFail();
-            $a->forceFill(['metadata' => [...($a->metadata ?? []), 'task_protocol' => $r->integer('task_protocol')]])->save();
+            $a->forceFill(['metadata' => [...($a->metadata ?? []), 'task_protocol' => $r->integer('task_protocol'), 'mtr_capability_confirmed_at' => in_array('mtr_path_analysis:v1', $r->validated('capabilities'), true) ? now()->toIso8601String() : null]])->save();
             if ($a->capabilities !== $r->validated('capabilities')) {
                 $a->forceFill(['capabilities' => $r->validated('capabilities')])->save();
                 $audit->record('agent.capabilities_updated', null, $a->tenant_id, 'agent', null, ['agent_id' => $a->id]);

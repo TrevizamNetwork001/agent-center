@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>@yield('title','Agent Center') · Agent Center</title><link rel="stylesheet" href="{{asset('agent-center.css')}}?v=15"><script src="{{asset('agent-center.js')}}?v=15" defer></script></head>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>@yield('title','Agent Center') · Agent Center</title><link rel="stylesheet" href="{{asset('agent-center.css')}}?v=16"><script src="{{asset('agent-center.js')}}?v=16" defer></script></head>
 <body data-theme-user="{{auth()->id() ?? 'guest'}}"><a class="skip-link" href="#main">Ir para o conteúdo</a>
 @auth<div class="app-shell"><aside class="sidebar" id="sidebar" aria-label="Navegação principal"><a href="{{route('dashboard')}}" class="brand"><span class="brand-mark" aria-hidden="true"><x-icon name="pulse"/></span><span>agentcenter<small>NETWORK OPERATIONS</small></span></a>
 <nav>

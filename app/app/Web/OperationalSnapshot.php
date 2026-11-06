@@ -2,6 +2,7 @@
 
 namespace App\Web;
 
+use App\Agent\Protocol;
 use App\Diagnostics\WorkerHealth;
 use App\Jobs\OperationsPulse;
 use App\Models\Agent;
@@ -22,7 +23,7 @@ class OperationalSnapshot
         try {
             DB::select('SELECT 1');
             $v['database'] = true;
-            $a = Agent::where('status', 'active')->whereNull('revoked_at')->selectRaw('count(*) total,count(*) FILTER (WHERE last_heartbeat_at > ? AND last_poll_at > ? AND metadata #>> \'{telemetry,device_operations_frozen}\' = \'true\' AND version IN (\'0.5.2\',\'0.5.3\',\'0.5.4\',\'0.5.5\',\'0.5.6\')) online, min(last_heartbeat_at) heartbeat,min(last_poll_at) poll,count(*) FILTER(WHERE last_heartbeat_at IS NULL) missing_heartbeat,count(*) FILTER(WHERE last_poll_at IS NULL) missing_poll', [now()->subSeconds(60), now()->subSeconds(30)])->first();
+            $a = Agent::where('status', 'active')->whereNull('revoked_at')->selectRaw('count(*) total,count(*) FILTER (WHERE last_heartbeat_at > ? AND last_poll_at > ? AND metadata #>> \'{telemetry,device_operations_frozen}\' = \'true\' AND version IN ('.implode(',', array_fill(0, count(Protocol::VERSIONS), '?')).')) online, min(last_heartbeat_at) heartbeat,min(last_poll_at) poll,count(*) FILTER(WHERE last_heartbeat_at IS NULL) missing_heartbeat,count(*) FILTER(WHERE last_poll_at IS NULL) missing_poll', [now()->subSeconds(60), now()->subSeconds(30), ...Protocol::VERSIONS])->first();
             $v['agents_total'] = (int) $a->total;
             $v['agents_online'] = (int) $a->online;
             $v['missing_heartbeat'] = (int) $a->missing_heartbeat;

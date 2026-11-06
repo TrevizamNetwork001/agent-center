@@ -19,7 +19,7 @@ for name, mode in [("helper.pyz", "mtr-helper"), ("agent.pyz", "agent")]:
 for source in (ROOT / "agent/mtr-debian13").iterdir():
     if source.is_file() and not source.name.endswith(".pyc"):
         (output / source.name).write_bytes(source.read_bytes())
-(output / "INSTALL.md").write_bytes((ROOT / "docs/MTR_SECURE_EXECUTOR.md").read_bytes())
+(output / "INSTALL.md").write_bytes((ROOT / "docs/MTR_TESTE_INSTALLATION.md").read_bytes())
 names = sorted(
     p.name
     for p in output.iterdir()

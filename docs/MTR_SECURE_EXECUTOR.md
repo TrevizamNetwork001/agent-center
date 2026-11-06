@@ -30,16 +30,14 @@ Antes de atualizar o runtime, a Central precisa estar implantada com o contrato 
 
 Verifique Debian 13, `/usr/bin/python3` 3.13, systemd e o cadastro existente. O instalador recusa outro SO/Python, hardening principal diferente, artefato adulterado, teto fora da política, caminhos inseguros e instalação anterior. Ele prepara os arquivos e o usuário isolado, **sem iniciar serviço, atualizar runtime, modificar config, identidade ou ACL**. Não é um instalador genérico de pacotes nem um mecanismo remoto de root.
 
-Conforme a solicitação de preparar também os utilitários para diagnósticos futuros, o operador pode instalar os pacotes dos repositórios oficiais Debian:
+MTR 0.95 já está instalado na VM teste. Verifique sem reinstalar:
 
 ```bash
-apt-get update
-apt-get install --no-install-recommends mtr-tiny tcpdump nmap
 mtr --version
 getcap /usr/bin/mtr-packet
 ```
 
-Isso somente instala os utilitários. Captura e varredura remota continuam desabilitadas. O helper MTR não executa tcpdump/Nmap. A instalação desses pacotes não autoriza alvos nem amplia o serviço principal.
+Este procedimento não instala nem habilita tcpdump, Nmap ou device actions.
 
 ## Instalação manual do helper
 

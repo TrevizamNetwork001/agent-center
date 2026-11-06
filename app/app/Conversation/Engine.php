@@ -2,6 +2,7 @@
 
 namespace App\Conversation;
 
+use App\Agent\Protocol;
 use App\Diagnostics\Catalog;
 use App\Diagnostics\Engine as Tasks;
 use App\Diagnostics\Planner;
@@ -113,7 +114,7 @@ class Engine
             } elseif ($intent === Intent::Path) {
                 $target = $det->target($safe) ?? $c->current_target;
                 $agent = Agent::where('status', 'active')->whereNull('revoked_at')->find($c->context_json['agent_id'] ?? null);
-                if (! $target || ! $agent || ! in_array('mtr_path_analysis:v1', $agent->capabilities ?? [], true)) {
+                if (! $target || ! $agent || ! Protocol::mtrAvailable($agent)) {
                     $this->reply($c, 'MTR indisponível neste Agent ou alvo ainda não informado. Nenhuma coleta de caminho foi iniciada.');
                 } elseif ($state === State::Running) {
                     $this->reply($c, 'O diagnóstico atual continua. Ao concluir, solicite o MTR; as evidências serão preservadas.');
@@ -189,7 +190,7 @@ class Engine
         if (! $p || ! $a || ($a->metadata['task_protocol'] ?? 0) !== 1) {
             return false;
         }
-        $plan = app(Planner::class)->plan($p, $c->current_target, $a->capabilities);
+        $plan = app(Planner::class)->plan($p, $c->current_target, Protocol::executionCapabilities($a));
 
         return ! collect($plan['steps'])->contains(fn ($s) => ! $s['optional'] && ! $s['available']);
     }
@@ -207,7 +208,7 @@ class Engine
 
             return;
         }
-        $plan = app(Planner::class)->plan($p, $target, $a->capabilities, ['mtr_requested' => $mtr]);
+        $plan = app(Planner::class)->plan($p, $target, Protocol::executionCapabilities($a), ['mtr_requested' => $mtr]);
         if (collect($plan['steps'])->contains(fn ($s) => (! $s['optional'] || $mtr && $s['capability'] === 'mtr_path_analysis:v1') && ! $s['available'])) {
             $this->reply($c, 'As Skills necessárias não estão disponíveis neste Agent/Profile. Nenhuma execução foi criada.');
 

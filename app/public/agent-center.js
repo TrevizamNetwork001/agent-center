@@ -85,3 +85,19 @@ for(const panel of document.querySelectorAll('[data-live-panel]')){
  schedule();
 }
 })();
+
+// MTR availability is a server-confirmed capability, never a catalog toggle alone.
+(() => {
+ const select=document.querySelector('[data-diagnostic-agent]');
+ if(!select)return;
+ const box=document.querySelector('[data-requires-mtr]');
+ const profile=document.querySelector('[data-diagnostic-profile]');
+ const status=document.querySelector('[data-mtr-availability]');
+ const apply=()=>{
+  const ready=select.selectedOptions[0]?.dataset.mtrReady==='1';
+  if(box){box.disabled=!ready;if(!ready)box.checked=false;}
+  profile?.querySelectorAll('[data-profile-requires-mtr="1"]').forEach(option=>{option.disabled=!ready;if(!ready&&option.selected)profile.value='';});
+  if(status)status.textContent=ready?'MTR disponível neste Agent; ACL-base e teto administrativo continuam obrigatórios.':'MTR indisponível neste Agent. Aguarde o runtime 0.6.2, helper seguro e confirmação da capability.';
+ };
+ select.addEventListener('change',apply);apply();
+})();
