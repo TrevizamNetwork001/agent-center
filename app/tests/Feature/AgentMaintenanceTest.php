@@ -147,4 +147,45 @@ class AgentMaintenanceTest extends IdentityTestCase
         $this->context()->forUser($this->admin);
         $this->assertSame(0, AgentMaintenanceAccess::count());
     }
+
+    public function test_until_revoked_requires_fresh_save_is_encrypted_audited_and_revocable(): void
+    {
+        $a = $this->agent();
+        $url = '/agents/'.$a->id.'/maintenance';
+        $this->actingAs($this->admin)->put($url, $this->data())->assertRedirect();
+        $this->context()->forUser($this->admin);
+        $access = AgentMaintenanceAccess::sole();
+        $access->forceFill(['expires_at' => now()->subHour()])->save();
+        $this->assertTrue($access->isExpired());
+        $this->put($url, ['revision' => 1, 'access_mode' => 'until_revoked'])->assertSessionHasErrors('password');
+        $this->context()->forUser($this->admin);
+        $this->assertTrue($access->fresh()->isExpired());
+        $this->put($url, array_replace($this->data(), ['revision' => 1, 'access_mode' => 'until_revoked']))->assertRedirect();
+        $this->context()->forUser($this->admin);
+        $access = $access->fresh();
+        $this->assertTrue($access->until_revoked);
+        $this->travel(2)->days();
+        $this->assertFalse($access->fresh()->isExpired());
+        $this->travelBack();
+        $this->assertStringNotContainsString($this->data()['password'], $access->getRawOriginal('password'));
+        $this->assertDatabaseHas('audit_events', ['event_type' => 'agent.maintenance_saved', 'metadata->access_mode' => 'until_revoked']);
+        $this->get($url)->assertOk()->assertSee('Até revogação')->assertDontSee($this->data()['password'], false);
+        $this->delete($url)->assertRedirect();
+        $this->context()->forUser($this->admin);
+        $this->assertSame(0, AgentMaintenanceAccess::count());
+    }
+
+    public function test_until_revoked_keeps_rbac_and_cannot_be_enabled_by_bad_input(): void
+    {
+        $a = $this->agent();
+        $url = '/agents/'.$a->id.'/maintenance';
+        $data = $this->data() + ['access_mode' => 'until_revoked'];
+        $this->actingAs($this->operator)->put($url, $data)->assertForbidden();
+        $this->flushSession();
+        $this->actingAs($this->other)->put($url, $data)->assertNotFound();
+        $this->flushSession();
+        $this->actingAs($this->admin)->put($url, array_replace($data, ['access_mode' => 'bypass']))->assertSessionHasErrors('access_mode');
+        $this->context()->forUser($this->admin);
+        $this->assertSame(0, AgentMaintenanceAccess::count());
+    }
 }

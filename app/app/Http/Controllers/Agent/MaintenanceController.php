@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class MaintenanceController extends Controller
@@ -29,7 +30,7 @@ class MaintenanceController extends Controller
         Gate::authorize('revoke', $agent);
         abort_unless($r->secure() || app()->environment('testing'), 403, 'HTTPS obrigatório para manutenção.');
         $data = $r->validate(['host' => ['required', 'ip'], 'port' => ['required', 'integer', 'between:1,65535'],
-            'username' => ['required', 'regex:/^[a-z_][a-z0-9_-]{0,31}$/D'], 'password' => ['required', 'string', 'max:1024'], 'revision' => ['required', 'integer', 'min:0']]);
+            'username' => ['required', 'regex:/^[a-z_][a-z0-9_-]{0,31}$/D'], 'password' => ['required', 'string', 'max:1024'], 'revision' => ['required', 'integer', 'min:0'], 'access_mode' => ['sometimes', Rule::in(['temporary', 'until_revoked'])]]);
         abort_unless($ssh->targetAllowed($agent, $data['host']), 403, 'Destino não autorizado para manutenção.');
         $existing = AgentMaintenanceAccess::where('agent_id', $agent->id)->first();
         abort_unless((int) ($existing?->revision ?? 0) === (int) $data['revision'], 409);
@@ -48,11 +49,11 @@ class MaintenanceController extends Controller
             $access->forceFill(['id' => $access->id ?? (string) Str::uuid(), 'tenant_id' => $agent->tenant_id, 'agent_id' => $agent->id,
                 'created_by' => $r->user()->id, 'host' => $data['host'], 'port' => $data['port'], 'username' => $data['username'],
                 'host_fingerprint' => $fingerprint, 'private_key' => null, 'password' => $data['password'], 'revision' => (int) $data['revision'] + 1,
-                'expires_at' => now()->addHour(), 'check_status' => null, 'checked_at' => null])->save();
-            $audit->record('agent.maintenance_saved', $r->user(), $agent->tenant_id, 'agent', null, ['agent_id' => $agent->id]);
+                'expires_at' => now()->addHour(), 'until_revoked' => ($data['access_mode'] ?? 'temporary') === 'until_revoked', 'check_status' => null, 'checked_at' => null])->save();
+            $audit->record('agent.maintenance_saved', $r->user(), $agent->tenant_id, 'agent', null, ['agent_id' => $agent->id, 'access_mode' => $data['access_mode'] ?? 'temporary']);
         });
 
-        return redirect()->route('agents.maintenance', $agent)->with('success', 'Acesso salvo por uma hora. Nenhuma instalação foi executada.');
+        return redirect()->route('agents.maintenance', $agent)->with('success', ($data['access_mode'] ?? 'temporary') === 'until_revoked' ? 'Acesso salvo até revogação. Nenhuma instalação foi executada.' : 'Acesso salvo por uma hora. Nenhuma instalação foi executada.');
     }
 
     public function check(Request $r, Agent $agent, MaintenanceSsh $ssh, Audit $audit)

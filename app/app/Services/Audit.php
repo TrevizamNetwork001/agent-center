@@ -15,6 +15,9 @@ class Audit
             throw new InvalidArgumentException('Evento não permitido.');
         }
         $safe = [];
+        if ($event === 'agent.maintenance_saved' && in_array($metadata['access_mode'] ?? null, ['temporary', 'until_revoked'], true)) {
+            $safe['access_mode'] = $metadata['access_mode'];
+        }
         if (in_array($metadata['reason'] ?? null, ['invalid_credentials', 'throttled'], true)) {
             $safe['reason'] = $metadata['reason'];
         }

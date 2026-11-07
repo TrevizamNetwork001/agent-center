@@ -34,7 +34,7 @@ class MaintenanceSsh
 
     public function check(AgentMaintenanceAccess $access): string
     {
-        if ($access->expires_at->isPast()) {
+        if ($access->isExpired()) {
             return 'expired';
         }
         $ssh = null;

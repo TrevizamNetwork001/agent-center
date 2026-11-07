@@ -19,7 +19,12 @@ class AgentMaintenanceAccess extends Model
 
     protected function casts(): array
     {
-        return ['private_key' => 'encrypted', 'password' => 'encrypted', 'expires_at' => 'datetime', 'checked_at' => 'datetime'];
+        return ['private_key' => 'encrypted', 'password' => 'encrypted', 'expires_at' => 'datetime', 'checked_at' => 'datetime', 'until_revoked' => 'boolean'];
+    }
+
+    public function isExpired(): bool
+    {
+        return ! $this->until_revoked && (! $this->expires_at || $this->expires_at->isPast());
     }
 
     protected static function booted(): void
