@@ -22,6 +22,10 @@ class Config:
     allowed_dns_names: tuple = ()
     config_path: str = ""
     auto_public_targets: bool = True
+    base_networks: tuple = ()
+    base_dns_names: tuple = ()
+    base_auto_public_targets: bool = True
+    managed_snapshot: dict | None = None
 
     @classmethod
     def load(cls, path: Path):
@@ -85,22 +89,39 @@ class Config:
                 or type(data.get("allow_managed_settings", True)) is not bool
             ):
                 raise ValueError()
+            local_networks = nets
+            local_names = tuple(n.lower().rstrip(".") for n in names)
+            local_auto_public = auto_public
+            managed_snapshot = None
             managed_path = paths[0] / "managed-settings.json"
             if data.get("allow_managed_settings", True) and (
                 managed_path.exists() or managed_path.is_symlink()
             ):
                 managed = normalize(read_private(managed_path))
+                managed_snapshot = {
+                    key: managed[key]
+                    for key in (
+                        "revision",
+                        "allowed_networks",
+                        "allowed_dns_names",
+                        "auto_public_targets",
+                    )
+                }
                 # Remote settings can restrict the local envelope, never enlarge it.
                 base_nets = [ipaddress.ip_network(v) for v in nets]
                 requested = [ipaddress.ip_network(v) for v in managed["allowed_networks"]]
-                nets = tuple(sorted({
-                    str(a if a.prefixlen >= b.prefixlen else b)
-                    for a in base_nets for b in requested
-                    if a.version == b.version and a.overlaps(b)
-                }))
+                nets = tuple(
+                    sorted(
+                        {
+                            str(a if a.prefixlen >= b.prefixlen else b)
+                            for a in base_nets
+                            for b in requested
+                            if a.version == b.version and a.overlaps(b)
+                        }
+                    )
+                )
                 names = sorted(
-                    {n.lower().rstrip(".") for n in names}
-                    & set(managed["allowed_dns_names"])
+                    {n.lower().rstrip(".") for n in names} & set(managed["allowed_dns_names"])
                 )
                 auto_public = auto_public and managed["auto_public_targets"]
             return cls(
@@ -112,6 +133,10 @@ class Config:
                 tuple(n.lower().rstrip(".") for n in names),
                 str(path),
                 auto_public,
+                local_networks,
+                local_names,
+                local_auto_public,
+                managed_snapshot,
             )
         except (KeyError, TypeError, ValueError) as exc:
             raise StateError("invalid_config") from exc

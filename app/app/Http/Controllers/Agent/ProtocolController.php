@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Agent;
 
 use App\Agent\ManagedSettings;
+use App\Agent\Observability;
 use App\Agent\Onboarding;
 use App\Agent\Protocol;
 use App\Diagnostics\Engine;
@@ -28,7 +29,7 @@ class ProtocolController extends Controller
     {
         $a = DB::transaction(function () use ($r) {
             $a = Agent::whereKey($r->attributes->get('agent')->id)->lockForUpdate()->firstOrFail();
-            $metadata = $a->metadata ?? [];
+            $metadata = Observability::receive($a, $r->validated());
             if ($r->has('telemetry')) {
                 $metadata['telemetry'] = [...$r->validated('telemetry'), 'collected_at' => now()->toIso8601String()];
             }
@@ -40,7 +41,7 @@ class ProtocolController extends Controller
             return $a;
         });
 
-        return response()->json(['status' => 'ok', 'policy' => Protocol::policy($a->id, ($a->metadata['task_protocol'] ?? 0) === 1, ManagedSettings::current($a))]);
+        return response()->json(['status' => 'ok', 'permission_request' => Observability::pending($a), 'policy' => Protocol::policy($a->id, ($a->metadata['task_protocol'] ?? 0) === 1, ManagedSettings::current($a))]);
     }
 
     public function capabilities(ProtocolRequest $r, Audit $audit)

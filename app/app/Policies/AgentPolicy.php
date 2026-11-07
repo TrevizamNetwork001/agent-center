@@ -31,6 +31,11 @@ class AgentPolicy
         return $this->view($u, $a) && $this->create($u);
     }
 
+    public function observe(User $u, Agent $a): bool
+    {
+        return $this->revoke($u, $a);
+    }
+
     public function delete(User $u, Agent $a): bool
     {
         return $this->revoke($u, $a) && $a->status === 'revoked' && $a->revoked_at !== null;

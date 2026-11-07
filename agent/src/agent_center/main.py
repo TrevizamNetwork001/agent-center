@@ -56,6 +56,7 @@ class Runtime:
             self.stop,
             state_dir=config.state_dir,
             agent_id=identity.agent_id,
+            config_path=config.config_path,
         )
         self.client = client_factory(config.central_url, identity.token, config.timeout)
         self.poller = Poller(self.client, identity, self.capabilities)

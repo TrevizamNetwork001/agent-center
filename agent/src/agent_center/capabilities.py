@@ -24,16 +24,19 @@ KNOWN = (
 )
 
 
-def available():
-    return tuple(
-        v
-        for v in KNOWN
-        if (v != mtr.CAPABILITY or mtr.ready())
+def capability_available(name):
+    return (
+        name in KNOWN
+        and (name != mtr.CAPABILITY or mtr.ready())
         and (
-            v not in ("icmp_ping:v1", "traceroute:v1")
-            or shutil.which("ping" if v == "icmp_ping:v1" else "traceroute")
+            name not in ("icmp_ping:v1", "traceroute:v1")
+            or bool(shutil.which("ping" if name == "icmp_ping:v1" else "traceroute"))
         )
     )
+
+
+def available():
+    return tuple(name for name in KNOWN if capability_available(name))
 
 
 def self_check():
@@ -201,7 +204,7 @@ class PinnedHTTPS(http_client.HTTPSConnection):
             raise
 
 
-def http(args, networks):
+def http_parameters(args, networks):
     p = urllib.parse.urlsplit(args["url"])
     ip = target(args.get("target", p.hostname), networks)
     if (
@@ -216,6 +219,11 @@ def http(args, networks):
         )
     ):
         raise ValueError("unsafe_url")
+    return p, ip
+
+
+def http(args, networks):
+    p, ip = http_parameters(args, networks)
     started = time.monotonic()
     conn = (
         PinnedHTTPS(p.hostname, ip, p.port or 443)
@@ -263,39 +271,57 @@ def public_name(value):
     )
 
 
+def prepare(name, args, policy, networks=(), dns_names=(), auto_public=False):
+    """Authorization shared by execution and inspection; never invokes a probe."""
+    if not authorize(name, policy, (name,) if capability_available(name) else ()):
+        raise TargetNotAllowed("policy_denied")
+    if not isinstance(args, dict):
+        raise ValueError("invalid_input")
+    if name == "dns_lookup:v1" and args.get("record_type") is not None:
+        if args.get("target", "").lower().rstrip(".") not in dns_names and not (
+            auto_public and public_name(args.get("target"))
+        ):
+            raise TargetNotAllowed("policy_denied")
+    if name == "http_probe:v1":
+        hostname = urllib.parse.urlsplit(args.get("url", "")).hostname
+        try:
+            target(hostname, networks)
+        except ValueError:
+            if hostname not in dns_names and not (auto_public and public_name(hostname)):
+                raise TargetNotAllowed("policy_denied")
+    if auto_public and name in (
+        "tcp_connect:v1",
+        "icmp_ping:v1",
+        "traceroute:v1",
+        "http_probe:v1",
+    ):
+        if name == "tcp_connect:v1" and args.get("port") != 443:
+            raise TargetNotAllowed("public_port_not_allowed")
+        if public_ip(args["target"]):
+            address = ipaddress.ip_address(args["target"])
+            networks = (*networks, str(address) + ("/32" if address.version == 4 else "/128"))
+    # These handlers previously checked numeric targets immediately before I/O.
+    # Keep that same check available to read-only inspection.
+    if name in ("icmp_ping:v1", "traceroute:v1", "tcp_connect:v1") or (
+        name == "dns_lookup:v1" and args.get("record_type") is None
+    ):
+        target(args["target"], networks)
+    if name == "http_probe:v1":
+        http_parameters(args, networks)
+    return networks
+
+
 def execute(name, args, policy, networks=(), dns_names=(), auto_public=False):
-    if not authorize(name, policy, available()):
-        return {"ok": False, "error": "policy_denied"}
     try:
-        if not isinstance(args, dict):
-            raise ValueError()
+        networks = prepare(name, args, policy, networks, dns_names, auto_public)
         if name == mtr.CAPABILITY:
             return {"ok": True, "data": mtr_client.collect(args, networks, dns_names)}
-        if name == "dns_lookup:v1" and args.get("record_type") is not None:
-            if args.get("target", "").lower().rstrip(".") not in dns_names and not (
-                auto_public and public_name(args.get("target"))
-            ):
-                return {"ok": False, "error": "policy_denied"}
-            if args.get("transport") in ("udp", "tcp"):
-                return dns_query(args)
-        if name == "http_probe:v1":
-            hostname = urllib.parse.urlsplit(args.get("url", "")).hostname
-            try:
-                target(hostname, networks)
-            except ValueError:
-                if hostname not in dns_names and not (auto_public and public_name(hostname)):
-                    return {"ok": False, "error": "policy_denied"}
-        if auto_public and name in (
-            "tcp_connect:v1",
-            "icmp_ping:v1",
-            "traceroute:v1",
-            "http_probe:v1",
+        if (
+            name == "dns_lookup:v1"
+            and args.get("record_type") is not None
+            and args.get("transport") in ("udp", "tcp")
         ):
-            if name == "tcp_connect:v1" and args.get("port") != 443:
-                raise TargetNotAllowed("public_port_not_allowed")
-            if public_ip(args["target"]):
-                address = ipaddress.ip_address(args["target"])
-                networks = (*networks, str(address) + ("/32" if address.version == 4 else "/128"))
+            return dns_query(args)
         return {"ok": True, "data": HANDLERS[name](args, networks)}
     except mtr.MtrError as error:
         return {"ok": False, "error": str(error)}

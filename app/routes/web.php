@@ -3,6 +3,7 @@
 use App\Http\Controllers\Agent\BootstrapController;
 use App\Http\Controllers\Agent\MaintenanceController;
 use App\Http\Controllers\Agent\ManagementController;
+use App\Http\Controllers\Agent\ObservabilityController;
 use App\Http\Controllers\Agent\ReleaseController;
 use App\Http\Controllers\Agent\SettingsController;
 use App\Http\Controllers\Agent\UpdateController;
@@ -45,6 +46,7 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->prefix('agents'
     Route::put('/{agent}/maintenance', [MaintenanceController::class, 'store'])->whereUuid('agent')->middleware('throttle:6,1')->name('agents.maintenance.store');
     Route::post('/{agent}/maintenance/check', [MaintenanceController::class, 'check'])->whereUuid('agent')->middleware('throttle:6,1')->name('agents.maintenance.check');
     Route::delete('/{agent}/maintenance', [MaintenanceController::class, 'destroy'])->whereUuid('agent')->name('agents.maintenance.destroy');
+    Route::post('/{agent}/permission-check', [ObservabilityController::class, 'check'])->whereUuid('agent')->middleware('throttle:6,1')->name('agents.permission-check');
     Route::put('/{agent}/settings', [SettingsController::class, 'update'])->whereUuid('agent')->name('agents.settings.update');
     Route::post('/{agent}/operations', [UpdateController::class, 'request'])->whereUuid('agent')->name('agents.operations.request');
     Route::get('/{agent}/repair-updater', [ManagementController::class, 'repairUpdater'])->whereUuid('agent')->name('agents.repair-updater');

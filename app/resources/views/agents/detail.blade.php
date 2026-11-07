@@ -10,6 +10,8 @@
 @can('revoke',$agent)@if($agent->status==='pending' && !isset($agent->metadata['onboarding']['approved']))<form method="post" action="{{route('agents.approve',$agent)}}">@csrf<p class="muted">Confira hostname, IP, fingerprint e tenant acima. Ao aceitar, você confirma que esta é a máquina autorizada.</p><input type="hidden" name="identity_reviewed" value="1"><button>Aceitar Agent</button></form>@endif @endcan</section>
 <section class="card"><h2>Inventário operacional coletado</h2><p class="muted">Dados declarados pelo Agent; processo vivo no último heartbeat não comprova serviço systemd saudável. Ausência de dado não equivale a saúde.</p><dl class="key-values">@foreach(['os','os_release','kernel','python','cpu_count','memory_total_bytes','rss_bytes','disk_free_bytes','process_alive','service_status','pid','threads','uptime_seconds','journal_ok','journal_pending','device_operations_frozen','dry_run','collected_at'] as $field)<div><dt>{{$field}}</dt><dd>@php($value=$agent->metadata['telemetry'][$field]??null){{$value===null?'Indisponível':(is_bool($value)?($value?'Sim':'Não'):$value)}}</dd></div>@endforeach</dl></section>
 
+@include('agents.observability')
+
 @include('agents.update-panel')
 @include('agents.restart')
 

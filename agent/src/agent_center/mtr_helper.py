@@ -11,7 +11,7 @@ import struct
 import time
 from pathlib import Path
 
-from . import mtr
+from . import __version__, mtr
 
 REQUEST_LIMIT = 4096
 RESPONSE_LIMIT = 65536
@@ -104,6 +104,17 @@ def locked_rate(state):
         raise mtr.MtrError("mtr_rate_limited") from None
 
 
+def authorize_layers(args, local, ceiling):
+    for layer, policy in (("base", local), ("ceiling", ceiling)):
+        try:
+            mtr.authorize(args, policy["allowed_networks"], policy["allowed_dns_names"])
+        except mtr.MtrError as error:
+            if str(error) != "policy_denied":
+                raise
+            return layer
+    return None
+
+
 def serve(connection, credentials, state, client_uid):
     deadline = time.monotonic() + 18
     peer = struct.unpack("3i", connection.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
@@ -111,6 +122,45 @@ def serve(connection, credentials, state, client_uid):
         raise mtr.MtrError("mtr_permission_denied")
     request = receive(connection)
     local, ceiling = policies(credentials)
+    if request == {"op": "observe", "protocol_version": 1}:
+        # Only allowlisted target policy fields; no paths, credentials or full configuration.
+        fields = ("allowed_networks", "allowed_dns_names")
+        return {
+            "ok": True,
+            "schema_version": 1,
+            "base": {key: local[key] for key in fields},
+            "ceiling": {key: ceiling[key] for key in fields},
+            "helper": {
+                "name": "mtr",
+                "version": __version__,
+                "installed": True,
+                "service_active": None,
+                "socket_available": True,
+                "authenticated": True,
+                "healthy": mtr.raw_ready(),
+            },
+        }
+    if (
+        set(request) == {"op", "input"}
+        and request["op"] == "check"
+        and isinstance(request["input"], dict)
+    ):
+        layer = authorize_layers(request["input"], local, ceiling)
+        if layer:
+            return {
+                "ok": False,
+                "schema_version": 1,
+                "layer": layer,
+                "reason": "POLICY_BASE_DENIED" if layer == "base" else "ADMIN_CEILING_DENIED",
+            }
+        if not mtr.raw_ready():
+            return {
+                "ok": False,
+                "schema_version": 1,
+                "layer": "helper",
+                "reason": "HELPER_UNHEALTHY",
+            }
+        return {"ok": True, "schema_version": 1}
     if request == {"op": "ready", "protocol_version": 1}:
         if not mtr.raw_ready():
             raise mtr.MtrError("mtr_permission_denied")
@@ -122,8 +172,8 @@ def serve(connection, credentials, state, client_uid):
     ):
         raise mtr.MtrError("mtr_invalid_input")
     args = request["input"]
-    for policy in (local, ceiling):
-        mtr.authorize(args, policy["allowed_networks"], policy["allowed_dns_names"])
+    if authorize_layers(args, local, ceiling):
+        raise mtr.MtrError("policy_denied")
     if not mtr.raw_ready():
         raise mtr.MtrError("mtr_permission_denied")
     rate = locked_rate(state)
