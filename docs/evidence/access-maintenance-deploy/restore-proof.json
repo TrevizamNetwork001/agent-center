@@ -1,0 +1,11 @@
+{
+  "full_backup_restoration": true,
+  "migration_up": true,
+  "migration_down": true,
+  "migration_reapply": true,
+  "existing_rows_preserved": true,
+  "no_automatic_permanence": true,
+  "old_expired_access_stays_expired": true,
+  "network": "none",
+  "no_keys_or_production_credentials_used_to_connect": true
+}

@@ -1,0 +1,92 @@
+ACCESS MAINTENANCE DEPLOY PASS
+
+ESCOPO AUTORIZADO E PUBLICADO
+Somente manutenção Até revogação, commit funcional 2a08663.
+Imagem publicada: agent-center-central:access-maintenance-2a08663-20261107.
+ID: sha256:fc4e7485b3789afcc9a673acc289f2722a72d5cb4697328184eac72daa3e3f78.
+Base preservada: agent-center-central:lifecycle-quarantine-20261107,
+sha256:6324c03915502f96d3099621fd241dac5464b5133341aa2d70e8be7654f02df9.
+
+A comparação de todas as fontes da aplicação entre as duas imagens identificou
+exatamente seis diferenças: model AgentMaintenanceAccess, MaintenanceSsh,
+MaintenanceController, view de manutenção, três linhas de auditoria do modo e
+migration 2026_11_07_180000_add_maintenance_access_lifetime.php.
+A auditoria foi derivada da fonte publicada: nenhum evento/hook de Observability
+foi antecipado. Nenhuma classe/view Observability existe na imagem publicada.
+Rotas, Auth, Policies, Agent API, protocolos, configuração e assets são iguais à
+base. Ambiente, volumes, redes e raiz de confiança foram preservados.
+
+PUBLICAÇÃO
+Migration Laravel aplicada com migrator existente e TLS, somente --path da
+migration aditiva; boolean until_revoked com default=false. Nenhuma alteração
+em RLS ou grants. Somente web recriado com Compose existente, --no-deps,
+--no-build, --pull never. Workers, nginx e PostgreSQL mantiveram os mesmos IDs.
+Cache de views foi limpo para remover template compilado anterior; sessões e
+caches de dados não foram apagados. Readiness HTTPS confirmado após a troca.
+deploy/compose.yaml registra a nova imagem para evitar retorno involuntário à
+imagem anterior num próximo up. Não usar --build com o workspace completo para
+reproduzir esta publicação restrita.
+
+CREDENCIAIS / VALIDADE
+Uma hora continua como padrão no formulário e no backend. Até revogação depende
+de escolha administrativa explícita e novo envio de senha no formulário HTTPS.
+RBAC, tenant, allowlist, fingerprint, cifragem, revisão otimista e auditoria são
+mantidos. A remoção do cadastro impede novas verificações pelo mecanismo do painel;
+não instala nem revoga chaves/contas do sistema operacional da VM.
+Nenhum acesso foi criado, convertido ou recadastrado automaticamente pelo deploy.
+
+O operador informou novo cadastro antes desta publicação. Ele já estava válido
+no snapshot anterior ao deploy. A linha atual continuou idêntica após o deploy,
+incluindo hash dos campos cifrados, revisão, timestamps e validade. Até revogação
+permaneceu false. O registro expirado histórico foi conferido no backup anterior
+e continuou expirado após a migration na restauração isolada. Não foi reativado.
+Para habilitar Até revogação, o operador deve escolher o modo e salvar pelo canal
+seguro. Nenhuma senha em claro foi acessada pelos probes ou exibida em evidências.
+
+VALIDAÇÃO
+- Restauração completa do dump atualizado em PostgreSQL descartável, --network none,
+  sem chave de aplicação de produção e com credenciais próprias do verificador.
+- Migration up/down/reapply PASS; registros anteriores preservados; zero conversão
+  automática. Modelo novo manteve o cadastro histórico expirado.
+- Regressão anterior da árvore Git limpa: 268 Laravel / 2035 assertions, 149 Python;
+  inclui cifra, RBAC, tenants, modo não padrão, expiração e remoção do cadastro.
+- HTTPS /login 200, HSTS, cookie Secure/HttpOnly/SameSite=Lax e formulário CSRF.
+- POST /login sem CSRF: 419; GET /agents e /operations sem sessão: redirecionamento.
+  Não foi submetida senha de operador para testar login em produção. A autenticação
+  por senha é coberta pelos testes isolados e seu código não foi alterado.
+- Agents, Operations Health e manutenção: renderização 200 no kernel real, com
+  usuário administrativo existente e sessão array local ao processo, sem criar
+  sessão persistente ou escrever credenciais. Campos de senha sem valor preenchido.
+- /health/live e /health/ready HTTPS: 200. Todos os containers do projeto healthy.
+- Agent continua 0.6.2, active, heartbeat/polling avançando, freeze e policy intactos.
+- Operations Health conserva ATENÇÃO preexistente; checks funcionais/infraestrutura
+  VERDE, sem NO-GO. O estado agregado não foi artificialmente promovido a VERDE.
+- Catálogo de releases e contagem de operações inalterados. 0.6.3 não publicada.
+- Logs recentes do web sem marcadores de erro de aplicação/credenciais privadas;
+  corpos dos logs não são anexados. Nenhum parâmetro de senha foi enviado em probes.
+
+BACKUP E ROLLBACK
+Backup local consistente, root-only, sem R2, descrito em
+  docs/evidence/access-maintenance-deploy/backup.json
+Dump custom com SHA256, listagem pg_restore e restauração integral verificadas.
+A cópia de verificação foi destruída com seu volume; não houve conexão externa.
+O dump restrito continua fora do Git. Nenhum backup foi restaurado em produção.
+
+Rollback preparado, não necessário nesta publicação:
+1. Criar override Compose somente services.web.image com o nome da base acima.
+2. Executar scripts/compose.sh -f /caminho/override-rollback.yaml up -d --no-deps
+   --no-build --pull never web.
+3. Executar docker exec -w /var/www/html agent-center-web-1 php artisan view:clear.
+4. Confirmar readiness HTTPS, renderização e progressão de heartbeat/polling.
+Preservar a coluna until_revoked e todos os registros; não executar migration down
+em produção, pois descartaria a preferência de validade. O código antigo respeita
+expires_at original, podendo exigir recadastro após sua expiração. Antes de nova
+ativação do modo após rollback, rever os cadastros explicitamente autorizados.
+Não restaurar o dump sobre alterações posteriores sem autorização específica.
+
+LIMITES E ESTADO FINAL
+Nenhuma conexão SSH com a VM; nenhum equipamento acessado. Agent não atualizado.
+Observability V1 não publicada nem homologada por este deploy. Nada em R2, política,
+privilégios, updater, Tasks ou Skills foi alterado. A autorização desta entrega é
+exclusiva da manutenção e não foi estendida à homologação ou rollout da 0.6.3.
+Evidências sanitizadas: docs/evidence/access-maintenance-deploy/.

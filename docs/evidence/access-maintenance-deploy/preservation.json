@@ -1,0 +1,133 @@
+{
+  "maintenance_records_before": 1,
+  "maintenance_records_after": 1,
+  "row_hashes_preserved": true,
+  "revision_before": 1,
+  "revision_after": 1,
+  "new_registration_by_operator_already_valid_before_deploy": true,
+  "until_revoked_before": false,
+  "until_revoked_after": false,
+  "expiration_preserved": true,
+  "old_expired_record_validated_in_historical_restore": true,
+  "rls_before": {
+    "enabled": true,
+    "forced": true
+  },
+  "rls_after": {
+    "enabled": true,
+    "forced": true
+  },
+  "release_catalog_unchanged": true,
+  "operations_unchanged": true,
+  "agent_version_before": "0.6.2",
+  "agent_version_after": "0.6.2",
+  "agent_policy_unchanged": true,
+  "device_freeze_after": true,
+  "health_before": "ATEN\u00c7\u00c3O",
+  "health_after": "ATEN\u00c7\u00c3O",
+  "checks_after": {
+    "laravel_web": {
+      "state": "VERDE",
+      "reason": "authenticated_request_completed"
+    },
+    "postgresql": {
+      "state": "VERDE",
+      "reason": "select_1_succeeded"
+    },
+    "postgresql_tls": {
+      "state": "VERDE",
+      "reason": "connection_tls_and_client_verification"
+    },
+    "diagnostic_worker": {
+      "state": "VERDE",
+      "reason": "functional_loop_recent"
+    },
+    "laravel_queue_worker": {
+      "state": "VERDE",
+      "reason": "health_job_completed"
+    },
+    "task_engine": {
+      "state": "VERDE",
+      "reason": "active_expired_leases"
+    },
+    "agents": {
+      "state": "VERDE",
+      "reason": "heartbeat_and_poll_coverage"
+    },
+    "nginx_external": {
+      "state": "VERDE",
+      "reason": "container_functional_health"
+    },
+    "fpm_process": {
+      "state": "VERDE",
+      "reason": "container_functional_health"
+    },
+    "postgresql_container": {
+      "state": "VERDE",
+      "reason": "container_functional_health"
+    },
+    "queue_container": {
+      "state": "VERDE",
+      "reason": "container_functional_health"
+    },
+    "diagnostic_container": {
+      "state": "VERDE",
+      "reason": "container_functional_health"
+    },
+    "web_https": {
+      "state": "VERDE",
+      "reason": "https_status_probe"
+    },
+    "agent_api_external": {
+      "state": "VERDE",
+      "reason": "https_status_probe"
+    },
+    "http_error_rate": {
+      "state": "VERDE",
+      "reason": "sanitized_status_log_5m"
+    },
+    "backup_local": {
+      "state": "VERDE",
+      "reason": "generation_integrity_verified"
+    },
+    "backup_external": {
+      "state": "VERDE",
+      "reason": "r2_encrypted_upload_download_verified"
+    },
+    "fencing_runtime": {
+      "state": "VERDE",
+      "reason": "active_attempt_generation_mismatch"
+    },
+    "agent_maintenance": {
+      "state": "VERDE",
+      "reason": "interrupted_or_stalled_operations"
+    }
+  },
+  "services_after": {
+    "web": {
+      "image": "agent-center-central:access-maintenance-2a08663-20261107",
+      "health": "healthy",
+      "same_container_as_before": false
+    },
+    "worker": {
+      "image": "agent-center-central:mtr-contract-062-final-20261106",
+      "health": "healthy",
+      "same_container_as_before": true
+    },
+    "diagnostic-worker": {
+      "image": "agent-center-central:mtr-contract-062-final-20261106",
+      "health": "healthy",
+      "same_container_as_before": true
+    },
+    "nginx": {
+      "image": "nginxinc/nginx-unprivileged:stable-alpine@sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03",
+      "health": "healthy",
+      "same_container_as_before": true
+    },
+    "postgres": {
+      "image": "postgres:17-bookworm@sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5",
+      "health": "healthy",
+      "same_container_as_before": true
+    }
+  }
+}

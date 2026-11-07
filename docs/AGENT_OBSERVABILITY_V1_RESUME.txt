@@ -1,3 +1,7 @@
+PUBLICAÇÃO POSTERIOR AUTORIZADA: somente manutenção Até revogação publicada.
+Ver ACCESS_MAINTENANCE_DEPLOY.txt. Observability/Agent 0.6.3 continuam não publicados.
+Este documento registra a preparação e reconciliação anteriores.
+
 AGENT OBSERVABILITY V1 — RETOMADA E RECONCILIAÇÃO
 
 Git reconciliado sem sobrescrever arquivos de trabalho:

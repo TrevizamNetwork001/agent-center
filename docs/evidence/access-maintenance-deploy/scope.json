@@ -1,0 +1,25 @@
+{
+  "base_image": "agent-center-central:lifecycle-quarantine-20261107",
+  "base_image_id": "sha256:6324c03915502f96d3099621fd241dac5464b5133341aa2d70e8be7654f02df9",
+  "candidate_image": "agent-center-central:maintenance-until-revoked-candidate-20261107",
+  "candidate_image_id": "sha256:fc4e7485b3789afcc9a673acc289f2722a72d5cb4697328184eac72daa3e3f78",
+  "changed_files": [
+    "app/Agent/MaintenanceSsh.php",
+    "app/Http/Controllers/Agent/MaintenanceController.php",
+    "app/Models/AgentMaintenanceAccess.php",
+    "app/Services/Audit.php",
+    "database/migrations/2026_11_07_180000_add_maintenance_access_lifetime.php",
+    "resources/views/agents/maintenance.blade.php"
+  ],
+  "only_approved_maintenance": true,
+  "observability_code_present": false,
+  "routes_protocol_auth_policies_unchanged": true,
+  "file_sha256_after": {
+    "app/Agent/MaintenanceSsh.php": "d65da74b41dec04880741d7bd1ca959980db242e17359c29c26233da4a1692df",
+    "app/Http/Controllers/Agent/MaintenanceController.php": "f0d5ce9b456a201a3fbc6c9ac15da36344bc4dfdb7f63c71733f5a4fac1b9196",
+    "app/Models/AgentMaintenanceAccess.php": "1d0c20d922097240fe42e2d7e39efe9a17d66cd7e1dc73c6b8975590be1c3f21",
+    "app/Services/Audit.php": "0ba2fe8199365f27d8388b99ececb672a0ae9cfcf9f28e466c8ddf5fcdfd9a4a",
+    "database/migrations/2026_11_07_180000_add_maintenance_access_lifetime.php": "2338f5c90ff472815f0ccc56c9a033b9e8b72a89d40be83650269199bd79d846",
+    "resources/views/agents/maintenance.blade.php": "238738f5d84b53ea005828ed9c8dc3e0422cdec249950c42d0c476f2b813fb41"
+  }
+}

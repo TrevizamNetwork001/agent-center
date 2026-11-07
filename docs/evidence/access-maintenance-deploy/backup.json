@@ -1,0 +1,9 @@
+{
+  "backup_path": "/opt/agent-center/backups/maintenance-lifetime-20261107T172035Z/before.dump",
+  "sha256": "01154bd9d1192afa661a8dc550aa87b92b3884bb695802e1a8b082b9a5e31a47",
+  "size": 408590,
+  "custom_dump_format_checked": true,
+  "restoration_tested": true,
+  "r2_used": false,
+  "database_changed": false
+}

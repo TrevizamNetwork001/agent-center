@@ -97,7 +97,7 @@ services:
     command: [php, artisan, migrate, '--force']
   web:
     <<: *app
-    image: agent-center-central:lifecycle-quarantine-20261107
+    image: agent-center-central:access-maintenance-2a08663-20261107
     environment:
       <<: *app-env
       AGENT_MAINTENANCE_TARGETS: ${AGENT_MAINTENANCE_TARGETS:-}

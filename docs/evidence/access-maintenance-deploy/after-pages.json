@@ -1,0 +1,23 @@
+{
+  "validation": "read-only kernel rendering with existing admin and process-local array session; no credential login or persistent session created",
+  "pages": {
+    "/agents": {
+      "status": 200,
+      "has_password_value": false,
+      "has_observability": false
+    },
+    "/operations": {
+      "status": 200,
+      "has_password_value": false,
+      "has_observability": false
+    },
+    "/agents/c88457e9-748f-4906-982a-166d0ee0f6d3/maintenance": {
+      "status": 200,
+      "has_password_value": false,
+      "has_observability": false,
+      "temporary_is_default": true,
+      "until_revoked_option": true,
+      "csrf": true
+    }
+  }
+}
