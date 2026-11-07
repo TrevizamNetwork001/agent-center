@@ -1,0 +1,76 @@
+AGENT OBSERVABILITY V1 — RETOMADA E RECONCILIAÇÃO
+
+Git reconciliado sem sobrescrever arquivos de trabalho:
+40ed9b8: base operacional preexistente (223 arquivos).
+f0e77ab: 16 integrações reais da Observability, separadas da base.
+2a08663: validade explícita até revogação no mecanismo de manutenção existente.
+O commit df15c23 original permanece intacto. Nenhum histórico foi reescrito.
+A fonte operacional necessária agora está no Git; o patch histórico não é mais
+pré-requisito para reconstruir a aplicação. Relatos anteriores sobre base faltante
+são superados por este registro. Documentos/artefatos históricos não relacionados
+continuam preservados fora desses commits. Nada em R2 foi modificado.
+
+Verificação: árvore Git 4ca86efe7b25b5fb4e58a84a3a8181fbfa8b8d63 extraída em /tmp.
+Dependências Composer e assets compilados locais adicionados apenas ao ambiente
+descartável. Nenhum .env, credencial real ou banco de produção foi usado nos testes.
+268 testes Laravel / 2035 assertions via scripts/test.sh, PostgreSQL isolado e
+FORCE RLS; migrations up/down PASS. 149 testes Python, usuário não-root, PASS.
+O runtime reconstruído dessa árvore é byte a byte o runtime da release assinada:
+08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480.
+Fonte SHA256 f42b67a233074925a2f0b5277e4a9cb23df88fc2383ff24caadb05e4b136c8a0.
+A mudança de manutenção é somente Central; não muda o runtime assinado do Agent.
+
+PEDIDO DE ACESSO PERMANENTE
+O mecanismo publicado possui prazo fixo de uma hora. Foi preparada opção explícita
+até revogação, mantendo modo de uma hora como padrão. Nova coluna booleana
+until_revoked=false preserva a expiração de todos os registros existentes.
+Ativar o novo modo requer envio de credencial pelo formulário HTTPS existente,
+revisão correta, administrador autorizado, tenant, allowlist e fingerprint válido.
+A senha continua cifrada, oculta das respostas e ausente dos logs; o modo fica
+registrado na auditoria. Remover o cadastro revoga o acesso pelo painel.
+Nenhuma authorized_key, porta, conta ou privilégio novo é instalado na VM.
+Não se altera artificialmente expires_at para data distante nem se usa a senha
+do cadastro vencido. Até publicar a opção e receber cadastro válido, não há acesso.
+
+PREPARAÇÃO DA PUBLICAÇÃO RESTRITA — AINDA NÃO EXECUTADA
+Imagem: agent-center-central:maintenance-until-revoked-candidate-20261107.
+Construída sobre a imagem web publicada, com fontes de manutenção comparadas à
+base por SHA256. Contém somente model, controller, serviço SSH de precheck, view,
+registro de modo na auditoria e migration aditiva. A auditoria foi derivada da
+fonte publicada para não antecipar a publicação da Observability.
+Não publica 0.6.3, não troca updater, não reinicia serviços da VM.
+
+Backup PostgreSQL consistente, local e restrito, em backup_path registrado em
+docs/evidence/observability-v1/resume/maintenance-preparation.json.
+Formato custom conferido com pg_restore --list. Restore completo desse dump não
+foi ensaiado; ele não é utilizado para povoar o laboratório. R2 não é utilizado.
+
+Após autorização específica de deploy da manutenção:
+1. Reconferir imagem base e guardar ID anterior; backup já preparado deve ser
+   refeito se houver intervalo material antes da alteração.
+2. Executar somente a migration nova com o migrator Laravel e TLS existentes.
+   Não mudar RLS, grants, banco público ou raiz de confiança.
+3. Publicar somente a imagem web restrita pelo Compose existente, --no-deps web.
+   Conferir readiness e tela de manutenção, sem mostrar senha nem abrir conexão
+   usando cadastro vencido. Reverter a imagem se readiness ou validação falhar.
+4. Operador recadastra credencial válida e escolhe Até revogação no canal seguro.
+   Só então verificar fingerprint/ambiente e preparar o laboratório isolado.
+
+Rollback da manutenção: retornar à imagem anterior e preservar a coluna/linhas.
+O código anterior respeita expires_at original; credenciais antigas não ganham
+prazo maior. Não executar down da migration em produção: remover a coluna perde
+a preferência until_revoked. Down foi testado apenas no banco descartável.
+Backup não deve ser restaurado sobre dados posteriores sem revisão específica.
+
+HOMOLOGAÇÃO AINDA PENDENTE
+Acesso temporário salvo continua expirado. Nova autorização/credencial foi
+solicitada pelo painel seguro. Nenhum acesso SSH com credencial vencida ocorreu.
+Systemd real, identidade/versão atuais da VM, backups nativos, instalação/rollback
+Lifecycle 0.6.3 e observação >=900s ainda dependem de acesso válido.
+Não reutilizar histórico 0.6.2 como prova de homologação da 0.6.3.
+O plano nativo/rollout/rollback permanece em AGENT_OBSERVABILITY_V1_CLOSURE.txt;
+a pendência Git desse documento foi resolvida pelos commits desta retomada.
+
+AGENT OBSERVABILITY V1 BLOCKED: falta acesso válido pelo mecanismo autorizado
+para iniciar homologação nativa. Até revogação está preparado/testado; disponibilizar
+essa opção exige publicação específica da manutenção, separada da release 0.6.3.

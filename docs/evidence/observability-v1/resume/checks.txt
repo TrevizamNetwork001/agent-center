@@ -1,0 +1,17 @@
+Extração limpa da árvore Git 4ca86efe7b25b5fb4e58a84a3a8181fbfa8b8d63.
+Laravel/PostgreSQL via scripts/test.sh: PASS, 268 testes, 2035 assertions.
+Inclui migrations up/down no banco descartável e FORCE RLS.
+Python: PASS, 149 testes, UID não-root 65534.
+Pint: PASS nos seis arquivos PHP de validade/manutenção.
+Ruff: PASS, agent/src e agent/tests.
+Imagem restrita da manutenção: build PASS; fonte publicada comparada à base.
+Runtime Agent reconstruído do Git: idêntico ao runtime aprovado e assinado.
+Secret scan do índice: PASS. Diff check: PASS.
+Backup Central local: formato custom validado com pg_restore --list.
+Restauração completa desse backup: não executada; dump não utilizado no laboratório.
+Nenhum arquivo de trabalho sobrescrito durante a reconciliação Git.
+Mudanças posteriores em manutenção são do pedido explícito de acesso até revogação.
+Publicação da manutenção: aguardando autorização específica de deploy.
+Credencial da VM: expirada; recadastro seguro pendente.
+Systemd/Lifecycle nativos 0.6.3 e observação 900s: não iniciados.
+Nenhuma publicação de release, atualização do Agent ou uso de R2.

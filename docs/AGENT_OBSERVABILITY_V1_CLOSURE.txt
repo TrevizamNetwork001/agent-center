@@ -1,3 +1,7 @@
+ATUALIZAÇÃO DA RETOMADA: base Git regularizada em 40ed9b8/f0e77ab;
+modo até revogação preparado em 2a08663. Ver AGENT_OBSERVABILITY_V1_RESUME.txt.
+Homologação nativa continua condicionada a acesso válido; nada publicado nesta retomada.
+
 AGENT OBSERVABILITY V1 — FECHAMENTO REVISÁVEL
 Data: 2026-11-07
 

@@ -1,0 +1,28 @@
+{
+  "base_image": "agent-center-central:lifecycle-quarantine-20261107",
+  "base_image_id": "sha256:6324c03915502f96d3099621fd241dac5464b5133341aa2d70e8be7654f02df9",
+  "published_sources_match_baseline": true,
+  "before_sha256": {
+    "app/Models/AgentMaintenanceAccess.php": "6ef1a01bf8226ad0b9f933a0b6b5fb2520f22ffe86abe0aaaa4aeae2001cf1a0",
+    "app/Agent/MaintenanceSsh.php": "38b9db7b775623af74e73f3fcfd611914717018bad8241770124d0a099e1a0ef",
+    "app/Http/Controllers/Agent/MaintenanceController.php": "a023a8ac4ff54d24021a85300eb228f1c0f368aed620fd02dd1e2652f7c79e16",
+    "resources/views/agents/maintenance.blade.php": "f7ffd2c858e4399884a7b9392b1593f6149235ce84e85648f2fd8ff76532631e",
+    "app/Services/Audit.php": "3d454a8564928005609c69e95ec1bd8121ac6611a50be19a518806608e602e76"
+  },
+  "scope": "maintenance lifetime only; no Agent/Observability rollout",
+  "deploy_executed": false,
+  "candidate_image": "agent-center-central:maintenance-until-revoked-candidate-20261107",
+  "candidate_image_id": "sha256:fc4e7485b3789afcc9a673acc289f2722a72d5cb4697328184eac72daa3e3f78",
+  "migration": "2026_11_07_180000_add_maintenance_access_lifetime.php",
+  "existing_credentials_remain_expired": true,
+  "new_secure_credential_submission_required": true,
+  "backup": {
+    "backup_path": "/opt/agent-center/backups/maintenance-lifetime-20261107T170707Z/before.dump",
+    "sha256": "c7a66b79675a853047d5a87fd5265d798d9671601d7851a2cfa0e2c08f6e2314",
+    "size": 413087,
+    "custom_dump_format_checked": true,
+    "restoration_tested": false,
+    "r2_used": false,
+    "database_changed": false
+  }
+}
