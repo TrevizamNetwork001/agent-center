@@ -1,28 +1,38 @@
-"""Build a stdlib-only zipapp with correct exit status propagation."""
+"""Deterministic zipapps built exclusively from authoritative Agent source."""
 
 import hashlib
-import pathlib
-import shutil
+import json
 import sys
-import tempfile
-import zipapp
+import zipfile
+from pathlib import Path
 
-root = pathlib.Path(__file__).resolve().parents[1]
-out = pathlib.Path(sys.argv[1]).resolve()
-module = (
-    "agent_center.update.cli"
-    if len(sys.argv) > 2 and sys.argv[2] == "updater"
-    else "agent_center.main"
-)
-with tempfile.TemporaryDirectory() as tmp:
-    stage = pathlib.Path(tmp)
-    shutil.copytree(
-        root / "src" / "agent_center",
-        stage / "agent_center",
-        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
-    )
-    (stage / "__main__.py").write_text(
-        "from " + module + " import main\nraise SystemExit(main())\n"
-    )
-    zipapp.create_archive(stage, target=out, interpreter="/usr/bin/env python3", compressed=True)
-print(hashlib.sha256(out.read_bytes()).hexdigest())
+
+def build(output, mode="agent"):
+    modules = {"mtr-helper": "agent_center.mtr_helper", "agent": "agent_center.main", "updater": "agent_center.update.cli", "remote-updater": "agent_center.update.remote"}
+    if mode not in modules:
+        raise ValueError("invalid_build_mode")
+    root = Path(__file__).resolve().parents[1] / "src"
+    sources = {}
+    for file in sorted((root / "agent_center").rglob("*.py")):
+        if file.is_symlink():
+            raise ValueError("source_symlink_forbidden")
+        data = file.read_bytes()
+        compile(data, str(file.relative_to(root)), "exec")
+        sources[file.relative_to(root).as_posix()] = data
+    source_hash = hashlib.sha256(json.dumps({name: hashlib.sha256(data).hexdigest() for name, data in sources.items()}, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    sources["__main__.py"] = ("from " + modules[mode] + " import main\nraise SystemExit(main())\n").encode()
+    output = Path(output)
+    with output.open("wb") as stream:
+        stream.write(b"#!/usr/bin/env python3\n")
+        with zipfile.ZipFile(stream, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+            for name, data in sorted(sources.items()):
+                info = zipfile.ZipInfo(name, (2026, 1, 1, 0, 0, 0))
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.external_attr = 0o100644 << 16
+                archive.writestr(info, data)
+    output.chmod(0o644)
+    return hashlib.sha256(output.read_bytes()).hexdigest(), source_hash
+
+
+if __name__ == "__main__":
+    print(build(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else "agent")[0])

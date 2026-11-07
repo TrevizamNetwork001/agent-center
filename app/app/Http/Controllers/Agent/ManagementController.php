@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Agent;
 
+use App\Agent\Protocol;
 use App\Agent\Releases;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Agent\EnrollmentRequest;
@@ -43,10 +44,21 @@ class ManagementController extends Controller
         $events = Gate::allows('view-audit') ? AuditEvent::where('metadata->agent_id', $agent->id)->with(['actor', 'tenant'])->latest('id')->limit(10)->get() : collect();
 
         if ($r->boolean('fragment')) {
-            return response()->view('agents.detail', compact('agent', 'events', 'releases', 'operations', 'enrollment', 'queuedTasks', 'lastUpdate'))->header('X-AC-Fragment', 'agent-detail');
+            return response()->view($r->boolean('updating') ? 'agents.update-content' : 'agents.detail', compact('agent', 'events', 'releases', 'operations', 'enrollment', 'queuedTasks', 'lastUpdate'))->header('X-AC-Fragment', 'agent-detail');
         }
 
-        return view('agents.show', compact('agent', 'events', 'releases', 'operations', 'enrollment', 'queuedTasks', 'lastUpdate'));
+        return view($r->boolean('updating') ? 'agents.updating' : 'agents.show', compact('agent', 'events', 'releases', 'operations', 'enrollment', 'queuedTasks', 'lastUpdate'));
+    }
+
+    public function repairUpdater(Agent $agent)
+    {
+        Gate::authorize('revoke', $agent);
+
+        if (Protocol::supportsDownloads($agent)) {
+            return redirect()->to(route('agents.show', $agent).'#agent-update');
+        }
+
+        return response()->view('agents.repair-updater', compact('agent'))->header('Cache-Control', 'no-store');
     }
 
     public function enrollment(EnrollmentRequest $r, TenantContext $c, Audit $audit)
@@ -65,7 +77,9 @@ class ManagementController extends Controller
         });
 
         // Código somente nesta resposta; não colocar em sessão/flash/logs.
-        return response()->view('agents.enrollment', compact('code'))->header('Cache-Control', 'no-store');
+        $expiresMinutes = (int) ceil($r->validated('expires_in', 900) / 60);
+
+        return response()->view('agents.enrollment', compact('code', 'expiresMinutes'))->header('Cache-Control', 'no-store');
     }
 
     public function approve(Request $r, Agent $agent, Audit $audit)
@@ -94,5 +108,18 @@ class ManagementController extends Controller
         });
 
         return redirect()->route('agents.show', $agent);
+    }
+
+    public function destroy(Request $r, Agent $agent, Audit $audit)
+    {
+        Gate::authorize('delete', $agent);
+        DB::transaction(function () use ($r, $agent, $audit) {
+            $locked = Agent::whereKey($agent->id)->lockForUpdate()->firstOrFail();
+            Gate::authorize('delete', $locked);
+            $locked->delete();
+            $audit->record('agent.deleted', $r->user(), $locked->tenant_id, 'agent', null, ['agent_id' => $locked->id]);
+        });
+
+        return redirect()->route('agents.index')->with('success', 'Agent apagado.');
     }
 }

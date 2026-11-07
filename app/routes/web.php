@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\Agent\BootstrapController;
+use App\Http\Controllers\Agent\MaintenanceController;
 use App\Http\Controllers\Agent\ManagementController;
+use App\Http\Controllers\Agent\ReleaseController;
+use App\Http\Controllers\Agent\SettingsController;
 use App\Http\Controllers\Agent\UpdateController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\AuthController;
@@ -33,19 +37,31 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->group(function 
 });
 
 Route::middleware(['auth', 'auth.session', 'password.changed'])->prefix('agents')->group(function () {
+    Route::get('/releases', [ReleaseController::class, 'index'])->name('agents.releases.index');
+    Route::post('/releases', [ReleaseController::class, 'store'])->name('agents.releases.store');
     Route::get('/', [ManagementController::class, 'index'])->name('agents.index');
     Route::post('/enrollments', [ManagementController::class, 'enrollment'])->name('agents.enrollment');
+    Route::get('/{agent}/maintenance', [MaintenanceController::class, 'show'])->whereUuid('agent')->name('agents.maintenance');
+    Route::put('/{agent}/maintenance', [MaintenanceController::class, 'store'])->whereUuid('agent')->middleware('throttle:6,1')->name('agents.maintenance.store');
+    Route::post('/{agent}/maintenance/check', [MaintenanceController::class, 'check'])->whereUuid('agent')->middleware('throttle:6,1')->name('agents.maintenance.check');
+    Route::delete('/{agent}/maintenance', [MaintenanceController::class, 'destroy'])->whereUuid('agent')->name('agents.maintenance.destroy');
+    Route::put('/{agent}/settings', [SettingsController::class, 'update'])->whereUuid('agent')->name('agents.settings.update');
     Route::post('/{agent}/operations', [UpdateController::class, 'request'])->whereUuid('agent')->name('agents.operations.request');
+    Route::get('/{agent}/repair-updater', [ManagementController::class, 'repairUpdater'])->whereUuid('agent')->name('agents.repair-updater');
     Route::post('/{agent}/operations/{operation}/approve', [UpdateController::class, 'approve'])->whereUuid(['agent', 'operation'])->name('agents.operations.approve');
+    Route::post('/{agent}/operations/{operation}/reconcile', [UpdateController::class, 'reconcile'])->whereUuid(['agent', 'operation'])->name('agents.operations.reconcile');
     Route::get('/{agent}', [ManagementController::class, 'show'])->whereUuid('agent')->name('agents.show');
     Route::post('/{agent}/approve', [ManagementController::class, 'approve'])->whereUuid('agent')->name('agents.approve');
     Route::post('/{agent}/revoke', [ManagementController::class, 'revoke'])->whereUuid('agent')->name('agents.revoke');
+    Route::delete('/{agent}', [ManagementController::class, 'destroy'])->whereUuid('agent')->name('agents.destroy');
 });
 
 Route::middleware(['auth', 'auth.session', 'password.changed'])->group(function () {
     Route::get('/diagnostics', [DiagnosticController::class, 'index'])->name('diagnostics.index');
     Route::get('/diagnostics/history', [DiagnosticController::class, 'history'])->name('diagnostics.history');
     Route::get('/profiles', [DiagnosticCatalogController::class, 'profiles'])->name('profiles.index');
+    Route::post('/skills/guides/mtr/analysis', [DiagnosticCatalogController::class, 'analyzeMtr'])->middleware('throttle:skill-analysis')->name('skills.mtr.analysis');
+    Route::get('/skills/guides/{guide}', [DiagnosticCatalogController::class, 'guide'])->where('guide', 'mtr|tcpdump|nmap')->name('skills.guide');
     Route::get('/skills', [DiagnosticCatalogController::class, 'skills'])->name('skills.index');
     Route::get('/profiles/{profile}', [DiagnosticCatalogController::class, 'show'])->whereUuid('profile')->name('profiles.show');
     Route::get('/diagnostics/create', [DiagnosticController::class, 'create'])->name('diagnostics.create');
@@ -98,3 +114,8 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->prefix('convers
 });
 
 require __DIR__.'/backups.php';
+
+Route::middleware(['auth', 'auth.session', 'password.changed'])->group(function () {
+    Route::get('/agent-requests', [BootstrapController::class, 'index'])->name('agent-requests.index');
+    Route::post('/agent-requests/{requestId}/accept', [BootstrapController::class, 'accept'])->whereUuid('requestId')->name('agent-requests.accept');
+});

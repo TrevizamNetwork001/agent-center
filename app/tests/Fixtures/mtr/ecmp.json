@@ -1,0 +1,49 @@
+{
+  "report": {
+    "mtr": {
+      "protocol": "icmp"
+    },
+    "hubs": [
+      {
+        "count": 1,
+        "host": "1.1.1.1",
+        "Loss%": 0,
+        "Snt": 5,
+        "Avg": 10,
+        "Best": 9,
+        "Wrst": 11,
+        "StDev": 1
+      },
+      {
+        "count": 2,
+        "host": "1.0.0.1",
+        "Loss%": 0,
+        "Snt": 5,
+        "Avg": 10,
+        "Best": 9,
+        "Wrst": 11,
+        "StDev": 1
+      },
+      {
+        "count": 3,
+        "host": "1.1.1.1",
+        "Loss%": 0,
+        "Snt": 5,
+        "Avg": 10,
+        "Best": 9,
+        "Wrst": 11,
+        "StDev": 1
+      },
+      {
+        "count": 4,
+        "host": "8.8.8.8",
+        "Loss%": 0,
+        "Snt": 5,
+        "Avg": 10,
+        "Best": 9,
+        "Wrst": 11,
+        "StDev": 1
+      }
+    ]
+  }
+}

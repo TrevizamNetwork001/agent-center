@@ -3,15 +3,15 @@ import getpass
 import json
 import os
 import signal
-import socket
 import sqlite3
 import sys
 import threading
+import time
 from pathlib import Path
 
 from . import __version__
 from .api import Client
-from .capabilities import self_check
+from .capabilities import available, self_check
 from .config import Config
 from .execution import Executor
 from .heartbeat import Heartbeat
@@ -46,12 +46,16 @@ class Runtime:
     def __init__(self, config, identity, client_factory=Client):
         self.config, self.identity = config, identity
         self.stop = threading.Event()
-        self.capabilities = self_check()
+        self_check()
+        self.capabilities = available()
+        self.capabilities_announced = False
         # Independent clients; never share journal, file locks or a connection with heartbeat.
         self.heartbeat = Heartbeat(
             client_factory(config.central_url, identity.token, config.timeout),
             config.heartbeat_interval,
             self.stop,
+            state_dir=config.state_dir,
+            agent_id=identity.agent_id,
         )
         self.client = client_factory(config.central_url, identity.token, config.timeout)
         self.poller = Poller(self.client, identity, self.capabilities)
@@ -85,12 +89,34 @@ class Runtime:
                 "schema_version": 1,
                 "state": state,
                 "version": __version__,
+                "capabilities": list(self.capabilities) if self.capabilities_announced else [],
+                "capabilities_announced": self.capabilities_announced,
                 "heartbeat_successes": self.heartbeat.successes,
                 "heartbeat_max_gap": self.heartbeat.max_gap,
                 "poll_successes": self.poller.successes,
                 "poll_max_gap": self.poller.max_gap,
             },
         )
+
+    def wait_for_work(self, executor, poll_started, good_poll):
+        delay = self.poller.delay(self.config.poll_interval)
+        if not good_poll:
+            # Completion cannot bypass transport/policy failure backoff.
+            self.stop.wait(delay)
+            return
+        deadline = time.monotonic() + delay
+        earliest = poll_started + min(2.0, self.config.poll_interval)
+        while not self.stop.is_set():
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                return
+            if executor.wake.wait(min(0.1, remaining)):
+                executor.wake.clear()
+                # Do not advertise capacity before the isolated lane has exited.
+                if executor.thread:
+                    executor.thread.join(timeout=0.1)
+                self.stop.wait(max(0, earliest - time.monotonic()))
+                return
 
     def run(self, logger=None):
         self.config.state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -132,21 +158,24 @@ class Runtime:
                     announced = result.ok and result.body.get("capabilities") == list(
                         self.capabilities
                     )
+                self.capabilities_announced = announced
                 executor.recover()
                 self.status("CLAIM")
+                poll_started = time.monotonic()
                 result = self.poller.poll(0 if executor.busy or journal.pending() else 1)
-                if executor.active_id in result.body.get("cancel_execution_ids", []):
+                cancellations = result.body.get("cancel_execution_ids", [])
+                if isinstance(cancellations, list) and executor.active_id in cancellations:
                     executor.cancel.set()
                 if result.ok and result.body.get("task") is not None:
                     executor.accept(result.body["task"], self.poller.policy)
-                if result.status in (401, 403):
+                if result.status in (401, 403) and result.body.get("error") != "origin_not_allowed":
                     self.status("QUARANTINED")
                     return 3
                 online = self.poller.policy.valid and announced
                 self.status("ONLINE" if online else "DEGRADED")
                 if logger and not online:
                     logger.warning("poll_unavailable")
-                self.stop.wait(self.poller.delay(self.config.poll_interval))
+                self.wait_for_work(executor, poll_started, result.ok and self.poller.policy.valid)
             self.status("STOPPED")
             return 0
         finally:
@@ -194,25 +223,17 @@ def main():
     try:
         config = Config.load(Path(args.config))
         if args.enroll:
-            if config.identity_file.exists():
-                raise StateError("identity_already_exists")
-            if not sys.stdin.isatty():
-                raise StateError("interactive_enrollment_required")
-            code = getpass.getpass("Enrollment code: ")
-            result = Client(config.central_url, timeout=config.timeout, retries=0).call(
-                "enroll",
-                {
-                    "code": code,
-                    "hostname": socket.gethostname(),
-                    "version": __version__,
-                    "capabilities": list(self_check()),
-                },
-            )
-            if not result.ok:
-                logger.error("startup_failed")
-                return 2
-            Identity.validate(result.body).save(config.identity_file)
-            return 0
+            from .onboarding import enroll
+
+            pending = config.state_dir / "enrollment.json"
+            code = None
+            if not pending.exists():
+                if not sys.stdin.isatty():
+                    raise StateError("interactive_enrollment_required")
+                code = getpass.getpass("Enrollment code: ")
+            ready = enroll(config, code)
+            print(json.dumps({"state": "ENROLLED" if ready else "AWAITING_APPROVAL"}))
+            return 0 if ready else 4
         identity = Identity.load(config.identity_file)
         runtime = Runtime(config, identity)
         for sig in (signal.SIGTERM, signal.SIGINT):

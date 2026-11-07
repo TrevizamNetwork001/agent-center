@@ -4,15 +4,37 @@ namespace App\Http\Controllers;
 
 use App\Diagnostics\Catalog;
 use App\Diagnostics\Classifier;
+use App\Diagnostics\MtrReport;
 use App\Http\Requests\CatalogRequest;
 use App\Models\Profile;
 use App\Models\Skill;
 use App\Services\Audit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class DiagnosticCatalogController extends Controller
 {
+    public function analyzeMtr(Request $r, MtrReport $reader)
+    {
+        Gate::authorize('manage-diagnostic-catalog');
+        $v = $r->validate(['target_ip' => ['required', 'ip'], 'report' => ['required', 'string', 'max:65536']]);
+        $analysis = $reader->analyze($v['report'], $v['target_ip']);
+        $definition = collect(json_decode(file_get_contents(resource_path('operational-skills.json')), true, flags: JSON_THROW_ON_ERROR))->firstWhere('key', 'mtr');
+
+        return response()->view('diagnostics.skill-guide', compact('definition', 'analysis'))->header('Cache-Control', 'no-store');
+    }
+
+    public function guide(string $guide)
+    {
+        Gate::authorize('manage-diagnostic-catalog');
+        $definitions = collect(json_decode(file_get_contents(resource_path('operational-skills.json')), true, flags: JSON_THROW_ON_ERROR));
+        $definition = $definitions->firstWhere('key', $guide);
+        abort_unless($definition, 404);
+
+        return view('diagnostics.skill-guide', compact('definition'));
+    }
+
     public function index()
     {
         Gate::authorize('manage-diagnostic-catalog');
@@ -61,6 +83,7 @@ class DiagnosticCatalogController extends Controller
     {
         DB::transaction(function () use ($r, $skill, $audit) {
             $skill = Skill::whereKey($skill->id)->lockForUpdate()->firstOrFail();
+            abort_if(in_array($skill->key, ['mtr', 'tcpdump', 'nmap'], true) && $r->boolean('enabled'), 409, 'Executor não habilitado para esta skill. A política local foi preservada.');
             $skill->forceFill(['enabled' => $r->boolean('enabled'), 'version' => $skill->version + 1])->save();
             $audit->record($skill->enabled ? 'skill.enabled' : 'skill.disabled', $r->user(), $skill->tenant_id, 'skill', metadata: ['skill_id' => $skill->id]);
         });

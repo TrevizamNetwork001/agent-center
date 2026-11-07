@@ -149,4 +149,26 @@ class AgentApiTest extends IdentityTestCase
             $this->assertSame('42501', $e->getCode());
         }
     }
+
+    public function test_mtr_requires_authenticated_announcement_and_compatible_runtime(): void
+    {
+        $identity = $this->enrolled();
+        $this->context()->apply(tenantId: $this->a->id);
+        $a = Agent::findOrFail($identity['agent_id']);
+        $this->assertFalse(Protocol::mtrAvailable($a));
+        $headers = ['Authorization' => 'Bearer '.$identity['token']];
+        $this->postJson('/api/v1/agent/heartbeat', ['version' => '0.6.2'], $headers)->assertOk();
+        $this->context()->apply(tenantId: $this->a->id);
+        $this->assertFalse(Protocol::mtrAvailable($a->fresh()));
+        $this->postJson('/api/v1/agent/capabilities', ['task_protocol' => 1, 'capabilities' => ['agent_info', 'mtr_path_analysis:v1']], $headers)->assertOk();
+        $this->context()->apply(tenantId: $this->a->id);
+        $this->assertTrue(Protocol::mtrAvailable($a->fresh()));
+        $this->postJson('/api/v1/agent/heartbeat', ['version' => '0.6.1'], $headers)->assertOk();
+        $this->context()->apply(tenantId: $this->a->id);
+        $this->assertFalse(Protocol::mtrAvailable($a->fresh()));
+        $this->assertNotContains('mtr_path_analysis:v1', Protocol::executionCapabilities($a->fresh()));
+        $this->postJson('/api/v1/agent/capabilities', ['task_protocol' => 1, 'capabilities' => ['agent_info']], $headers)->assertOk();
+        $this->context()->apply(tenantId: $this->a->id);
+        $this->assertNull($a->fresh()->metadata['mtr_capability_confirmed_at']);
+    }
 }

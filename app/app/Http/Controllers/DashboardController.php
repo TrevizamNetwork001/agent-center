@@ -8,6 +8,7 @@ use App\Models\Diagnostic;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Tenancy\TenantContext;
+use App\Web\DashboardData;
 use App\Web\OperationalSnapshot;
 use Illuminate\Http\Request;
 
@@ -22,6 +23,11 @@ class DashboardController extends Controller
         $data = ['tenant' => $context->tenantId ? Tenant::findOrFail($context->tenantId) : null, 'activeUsers' => $context->tenantId ? User::where('status', 'active')->count() : null, 'events' => $events->with(['actor', 'tenant'])->latest('id')->limit(5)->get(), 'recent' => Diagnostic::with(['profile', 'agent', 'conclusion'])->latest()->limit(6)->get(), 'health' => $context->tenantId ? $snapshot->get() : null];
         if ($request->boolean('fragment')) {
             return response()->view('dashboard.content', $data)->header('X-AC-Fragment', 'dashboard-panel');
+        }
+
+        $data['dashboard'] = app(DashboardData::class)->make($data, $request->user(), $context->tenantId);
+        if ($request->query('format') === 'json' || $request->wantsJson()) {
+            return response()->json($data['dashboard'])->header('Cache-Control', 'no-store, private')->header('X-AC-Tenant', (string) ($context->tenantId ?? 'platform'));
         }
 
         return view('dashboard', $data);

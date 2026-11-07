@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from .managed_settings import normalize
 from .state import StateError, read_private
 
 
@@ -20,6 +21,7 @@ class Config:
     allowed_networks: tuple = ()
     allowed_dns_names: tuple = ()
     config_path: str = ""
+    auto_public_targets: bool = True
 
     @classmethod
     def load(cls, path: Path):
@@ -77,6 +79,30 @@ class Config:
                 )
             ):
                 raise ValueError()
+            auto_public = data.get("auto_public_targets", True)
+            if (
+                type(auto_public) is not bool
+                or type(data.get("allow_managed_settings", True)) is not bool
+            ):
+                raise ValueError()
+            managed_path = paths[0] / "managed-settings.json"
+            if data.get("allow_managed_settings", True) and (
+                managed_path.exists() or managed_path.is_symlink()
+            ):
+                managed = normalize(read_private(managed_path))
+                # Remote settings can restrict the local envelope, never enlarge it.
+                base_nets = [ipaddress.ip_network(v) for v in nets]
+                requested = [ipaddress.ip_network(v) for v in managed["allowed_networks"]]
+                nets = tuple(sorted({
+                    str(a if a.prefixlen >= b.prefixlen else b)
+                    for a in base_nets for b in requested
+                    if a.version == b.version and a.overlaps(b)
+                }))
+                names = sorted(
+                    {n.lower().rstrip(".") for n in names}
+                    & set(managed["allowed_dns_names"])
+                )
+                auto_public = auto_public and managed["auto_public_targets"]
             return cls(
                 url.rstrip("/"),
                 *paths,
@@ -85,6 +111,7 @@ class Config:
                 nets,
                 tuple(n.lower().rstrip(".") for n in names),
                 str(path),
+                auto_public,
             )
         except (KeyError, TypeError, ValueError) as exc:
             raise StateError("invalid_config") from exc

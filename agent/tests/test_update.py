@@ -4,6 +4,7 @@ import unittest
 import zipapp
 from pathlib import Path
 
+from agent_center import __version__
 from agent_center.state import InstanceLock
 from agent_center.update.engine import Engine, UpdateError
 
@@ -110,11 +111,14 @@ class UpdateTests(unittest.TestCase):
         build = Path(__file__).resolve().parents[1] / "packaging" / "build.py"
         artifact = self.root / "real.pyz"
         subprocess.run([sys.executable, str(build), str(artifact)], check=True, capture_output=True)
+        repeated = self.root / "repeated.pyz"
+        subprocess.run([sys.executable, str(build), str(repeated)], check=True, capture_output=True)
+        self.assertEqual(artifact.read_bytes(), repeated.read_bytes())
         result = subprocess.run(
             [sys.executable, "-I", str(artifact), "--self-check"], check=True, capture_output=True
         )
         info = json.loads(result.stdout)
-        self.assertEqual(info["version"], "0.5.2")
+        self.assertEqual(info["version"], __version__)
         self.assertEqual(info["journal_schema"], 1)
         failure = subprocess.run(
             [sys.executable, "-I", str(artifact), "--config", "/missing/config.json"],

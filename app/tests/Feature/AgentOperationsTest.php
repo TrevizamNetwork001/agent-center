@@ -130,6 +130,8 @@ class AgentOperationsTest extends IdentityTestCase
             $c = $this->postJson('/api/v1/agent/operations/claim', [], $h)->assertOk()->assertJsonPath('operation.phase', 'precheck');
             $this->postJson('/api/v1/agent/operations/report', ['operation_id' => $o->id, 'status' => 'COMPLETED'], $h)->assertConflict();
             $this->postJson('/api/v1/agent/operations/report', ['operation_id' => $o->id, 'status' => 'PLANNED', 'evidence' => ['sha256' => $release['sha256'], 'version' => '0.5.2', 'freeze_preserved' => true]], $h)->assertOk();
+            $this->postJson('/api/v1/agent/operations/report', ['operation_id' => $o->id, 'status' => 'PLANNED', 'evidence' => ['sha256' => $release['sha256'], 'version' => '0.5.2', 'freeze_preserved' => true]], $h)->assertOk();
+            $this->postJson('/api/v1/agent/operations/report', ['operation_id' => $o->id, 'status' => 'PLANNED', 'evidence' => ['sha256' => str_repeat('0', 64), 'version' => '0.5.2', 'freeze_preserved' => true]], $h)->assertConflict();
             $this->postJson('/api/v1/agent/operations/claim', [], $h)->assertOk()->assertJsonPath('operation', null);
             $this->actingAs($this->admin)->post('/agents/'.$a->id.'/operations/'.$o->id.'/approve', [])->assertSessionHasErrors('plan_reviewed');
             $this->post('/agents/'.$a->id.'/operations/'.$o->id.'/approve', ['plan_reviewed' => 1])->assertRedirect();
@@ -152,6 +154,29 @@ class AgentOperationsTest extends IdentityTestCase
         $this->assertSame('ATENÇÃO', Presentation::agentStatus($a));
         $a->last_heartbeat_at = now()->subMinutes(2);
         $this->assertSame('OFFLINE', Presentation::agentStatus($a));
+    }
+
+    public function test_new_companion_reports_safe_failure_and_version_with_tenant_isolation(): void
+    {
+        $this->context()->forUser($this->admin);
+        $agent = new Agent;
+        $token = Str::uuid().'.'.str_repeat('b', 64);
+        $agent->forceFill(['id' => explode('.', $token)[0], 'tenant_id' => $this->a->id, 'name' => 'Updated companion', 'hostname' => 'host', 'version' => '0.5.3', 'status' => 'active', 'token_hash' => hash('sha256', $token), 'enrolled_at' => now(), 'capabilities' => []])->save();
+        $release = app(Releases::class)->all()[0];
+        $this->actingAs($this->admin)->post('/agents/'.$agent->id.'/operations', ['kind' => 'update', 'release_sha' => $release['sha256'], 'reason' => 'repair'])->assertRedirect();
+        $this->context()->forUser($this->admin);
+        $operation = AgentOperation::where('agent_id', $agent->id)->sole();
+        $this->app['auth']->forgetGuards();
+        $headers = ['Authorization' => 'Bearer '.$token];
+        $this->postJson('/api/v1/agent/operations/claim', ['updater_version' => '0.5.5'], $headers)->assertOk()->assertJsonPath('operation.phase', 'precheck');
+        $report = ['operation_id' => $operation->id, 'status' => 'FAILED', 'error' => 'self_check_privilege_failed'];
+        $this->postJson('/api/v1/agent/operations/report', $report, $headers)->assertOk();
+        $this->postJson('/api/v1/agent/operations/report', $report, $headers)->assertOk();
+        $this->context()->forUser($this->admin);
+        $this->assertSame('0.5.5', $agent->fresh()->metadata['updater']['version']);
+        $this->assertSame('self_check_privilege_failed', $operation->fresh()->error);
+        $this->context()->forUser($this->other);
+        $this->assertSame(0, AgentOperation::count());
     }
 
     public function test_database_rejects_cross_tenant_agent_reference(): void

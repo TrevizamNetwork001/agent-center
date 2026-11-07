@@ -9,6 +9,8 @@ import subprocess
 import time
 import urllib.parse
 
+from . import __version__, mtr, mtr_client
+from .dns_transport import query as dns_query
 from .policy import authorize
 
 KNOWN = (
@@ -18,6 +20,7 @@ KNOWN = (
     "tcp_connect:v1",
     "traceroute:v1",
     "http_probe:v1",
+    mtr.CAPABILITY,
 )
 
 
@@ -25,28 +28,37 @@ def available():
     return tuple(
         v
         for v in KNOWN
-        if v not in ("icmp_ping:v1", "traceroute:v1")
-        or shutil.which("ping" if v == "icmp_ping:v1" else "traceroute")
+        if (v != mtr.CAPABILITY or mtr.ready())
+        and (
+            v not in ("icmp_ping:v1", "traceroute:v1")
+            or shutil.which("ping" if v == "icmp_ping:v1" else "traceroute")
+        )
     )
 
 
 def self_check():
-    caps = available()
+    # Legacy updater validates this six-capability self-check contract.
+    # Extension negotiation uses the normal capabilities endpoint.
+    caps = tuple(c for c in available() if c != mtr.CAPABILITY)
     assert len(caps) == len(set(caps)) and set(caps) <= set(KNOWN)
     assert all(callable(HANDLERS[c]) for c in caps)
     return caps
 
 
+class TargetNotAllowed(ValueError):
+    """A valid destination is outside the configured network authorization."""
+
+
 def target(value, networks):
     ip = ipaddress.ip_address(value)
     if not any(ip in ipaddress.ip_network(net) for net in networks):
-        raise ValueError("target_not_allowed")
+        raise TargetNotAllowed("target_not_allowed")
     return str(ip)
 
 
 def info(args, networks):
     return {
-        "version": "0.5.2",
+        "version": __version__,
         "hostname": socket.gethostname(),
         "python": platform.python_version(),
         "device_operations_frozen": True,
@@ -101,7 +113,9 @@ def dns(args, networks):
         rows = socket.getaddrinfo(
             host, 443, socket.AF_INET if kind == "A" else socket.AF_INET6, socket.SOCK_STREAM
         )
-        answers = sorted({target(row[4][0], networks) for row in rows})[:20]
+        # DNS records are evidence, not destinations for a new connection.
+        # execute() authorizes the queried name. Active probes separately enforce networks.
+        answers = sorted({str(ipaddress.ip_address(row[4][0])) for row in rows})[:20]
         error = None if answers else "nodata"
     except socket.gaierror as e:
         answers = []
@@ -210,7 +224,9 @@ def http(args, networks):
     )
     try:
         conn.request(
-            "HEAD", p.path or "/", headers={"Host": p.netloc, "User-Agent": "Agent-Center/0.5.2"}
+            "HEAD",
+            p.path or "/",
+            headers={"Host": p.netloc, "User-Agent": "Agent-Center/" + __version__},
         )
         response = conn.getresponse()
         return {
@@ -223,26 +239,68 @@ def http(args, networks):
         conn.close()
 
 
-HANDLERS = dict(zip(KNOWN, (info, ping, dns, tcp, trace, http), strict=True))
+HANDLERS = dict(zip(KNOWN, (info, ping, dns, tcp, trace, http, mtr_client.collect), strict=True))
 
 
-def execute(name, args, policy, networks=(), dns_names=()):
+def public_ip(value):
+    ip = ipaddress.ip_address(value)
+    mapped = getattr(ip, "ipv4_mapped", None)
+    if mapped is not None:
+        ip = mapped
+    return ip.is_global and not (
+        ip.is_multicast or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_unspecified
+    )
+
+
+def public_name(value):
+    return (
+        isinstance(value, str)
+        and bool(re.fullmatch(r"[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?", value.lower().rstrip(".")))
+        and "." in value.rstrip(".")
+        and not value.lower()
+        .rstrip(".")
+        .endswith((".localhost", ".local", ".internal", ".lan", ".invalid", ".test"))
+    )
+
+
+def execute(name, args, policy, networks=(), dns_names=(), auto_public=False):
     if not authorize(name, policy, available()):
         return {"ok": False, "error": "policy_denied"}
     try:
         if not isinstance(args, dict):
             raise ValueError()
+        if name == mtr.CAPABILITY:
+            return {"ok": True, "data": mtr_client.collect(args, networks, dns_names)}
         if name == "dns_lookup:v1" and args.get("record_type") is not None:
-            if args.get("target", "").lower().rstrip(".") not in dns_names:
+            if args.get("target", "").lower().rstrip(".") not in dns_names and not (
+                auto_public and public_name(args.get("target"))
+            ):
                 return {"ok": False, "error": "policy_denied"}
+            if args.get("transport") in ("udp", "tcp"):
+                return dns_query(args)
         if name == "http_probe:v1":
             hostname = urllib.parse.urlsplit(args.get("url", "")).hostname
             try:
                 target(hostname, networks)
             except ValueError:
-                if hostname not in dns_names:
+                if hostname not in dns_names and not (auto_public and public_name(hostname)):
                     return {"ok": False, "error": "policy_denied"}
+        if auto_public and name in (
+            "tcp_connect:v1",
+            "icmp_ping:v1",
+            "traceroute:v1",
+            "http_probe:v1",
+        ):
+            if name == "tcp_connect:v1" and args.get("port") != 443:
+                raise TargetNotAllowed("public_port_not_allowed")
+            if public_ip(args["target"]):
+                address = ipaddress.ip_address(args["target"])
+                networks = (*networks, str(address) + ("/32" if address.version == 4 else "/128"))
         return {"ok": True, "data": HANDLERS[name](args, networks)}
+    except mtr.MtrError as error:
+        return {"ok": False, "error": str(error)}
+    except TargetNotAllowed:
+        return {"ok": False, "error": "policy_denied"}
     except ssl.SSLError:
         return {"ok": False, "error": "tls_failed"}
     except TimeoutError:

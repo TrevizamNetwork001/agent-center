@@ -10,7 +10,8 @@ class Planner
 {
     public function target(string $target): array
     {
-        $url = str_contains($target, '://') ? $target : 'https://'.$target;
+        $target = trim($target);
+        $url = filter_var($target, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) ? 'https://['.$target.']' : (str_contains($target, '://') ? $target : 'https://'.$target);
         $p = parse_url($url);
         $host = strtolower(rtrim($p['host'] ?? '', '.'));
         $host = trim($host, '[]');
@@ -21,14 +22,30 @@ class Planner
         return ['host' => $host, 'url' => 'https://'.(str_contains($host, ':') ? '['.$host.']' : $host).($p['path'] ?? '/'), 'literal' => (bool) filter_var($host, FILTER_VALIDATE_IP)];
     }
 
+    public function validateTarget(Profile $profile, string $target): array
+    {
+        $parsed = $this->target($target);
+        if (! array_key_exists($profile->key, Catalog::PROFILES)) {
+            throw ValidationException::withMessages(['profile_id' => 'Perfil de diagnóstico não suportado.']);
+        }
+        if ($profile->key === 'PROBLEMA_DNS' && $parsed['literal']) {
+            throw ValidationException::withMessages(['target' => 'Para consultar registros A e AAAA, informe um domínio, não um IP.']);
+        }
+
+        return $parsed;
+    }
+
     public function plan(Profile $profile, string $target, array $capabilities, array $context = []): array
     {
-        $t = $this->target($target);
+        $t = $this->validateTarget($profile, $target);
         $steps = [];
         $skills = Skill::all()->keyBy('key');
         $add = function ($key, $skill, $wave, $optional = false, $condition = 'always', $record = null) use (&$steps, $skills, $capabilities, $t) {
             $s = $skills[$skill];
             $input = ['target' => $t['host']];
+            if ($skill === 'mtr_path') {
+                $input += ['destination' => $t['host'], 'protocol' => $key === 'mtr_tcp' ? 'tcp' : 'icmp', 'cycles' => 5, 'max_hops' => 16, 'interval' => 1];
+            }
             if ($record) {
                 $input['record_type'] = $record;
             }if ($skill === 'tcp_connect') {
@@ -42,8 +59,18 @@ class Planner
             $add('dns_a', 'dns_lookup', 1, record: 'A');
             $add('dns_aaaa', 'dns_lookup', 1, record: 'AAAA');
         }
+        if ($profile->key === 'PROBLEMA_DNS' && version_compare($context['agent_version'] ?? '0.0.0', '0.6.0', '>=') && filter_var($context['dns_resolvers'][0] ?? '', FILTER_VALIDATE_IP)) {
+            foreach (['udp', 'tcp'] as $transport) {
+                $add('dns_'.$transport, 'dns_lookup', 1, record: 'A');
+                $index = count($steps) - 1;
+                $steps[$index]['input'] += ['transport' => $transport, 'resolver' => $context['dns_resolvers'][0]];
+                $steps[$index]['logical_group'] = 'DNS '.strtoupper($transport);
+            }
+        }
         $network = $t['literal'] ? 'always' : 'dns_ok';
-        if ($profile->key === 'PERDA_LATENCIA') {
+        if (in_array($profile->key, ['MTR_ICMP', 'MTR_TCP'], true)) {
+            $add($profile->key === 'MTR_TCP' ? 'mtr_tcp' : 'mtr_icmp', 'mtr_path', 2, false, $network);
+        } elseif ($profile->key === 'PERDA_LATENCIA') {
             $add('ping', 'icmp_ping', 2, false, $network);
             $add('trace', 'traceroute', 3, true, 'trace_needed');
         } elseif ($profile->key !== 'PROBLEMA_DNS') {
@@ -53,15 +80,31 @@ class Planner
             $add('trace', 'traceroute', 5, true, 'trace_needed');
         }
 
-        return ['schema_version' => 1, 'profile' => $profile->key, 'profile_version' => $profile->version, 'target' => $t, 'thresholds' => [...$profile->definition, 'trace_requested' => ($context['trace_requested'] ?? false) === true], 'steps' => $steps];
+        if (! str_starts_with($profile->key, 'MTR_') && $profile->key !== 'PROBLEMA_DNS' && ($context['mtr_requested'] ?? false) === true) {
+            $add('mtr_icmp', 'mtr_path', 6, false, $network);
+            $add('mtr_tcp', 'mtr_path', 7, false, $network);
+        }
+
+        return ['schema_version' => 1, 'profile' => $profile->key, 'profile_version' => $profile->version, 'target' => $t, 'thresholds' => [...['mtr_threshold_version' => 1, 'mtr_min_cycles' => 5, 'mtr_loss_percent' => 0, 'mtr_rtt_increase_ms' => 50, 'mtr_rtt_ratio' => 2], ...$profile->definition, 'trace_requested' => ($context['trace_requested'] ?? false) === true, 'target_literal' => $t['literal'], 'mtr_requested' => ($context['mtr_requested'] ?? false) === true, 'required_steps' => array_values(array_column(array_filter($steps, fn ($step) => ! $step['optional']), 'key'))], 'steps' => $steps];
     }
 
     public function condition(string $condition, array $evidence, array $thresholds): bool
     {
-        $dns = array_filter($evidence, fn ($r, $k) => str_starts_with($k, 'dns_') && ($r['ok'] ?? false) && count($r['data']['answers'] ?? []) > 0, ARRAY_FILTER_USE_BOTH);
+        $dns = array_filter($evidence, fn ($r, $k) => str_starts_with($k, 'dns_') && ($r['ok'] ?? false) === true && count($r['data']['answers'] ?? []) > 0, ARRAY_FILTER_USE_BOTH);
+        $error = fn ($result) => $result['error'] ?? $result['data']['error'] ?? null;
+        $tcpFailure = isset($evidence['tcp']) && (in_array($error($evidence['tcp']), ['timeout', 'connection_refused', 'unreachable'], true) || (($evidence['tcp']['ok'] ?? false) === true && ($evidence['tcp']['data']['connected'] ?? true) === false));
+        $http = ($evidence['https']['ok'] ?? false) === true ? ($evidence['https']['data'] ?? []) : [];
+        $httpFailure = isset($evidence['https']) && (in_array($error($evidence['https']), ['timeout', 'tls_failed', 'unreachable'], true) || $http && ((($http['status'] ?? 0) >= 500 && ($http['status'] ?? 0) !== 501) || ($http['duration_ms'] ?? 0) > ($thresholds['slow_ms'] ?? 2000)));
+        $ping = ($evidence['ping']['ok'] ?? false) === true ? ($evidence['ping']['data'] ?? []) : [];
+        $pingRequired = isset($thresholds['required_steps']) ? in_array('ping', $thresholds['required_steps'], true) : (! isset($evidence['tcp']) && ! isset($evidence['https']));
+        $pingFailure = $pingRequired && isset($evidence['ping']) && (in_array($error($evidence['ping']), ['timeout', 'unreachable'], true) || $ping && (($ping['loss_percent'] ?? 0) > ($thresholds['loss_percent'] ?? 10) || ($ping['avg_ms'] ?? 0) > ($thresholds['latency_ms'] ?? 150)));
 
         return match ($condition) {
-            'always' => true,'dns_ok' => (bool) $dns,'tcp_ok' => ($evidence['tcp']['data']['connected'] ?? false) === true,'trace_needed' => ($thresholds['trace_requested'] ?? false) === true || isset($evidence['tcp']) && ! ($evidence['tcp']['data']['connected'] ?? false) || isset($evidence['https']) && (($evidence['https']['data']['status'] ?? 500) >= 500 || ($evidence['https']['data']['duration_ms'] ?? 0) > ($thresholds['slow_ms'] ?? 2000)) || isset($evidence['ping']['data']['loss_percent']) && $evidence['ping']['data']['loss_percent'] > ($thresholds['loss_percent'] ?? 10),default => false
+            'always' => true,
+            'dns_ok' => (bool) $dns,
+            'tcp_ok' => ($evidence['tcp']['ok'] ?? false) === true && ($evidence['tcp']['data']['connected'] ?? false) === true,
+            'trace_needed' => ($thresholds['trace_requested'] ?? false) === true || ($thresholds['trace_on_failure'] ?? true) === true && ($tcpFailure || $httpFailure || $pingFailure),
+            default => false,
         };
     }
 }

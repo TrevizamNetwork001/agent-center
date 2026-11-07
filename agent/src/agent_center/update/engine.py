@@ -3,6 +3,7 @@ import io
 import json
 import os
 import pwd
+import re
 import shutil
 import stat
 import subprocess
@@ -12,6 +13,7 @@ import time
 import zipfile
 from pathlib import Path
 
+from ..capabilities import KNOWN
 from ..state import InstanceLock, atomic_write
 
 
@@ -41,35 +43,54 @@ class Service:
             raise UpdateError("service_start_failed")
 
 
-def drop_privileges():
+def child_credentials():
+    """Resolve credentials before fork; no Python/NSS callback in the child."""
     if os.geteuid() == 0:
         try:
             account = pwd.getpwnam("agent-center-agent")
             uid, gid = account.pw_uid, account.pw_gid
         except KeyError:
             uid, gid = 65534, 65534
-        os.setgroups([])
-        os.setgid(gid)
-        os.setuid(uid)
+        return {"user": uid, "group": gid, "extra_groups": []}
+    return {}
 
 
-def self_check(path):
-    result = subprocess.run(
-        [sys.executable, "-I", str(path), "--self-check"],
-        capture_output=True,
-        timeout=15,
-        check=True,
-        preexec_fn=drop_privileges if os.geteuid() == 0 else None,
-    )
-    body = json.loads(result.stdout)
+def self_check(path, expected_version=None):
+    try:
+        result = subprocess.run(
+            [sys.executable, "-I", str(path), "--self-check"],
+            capture_output=True,
+            timeout=15,
+            check=True,
+            **child_credentials(),
+        )
+    except PermissionError:
+        raise UpdateError("self_check_permission_denied") from None
+    except subprocess.TimeoutExpired:
+        raise UpdateError("self_check_timeout") from None
+    except subprocess.CalledProcessError:
+        raise UpdateError("self_check_exec_failed") from None
+    except subprocess.SubprocessError:
+        raise UpdateError("self_check_privilege_failed") from None
+    except OSError:
+        raise UpdateError("self_check_exec_failed") from None
+    try:
+        body = json.loads(result.stdout)
+    except (ValueError, TypeError, UnicodeError):
+        raise UpdateError("self_check_invalid_output") from None
     if (
-        body.get("version") != "0.5.2"
+        not isinstance(body, dict)
+        or not isinstance(body.get("version"), str)
+        or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", body["version"])
         or body.get("state_schema") != 1
         or body.get("journal_schema") != 1
         or body.get("device_operations_frozen") is not True
         or not isinstance(body.get("capabilities"), list)
+        or any(not isinstance(name, str) or name not in KNOWN for name in body["capabilities"])
     ):
         raise UpdateError("self_check_failed")
+    if expected_version is not None and body["version"] != expected_version:
+        raise UpdateError("incompatible")
     return body
 
 
@@ -84,6 +105,8 @@ def validate(artifact, expected):
         if len(entries) > 200 or sum(e.file_size for e in entries) > 20_971_520:
             raise UpdateError("unsafe_archive")
         names = {e.filename for e in entries}
+        if len(names) != len(entries):
+            raise UpdateError("unsafe_archive")
         if "__main__.py" not in names or "agent_center/main.py" not in names:
             raise UpdateError("invalid_archive")
         for e in entries:
@@ -94,6 +117,7 @@ def validate(artifact, expected):
                 or ".." in p.parts
                 or "\\" in e.filename
                 or stat.S_ISLNK(mode)
+                or e.flag_bits & 1
                 or not (e.filename == "__main__.py" or (p.parts and p.parts[0] == "agent_center"))
                 or (not e.is_dir() and p.suffix != ".py")
             ):
@@ -123,6 +147,12 @@ class Engine:
         if path.exists():
             self._move(path, self.base / (name + "." + str(time.time_ns())))
 
+    def _runtime_hash(self):
+        runtime = self.base / "runtime" / "agent.pyz"
+        if runtime.is_file() and not runtime.is_symlink():
+            return hashlib.sha256(runtime.read_bytes()).hexdigest()
+        return None
+
     def dry_run(self, artifact, expected):
         data = validate(Path(artifact), expected)
         with tempfile.TemporaryDirectory(prefix="agent-dry-run-") as directory:
@@ -135,18 +165,26 @@ class Engine:
         return {"valid": True, "sha256": expected, "apply": False}
 
     def apply(self, artifact, expected):
+        lock = InstanceLock(self.base / "update.lock")
+        try:
+            return self._apply(artifact, expected)
+        finally:
+            lock.close()
+
+    def _apply(self, artifact, expected):
         self.dry_run(
             artifact, expected
         )  # Mandatory validation even if the operator skipped a separate dry-run.
         if self.base.is_symlink() or not self.base.is_dir():
             raise UpdateError("unsafe_base")
         was_active = self.service.active()
-        self.service.stop()
-        if self.service.active():
-            raise UpdateError("service_still_active")
+        old_hash = self._runtime_hash()
         lock = None
         stage = None
         try:
+            self.service.stop()
+            if self.service.active():
+                raise UpdateError("service_still_active")
             lock = InstanceLock(self.state / "instance.lock")
             runtime = self.base / "runtime"
             previous = self.base / ".previous"
@@ -198,6 +236,21 @@ class Engine:
                 raise UpdateError("new_runtime_failed_rolled_back") from None
             atomic_write(self.base / "update.json", {"state": "complete", "sha256": expected})
             return {"applied": True, "sha256": expected}
+        except Exception:
+            if lock:
+                lock.close()
+                lock = None
+            if (
+                was_active
+                and old_hash
+                and self._runtime_hash() == old_hash
+                and not self.service.active()
+            ):
+                try:
+                    self.service.start()
+                except Exception:
+                    raise UpdateError("service_restart_failed") from None
+            raise
         finally:
             if lock:
                 lock.close()
@@ -205,6 +258,13 @@ class Engine:
                 shutil.rmtree(stage)
 
     def rollback(self, dry_run=True):
+        lock = InstanceLock(self.base / "update.lock")
+        try:
+            return self._rollback(dry_run)
+        finally:
+            lock.close()
+
+    def _rollback(self, dry_run=True):
         previous = self.base / ".previous"
         if previous.is_symlink() or not previous.is_dir():
             raise UpdateError("missing_previous")
@@ -212,19 +272,37 @@ class Engine:
         if dry_run:
             return {"valid": True, "apply": False}
         was_active = self.service.active()
-        self.service.stop()
-        if self.service.active():
-            raise UpdateError("service_still_active")
-        lock = InstanceLock(self.state / "instance.lock")
+        old_hash = self._runtime_hash()
+        lock = None
         try:
+            self.service.stop()
+            if self.service.active():
+                raise UpdateError("service_still_active")
+            lock = InstanceLock(self.state / "instance.lock")
             self._archive(".failed")
             if (self.base / "runtime").exists():
                 self._move(self.base / "runtime", self.base / ".failed")
             self._move(previous, self.base / "runtime")
             self.checker(self.base / "runtime" / "agent.pyz")
             atomic_write(self.base / "update.json", {"state": "rolled_back"})
+        except Exception:
+            if lock:
+                lock.close()
+                lock = None
+            if (
+                was_active
+                and old_hash
+                and self._runtime_hash() == old_hash
+                and not self.service.active()
+            ):
+                try:
+                    self.service.start()
+                except Exception:
+                    raise UpdateError("service_restart_failed") from None
+            raise
         finally:
-            lock.close()
+            if lock:
+                lock.close()
         if was_active:
             self.service.start()
         return {"rolled_back": True}

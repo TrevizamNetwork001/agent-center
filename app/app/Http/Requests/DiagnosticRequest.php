@@ -15,6 +15,6 @@ class DiagnosticRequest extends FormRequest
 
     public function rules(): array
     {
-        return ['trace_requested' => ['sometimes', 'boolean'], 'target' => ['required', 'string', 'max:512'], 'profile_id' => ['required', 'uuid'], 'agent_id' => ['required', 'uuid'], 'tenant_id' => ['prohibited'], 'status' => ['prohibited']];
+        return ['mtr_requested' => ['sometimes', 'boolean'], 'trace_requested' => ['sometimes', 'boolean'], 'target' => ['required', 'string', 'max:512'], 'profile_id' => ['required', 'uuid'], 'agent_id' => ['required', 'uuid'], 'tenant_id' => ['prohibited'], 'status' => ['prohibited']];
     }
 }

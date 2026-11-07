@@ -25,6 +25,8 @@ class DiagnosticWorker extends Command
         $iterations = 0;
         $progress = 0;
         do {
+            $loopStart = hrtime(true);
+            $loopWall = now()->utc()->toISOString();
             try {
                 $ctx->apply(platform: true);
                 $ids = Tenant::where('status', 'active')->pluck('id');
@@ -32,7 +34,7 @@ class DiagnosticWorker extends Command
                     $ctx->apply(tenantId: $id);
                     $progress += $engine->tick();
                 }$ctx->apply();
-                WorkerHealth::write(++$iterations, $progress);
+                WorkerHealth::write(++$iterations, $progress, (hrtime(true) - $loopStart) / 1e6, $loopWall);
                 if ($iterations % 15 === 1) {
                     OperationsPulse::dispatch();
                 }

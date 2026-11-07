@@ -44,11 +44,13 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Agent::class, AgentPolicy::class);
         Gate::define('manage-intelligence', fn (User $u) => (new AgentPolicy)->create($u));
         Gate::define('read-knowledge', fn (User $u) => (new AgentPolicy)->viewAny($u));
+        RateLimiter::for('skill-analysis', fn ($r) => Limit::perMinute(6)->by('skill-analysis:'.$r->user()->id));
         RateLimiter::for('llm-call', fn ($r) => [Limit::perMinute(6)->by('user:'.$r->user()->id), Limit::perMinute(30)->by('tenant:'.app(TenantContext::class)->tenantId)]);
         Gate::policy(Diagnostic::class, DiagnosticPolicy::class);
         Gate::define('manage-diagnostic-catalog', fn (User $u) => (new AgentPolicy)->create($u));
         RateLimiter::for('agent-origin', fn ($r) => Limit::perMinute(1200)->by(hash('sha256', (string) $r->ip())));
         RateLimiter::for('agent-enrollment', fn ($r) => Limit::perMinute(10)->by(hash('sha256', (string) $r->ip())));
+        RateLimiter::for('agent-bootstrap-status', fn ($r) => Limit::perMinute(30)->by('bootstrap:'.hash('sha256', (string) $r->input('receipt'))));
         RateLimiter::for('agent-api', fn ($r) => Limit::perMinute(120)->by($r->attributes->get('agent')->id));
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Tenant::class, TenantPolicy::class);

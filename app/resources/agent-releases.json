@@ -1,36 +1,176 @@
 [
-  {
-    "version": "0.5.3",
-    "sha256": "7f3923e2d3f62fb3593b5a557d3d40540f23c8a6e0fd44a3cbcf86d29788f794",
-    "artifact": "agent.pyz",
-    "compatibility": "Debian 12/13; Linux CPython 3.13; state/journal schema 1",
-    "date": "2026-11-04T20:38:55.580671+00:00",
-    "status": "available",
-    "changelog": "Human-approved onboarding, operational telemetry and allowlisted pre-staged update/rollback companion.",
-    "git_ref": "cb9dcef5af1eab10908d38247f5b6b86900bbf89",
-    "device_operations_frozen": true,
-    "tested_capabilities": [
-      "agent_info",
-      "dns_lookup:v1",
-      "tcp_connect:v1",
-      "http_probe:v1"
-    ]
-  },
-  {
-    "version": "0.5.2",
-    "sha256": "826fdabd43f8717abdb1e5c8735035027969257999b07b05ed606d73ff807ddc",
-    "device_operations_frozen": true,
-    "artifact": "agent-0.5.2.pyz",
-    "compatibility": "Linux CPython >=3.13; state/journal schema 1",
-    "date": "2026-11-04",
-    "status": "available",
-    "changelog": "Baseline rebuilt from recovered Git source ff168b9; not an artifact from the lost VPS.",
-    "git_ref": "ff168b9",
-    "tested_capabilities": [
-      "agent_info",
-      "dns_lookup:v1",
-      "tcp_connect:v1",
-      "http_probe:v1"
-    ]
-  }
+    {
+        "version": "0.6.1",
+        "sha256": "5adb4d7bc1884ed7fe7d469543bbf1f07f557aa21662b31071eb6aa93eb4ae99",
+        "artifact": "agent.pyz",
+        "compatibility": "Debian 12/13; Linux CPython 3.13; state/journal schema 1",
+        "date": "2026-11-05",
+        "status": "available",
+        "device_operations_frozen": true,
+        "git_ref": "source-sha256:03654f99b6f8150e747542444a51520fc8d99dd65f8ba8a59e38bde7bb76dd7c",
+        "source_sha256": "03654f99b6f8150e747542444a51520fc8d99dd65f8ba8a59e38bde7bb76dd7c",
+        "changelog": "Wake the scheduling loop after isolated execution finishes, preserving journal recovery, one execution lane, failed-poll backoff and a two-second minimum dispatch cadence. No local policy or privilege changes.",
+        "tested_capabilities": [
+            "agent_info",
+            "dns_lookup:v1",
+            "tcp_connect:v1",
+            "http_probe:v1"
+        ]
+    },
+    {
+        "version": "0.6.0",
+        "sha256": "95d8e2d4531ed642030947717b434f454343330f016707f79d4c42b885d243e3",
+        "artifact": "agent.pyz",
+        "compatibility": "Debian 12/13; Linux CPython 3.13; state/journal schema 1",
+        "date": "2026-11-05",
+        "status": "available",
+        "device_operations_frozen": true,
+        "git_ref": "source-sha256:35e99999ab5133916ad511dbefa55088b890719b57d7a55b50c7efeef1ee905b",
+        "source_sha256": "35e99999ab5133916ad511dbefa55088b890719b57d7a55b50c7efeef1ee905b",
+        "changelog": "Managed settings and source-IP ACL acknowledgements, provider network inventory, public diagnostic targets with private-address safeguards, and verified DNS UDP/TCP transport checks. Compatible with the existing automatic download companion protocol.",
+        "tested_capabilities": [
+            "agent_info",
+            "dns_lookup:v1",
+            "tcp_connect:v1",
+            "http_probe:v1"
+        ]
+    },
+    {
+        "version": "0.5.9",
+        "sha256": "e0bf349dff2f87c4476a32300e368e57958306d0fe308119bd72b0b8223bea02",
+        "artifact": "agent.pyz",
+        "compatibility": "Debian 12/13; Linux CPython 3.13; state/journal schema 1",
+        "date": "2026-11-05",
+        "status": "available",
+        "device_operations_frozen": true,
+        "git_ref": "source-sha256:ca248908a74a2b69ab9d2d827fe195caf77563b5aa5a007b78966c7c51c859ea",
+        "source_sha256": "ca248908a74a2b69ab9d2d827fe195caf77563b5aa5a007b78966c7c51c859ea",
+        "changelog": "Active probe destination denials now report policy_denied before network or subprocess execution. DNS domain authorization remains independent of probe networks. Compatible with the existing automatic download companion protocol.",
+        "tested_capabilities": [
+            "agent_info",
+            "dns_lookup:v1",
+            "tcp_connect:v1",
+            "http_probe:v1"
+        ]
+    },
+    {
+        "version": "0.5.8",
+        "sha256": "ee00aed3e687b7429decf2c056754119ce485e01b3a2f980eea1615d893750d2",
+        "artifact": "agent.pyz",
+        "compatibility": "Debian 12/13; Linux CPython 3.13; state/journal schema 1",
+        "date": "2026-11-05",
+        "status": "available",
+        "device_operations_frozen": true,
+        "git_ref": "source-sha256:0b74338fbc3cb2d3376cffb18d5a0b3c095b090bd3afebdd3db5a739059fe010",
+        "source_sha256": "0b74338fbc3cb2d3376cffb18d5a0b3c095b090bd3afebdd3db5a739059fe010",
+        "changelog": "Automatic digest-pinned package staging from the configured Central over verified HTTPS after a panel request. Keeps DNS domain authorization independent of active probe networks and preserves the systemd CAP_SETUID updater fix.",
+        "tested_capabilities": [
+            "agent_info",
+            "dns_lookup:v1",
+            "tcp_connect:v1",
+            "http_probe:v1"
+        ]
+    },
+    {
+        "version": "0.5.7",
+        "sha256": "8fbd94ded4efbebfabe078a982435c7f684ad24c542f45d3c25166fe72bc9cd7",
+        "artifact": "agent.pyz",
+        "compatibility": "Debian 12/13; Linux CPython 3.13; state/journal schema 1",
+        "date": "2026-11-05",
+        "status": "available",
+        "device_operations_frozen": true,
+        "git_ref": "source-sha256:64cdc87d0bcd437b1737c8bec7baacd8926f759a031e847e1fed64dde01889a2",
+        "source_sha256": "64cdc87d0bcd437b1737c8bec7baacd8926f759a031e847e1fed64dde01889a2",
+        "changelog": "Allowlisted forward DNS queries return address records independently of probe networks; active connections retain destination network authorization. Includes the systemd CAP_SETUID updater fix.",
+        "tested_capabilities": [
+            "agent_info",
+            "dns_lookup:v1",
+            "tcp_connect:v1",
+            "http_probe:v1"
+        ]
+    },
+    {
+        "version": "0.5.6",
+        "sha256": "64c1cec31db9227bacf7103ca2ba5ea5036e169b2c1d5c009e0176861754da5c",
+        "artifact": "agent.pyz",
+        "compatibility": "Debian 12/13; Linux CPython 3.13; state/journal schema 1",
+        "date": "2026-11-05",
+        "status": "available",
+        "device_operations_frozen": true,
+        "git_ref": "source-sha256:29adbfd48e8dea2823a7fdd44854ab9d958b0650f1f41c26acdbc3e12385d57c",
+        "source_sha256": "29adbfd48e8dea2823a7fdd44854ab9d958b0650f1f41c26acdbc3e12385d57c",
+        "changelog": "Native subprocess user/group credential switching without Python preexec callbacks; preserves verified rollback, deadline watchdog and robust recovery.",
+        "tested_capabilities": [
+            "agent_info",
+            "dns_lookup:v1",
+            "tcp_connect:v1",
+            "http_probe:v1"
+        ]
+    },
+    {
+        "version": "0.5.5",
+        "sha256": "769980dd97751c44cf486e0f21fc399cf4448142c18f0b3f08966d45521e12a1",
+        "artifact": "agent.pyz",
+        "compatibility": "Debian 12/13; Linux CPython 3.13; state/journal schema 1",
+        "date": "2026-11-05",
+        "status": "available",
+        "device_operations_frozen": true,
+        "git_ref": "source-sha256:8ea3d5d194a877af9ea3868a94ae28275ce18fd5fcc6c0e58ba6092759d63c00",
+        "source_sha256": "8ea3d5d194a877af9ea3868a94ae28275ce18fd5fcc6c0e58ba6092759d63c00",
+        "changelog": "Complete authoritative source; safe precheck diagnostics, verified rollback, expected-version postcheck, deadline watchdog and robust recovery.",
+        "tested_capabilities": [
+            "agent_info",
+            "dns_lookup:v1",
+            "tcp_connect:v1",
+            "http_probe:v1"
+        ]
+    },
+    {
+        "version": "0.5.4",
+        "sha256": "bb8c0274b9fc2121c283136b2ad66a9b67037c0c7d32e44f79f44b5d33f5cb19",
+        "artifact": "bb8c0274b9fc2121c283136b2ad66a9b67037c0c7d32e44f79f44b5d33f5cb19.pyz",
+        "compatibility": "Debian 12/13; Linux CPython 3.13; state/journal schema 1",
+        "date": "2026-11-05",
+        "status": "available",
+        "changelog": "DNS answer network rejection reports policy_denied instead of action_failed. Existing name/network authorization remains enforced; configuration and identity are preserved.",
+        "git_ref": "baseline-0.5.3-plus-scripts/build-agent-dns-release.py",
+        "device_operations_frozen": true,
+        "tested_capabilities": [
+            "dns_lookup:v1"
+        ]
+    },
+    {
+        "version": "0.5.3",
+        "sha256": "7f3923e2d3f62fb3593b5a557d3d40540f23c8a6e0fd44a3cbcf86d29788f794",
+        "artifact": "agent.pyz",
+        "compatibility": "Debian 12/13; Linux CPython 3.13; state/journal schema 1",
+        "date": "2026-11-04T20:38:55.580671+00:00",
+        "status": "available",
+        "changelog": "Human-approved onboarding, operational telemetry and allowlisted pre-staged update/rollback companion.",
+        "git_ref": "cb9dcef5af1eab10908d38247f5b6b86900bbf89",
+        "device_operations_frozen": true,
+        "tested_capabilities": [
+            "agent_info",
+            "dns_lookup:v1",
+            "tcp_connect:v1",
+            "http_probe:v1"
+        ]
+    },
+    {
+        "version": "0.5.2",
+        "sha256": "826fdabd43f8717abdb1e5c8735035027969257999b07b05ed606d73ff807ddc",
+        "device_operations_frozen": true,
+        "artifact": "agent-0.5.2.pyz",
+        "compatibility": "Linux CPython >=3.13; state/journal schema 1",
+        "date": "2026-11-04",
+        "status": "available",
+        "changelog": "Baseline rebuilt from recovered Git source ff168b9; not an artifact from the lost VPS.",
+        "git_ref": "ff168b9",
+        "tested_capabilities": [
+            "agent_info",
+            "dns_lookup:v1",
+            "tcp_connect:v1",
+            "http_probe:v1"
+        ]
+    }
 ]

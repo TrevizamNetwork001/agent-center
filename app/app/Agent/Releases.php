@@ -2,13 +2,20 @@
 
 namespace App\Agent;
 
+use App\Models\AgentRelease;
+use App\Models\AgentReleaseQuarantine;
+
 class Releases
 {
     public function all(): array
     {
         $rows = json_decode(file_get_contents(resource_path('agent-releases.json')), true, 32, JSON_THROW_ON_ERROR);
 
-        return array_values(array_filter($rows, fn ($r) => ($r['status'] ?? null) === 'available' && preg_match('/^[a-f0-9]{64}$/D', $r['sha256'] ?? '') && ($r['device_operations_frozen'] ?? false) === true));
+        $quarantined = AgentReleaseQuarantine::pluck('sha256')->all();
+        $published = AgentRelease::whereNotIn('sha256', $quarantined)->orderByDesc('sequence')->get()->map(fn ($release) => $release->descriptor())->all();
+        $digests = array_column($published, 'sha256');
+
+        return [...$published, ...array_values(array_filter($rows, fn ($r) => ($r['status'] ?? null) === 'available' && preg_match('/^[a-f0-9]{64}$/D', $r['sha256'] ?? '') && ($r['device_operations_frozen'] ?? false) === true && ! in_array($r['sha256'], $digests, true) && ! in_array($r['sha256'], $quarantined, true)))];
     }
 
     public function find(string $sha): array

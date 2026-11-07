@@ -8,16 +8,19 @@ import time
 import uuid
 from pathlib import Path
 
-from .state import atomic_write, read_private
+from .state import StateError, atomic_write, read_private
 
 
 class Executor:
     """One execution lane, durable before START, isolated from heartbeat and polling."""
 
+    RENEW_INTERVAL = 10
+
     def __init__(self, config, journal, client, stop):
         self.config, self.journal, self.client, self.stop = config, journal, client, stop
         self.thread = None
         self.cancel = threading.Event()
+        self.wake = threading.Event()
         self.active_id = None
         self.leases = config.state_dir / "leases"
         self.leases.mkdir(mode=0o700, exist_ok=True)
@@ -32,6 +35,8 @@ class Executor:
             return False
         try:
             for key in ("task_id", "execution_id"):
+                if not isinstance(task[key], str):
+                    return False
                 uuid.UUID(task[key])
             if (
                 type(task["generation"]) is not int
@@ -58,6 +63,7 @@ class Executor:
             atomic_write(self.leases / (task["execution_id"] + ".json"), self.envelope(task))
             self.active_id = task["execution_id"]
             self.cancel.clear()
+            self.wake.clear()
             self.thread = threading.Thread(
                 target=self.run, args=(task,), name="execution", daemon=True
             )
@@ -94,6 +100,8 @@ class Executor:
 
     def run(self, task):
         child = None
+        watchdog = None
+        expired = threading.Event()
         execution = task["execution_id"]
         try:
             # Unknown START outcome can never authorize replay after a crash.
@@ -111,24 +119,39 @@ class Executor:
                 stderr=subprocess.DEVNULL,
                 start_new_session=True,
             )
+            deadline = time.monotonic() + task["timeout"]
+
+            def enforce_deadline():
+                if child.poll() is None:
+                    expired.set()
+                    try:
+                        os.killpg(child.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+
+            watchdog = threading.Timer(task["timeout"], enforce_deadline)
+            watchdog.daemon = True
+            watchdog.start()
             child.stdin.write(
                 json.dumps({"capability": task["capability"], "input": task["input"]}).encode()
             )
             child.stdin.close()
-            deadline = time.monotonic() + task["timeout"]
-            renew = time.monotonic() + 10
+            renew = time.monotonic() + self.RENEW_INTERVAL
             result = None
             while child.poll() is None:
                 now = time.monotonic()
                 if self.stop.is_set() or self.cancel.is_set():
                     result = {"ok": False, "error": "cancelled"}
                     break
-                if now >= deadline:
+                if expired.is_set() or now >= deadline:
                     result = {"ok": False, "error": "execution_timeout"}
                     break
                 if now >= renew:
                     self.phase = "RENEW"
                     outcome = self.client.call("renew", self.envelope(task))
+                    if expired.is_set() or time.monotonic() >= deadline:
+                        result = {"ok": False, "error": "execution_timeout"}
+                        break
                     if (
                         not outcome.ok
                         or outcome.body.get("cancel")
@@ -139,9 +162,11 @@ class Executor:
                             "error": "cancelled" if outcome.body.get("cancel") else "lease_lost",
                         }
                         break
-                    renew = time.monotonic() + 10
+                    renew = time.monotonic() + self.RENEW_INTERVAL
                     self.phase = "EXECUTE"
                 self.cancel.wait(0.05)
+            if expired.is_set() or time.monotonic() >= deadline:
+                result = {"ok": False, "error": "execution_timeout"}
             if result is None:
                 raw = child.stdout.read(65537)
                 if len(raw) > 65536 or child.returncode != 0:
@@ -158,12 +183,16 @@ class Executor:
         except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
             self.journal.transition(execution, "uncertain")
         finally:
+            if watchdog:
+                watchdog.cancel()
+                watchdog.join(timeout=3)
             if child:
                 self.kill(child)
                 if child.stdout:
                     child.stdout.close()
             self.phase = "IDLE"
             self.active_id = None
+            self.wake.set()
 
     def deliver(self, envelope, result):
         outcome = self.client.call("result", envelope | {"result": result})
@@ -181,8 +210,12 @@ class Executor:
         if not outcome.ok or not isinstance(outcome.body.get("executions"), list):
             return
         for entry in outcome.body["executions"]:
+            if not isinstance(entry, dict):
+                continue
             execution = entry.get("execution_id")
-            if not any(e["execution_id"] == execution for e in pending):
+            if not isinstance(execution, str) or not any(
+                e["execution_id"] == execution for e in pending
+            ):
                 continue
             path = self.leases / (execution + ".json")
             disposition = entry.get("disposition")
@@ -194,7 +227,7 @@ class Executor:
                     result = self.journal.result(execution)
                     if result is not None:
                         self.deliver(read_private(path), result)
-                except (OSError, ValueError, TypeError):
+                except (OSError, ValueError, TypeError, StateError):
                     pass
 
     def close(self):

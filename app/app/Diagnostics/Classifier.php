@@ -6,54 +6,101 @@ class Classifier
 {
     public const NORMAL = 'Não foram encontradas anormalidades no escopo testado.';
 
-    public function classify(string $profile, array $evidence, array $thresholds = [], bool $cancelled = false): array
+    public function classify(string $profile, array $evidence, array $thresholds = [], bool $cancelled = false, ?string $executionError = null): array
     {
-        $class = 'INCONCLUSIVO';
-        $primary = $profile === 'PROBLEMA_DNS' ? ['dns_a', 'dns_aaaa'] : ($profile === 'PERDA_LATENCIA' ? ['ping'] : ['dns_a', 'dns_aaaa', 'tcp', 'https']);
+        $original = $evidence;
+        $web = in_array($profile, ['SITE_LENTO', 'SITE_NAO_ABRE', 'GOOGLE_YOUTUBE', 'CONTEUDO_LENTO'], true);
+        $primary = $profile === 'PROBLEMA_DNS' ? ['dns_a', 'dns_aaaa'] : ($profile === 'PERDA_LATENCIA' ? ['ping'] : ($web ? ['tcp', 'https'] : []));
+        foreach (['dns_a', 'dns_aaaa'] as $key) {
+            if (isset($evidence[$key]) && ! in_array($key, $primary, true)) {
+                $primary[] = $key;
+            }
+        }
+        $required = $thresholds['required_steps'] ?? $primary;
+        $blocked = false;
         $internal = false;
         $failure = false;
-        foreach ($evidence as $k => $r) {
-            if (! in_array($k, $primary, true)) {
+        foreach ($evidence as $key => $result) {
+            if (! in_array($key, $required, true) && ! (($thresholds['mtr_requested'] ?? false) && in_array($key, ['mtr_icmp', 'mtr_tcp'], true))) {
                 continue;
-            }$err = $r['error'] ?? $r['data']['error'] ?? null;
-            if (in_array($err, ['internal_error', 'action_failed', 'execution_timeout', 'lease_lost'], true)) {
-                $internal = true;
             }
-            if (in_array($err, ['dns_failed', 'timeout', 'connection_refused', 'tls_failed', 'unreachable'], true)) {
-                $failure = true;
-            }
+            $error = $result['error'] ?? $result['data']['error'] ?? null;
+            $blocked = $blocked || $error === 'policy_denied';
+            $internal = $internal || in_array($error, ['internal_error', 'action_failed', 'execution_timeout', 'lease_lost', 'mtr_not_installed', 'mtr_unsupported', 'mtr_invalid_input', 'mtr_invalid_output', 'mtr_output_limit', 'mtr_permission_denied', 'mtr_execution_failed'], true);
+            $failure = $failure || in_array($error, ['dns_failed', 'timeout', 'connection_refused', 'tls_failed', 'unreachable'], true);
         }
-        $dns = ! isset($evidence['dns_a']) && ! isset($evidence['dns_aaaa']) || count($evidence['dns_a']['data']['answers'] ?? []) > 0 || count($evidence['dns_aaaa']['data']['answers'] ?? []) > 0;
-        $tcp = ($evidence['tcp']['data']['connected'] ?? false) === true;
-        $http = $evidence['https']['data'] ?? [];
-        if (isset($evidence['tcp']['data']) && ! $tcp) {
-            $failure = true;
-        }
-        if ($http && (($http['status'] ?? 500) >= 400 || ($http['tls'] ?? false) !== true || ($http['duration_ms'] ?? 0) > ($thresholds['slow_ms'] ?? 2000))) {
-            $failure = true;
-        }
-        if ($profile === 'PROBLEMA_DNS' && isset($evidence['dns_a'],$evidence['dns_aaaa']) && ! $dns) {
-            $failure = true;
-        }
+        $complete = $required !== [] && collect($required)->every(fn ($key) => ($evidence[$key]['ok'] ?? false) === true);
+        $dnsExpected = in_array('dns_a', $required, true) || in_array('dns_aaaa', $required, true);
+        $dns = ! $dnsExpected || count($evidence['dns_a']['data']['answers'] ?? []) > 0 || count($evidence['dns_aaaa']['data']['answers'] ?? []) > 0;
+        $http = ($evidence['https']['ok'] ?? false) === true ? ($evidence['https']['data'] ?? []) : [];
+        $headUnsupported = in_array($http['status'] ?? null, [405, 501], true);
+        $tcp = ($evidence['tcp']['ok'] ?? false) === true && ($evidence['tcp']['data']['connected'] ?? false) === true;
+        $success = false;
         if ($profile === 'PERDA_LATENCIA') {
-            $p = $evidence['ping']['data'] ?? [];
-            if ($p && (($p['loss_percent'] ?? 100) > ($thresholds['loss_percent'] ?? 10) || ($p['avg_ms'] ?? 0) > ($thresholds['latency_ms'] ?? 150))) {
-                $failure = true;
-            }$success = $p && ($p['received'] ?? 0) > 0;
+            $ping = ($evidence['ping']['ok'] ?? false) === true ? ($evidence['ping']['data'] ?? []) : [];
+            if ($ping) {
+                $failure = $failure || ($ping['loss_percent'] ?? 0) > ($thresholds['loss_percent'] ?? 10) || ($ping['avg_ms'] ?? 0) > ($thresholds['latency_ms'] ?? 150);
+            }
+            $success = $complete && $dns && ($ping['received'] ?? 0) > 0 && isset($ping['avg_ms']);
         } elseif ($profile === 'PROBLEMA_DNS') {
-            $success = isset($evidence['dns_a'],$evidence['dns_aaaa']) && $dns;
-        } else {
-            $success = $dns && $tcp && $http && ($http['status'] ?? 500) < 400 && ($http['tls'] ?? false) === true;
+            $success = $complete && $dns;
+        } elseif ($web) {
+            if (($evidence['tcp']['ok'] ?? false) === true && isset($evidence['tcp']['data']['connected']) && ! $tcp) {
+                $failure = true;
+            }
+            if ($http) {
+                $failure = $failure || (! $headUnsupported && ($http['status'] ?? 0) >= 400) || ($http['tls'] ?? false) !== true || ($http['duration_ms'] ?? 0) > ($thresholds['slow_ms'] ?? 2000);
+            }
+            $success = $complete && $dns && $tcp && ($http['status'] ?? 0) >= 200 && ($http['status'] ?? 500) < 400 && ($http['tls'] ?? false) === true;
         }
-        if (! $cancelled) {
-            $class = $internal ? 'ERRO_DE_EXECUCAO' : ($failure ? 'INDICIO_DE_FALHA' : ($success ? 'NORMAL' : 'INCONCLUSIVO'));
+        $paths = [];
+        foreach (['mtr_icmp', 'mtr_tcp'] as $key) {
+            if (($evidence[$key]['ok'] ?? false) === true) {
+                $paths[$key] = app(MtrPath::class)->analyze($evidence[$key]['data'], $thresholds);
+            }
         }
+        if (str_starts_with($profile, 'MTR_')) {
+            $key = $profile === 'MTR_TCP' ? 'mtr_tcp' : 'mtr_icmp';
+            $pathClass = $paths[$key]['classification'] ?? 'INCONCLUSIVO';
+            $success = $complete && $dns && $pathClass === 'NORMAL';
+            $failure = $pathClass === 'INDICIO_DE_FALHA';
+        }
+        $failure = $failure || collect($paths)->contains(fn ($p) => $p['classification'] === 'INDICIO_DE_FALHA');
+        if (($thresholds['mtr_requested'] ?? false) && ! str_starts_with($profile, 'MTR_') && count($paths) < 2) {
+            $success = false;
+        }
+        if (($thresholds['mtr_requested'] ?? false) && collect($paths)->contains(fn ($p) => $p['classification'] === 'INCONCLUSIVO')) {
+            $success = false;
+        }
+        $class = $cancelled || $executionError ? 'INCONCLUSIVO' : ($internal ? 'ERRO_DE_EXECUCAO' : ($failure ? 'INDICIO_DE_FALHA' : ($success && ! $blocked ? 'NORMAL' : 'INCONCLUSIVO')));
         $summary = match ($class) {
-            'NORMAL' => self::NORMAL,'INDICIO_DE_FALHA' => 'Foram encontrados indícios de falha ou lentidão no escopo testado.','ERRO_DE_EXECUCAO' => 'A execução encontrou um erro técnico; revise as etapas afetadas.',default => $cancelled ? 'Diagnóstico interrompido; as evidências coletadas foram preservadas.' : 'Evidências insuficientes para concluir no escopo testado.'
+            'NORMAL' => self::NORMAL,
+            'INDICIO_DE_FALHA' => 'Foram encontrados indícios de falha ou lentidão no escopo testado.',
+            'ERRO_DE_EXECUCAO' => 'A execução encontrou um erro técnico; revise as etapas afetadas.',
+            default => $cancelled ? 'Diagnóstico interrompido; as evidências coletadas foram preservadas.' : match ($executionError) {
+                'diagnostic_timeout' => 'O prazo total do diagnóstico foi excedido; as evidências parciais foram preservadas.',
+                'agent_unavailable' => 'O Agent não estava disponível para concluir as verificações.',
+                'profile_unavailable' => 'O perfil ficou indisponível antes do início das verificações.',
+                default => $blocked ? 'Verificações bloqueadas pela política do Agent; evidências insuficientes para concluir no escopo testado.' : ($headUnsupported ? 'O servidor respondeu ao HTTPS, mas não aceita o método HEAD usado neste teste; resultado inconclusivo sobre a abertura da página.' : 'Evidências insuficientes para concluir no escopo testado.'),
+            },
         };
+        $next = match ($class) {
+            'NORMAL' => ['Se o sintoma persistir, amplie o escopo com um novo diagnóstico.'],
+            'INDICIO_DE_FALHA' => ['Confira as etapas com falha e repita o teste autorizado para confirmar persistência.'],
+            'ERRO_DE_EXECUCAO' => ['Verifique disponibilidade do Agent e os códigos de erro das etapas.'],
+            default => $cancelled || $executionError ? ['Confira a disponibilidade do Agent e do perfil antes de iniciar outro diagnóstico.'] : ($blocked ? ['Confira a autorização da capability e a lista local de alvos permitidos no Agent. Após a autorização, repita o diagnóstico.'] : ($headUnsupported ? ['Valide a página por um método aceito pelo servidor; este teste não segue redirecionamentos nem baixa conteúdo.'] : ['Confira as etapas bloqueadas, o alvo e as capabilities disponíveis.'])),
+        };
+        if ($class === 'NORMAL' && ($http['status'] ?? 0) >= 300) {
+            $next[] = 'O servidor retornou um redirecionamento. O destino do redirecionamento não foi testado.';
+        }
 
-        return ['classification' => $class, 'summary' => $summary, 'evidence' => $evidence, 'next_steps' => match ($class) {
-            'NORMAL' => ['Se o sintoma persistir, amplie o escopo com um novo diagnóstico.'],'INDICIO_DE_FALHA' => ['Confira as etapas com falha e repita o teste autorizado para confirmar persistência.'],'ERRO_DE_EXECUCAO' => ['Verifique disponibilidade do Agent e os códigos de erro das etapas.'],default => ['Confira as etapas bloqueadas, o alvo e as capabilities disponíveis.']
-        }];
+        foreach ($paths as $path) {
+            $next[] = $path['summary'];
+        }
+        if (isset($paths['mtr_icmp'], $paths['mtr_tcp']) && ! $paths['mtr_icmp']['destination_reached'] && $paths['mtr_tcp']['destination_reached']) {
+            $next[] = 'TCP/443 respondeu enquanto ICMP não confirmou o destino: isso é compatível com tratamento distinto das sondas. Não prova falha do serviço nem que ambos percorreram a mesma rota.';
+        }
+
+        return ['classification' => $class, 'summary' => $summary, 'evidence' => $original, 'next_steps' => $next];
     }
 }

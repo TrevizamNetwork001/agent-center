@@ -1,0 +1,8 @@
+[Unit]
+Description=Poll approved Agent maintenance intentions
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=15
+AccuracySec=1
+[Install]
+WantedBy=timers.target

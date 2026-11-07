@@ -32,3 +32,5 @@ __pycache__/
 /deploy/browser-crypto/node_modules/
 
 /artifacts/agentkit/
+
+/app/public/downloads/agent/

@@ -8,6 +8,7 @@ import uuid
 from pathlib import Path
 from unittest.mock import patch
 
+from agent_center import __version__
 from agent_center.api import Outcome
 from agent_center.capabilities import available, execute
 from agent_center.config import Config
@@ -89,7 +90,7 @@ class ExecutionTests(unittest.TestCase):
         self.assertTrue(self.executor.accept(self.task, self.policy))
         self.wait()
         self.assertEqual([c[0] for c in self.calls], ["start", "result"])
-        self.assertEqual(self.calls[-1][1]["result"]["data"]["version"], "0.5.2")
+        self.assertEqual(self.calls[-1][1]["result"]["data"]["version"], __version__)
         self.assertFalse(self.executor.accept(self.task, self.policy))
         self.assertEqual(self.journal.pending(), [])
         self.assertNotIn(
@@ -145,7 +146,9 @@ class ExecutionTests(unittest.TestCase):
                 self.wait()
             self.assertGreater(hb.successes, 20)
             self.assertLess(hb.max_gap, 0.2)
-            self.assertEqual(self.calls[-1][1]["result"]["error"], "execution_timeout")
+            results = [data for operation, data in self.calls if operation == "result"]
+            self.assertEqual(len(results), 1)
+            self.assertEqual(results[0]["result"]["error"], "execution_timeout")
         finally:
             self.stop.set()
             hb.join()
@@ -199,12 +202,12 @@ class ExecutionTests(unittest.TestCase):
             )
             lookup.assert_not_called()
 
-    def test_dns_rebinding_and_out_of_scope_addresses_fail_closed(self):
+    def test_authorized_forward_dns_returns_out_of_probe_scope_records(self):
         with patch(
             "socket.getaddrinfo",
             return_value=[(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("192.0.2.1", 443))],
         ):
-            self.assertFalse(
+            self.assertTrue(
                 execute(
                     "dns_lookup:v1",
                     dict(target="localhost", record_type="A"),

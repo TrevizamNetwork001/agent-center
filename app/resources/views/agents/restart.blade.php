@@ -1,0 +1,5 @@
+@can('revoke',$agent)
+@php($currentRelease = collect($releases)->first(fn ($r) => $r['version'] === $agent->version))
+@if($agent->status==='active' && !$agent->revoked_at && $currentRelease && !$pendingUpdate && \App\Agent\Protocol::supportsDownloads($agent))
+<details class="card"><summary>Manutenção · reiniciar serviço do Agent</summary><p>Se o atualizador estiver sem contato, a solicitação aguardará sua conexão.</p><p>O atualizador local fará backup, verificará e reaplicará a mesma versão para reiniciar o serviço. Cadastro, configuração e evidências serão preservados. Aguarda o fim dos testes em execução.</p><form method="post" action="{{route('agents.operations.request',$agent)}}" data-confirm="Reiniciar o serviço deste Agent? Ele ficará brevemente sem comunicação durante a operação.">@csrf<input type="hidden" name="kind" value="update"><input type="hidden" name="reason" value="restart"><input type="hidden" name="release_sha" value="{{$currentRelease['sha256']}}"><input type="hidden" name="install_after_check" value="1"><button class="button-secondary">Reiniciar serviço</button></form></details>
+@endif @endcan

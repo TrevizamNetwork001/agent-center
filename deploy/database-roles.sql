@@ -21,3 +21,9 @@ SELECT format('GRANT SELECT ON TABLE public.%I TO %I', viewname, :'runtime_user'
 
 SELECT format('GRANT SELECT, INSERT, UPDATE ON TABLE public.%I TO %I',tablename,:'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('conversations','conversation_settings') \gexec
 SELECT format('GRANT SELECT, INSERT ON TABLE public.%I TO %I',tablename,:'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('conversation_messages','conversation_events') \gexec
+
+SELECT format('GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.agent_maintenance_accesses TO %I', :'runtime_user') WHERE to_regclass('public.agent_maintenance_accesses') IS NOT NULL \gexec
+
+GRANT SELECT, INSERT ON TABLE public.agent_releases TO :"runtime_user";
+
+SELECT format('GRANT SELECT, INSERT ON TABLE public.agent_release_quarantines TO %I', :'runtime_user') WHERE to_regclass('public.agent_release_quarantines') IS NOT NULL \gexec

@@ -76,6 +76,26 @@ class WebUxTest extends IdentityTestCase
             ->assertSee('PLATFORM CONTEXT')->assertSee(route('backups.settings'), false);
     }
 
+    public function test_platform_admin_can_return_from_client_context_without_exposing_action_to_client(): void
+    {
+        $this->actingAs($this->platform)->withSession(['active_tenant_id' => $this->a->id])
+            ->get('/dashboard')->assertOk()->assertSee('Voltar à plataforma');
+        $this->post('/tenant-context', [])->assertRedirect('/dashboard');
+        $this->get('/dashboard')->assertOk()->assertSee('PLATFORM CONTEXT')->assertDontSee('Voltar à plataforma');
+        $this->flushSession();
+        $this->actingAs($this->admin)->get('/dashboard')->assertOk()->assertDontSee('Voltar à plataforma');
+        $this->post('/tenant-context', [])->assertForbidden();
+    }
+
+    public function test_deleting_revoked_agent_preserves_diagnostic_history(): void
+    {
+        $this->actingAs($this->admin)->post('/agents/'.$this->agent->id.'/revoke')->assertRedirect();
+        $this->delete('/agents/'.$this->agent->id)->assertRedirect('/agents');
+        $this->get('/diagnostics/'.$this->normal->id)->assertOk()->assertSee('UX Agent A');
+        $this->context()->forUser($this->admin);
+        $this->assertSame($this->agent->id, $this->normal->fresh()->agent->id);
+    }
+
     public function test_dashboard_real_counts_recent_and_tenant_context(): void
     {
         $this->actingAs($this->admin)->get('/dashboard')->assertOk()->assertSee('Estado operacional')->assertSee('UX Agent A')->assertSee('alpha.example.test')->assertViewHas('health', fn ($h) => $h['agents_online'] === 1 && $h['agents_total'] === 1 && $h['today'] === 1 && $h['indications'] === 0 && $h['state'] === 'ATENÇÃO');
@@ -145,7 +165,9 @@ class WebUxTest extends IdentityTestCase
         $this->get('/profiles/'.$profile->id)->assertOk()->assertSee('Composição')->assertSee('Testar perfil');
         $this->get('/skills')->assertOk()->assertSee('read-only')->assertSee('dns_lookup:v1');
         $this->flushSession();
-        $this->actingAs($this->operator)->get('/profiles')->assertForbidden();
+        $this->actingAs($this->operator)->get('/profiles')->assertForbidden()
+            ->assertSee('Acesso restrito')->assertSee('Você não tem permissão para acessar esta página.')
+            ->assertDontSee('403 Forbidden');
         $this->get('/skills')->assertForbidden();
         $this->get('/profiles/'.$profile->id)->assertForbidden();
     }
@@ -212,5 +234,31 @@ class WebUxTest extends IdentityTestCase
             $a->forceFill(['id' => (string) Str::uuid(), 'name' => 'Pagination '.$i])->save();
         }
         $this->actingAs($this->admin)->get('/agents?fragment=1')->assertOk()->assertSee('page=2', false)->assertDontSee('fragment=1', false);
+    }
+
+    public function test_dashboard_json_is_private_scoped_and_exposes_only_explicit_fields(): void
+    {
+        $this->context()->forUser($this->other);
+        app(Catalog::class)->ensure();
+        $other = new Agent;
+        $other->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $this->b->id, 'name' => 'PRIVATE OTHER AGENT', 'hostname' => 'other-agent', 'status' => 'active', 'version' => '0.6.1', 'token_hash' => hash('sha256', random_bytes(32)), 'capabilities' => ['agent_info'], 'metadata' => ['task_protocol' => 1], 'enrolled_at' => now()])->save();
+        app(Engine::class)->create(Profile::where('key', 'SITE_LENTO')->sole(), $other, 'private-other.example.test', $this->other);
+        $response = $this->actingAs($this->admin)->getJson('/dashboard?format=json&tenant_id='.$this->b->id);
+        $response->assertOk()->assertHeader('Cache-Control', 'no-store, private')->assertHeader('X-AC-Tenant', (string) $this->a->id)
+            ->assertJsonPath('schema_version', 1)->assertJsonPath('tenant_id', $this->a->id)->assertJsonPath('health.agents_online', 1)
+            ->assertJsonMissingPath('user.email')->assertJsonMissingPath('recent.0.result')->assertJsonMissingPath('events.0.metadata')
+            ->assertSee('alpha.example.test')->assertDontSee('private-other.example.test')->assertDontSee('PRIVATE OTHER AGENT')->assertDontSee('token_hash');
+        $this->flushSession();
+        $this->actingAs($this->viewer)->getJson('/dashboard?format=json')->assertOk()->assertJsonPath('links.audit', null)->assertJsonPath('links.create', null);
+    }
+
+    public function test_dashboard_json_without_tenant_never_serializes_tenant_records(): void
+    {
+        $this->actingAs($this->platform)->getJson('/dashboard?format=json')->assertOk()->assertJsonPath('tenant_id', null)->assertJsonPath('tenant', null)->assertJsonPath('recent', [])->assertJsonPath('events', [])->assertJsonPath('health', null)->assertDontSee('alpha.example.test');
+    }
+
+    public function test_react_dashboard_uses_vite_and_preserves_server_fallback(): void
+    {
+        $this->actingAs($this->admin)->get('/dashboard')->assertOk()->assertSee('id="dashboard-react"', false)->assertSee('type="module"', false)->assertSee('/build/assets/dashboard-', false)->assertSee('Estado operacional')->assertSee('alpha.example.test');
     }
 }

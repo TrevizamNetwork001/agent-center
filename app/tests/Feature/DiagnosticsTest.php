@@ -11,6 +11,7 @@ use App\Diagnostics\Normalizer;
 use App\Diagnostics\Planner;
 use App\Diagnostics\WorkerHealth;
 use App\Models\Agent;
+use App\Models\AgentOperation;
 use App\Models\AgentTask;
 use App\Models\AgentTaskAttempt;
 use App\Models\AuditEvent;
@@ -78,10 +79,10 @@ class DiagnosticsTest extends IdentityTestCase
 
     public function test_catalog_closed_and_planner_snapshot_digest_and_waves(): void
     {
-        $this->assertSame(6, Skill::count());
-        $this->assertSame(6, Profile::count());
+        $this->assertSame(10, Skill::count());
+        $this->assertSame(8, Profile::count());
         app(Catalog::class)->ensure();
-        $this->assertSame(6, Skill::count());
+        $this->assertSame(10, Skill::count());
         $d = $this->diagnostic();
         app(Engine::class)->tick();
         $plan = DiagnosticPlan::sole();
@@ -267,7 +268,7 @@ class DiagnosticsTest extends IdentityTestCase
         $this->put('/diagnostic-catalog/skills/'.$s->id, ['enabled' => 0])->assertRedirect();
         $this->context()->forUser($this->admin);
         $this->assertFalse($s->fresh()->enabled);
-        $this->assertSame(1, AuditEvent::where('event_type', 'skill.disabled')->count());
+        $this->assertSame(1, AuditEvent::where('event_type', 'skill.disabled')->where('metadata->skill_id', $s->id)->count());
         $this->assertTrue(Gate::forUser($this->admin)->allows('create', Diagnostic::class));
     }
 
@@ -284,7 +285,7 @@ class DiagnosticsTest extends IdentityTestCase
                 $this->assertSame('42501', $e->getCode());
             }
         }
-        $this->assertSame(28, (int) DB::selectOne("SELECT count(*) n FROM pg_class WHERE relnamespace='public'::regnamespace AND relrowsecurity AND relforcerowsecurity")->n);
+        $this->assertSame(30, (int) DB::selectOne("SELECT count(*) n FROM pg_class WHERE relnamespace='public'::regnamespace AND relrowsecurity AND relforcerowsecurity")->n);
     }
 
     public function test_offline_deadline_ends_without_invented_success(): void
@@ -406,5 +407,135 @@ class DiagnosticsTest extends IdentityTestCase
         $this->actingAs($this->platform)->get('/diagnostics')->assertForbidden();
         $this->post('/tenant-context', ['tenant_id' => $this->a->id])->assertRedirect();
         $this->get('/diagnostics/'.$d->id)->assertOk();
+    }
+
+    public function test_dns_record_type_and_https_address_are_bound_to_the_claimed_task(): void
+    {
+        $d = $this->diagnostic();
+        $engine = app(Engine::class);
+        $engine->tick();
+        for ($i = 0; $i < 3; $i++) {
+            $task = $this->claim();
+            $envelope = $this->envelope($task);
+            $this->api('start', $envelope)->assertOk();
+            if ($task['capability'] === 'dns_lookup:v1') {
+                $wrong = ['ok' => true, 'data' => ['record_type' => $task['input']['record_type'] === 'A' ? 'AAAA' : 'A', 'answers' => [], 'duration_ms' => 1]];
+                $this->api('result', $envelope + ['result' => $wrong])->assertUnprocessable();
+            }
+            $this->api('result', $envelope + ['result' => $this->success($task)])->assertOk();
+            $engine->tick();
+        }
+        $task = $this->claim();
+        $this->assertSame('http_probe:v1', $task['capability']);
+        $envelope = $this->envelope($task);
+        $this->api('start', $envelope)->assertOk();
+        $wrong = $this->success($task);
+        $wrong['data']['resolved_ip'] = '192.0.2.1';
+        $this->api('result', $envelope + ['result' => $wrong])->assertUnprocessable();
+        $this->api('result', $envelope + ['result' => $this->success($task)])->assertOk();
+    }
+
+    public function test_global_deadline_cannot_leave_a_normal_conclusion_with_partial_execution(): void
+    {
+        $d = $this->diagnostic();
+        $engine = app(Engine::class);
+        $engine->tick();
+        for ($i = 0; $i < 4; $i++) {
+            $task = $this->claim();
+            $envelope = $this->envelope($task);
+            $this->api('start', $envelope)->assertOk();
+            $this->api('result', $envelope + ['result' => $this->success($task)])->assertOk();
+            $engine->tick();
+        }
+        Diagnostic::whereKey($d->id)->update(['created_at' => now()->subMinutes(6)]);
+        $engine->tick();
+        $this->assertSame('FAILED', $d->fresh()->status);
+        $this->assertSame('INCONCLUSIVO', DiagnosticConclusion::sole()->classification);
+        $this->assertStringContainsString('prazo', DiagnosticConclusion::sole()->summary);
+    }
+
+    public function test_profile_or_agent_unavailable_before_plan_settles_without_tasks(): void
+    {
+        $d = $this->diagnostic();
+        Profile::whereKey($d->profile_id)->update(['enabled' => false]);
+        app(Engine::class)->tick();
+        $this->assertSame('FAILED', $d->fresh()->status);
+        $this->assertSame('profile_unavailable', $d->fresh()->error_code);
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, DiagnosticPlan::count());
+        Profile::whereKey($d->profile_id)->update(['enabled' => true]);
+        $d = $this->diagnostic();
+        $this->agent->forceFill(['status' => 'revoked', 'revoked_at' => now()])->save();
+        $this->agent->delete();
+        app(Engine::class)->tick();
+        $this->assertSame('FAILED', $d->fresh()->status);
+        $this->assertSame('agent_unavailable', $d->fresh()->error_code);
+        $this->assertSame(0, AgentTask::count());
+    }
+
+    public function test_disappeared_capability_and_policy_denial_do_not_wait_for_deadline_or_trigger_route(): void
+    {
+        $d = $this->diagnostic();
+        $engine = app(Engine::class);
+        $engine->tick();
+        $this->agent->forceFill(['capabilities' => []])->save();
+        $this->assertNull($this->claim());
+        $engine->tick();
+        $engine->tick();
+        $this->assertSame('COMPLETED', $d->fresh()->status);
+        $this->assertSame('INCONCLUSIVO', DiagnosticConclusion::sole()->classification);
+        $this->assertSame(2, DiagnosticStep::where('error_code', 'capability_unavailable')->count());
+    }
+
+    public function test_planned_maintenance_does_not_stall_diagnostics_but_approved_or_uncertain_does(): void
+    {
+        $d = $this->diagnostic();
+        $engine = app(Engine::class);
+        $engine->tick();
+        $operation = new AgentOperation;
+        $operation->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $this->a->id, 'agent_id' => $this->agent->id, 'requested_by' => $this->admin->id, 'kind' => 'update', 'status' => 'PLANNED', 'from_version' => '0.5.2', 'release' => [], 'reason' => 'maintenance'])->save();
+        $task = $this->claim();
+        $this->assertNotNull($task);
+        $envelope = $this->envelope($task);
+        $this->api('start', $envelope)->assertOk();
+        $this->api('result', $envelope + ['result' => $this->success($task)])->assertOk();
+        foreach (['APPROVED', 'UNCERTAIN'] as $status) {
+            $operation->forceFill(['status' => $status])->save();
+            $this->assertNull($this->claim());
+        }
+    }
+
+    public function test_legacy_agent_info_schema_is_upgraded_without_reenabling_skill(): void
+    {
+        $skill = Skill::where('key', 'agent_info')->sole();
+        $schema = $skill->output_schema;
+        $schema['properties']['data']['properties']['version'] = ['const' => '0.5.2'];
+        $skill->forceFill(['enabled' => false, 'output_schema' => $schema])->save();
+        $before = $skill->version;
+        app(Catalog::class)->ensure();
+        app(Catalog::class)->ensure();
+        $skill = $skill->fresh();
+        $this->assertFalse($skill->enabled);
+        $this->assertSame($before + 1, $skill->version);
+        $this->assertContains('0.5.9', $skill->output_schema['properties']['data']['properties']['version']['enum']);
+        $this->assertSame(1, AuditEvent::where('event_type', 'skill.schema_updated')->count());
+    }
+
+    public function test_revocation_during_execution_closes_work_and_keeps_existing_evidence(): void
+    {
+        $d = $this->diagnostic();
+        $engine = app(Engine::class);
+        $engine->tick();
+        $task = $this->claim();
+        $envelope = $this->envelope($task);
+        $this->api('start', $envelope)->assertOk();
+        $this->api('result', $envelope + ['result' => $this->success($task)])->assertOk();
+        $this->agent->forceFill(['status' => 'revoked', 'revoked_at' => now()])->save();
+        $engine->tick();
+        $this->assertSame('FAILED', $d->fresh()->status);
+        $this->assertSame('agent_unavailable', $d->fresh()->error_code);
+        $this->assertSame('INCONCLUSIVO', DiagnosticConclusion::sole()->classification);
+        $this->assertNotEmpty(DiagnosticConclusion::sole()->evidence);
+        $this->assertSame(0, AgentTask::whereIn('status', ['QUEUED', 'CLAIMED', 'RUNNING'])->count());
     }
 }

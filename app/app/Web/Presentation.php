@@ -2,19 +2,89 @@
 
 namespace App\Web;
 
+use App\Agent\Protocol;
+use App\Diagnostics\Classifier;
+use Carbon\CarbonImmutable;
+
 class Presentation
 {
+    public static function time($date, string $format = 'd/m/Y H:i:s P'): ?string
+    {
+        if ($date === null) {
+            return null;
+        }
+        $instant = is_string($date) ? CarbonImmutable::parse($date) : CarbonImmutable::instance($date);
+
+        return $instant->setTimezone('America/Sao_Paulo')->format(str_replace(' T', ' P', $format));
+    }
+
+    public static function stepStatus($step): string
+    {
+        $error = $step->result['error'] ?? $step->result['data']['error'] ?? $step->error_code;
+
+        $data = ($step->result['ok'] ?? false) === true ? ($step->result['data'] ?? []) : [];
+
+        return match (true) {
+            $error === 'policy_denied' => 'POLICY_BLOCKED',
+            in_array($error, ['action_failed', 'internal_error', 'execution_timeout', 'lease_lost', 'diagnostic_timeout', 'agent_unavailable'], true) => 'EXECUTION_ERROR',
+            in_array($error, ['dns_failed', 'timeout', 'connection_refused', 'tls_failed', 'unreachable'], true) => 'TECHNICAL_FAILURE',
+            ($step->capability ?? null) === 'http_probe:v1' && in_array($data['status'] ?? null, [405, 501], true) => 'LIMITED',
+            ($step->capability ?? null) === 'tcp_connect:v1' && ($data['connected'] ?? null) === false => 'TECHNICAL_FAILURE',
+            ($step->capability ?? null) === 'http_probe:v1' && (($data['status'] ?? 0) >= 400 || ($data['tls'] ?? null) === false) => 'TECHNICAL_FAILURE',
+            ($step->capability ?? null) === 'icmp_ping:v1' && (($data['loss_percent'] ?? 0) > 0 || ($data['received'] ?? null) === 0) => 'TECHNICAL_FAILURE',
+            default => $step->status,
+        };
+    }
+
+    public static function diagnosticError(?string $error): string
+    {
+        return match ($error) {
+            'policy_denied' => 'Bloqueado pela política do Agent',
+            'agent_unavailable' => 'Agent indisponível para concluir a verificação',
+            'capability_unavailable' => 'Verificação indisponível neste Agent',
+            'condition_not_met' => 'Uma etapa anterior não forneceu a evidência necessária',
+            'dns_unavailable' => 'Nenhum endereço DNS disponível para esta verificação',
+            'dns_failed' => 'Falha na resolução DNS',
+            'nodata' => 'A consulta não retornou endereços',
+            'connection_refused' => 'A conexão foi recusada pelo destino',
+            'tls_failed' => 'A validação TLS falhou',
+            'timeout' => 'O destino não respondeu dentro do prazo',
+            'unreachable' => 'Não foi possível alcançar o destino',
+            'execution_timeout' => 'A verificação excedeu o tempo de execução',
+            'diagnostic_timeout' => 'O diagnóstico excedeu o prazo total',
+            'lease_lost' => 'A execução perdeu a confirmação com a Central',
+            'cancelled' => 'Verificação cancelada',
+            'action_failed', 'internal_error' => 'Falha técnica ao executar a verificação',
+            default => 'Verificação não concluída',
+        };
+    }
+
+    public static function conclusion($diagnostic): ?array
+    {
+        $conclusion = $diagnostic->conclusion;
+        if (! $conclusion) {
+            return null;
+        }
+        $evidence = $conclusion->evidence ?? [];
+        // Correct legacy display only where no measurement was made; keep append-only records intact.
+        if ($conclusion->classification === 'INDICIO_DE_FALHA' && $evidence && collect($evidence)->every(fn ($r) => ($r['error'] ?? $r['data']['error'] ?? null) === 'policy_denied')) {
+            return app(Classifier::class)->classify($diagnostic->profile?->key ?? '', $evidence);
+        }
+
+        return ['classification' => $conclusion->classification, 'summary' => $conclusion->summary, 'next_steps' => $conclusion->next_steps];
+    }
+
     public static function tone(?string $s): string
     {
         return match ($s) {
-            'NORMAL','COMPLETED','ONLINE','VERDE','HEALTHY','active' => 'good','RUNNING','CLAIMED' => 'info','INDICIO_DE_FALHA','INCONCLUSIVO','PENDING','QUEUED','ATENÇÃO' => 'warn','FAILED','ERRO_DE_EXECUCAO','EXPIRED','OFFLINE','NO-GO','REVOKED','revoked' => 'bad',default => 'neutral'
+            'NORMAL','COMPLETED','ONLINE','VERDE','HEALTHY','active' => 'good','RUNNING','CLAIMED' => 'info','LIMITED','POLICY_BLOCKED','INDICIO_DE_FALHA','INCONCLUSIVO','PENDING','QUEUED','ATENÇÃO' => 'warn','TECHNICAL_FAILURE','EXECUTION_ERROR','FAILED','ERRO_DE_EXECUCAO','EXPIRED','OFFLINE','NO-GO','REVOKED','revoked' => 'bad',default => 'neutral'
         };
     }
 
     public static function label(?string $s): string
     {
         return match ($s) {
-            'active' => 'Habilitado','disabled' => 'Desabilitado','REVOKED' => 'Revogado','COMPLETED' => 'Concluído','RUNNING' => 'Em execução','CLAIMED' => 'Reservado','PENDING' => 'Pendente','QUEUED' => 'Na fila','SKIPPED' => 'Dispensado','BLOCKED' => 'Bloqueado','CANCELLED' => 'Cancelado','FAILED' => 'Falhou','EXPIRED' => 'Expirado',null => 'Aguardando conclusão',default => $s
+            'active' => 'Habilitado','disabled' => 'Desabilitado','REVOKED' => 'Revogado','COMPLETED' => 'Concluído','RUNNING' => 'Em execução','CLAIMED' => 'Reservado','PENDING' => 'Pendente','QUEUED' => 'Na fila','EXECUTION_ERROR' => 'Erro de execução','TECHNICAL_FAILURE' => 'Teste executado com falha','LIMITED' => 'Verificação limitada','POLICY_BLOCKED' => 'Bloqueado por política','SKIPPED' => 'Dispensado','BLOCKED' => 'Bloqueado','CANCELLED' => 'Cancelado','FAILED' => 'Falhou','EXPIRED' => 'Expirado',null => 'Aguardando conclusão',default => $s
         };
     }
 
@@ -45,15 +115,27 @@ class Presentation
             return 'OFFLINE';
         }
 
-        return ! $a->last_poll_at || $a->last_poll_at->lte(now()->subSeconds(30)) || ($a->metadata['telemetry']['device_operations_frozen'] ?? null) !== true || ! in_array($a->version, ['0.5.2', '0.5.3'], true) ? 'ATENÇÃO' : 'ONLINE';
+        return ! $a->last_poll_at || $a->last_poll_at->lte(now()->subSeconds(30)) || ($a->metadata['telemetry']['device_operations_frozen'] ?? null) !== true || ! in_array($a->version, Protocol::VERSIONS, true) ? 'ATENÇÃO' : 'ONLINE';
     }
 
     public static function groupStatus($steps): string
     {
+        foreach (['TECHNICAL_FAILURE', 'EXECUTION_ERROR'] as $state) {
+            if ($steps->contains(fn ($step) => self::stepStatus($step) === $state)) {
+                return $state;
+            }
+        }
+        if ($steps->contains(fn ($step) => self::stepStatus($step) === 'POLICY_BLOCKED') && ! $steps->contains(fn ($step) => in_array($step->status, ['RUNNING', 'CLAIMED', 'QUEUED', 'PENDING']))) {
+            return 'POLICY_BLOCKED';
+        }
         foreach (['RUNNING', 'CLAIMED', 'QUEUED', 'PENDING', 'FAILED', 'EXPIRED', 'CANCELLED', 'BLOCKED'] as $s) {
             if ($steps->contains('status', $s)) {
                 return $s;
             }
+        }
+
+        if ($steps->contains(fn ($step) => self::stepStatus($step) === 'LIMITED')) {
+            return 'LIMITED';
         }
 
         return $steps->every(fn ($s) => $s->status === 'SKIPPED') ? 'SKIPPED' : 'COMPLETED';

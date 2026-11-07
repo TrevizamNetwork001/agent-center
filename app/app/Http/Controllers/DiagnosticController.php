@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Diagnostics\Catalog;
 use App\Diagnostics\Engine;
+use App\Diagnostics\Timing;
 use App\Http\Requests\DiagnosticRequest;
 use App\Http\Requests\HistoryRequest;
 use App\Models\Agent;
@@ -59,7 +60,7 @@ class DiagnosticController extends Controller
 
     public function store(DiagnosticRequest $r, Engine $engine)
     {
-        $d = $engine->create(Profile::findOrFail($r->validated('profile_id')), Agent::findOrFail($r->validated('agent_id')), $r->validated('target'), $r->user(), ['trace_requested' => $r->boolean('trace_requested')]);
+        $d = $engine->create(Profile::findOrFail($r->validated('profile_id')), Agent::findOrFail($r->validated('agent_id')), $r->validated('target'), $r->user(), ['trace_requested' => $r->boolean('trace_requested'), 'mtr_requested' => $r->boolean('mtr_requested')]);
 
         return redirect()->route('diagnostics.show', $d);
     }
@@ -69,7 +70,7 @@ class DiagnosticController extends Controller
         Gate::authorize('view', $diagnostic);
 
         $interpretation = DiagnosticInterpretation::with('sources')->where('diagnostic_id', $diagnostic->id)->latest('created_at')->first();
-        $data = ['interpretation' => $interpretation, 'diagnostic' => $diagnostic, 'steps' => DiagnosticStep::where('diagnostic_id', $diagnostic->id)->orderBy('wave')->orderBy('key')->get(), 'plan' => DiagnosticPlan::where('diagnostic_id', $diagnostic->id)->first(), 'conclusion' => DiagnosticConclusion::where('diagnostic_id', $diagnostic->id)->first()];
+        $data = ['performanceAttempts' => Timing::attempts($diagnostic->id), 'interpretation' => $interpretation, 'diagnostic' => $diagnostic, 'steps' => DiagnosticStep::where('diagnostic_id', $diagnostic->id)->orderBy('wave')->orderBy('key')->get(), 'plan' => DiagnosticPlan::where('diagnostic_id', $diagnostic->id)->first(), 'conclusion' => DiagnosticConclusion::where('diagnostic_id', $diagnostic->id)->first()];
         if ($r->boolean('fragment')) {
             return response()->view('diagnostics.result', $data)->header('X-AC-Fragment', 'diagnostic-panel');
         }

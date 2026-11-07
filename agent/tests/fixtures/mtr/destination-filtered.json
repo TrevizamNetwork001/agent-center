@@ -1,0 +1,29 @@
+{
+  "report": {
+    "mtr": {
+      "protocol": "icmp"
+    },
+    "hubs": [
+      {
+        "count": 1,
+        "host": "192.168.1.1",
+        "Loss%": 0,
+        "Snt": 5,
+        "Avg": 10,
+        "Best": 9,
+        "Wrst": 11,
+        "StDev": 1
+      },
+      {
+        "count": 2,
+        "host": "???",
+        "Loss%": 100,
+        "Snt": 5,
+        "Avg": 0,
+        "Best": 0,
+        "Wrst": 0,
+        "StDev": 0
+      }
+    ]
+  }
+}

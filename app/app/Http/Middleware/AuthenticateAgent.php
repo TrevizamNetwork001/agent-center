@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Agent\AgentContext;
+use App\Agent\ManagedSettings;
 use App\Models\Agent;
 use App\Models\Tenant;
 use App\Tenancy\TenantContext;
@@ -30,6 +31,10 @@ class AuthenticateAgent
             AgentContext::clear();
             abort_if($agent->revoked_at || $agent->status !== 'active', 403);
             abort_unless(Tenant::whereKey($agent->tenant_id)->where('status', 'active')->exists(), 403);
+            if (! app(ManagedSettings::class)->allow($agent, $r->ip())) {
+                return response()->json(['error' => 'origin_not_allowed', 'message' => 'IP de origem não autorizado para este Agent.'], 403)->header('Cache-Control', 'no-store');
+            }
+            $agent->refresh();
             $r->attributes->set('agent', $agent);
             $response = $next($r);
             $response->headers->set('Cache-Control', 'no-store');

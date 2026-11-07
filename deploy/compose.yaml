@@ -1,11 +1,11 @@
 name: agent-center
 x-app: &app
-  image: agent-center-central:recovery9
+  image: agent-center-central:mtr-contract-062-final-20261106
   build:
     context: ..
     dockerfile: deploy/php/Dockerfile
     target: production
-  environment:
+  environment: &app-env
     APP_NAME: ${APP_NAME:-Agent Center}
     APP_ENV: ${APP_ENV:-production}
     APP_KEY: ${APP_KEY:?required}
@@ -97,6 +97,13 @@ services:
     command: [php, artisan, migrate, '--force']
   web:
     <<: *app
+    image: agent-center-central:lifecycle-quarantine-20261107
+    environment:
+      <<: *app-env
+      AGENT_MAINTENANCE_TARGETS: ${AGENT_MAINTENANCE_TARGETS:-}
+      AGENT_MAINTENANCE_HOST_FINGERPRINTS: ${AGENT_MAINTENANCE_HOST_FINGERPRINTS:-}
+      AGENT_RELEASE_PUBLIC_KEY: "sKp8xFy6GcBquLjRRXt8cafE/mIWn1iUueHGop2XK8g="
+    networks: [backend, maintenance_egress]
     volumes:
       - app_storage:/var/www/html/storage
       - ../secrets/postgres/ca.crt:/run/pg-tls/ca.crt:ro
@@ -157,3 +164,4 @@ networks:
   frontend:
   backend:
     internal: true
+  maintenance_egress: {}

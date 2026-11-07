@@ -27,6 +27,9 @@ class ResolveAgentOperation extends Command
                 if (! in_array($o->status, ['RUNNING', 'PRECHECKING', 'UNCERTAIN'], true)) {
                     throw new \RuntimeException('Not interrupted');
                 }
+                if ($o->status === 'UNCERTAIN' && isset($o->release['lifecycle'])) {
+                    throw new \RuntimeException('Signed lifecycle requires verified reconciliation through the panel');
+                }
                 $o->forceFill(['status' => 'FAILED', 'error' => 'interrupted', 'finished_at' => now()])->save();
                 $audit->record('agent.'.$o->kind.'_failed', null, $o->tenant_id, 'agent', null, ['agent_id' => $o->agent_id, 'operation_id' => $o->id]);
             });

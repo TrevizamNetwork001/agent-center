@@ -18,4 +18,7 @@ docker run --rm "${mounts[@]}" "$test_image" composer install --no-interaction -
 docker run --rm --network "$test_network" --env-file "$test_owner_env" -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php artisan migrate --force
 docker exec -i "$test_pg_container" sh -c 'psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d agent_center_test -f /dev/stdin' < deploy/database-roles.sql
 docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php vendor/bin/phpunit --display-warnings --fail-on-warning "$@"
+if [ "${TEST_DIAGNOSTIC_CONCURRENCY:-0}" = 1 ]; then
+ docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/diagnostic-concurrency.php
+fi
 docker run --rm --network "$test_network" --env-file "$test_owner_env" -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php artisan migrate:rollback --force
