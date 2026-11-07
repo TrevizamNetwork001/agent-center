@@ -1,0 +1,157 @@
+FECHAMENTO ATUALIZADO: ver docs/AGENT_OBSERVABILITY_V1_CLOSURE.txt.
+Candidata 0.6.3 assinada pela autoridade operacional existente, sequência 4, não publicada.
+Este documento também conserva o histórico da preparação inicial de laboratório.
+
+AGENT OBSERVABILITY V1 — ENTREGA DE LABORATÓRIO
+
+STATUS: BLOCKED para aceite integral. Há implementação revisável e testes de
+laboratório; não há publicação nem atualização do Agent real. A consulta por
+destino cobre as capabilities existentes: MTR ICMP/TCP443, info, DNS A, ping,
+TCP443, traceroute e HTTPS. Falta homologar o novo contrato do helper
+em systemd Debian 13. O artefato inicial descrito abaixo é de laboratório; a
+candidata assinada operacionalmente está identificada no documento de fechamento.
+
+REGRAS E COMMIT
+AGENTS.md e app/AGENTS.md atualizados no commit isolado 40dbafa, removendo a
+restrição histórica de Fase 1 e preservando Laravel, separação Central/Agent,
+PostgreSQL, RBAC/FORCE RLS, tenants, autenticação, CSRF, TLS, auditoria, freeze,
+allowlist, releases assinadas, Lifecycle, backup/rollback e LLM sem autoridade.
+Nenhuma autorização automática de deploy, privilégio, device ou destruição.
+Não foram encontrados outros AGENTS.md aplicáveis ao código alterado. Os
+AGENTS.md de dependências vendor não se aplicam aos arquivos desta entrega.
+Alterações de implementação permanecem fora do commit de instruções, pois o
+checkout já continha muitas alterações anteriores; não foram agregadas a esse
+commit nem descartadas.
+
+INVENTÁRIO / REUTILIZAÇÃO
+Central: Agent model, metadata JSONB, heartbeat autenticado, TenantContext,
+AgentPolicy, ManagedSettings, Protocol, Audit, Lifecycle e detalhe Blade.
+Operations Health existente preservado; sem novo serviço ou protocolo de tarefas.
+Agent: Policy.parse/authorize, Config.load, managed_settings.apply e heartbeat.
+Executor MTR: mtr.authorize, mtr_client.collect e mtr_helper.serve.
+Execução padrão e inspeção compartilham capabilities.prepare, incluindo as
+verificações HTTP e de destinos numéricos antes de qualquer I/O. Config.load
+retém em memória o snapshot-base e o gerenciado usados na interseção; se a
+política mudar durante a leitura, o resultado fica UNKNOWN/POLICY_NOT_APPLIED.
+A origem das fontes MTR/Lifecycle recuperadas está registrada em
+  docs/evidence/observability-v1/source-baseline.txt
+O checkout tinha runtime 0.6.1 sem MTR, enquanto o estágio anterior continha a
+implementação 0.6.2. Foram reutilizadas essas fontes e testes, inclusive anúncio
+de capabilities, Lifecycle e empacotamento do helper. Não se reimplementou o
+Lifecycle. Não se comparou o candidato com arquivos da VM real por SSH.
+
+ARQUITETURA
+Agent 0.6.3 candidato transmite observability schema_version=1 no heartbeat já
+existente. Central valida campos, enums, formatos, cardinalidades e 16 KiB de
+relatório; persiste exclusivamente no metadata do Agent, sob RLS existente.
+Sem migrations novas, cache compartilhado ou jobs novos.
+Helper recebe somente duas operações adicionais de leitura no socket existente:
+observe: campos permitidos de ACL-base/teto e saúde local;
+check: entrada MTR tipada, autorização e health, sem collect nem consumo de rate.
+SO_PEERCRED e restrições existentes do socket são preservados. Nenhum caminho,
+shell, comando ou perfil de privilégio é recebido pela consulta.
+O painel apenas agenda uma consulta tipada no metadata do próprio Agent. O
+heartbeat entrega a solicitação e recebe a decisão com ID, revisão e digest.
+Não é uma tarefa executável do Task Engine. Solicitação e resultado expiram em
+60 s; consultas concorrentes para o mesmo Agent são recusadas. Limite: 6/min.
+Sem ACL publicada para usuários sem AgentPolicy.observe (administrador do tenant
+ou administrador da plataforma atuando no tenant). Acesso cruzado retorna 404.
+
+DADOS
+Identidade, hostname, versão, sistema operacional e presença usam os campos
+existentes do Agent e da telemetria autenticada. Último polling e heartbeat são
+observações da Central. Última atualização usa operação COMPLETED do Lifecycle.
+Relatório contém política gerenciada aplicada, ACL-base, teto, estado das
+capabilities e saúde do helper. Componentes mostram runtime, helper e updater.
+policy_revision e policy_digest referem-se EXPLICITAMENTE à política gerenciada
+de destinos normalizada, sem source_ips; não são uma revisão ou digest inventado
+da ACL-base/teto. Base/teto não possuem revisão histórica conhecida.
+A última aplicação só é registrada após apply() bem-sucedido, em arquivo privado
+policy-observed.json, com digest/revisão. Repetição da mesma revisão preserva a
+data original observada. Estado anterior sem evidência permanece INDISPONÍVEL.
+Serviço systemd ativo permanece desconhecido quando não aferido. Uma resposta
+por socket não é apresentada como medição de systemd. Versão desconhecida,
+ausência de componente e erros não coletados nunca são inventados.
+Código instalado, permissão global, saúde e permissão de destino são distintos.
+Capabilities sem evidência de saúde ficam UNKNOWN. Ausência de handler é
+UNAVAILABLE/CAPABILITY_UNAVAILABLE. Helper inacessível não prova desinstalação.
+Somente campos permitidos e códigos finitos são transmitidos; nunca traceback,
+conteúdo de configuração integral, tokens, credenciais ou chaves privadas.
+
+POLÍTICA EFETIVA MTR
+Executor preserva Config.load (base intersectada com gerenciada), mtr.authorize
+no cliente e autorizações da base/teto no helper. A consulta chama as mesmas
+funções. authorize_layers() é compartilhada pelos caminhos check e collect do
+helper, mantendo a recusa policy_denied da execução real.
+Consulta não chama collect, ping, traceroute ou outros handlers de sondagem.
+Resolução DNS é parte da autorização real e continua necessária para domínios;
+o IP é validado/pinado segundo a lógica MTR existente.
+Recusas são atribuídas a base, ceiling ou managed apenas após decisão dessa
+camada. Ausência, erro de comunicação ou incompatibilidade produzem UNKNOWN.
+Códigos emitidos incluem POLICY_BASE_DENIED, ADMIN_CEILING_DENIED,
+MANAGED_POLICY_DENIED, CAPABILITY_UNAVAILABLE, HELPER_UNAVAILABLE,
+HELPER_UNHEALTHY, DEVICE_OPERATIONS_FROZEN, POLICY_NOT_APPLIED,
+UNSUPPORTED_VERSION e STATUS_UNKNOWN. Os demais códigos do enum não equivalem
+a diagnósticos efetivamente aferidos e não são fabricados na interface.
+ALLOWED vale para os parâmetros e o instante consultados; não substitui a
+revalidação da execução nem garante sucesso de rede. Revisão/digest diferentes,
+Agent offline/revogado, dados antigos ou ausência de resposta invalidam o estado.
+
+INTERFACE
+Seção Diagnóstico operacional restrita pela policy nativa, com sete áreas:
+Estado geral, Capabilities, Políticas, Helpers, Componentes, Atualizações e
+Eventos recentes. Formulário CSRF com allowlist das capabilities existentes, destino e protocolo MTR.
+Demais protocolos são normalizados no servidor: DNS A, TCP443, HTTPS e ICMP;
+agent_info não usa destino. prepare() é compartilhada com execute() para essas
+capabilities; a consulta não chama handlers. Quando recusada, a mesma função
+avalia o envelope-base para distinguir base de gerenciada. O teto do helper
+é aplicável ao MTR; não é imposto nem inventado para outros executores. Resultado
+mostra destino, capability, protocolo, decisão, motivo e camada. Nenhuma alteração
+de ACL é efetuada pela consulta. Tema e CSS existentes são reutilizados.
+Seis capturas em docs/evidence/observability-v1: 390/900/1440, claro/escuro.
+São fixtures do Laravel em laboratório; NÃO capturas da VM ou de produção.
+
+VALIDAÇÃO E ARTEFATOS
+Resultados finais e hashes em docs/evidence/observability-v1/validation.txt.
+Testes verificam equivalência entre check e collect do helper, sem sondas reais,
+base/teto/gerenciada negando, tarefas desabilitadas, helper ausente/incompatível,
+comunicação falha, capability instalada/bloqueada/ausente, aplicação observada,
+política stale, correlação, digest, autenticação, RBAC, FORCE RLS e tenants.
+Testes de Lifecycle reutilizados verificam assinaturas, componentes, recuperação,
+rollback e integridade do arquivo. Isso NÃO substitui homologação systemd.
+Dois testes legados de RLS foram ajustados de 30 para 31 tabelas, considerando a
+quarentena de releases já existente. Nenhuma tabela foi criada nesta entrega.
+Build Node foi realizado em cópia descartável com npm ci, sem mudar o lockfile.
+Artefato local: artifacts/observability-v1/agent-0.6.3-lab.tar.gz.
+A chave privada de laboratório permanece fora do Git, em arquivo restrito.
+A release usa o formato e verificador do Lifecycle existente. Não foi inserida
+no catálogo de produção, aprovada para rollout ou enviada à VM.
+
+ROLLBACK E PUBLICAÇÃO
+Nenhum rollback operacional foi executado, pois não houve implantação.
+Antes de qualquer publicação autorizada: backup consistente do metadata e estado
+privado; preservar a release assinada anterior e seu conjunto de componentes;
+validar contrato novo com o helper e Lifecycle em laboratório nativo; assinar o
+manifest com a autoridade de produção e uma sequência adequada; revisão humana
+do candidato e autorização operacional específica para Central/Agent reais.
+Rollback da Central deve reverter somente o patch de observabilidade, preservando
+alterações anteriores do checkout. Metadata histórico é preservado, sem remoção
+de dados. Para Agent usar exclusivamente o rollback existente do Lifecycle,
+incluindo helper compatível; preservar identidade, ACL-base, teto, gerenciada e
+journal. policy-observed.json não concede autoridade e pode ser preservado como
+histórico. Não restaurar journal antigo sobre execuções posteriores.
+Não aplicar automaticamente as units/drop-ins presentes no código-fonte.
+
+PENDÊNCIAS REAIS / LIMITES
+1. Consulta por destino estendida às capabilities existentes, com regressão de
+   correspondência exata entre decisão e executor. Saúde sem medição permanece
+   UNKNOWN mesmo quando a autorização de destino é permitida.
+2. Homologação nativa systemd do novo helper/heartbeat e do rollout/rollback
+   integrados ainda não realizada; testes locais simulam a fronteira de serviço.
+3. Assinatura operacional preparada na sequência candidata 4; falta homologar
+   e conferir unicidade antes de eventual publicação especificamente autorizada.
+   Chave de laboratório não deve ser adicionada à trust store real.
+4. Revisão da reconciliação das fontes 0.6.2 antes de promoção de produção.
+5. Estado systemd e último erro real do executor permanecem INDISPONÍVEIS onde
+   não há medição; não inferidos a partir de processos vivos ou sucesso antigo.
+Nenhuma ação em R2, equipamentos, tcpdump, Nmap, RAG, Telegram ou WhatsApp.

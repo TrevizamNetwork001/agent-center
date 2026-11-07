@@ -1,0 +1,8 @@
+Baseline reutilizada para MTR: /root/agent-center-mtr-central/stage/agent/src/agent_center.
+O checkout principal ainda declarava 0.6.1 e não continha os três módulos MTR.
+Reutilizados mtr.py, mtr_client.py, mtr_helper.py, capabilities.py, config.py e action_worker.py, com testes MTR existentes.
+Nenhum arquivo de política local, teto, credencial, unit ou serviço foi alterado.
+A configuração-base existente em produção não é modificada por esta integração de fontes.
+A validação destes arquivos é de laboratório; não comprova publicação nem identidade com o runtime atualmente instalado na VM.
+
+Também reutilizados main.py (anúncio de capabilities), lifecycle/* e update/{engine,remote,releases}.py para preservar o Lifecycle Manager e a instalação de componentes no candidato 0.6.3. Build reutiliza scripts/build-mtr-component-release.py. Não é um novo gerenciador de releases.

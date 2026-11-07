@@ -1,0 +1,85 @@
+{
+  "note": "Delta Observability sobre fontes 0.6.2 j\u00e1 existentes; wrappers Laravel reconstru\u00eddos removendo apenas hooks identificados. Base Git HEAD n\u00e3o cont\u00e9m esses pr\u00e9-requisitos. N\u00e3o aplicar diretamente sobre HEAD antigo.",
+  "files": [
+    {
+      "path": "agent/pyproject.toml",
+      "base_sha256": "1d05177a2a0508467185fde6140e783ca078cf98de76af74c83b419837acbc9d",
+      "observability_sha256": "36973317bb08d48556aa8fe2ce80bab5cec837dd75a629e938ae64fc5f7d0da5"
+    },
+    {
+      "path": "agent/src/agent_center/__init__.py",
+      "base_sha256": "f7e284b72ee14cabca30b9cadb3feb9d2be3638b54738fa7d3e791f23c19c8be",
+      "observability_sha256": "53165b41b4ac3fc5ec1e2cde9ea8124a154a5c42a1888cb6031d610244bad141"
+    },
+    {
+      "path": "agent/src/agent_center/capabilities.py",
+      "base_sha256": "669050cb70ba9a0de5cb90469f312c059df327c432d279920f4a20e7f01db52f",
+      "observability_sha256": "7ecf91ba85efd2800bcdeba87e4f34f3d6426e42dc190e63cb581333fc417674"
+    },
+    {
+      "path": "agent/src/agent_center/config.py",
+      "base_sha256": "70fcece4e743bf5a761ac335d01a536a2fa7dfa307dea61e1579a7554add9e31",
+      "observability_sha256": "60986a4ec03ec5986be87873bca0e3b040f5193876f716500f2006c2f1f37452"
+    },
+    {
+      "path": "agent/src/agent_center/heartbeat.py",
+      "base_sha256": "956d76a0c0be753f0e4475a1cd713475306a52567f06708421ee26d71a9a5c40",
+      "observability_sha256": "eef8eae690f11c4466632ab0d4ed98d14e979c10127f57e23fca484b0d22aa5f"
+    },
+    {
+      "path": "agent/src/agent_center/main.py",
+      "base_sha256": "2ef5109311a3113b90b4ef28e4e40dc1569295807af56b8cc3e6105981142898",
+      "observability_sha256": "5f6e0fe0f933af8dc9628f42d50dd3bc8d3ea6427ddb80240948bdb1dce43d9e"
+    },
+    {
+      "path": "agent/src/agent_center/mtr_helper.py",
+      "base_sha256": "0cc1ce808d7552182834afbdbac4802ecb112221d76559e23406f79322c00a5c",
+      "observability_sha256": "b50ce27784eab6bfe14acf2fd050d654d6a6450823d7168da9d283b7439f9fc0"
+    },
+    {
+      "path": "app/app/Agent/Protocol.php",
+      "base_sha256": "957c2bc4f51fef96a2e2cbf0bb4ef0f178f7d4698c3329cd1fb32dcb9ba45c32",
+      "observability_sha256": "9d8c937a17e9b7f8d412eec7cb7a43db9af58944d71e1ccdd59f4d02b0679bf4"
+    },
+    {
+      "path": "app/app/Http/Controllers/Agent/ProtocolController.php",
+      "base_sha256": "61695878835a3117c5c28a3a24d205d215ad02a7751298dc44b238e337087230",
+      "observability_sha256": "fd519f21d3b4e12b125951c6ea27d61fe64bdf014c3f5eb477e1f3fdfe3cabb2"
+    },
+    {
+      "path": "app/app/Http/Requests/Agent/ProtocolRequest.php",
+      "base_sha256": "108cc6849f10f5eacf832a37c1210b8bcf03084302866a0a0171b241616a6cc7",
+      "observability_sha256": "cb4bcba62536ff5a3d32b32ea45886a30ba821fcb3d5b46c0806013153e044ff"
+    },
+    {
+      "path": "app/app/Policies/AgentPolicy.php",
+      "base_sha256": "9e7a9b191a8e97165a73bc1798448d792a70c339d53fffb1035f8ff457ee0c82",
+      "observability_sha256": "b646e1b4bbf85a236925b208684af7e264724bc9d002e7210aae6b6d46c69253"
+    },
+    {
+      "path": "app/app/Services/Audit.php",
+      "base_sha256": "3d454a8564928005609c69e95ec1bd8121ac6611a50be19a518806608e602e76",
+      "observability_sha256": "b46820cb6916c0e04dcdcc88386578a09392a0c49c8361d9a92e7d0368c00a4d"
+    },
+    {
+      "path": "app/routes/web.php",
+      "base_sha256": "6c981146137a209c01a3d503a9c65ec4a856238e1c9d250d53a4bb5e5c92bdfa",
+      "observability_sha256": "1ec84c99266e2bd506131fe5fa20b258e1a7454da0d41bc95ada938cd86ec354"
+    },
+    {
+      "path": "app/resources/views/agents/detail.blade.php",
+      "base_sha256": "3a35232d1639627a18bc387367719e57056aa476377f9197f9ca07f4f26d275a",
+      "observability_sha256": "163db1cc8cba280c1dff3f6d33ad85e8c2ffc9ac96a11d507b46610ade6fd24e"
+    },
+    {
+      "path": "app/tests/Feature/DiagnosticsTest.php",
+      "base_sha256": "c290a7f06ddc60cdcb454245fea3c20abfec45f73e6bce69253c968c1c3deb8b",
+      "observability_sha256": "8acd3fda9aef199355f782a20b8e80d8098a51bbae3ec911a99489c4719830a7"
+    },
+    {
+      "path": "app/tests/Feature/KnowledgePromptTest.php",
+      "base_sha256": "956b485cf3321720a02056ae5babaf01f09054b9caa740154e64d30bd8bd05be",
+      "observability_sha256": "51ccfca94ff0368cb2aa6db6a36b29340b982bc90c1f968842559b772951c92c"
+    }
+  ]
+}

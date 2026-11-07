@@ -1,0 +1,15 @@
+{
+  "30-mtr-components.conf": "696634c983eac7d3be72fcde1a7dc1bcfaec344be7eb6cce6f2a408ee6e440c7",
+  "agent-center-mtr.socket": "237251b5cb827cc7e72362d4e8b861d9406211161ee3ae2396457175d186aa77",
+  "agent-center-mtr@.service": "b4123a7a93a2d54fb2e095f4f3b724f85d99004994cc6d2448b9774f0aa18ef6",
+  "agent.pyz": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+  "check-helper.py": "03e1248669dd9b99f9d720ebe605548c18e5196174b320189e68fa8c23239564",
+  "helper.pyz": "14f9f8ba6abd08fa6a301a19ce4c987a8ef554bfa205c9e3aa0182937cccfdf5",
+  "lifecycle-policy.example.json": "5033ea624236c4d9c5d44482b7a30ca5bbdfc659edb5fa238951a53933dd8d04",
+  "manifest.json": "49bcb7f574624b5e41d94645a9cbec223d38bdebc34d1cfac0a6186f3f62e65a",
+  "release-public.pem": "f2910eaa0aafd87d4ae13e9d35179d2dbc82ec773baee594662afd9df2aa04d7",
+  "remote-updater.pyz": "589f442eed2953edd0f98e6a510a5e0d92eeeabc34fb48df46abdaa6c363bc41",
+  "signature.base64": "d991d7eb855a5d5fe6c8eb532c0ff75da8a504faa44100a73a3f6a6340e4ca3e",
+  "sysusers.conf": "8c9acf4321c7ef881b699f56d8dc25a034e2874f5620ca0eaf7f1e8ef6bbcc44",
+  "updater.pyz": "65746aa685f5ec0dcec60f10b7580211ed7e8988acd7205e72d2f0e046d14df6"
+}

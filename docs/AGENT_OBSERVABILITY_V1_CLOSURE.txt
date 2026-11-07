@@ -1,0 +1,153 @@
+AGENT OBSERVABILITY V1 — FECHAMENTO REVISÁVEL
+Data: 2026-11-07
+
+AGENT OBSERVABILITY V1 BLOCKED: acesso de manutenção salvo da VM teste está
+expirado. Nenhuma conexão SSH foi feita com a credencial vencida. A pergunta
+sobre renovação pelo painel ou outro laboratório autorizado foi enviada ao
+operador. Não se renovou autorização, alterou senha ou reutilizou identidade do
+Agent operacional. Systemd/PID1 não está disponível no ambiente local de edição.
+
+Nenhuma alegação LAB PASS. Não há observação nativa de 900 segundos para 0.6.3.
+Os resultados históricos do Lifecycle 0.6.2 não homologam esta release.
+
+CÓDIGO E ISOLAMENTO DO COMMIT
+O HEAD ainda contém a base histórica 0.5.x. Agent 0.6.2, ManagedSettings, MTR,
+Lifecycle e vários ajustes da Central estão no workspace sem commit, anteriores
+à Observability. Não é possível apresentar um commit autônomo e executável sobre
+esse HEAD sem incluir esses pré-requisitos ou registrar antes sua base canônica.
+Para preservar a proibição de misturar alterações anteriores, o commit desta
+entrega contém os novos módulos de Observability, seus testes, interface,
+evidências e o delta de integração como patch, com hashes da base necessária.
+Não se afirma que esse commit sozinho restaura toda a aplicação em um clone do
+HEAD antigo. O fechamento integral da integração Git permanece pendente da base
+canônica. Nenhum histórico foi reescrito nem alteração preexistente descartada.
+
+Novos módulos: agent/src/agent_center/observability.py;
+agent/tests/test_observability.py; app/app/Agent/Observability.php;
+app/app/Http/Controllers/Agent/ObservabilityController.php;
+app/resources/views/agents/observability.blade.php;
+app/tests/Feature/AgentObservabilityTest.php;
+scripts/tests/observability-browser.cjs.
+
+Integrações exatas: docs/evidence/observability-v1/integration.patch.
+Bases/hash finais: docs/evidence/observability-v1/integration-base.json.
+O patch sem linhas de contexto usa git apply --unidiff-zero, sempre após
+conferir todos os hashes da base. Foi reaplicado em árvore descartável de pré-requisitos e cada resultado
+foi comparado por SHA256 ao arquivo real do workspace. São 16 arquivos: versão,
+relatório/heartbeat, autorização compartilhada, snapshot da configuração, helper,
+contrato Laravel, RBAC/auditoria, rota, inclusão da seção e regressões RLS.
+Não inclui Conversation, Knowledge, LLM, R2, deploy, updater ou Lifecycle novos.
+Os arquivos preexistentes dessas áreas permanecem fora do commit.
+Esse patch é um delta de fonte revisável, NÃO um instalador nem um canal de
+execução remoto. Só aplicar após comparar os hashes da base; nunca sobrepor
+arquivos indiscriminadamente nem aplicá-lo diretamente à base Git antiga.
+
+RELEASE ASSINADA APROVADA — PREPARADA, NÃO PUBLICADA
+Versão 0.6.3; sequência candidata 4; plataforma debian13; componente MTR 0.6.3.
+Foi utilizada a autoridade operacional existente, com chave privada root-only,
+fora do Git. Não foi usada chave descartável de laboratório. A chave pública
+derivada corresponde exatamente à configuração confiável atual da Central.
+Nenhuma alteração da trust store. Assinatura Ed25519 verificada pelo verificador
+existente do Lifecycle contra o manifesto e os bytes exatos do runtime.
+
+Artefato local (ignorado pelo Git):
+artifacts/agentkit/0.6.3-observability-seq4-approved.tar.gz
+Manifesto/assinatura/provas públicas:
+docs/evidence/observability-v1/closure/approved-manifest.json
+docs/evidence/observability-v1/closure/approved-signature.base64
+docs/evidence/observability-v1/closure/release-proof.json
+
+O catálogo observado contém sequências até 3. Sequência 4 NÃO foi reservada nem
+publicada: reconferir unicidade e estado do catálogo antes de qualquer publicação.
+Pré-requisitos: Debian13, Python3.13, mtr0.95, state/journal schema1; updater
+com download1, assinatura1 e componentes1. O catálogo MTR exige runtime >=0.6.2.
+O perfil de privilégio é o existente: principal sem CAP_NET_RAW, helper isolado
+com o perfil network-raw-helper. Nenhum perfil foi ampliado.
+Esta assinatura prova procedência/integridade; não prova homologação systemd.
+
+TESTES REEXECUTADOS
+266 Laravel / 2015 assertions via scripts/test.sh e PostgreSQL isolado.
+149 Python como usuário não-root. Pint, Ruff e build passaram.
+6 capturas com fixtures Laravel, claro/escuro e 390/900/1440, sem overflow nem
+erros JS. Não são capturas de dados nativos da VM.
+Regressões de decisão cobrem ALLOWED/DENIED por base, teto e gerenciada,
+helper ausente/indisponível, capability ausente, política alterada no carregamento,
+revisão stale, comunicação falha, contrato incompatível, offline, freeze e tenants.
+Autorizações de consulta e execução compartilham prepare(), mtr.authorize() e
+authorize_layers(). Os handlers de sondagem não são chamados na consulta.
+As provas desses casos são testes de software; falta seu fechamento no laboratório
+nativo e o ciclo real de atualização/rollback da release 0.6.3.
+
+PLANO DE HOMOLOGAÇÃO NATIVA — NÃO EXECUTADO
+Após acesso válido, confirmar a identidade da VM teste pelo fingerprint salvo.
+Coletar precheck somente leitura do Agent operacional (serviço/timer, identidade,
+configuração, journal e hashes), sem ler ou copiar seu token para o laboratório.
+Criar laboratório separado, com rootfs/nome/units/portas próprios, reaproveitando
+os procedimentos nspawn/systemd já homologados para Lifecycle; nunca o state ou
+as units do Agent operacional. Não usar shared-network sem conferir conflito de
+portas; banco, FPM e APIs internas ficam sem exposição pública.
+Gerar identidade/enrollment, credenciais de banco, conta de teste e sessões novas,
+exclusivas do tenant de laboratório. Instalar a chave pública operacional já
+confiável; nunca transferir a chave privada. Manter freeze e allowlists restritas.
+
+No laboratório: inicialização real, heartbeat/polling, payload v1 autenticado,
+revision/digest, ACL-base/teto/managed, helper/socket/peer credentials e componentes.
+Exercitar consultas sem sondagens, incluindo respostas inválidas e casos de
+recusa. Comparar ao preflight real do executor, com prova de que nenhuma consulta
+alcança collect/handlers. Caso autorizado não implica executar a sonda.
+
+Fluxo: criar e aprovar operação pelo Laravel isolado; Agent API entrega a operação;
+Lifecycle/updater existente valida assinatura/seq/hash, instala, reinicia,
+executa postcheck e reporta ao painel. Nenhum mecanismo paralelo.
+Validar sucesso, falha controlada de instalação/postcheck, rollback, restart,
+reconciliação e preservação dos hashes de identidade e integridade do journal.
+Separar fixtures de falha de qualquer catálogo de produção; não promover releases
+de ensaio. Testar a segunda atualização somente pelo painel/timer: nenhum comando
+manual no Agent durante esse ciclo. Preparar toda instrumentação antes do início.
+Não confundir rollback bem-sucedido com instalação bem-sucedida.
+
+Só após estabilizar o último ciclo: observação nativa de >=900 segundos monotônicos,
+com pelo menos 31 amostras a cada 30s: heartbeat, polling, idade dos dados, serviços,
+socket, journal, UIDs/capabilities/NNP, CPU/RSS/FDs/threads e NRestarts. Ausência de
+amostras, restart inesperado, heartbeat/poll parado, journal inválido ou elevação
+de privilégios bloqueiam LAB PASS. Conferir novamente o Agent operacional intacto.
+
+PLANO DE ROLLOUT DE PRODUÇÃO — EXIGE AUTORIZAÇÃO ESPECÍFICA
+Nenhuma ação de produção está autorizada por esta entrega.
+Central: adicionar módulo/controller/Policy/contrato de relatório e consulta,
+registro de auditoria, rota protegida por CSRF/RBAC e seção Blade no detalhe;
+aceitar a versão 0.6.3. Não há migration nova da Observability nem troca de banco,
+Agent API, autenticação, RLS, Task Engine, updater ou raiz de confiança.
+Empacotar somente esses deltas sobre a imagem publicada comprovada; conferir
+hashes e dependências da base. Não usar o workspace inteiro como imagem de deploy.
+Backup PostgreSQL consistente, metadata/estado e digest da imagem anterior;
+validar restauração. Publicar a Central compatível antes da oferta de 0.6.3.
+
+Agent/VM teste: somente após LAB PASS e autorização operacional específica,
+publicar/autorizar o candidato normal no catálogo do tenant correto, garantindo
+que a sequência esteja livre e que fixtures de falha não sejam oferecidas.
+Alterações previstas: runtime agent.pyz 0.6.3 e componente helper MTR 0.6.3,
+pelos destinos fixos já definidos no Lifecycle. Novo arquivo privado de evidência
+policy-observed.json no state; novos metadados de relatório/consulta na Central.
+Não alterar identidade, ACL-base, teto, managed policy, journal, privilégios ou
+serviço do Agent operacional durante a homologação isolada.
+O updater/companion existente só pode ser trocado se o contrato realmente exigir,
+com diferença e autorização próprias; esta feature não cria outro updater.
+
+Rollback: retirar oferta do candidato conforme mecanismo existente, preservar
+artefatos assinados anteriores e usar rollback nativo de runtime+componente;
+postcheck deve comprovar identidade/configuração/freeze e journal preservados.
+Não restaurar journal antigo sobre eventos posteriores. Rollback da Central só
+para imagem anterior compatível e com metadata preservado; sem DROP/truncate.
+Guardar ledger, resultado original, prova de recuperação e auditoria. Operação
+UNCERTAIN exige reconciliação pelo fluxo existente, nunca replay automático.
+
+RISCOS/PENDÊNCIAS
+- Credencial de manutenção expirada: impede acesso válido ao laboratório nativo.
+- Base operacional ainda não registrada no Git: o commit é núcleo+delta de
+  integração revisável, não um commit autônomo sobre o HEAD antigo.
+- Systemd, ciclos Lifecycle e observação de 15min da 0.6.3 ainda não executados.
+- Sequência assinada ainda não reservada: conferir concorrência antes de publicar.
+- Estado systemd/erros reais sem medição continuam INDISPONÍVEIS, sem inferência.
+- Assinatura aprovada NÃO é autorização para publicar ou atualizar o Agent real.
+Nada em R2, equipamentos, tcpdump, Nmap ou novas Skills foi alterado.

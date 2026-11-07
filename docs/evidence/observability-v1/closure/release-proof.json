@@ -1,0 +1,29 @@
+{
+  "release_version": "0.6.3",
+  "sequence": 4,
+  "last_catalog_sequence_observed": 3,
+  "signing_authority": "existing approved operational Ed25519",
+  "public_key_sha256": "5f16350383c280c1b39d4f7257f09ecbe1002b1d59a1721ceb8bf4d5091195e1",
+  "trusted_public_key_matches": true,
+  "signature_verified_by_existing_lifecycle": true,
+  "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+  "source_sha256": "f42b67a233074925a2f0b5277e4a9cb23df88fc2383ff24caadb05e4b136c8a0",
+  "bundle_sha256": "b49ec41112636b62b654762848c94eaaf4c775969fe3a2ca90c461de96c5c70f",
+  "component_minimum_runtime": "0.6.2",
+  "required_platform": "debian13",
+  "required_dependencies": [
+    "python3.13",
+    "mtr0.95"
+  ],
+  "required_updater_protocols": {
+    "release_download": 1,
+    "signed_release": 1,
+    "components": 1
+  },
+  "state_schema": 1,
+  "journal_schema": 1,
+  "published": false,
+  "systemd_homologated": false,
+  "production_root_of_trust_changed": false,
+  "vm_access_unexpired": false
+}

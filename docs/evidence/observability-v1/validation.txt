@@ -1,0 +1,53 @@
+REGISTRO DA PREPARAÇÃO INICIAL. Fechamento atualizado: closure/checks.txt e
+closure/release-proof.json (assinatura operacional existente, não descartável).
+
+AGENT OBSERVABILITY V1 — validação de laboratório, 2026-11-07
+
+Instruções: commit 40dbafa (somente AGENTS.md e app/AGENTS.md).
+Nenhuma implantação, publicação de release no catálogo ou atualização da VM.
+
+Laravel: PASS, scripts/test.sh exit 0.
+266 testes, 2015 assertions. PostgreSQL 17 isolado, sem porta pública.
+Runner com papel lab_runtime, sem ownership do schema e sem bypass de RLS.
+Migrations Laravel e rollback completo: PASS; banco descartável removido pelo runner.
+Inclui 9 testes específicos, 42 assertions: Agent API, relatórios, consulta,
+RBAC, FORCE RLS, leitura SQL entre tenants, stale/digest e rejeição de dados inválidos.
+Ajustes do ambiente: TZ=UTC no app e banco, SESSION_ENCRYPT=true; nenhum secret real.
+
+Python: PASS, 149 testes, usuário 65534 sem root, Python 3.13 em container de tooling.
+Inclui 15 testes novos de observabilidade e testes existentes MTR/Lifecycle.
+Contratos check/collect usam authorize_layers e mtr.authorize reais, com sondagens
+mockadas. Nenhuma coleta MTR externa foi feita. Config.load também foi testado
+com caminho real de configuração em string, como usado pelo runtime.
+
+Visual: PASS, 6 capturas, 390/900/1440, claro/escuro, 7 áreas compactas,
+sem overflow de página ou erros JavaScript. Fixture Laravel, não produção.
+Em telas pequenas, tabela usa table-scroll do tema existente.
+
+Pint: PASS nos 9 arquivos Laravel novos/integrados, incluindo teste novo.
+Ruff: PASS em agent/src e agent/tests.
+Build: PASS, Node 24, npm ci em cópia descartável; Vite 8, 13 módulos.
+Secret scan do índice: PASS.
+Secret scan básico do diff e arquivos não rastreados: PASS, sem imprimir valores.
+git diff --check: PASS.
+
+Release de laboratório 0.6.3: assinatura Ed25519 verificada pelo Lifecycle existente.
+Chave criada somente para laboratório, fora do Git, permissões restritas.
+Não é assinada pela autoridade de produção e NÃO deve ser publicada na trust store real.
+Sequência 1 apenas de laboratório, não usar como sequência de rollout real.
+Runtime SHA256: 08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480
+Source SHA256: f42b67a233074925a2f0b5277e4a9cb23df88fc2383ff24caadb05e4b136c8a0
+Bundle SHA256: bbd0fba5d07a4537470764eebc0ca3a9fb22b90959c4fd17d23076da25705146
+Bundle: artifacts/observability-v1/agent-0.6.3-lab.tar.gz
+Manifest e hashes públicos anexados nesta pasta. Nenhuma chave privada anexada.
+
+AGENT OBSERVABILITY V1 BLOCKED: aceite integral depende de homologação nativa
+systemd do contrato observability/check e de seu rollout/rollback integrado,
+seguida de preparação da assinatura de produção. Sem autorização de deploy nesta tarefa.
+
+Extensão: todas as 7 capabilities existentes estão na allowlist da consulta.
+prepare() é compartilhada por execução e inspeção padrão; authorize_layers() e
+mtr.authorize continuam compartilhadas no MTR. Casos permitidos/negados foram
+comparados sem chamar handlers de sondagem na consulta.
+Troca de política durante Config.load invalida o resultado (UNKNOWN); o snapshot
+base e o gerenciado usados na leitura pertencem à mesma configuração carregada.

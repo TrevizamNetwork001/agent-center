@@ -1,0 +1,328 @@
+--- a/agent/pyproject.toml
++++ b/agent/pyproject.toml
+@@ -6 +6 @@
+-version = "0.6.2"
++version = "0.6.3"
+--- a/agent/src/agent_center/__init__.py
++++ b/agent/src/agent_center/__init__.py
+@@ -3 +3 @@
+-__version__ = "0.6.2"
++__version__ = "0.6.3"
+--- a/agent/src/agent_center/capabilities.py
++++ b/agent/src/agent_center/capabilities.py
+@@ -26,0 +27,11 @@
++def capability_available(name):
++    return (
++        name in KNOWN
++        and (name != mtr.CAPABILITY or mtr.ready())
++        and (
++            name not in ("icmp_ping:v1", "traceroute:v1")
++            or bool(shutil.which("ping" if name == "icmp_ping:v1" else "traceroute"))
++        )
++    )
++
++
+@@ -28,9 +39 @@
+-    return tuple(
+-        v
+-        for v in KNOWN
+-        if (v != mtr.CAPABILITY or mtr.ready())
+-        and (
+-            v not in ("icmp_ping:v1", "traceroute:v1")
+-            or shutil.which("ping" if v == "icmp_ping:v1" else "traceroute")
+-        )
+-    )
++    return tuple(name for name in KNOWN if capability_available(name))
+@@ -204 +207 @@
+-def http(args, networks):
++def http_parameters(args, networks):
+@@ -218,0 +222,5 @@
++    return p, ip
++
++
++def http(args, networks):
++    p, ip = http_parameters(args, networks)
+@@ -265,0 +274,40 @@
++def prepare(name, args, policy, networks=(), dns_names=(), auto_public=False):
++    """Authorization shared by execution and inspection; never invokes a probe."""
++    if not authorize(name, policy, (name,) if capability_available(name) else ()):
++        raise TargetNotAllowed("policy_denied")
++    if not isinstance(args, dict):
++        raise ValueError("invalid_input")
++    if name == "dns_lookup:v1" and args.get("record_type") is not None:
++        if args.get("target", "").lower().rstrip(".") not in dns_names and not (
++            auto_public and public_name(args.get("target"))
++        ):
++            raise TargetNotAllowed("policy_denied")
++    if name == "http_probe:v1":
++        hostname = urllib.parse.urlsplit(args.get("url", "")).hostname
++        try:
++            target(hostname, networks)
++        except ValueError:
++            if hostname not in dns_names and not (auto_public and public_name(hostname)):
++                raise TargetNotAllowed("policy_denied")
++    if auto_public and name in (
++        "tcp_connect:v1",
++        "icmp_ping:v1",
++        "traceroute:v1",
++        "http_probe:v1",
++    ):
++        if name == "tcp_connect:v1" and args.get("port") != 443:
++            raise TargetNotAllowed("public_port_not_allowed")
++        if public_ip(args["target"]):
++            address = ipaddress.ip_address(args["target"])
++            networks = (*networks, str(address) + ("/32" if address.version == 4 else "/128"))
++    # These handlers previously checked numeric targets immediately before I/O.
++    # Keep that same check available to read-only inspection.
++    if name in ("icmp_ping:v1", "traceroute:v1", "tcp_connect:v1") or (
++        name == "dns_lookup:v1" and args.get("record_type") is None
++    ):
++        target(args["target"], networks)
++    if name == "http_probe:v1":
++        http_parameters(args, networks)
++    return networks
++
++
+@@ -267,2 +314,0 @@
+-    if not authorize(name, policy, available()):
+-        return {"ok": False, "error": "policy_denied"}
+@@ -270,2 +316 @@
+-        if not isinstance(args, dict):
+-            raise ValueError()
++        networks = prepare(name, args, policy, networks, dns_names, auto_public)
+@@ -274,19 +319,4 @@
+-        if name == "dns_lookup:v1" and args.get("record_type") is not None:
+-            if args.get("target", "").lower().rstrip(".") not in dns_names and not (
+-                auto_public and public_name(args.get("target"))
+-            ):
+-                return {"ok": False, "error": "policy_denied"}
+-            if args.get("transport") in ("udp", "tcp"):
+-                return dns_query(args)
+-        if name == "http_probe:v1":
+-            hostname = urllib.parse.urlsplit(args.get("url", "")).hostname
+-            try:
+-                target(hostname, networks)
+-            except ValueError:
+-                if hostname not in dns_names and not (auto_public and public_name(hostname)):
+-                    return {"ok": False, "error": "policy_denied"}
+-        if auto_public and name in (
+-            "tcp_connect:v1",
+-            "icmp_ping:v1",
+-            "traceroute:v1",
+-            "http_probe:v1",
++        if (
++            name == "dns_lookup:v1"
++            and args.get("record_type") is not None
++            and args.get("transport") in ("udp", "tcp")
+@@ -294,5 +324 @@
+-            if name == "tcp_connect:v1" and args.get("port") != 443:
+-                raise TargetNotAllowed("public_port_not_allowed")
+-            if public_ip(args["target"]):
+-                address = ipaddress.ip_address(args["target"])
+-                networks = (*networks, str(address) + ("/32" if address.version == 4 else "/128"))
++            return dns_query(args)
+--- a/agent/src/agent_center/config.py
++++ b/agent/src/agent_center/config.py
+@@ -24,0 +25,4 @@
++    base_networks: tuple = ()
++    base_dns_names: tuple = ()
++    base_auto_public_targets: bool = True
++    managed_snapshot: dict | None = None
+@@ -87,0 +92,4 @@
++            local_networks = nets
++            local_names = tuple(n.lower().rstrip(".") for n in names)
++            local_auto_public = auto_public
++            managed_snapshot = None
+@@ -92,0 +101,9 @@
++                managed_snapshot = {
++                    key: managed[key]
++                    for key in (
++                        "revision",
++                        "allowed_networks",
++                        "allowed_dns_names",
++                        "auto_public_targets",
++                    )
++                }
+@@ -96,5 +113,10 @@
+-                nets = tuple(sorted({
+-                    str(a if a.prefixlen >= b.prefixlen else b)
+-                    for a in base_nets for b in requested
+-                    if a.version == b.version and a.overlaps(b)
+-                }))
++                nets = tuple(
++                    sorted(
++                        {
++                            str(a if a.prefixlen >= b.prefixlen else b)
++                            for a in base_nets
++                            for b in requested
++                            if a.version == b.version and a.overlaps(b)
++                        }
++                    )
++                )
+@@ -102,2 +124 @@
+-                    {n.lower().rstrip(".") for n in names}
+-                    & set(managed["allowed_dns_names"])
++                    {n.lower().rstrip(".") for n in names} & set(managed["allowed_dns_names"])
+@@ -114,0 +136,4 @@
++                local_networks,
++                local_names,
++                local_auto_public,
++                managed_snapshot,
+--- a/agent/src/agent_center/heartbeat.py
++++ b/agent/src/agent_center/heartbeat.py
+@@ -5,0 +6,2 @@
++from .observability import check, record_applied
++from .observability import snapshot as operational_snapshot
+@@ -11 +13 @@
+-    def __init__(self, client, interval, stop, state_dir=None, agent_id=None):
++    def __init__(self, client, interval, stop, state_dir=None, agent_id=None, config_path=None):
+@@ -14,0 +17 @@
++        self.config_path = config_path
+@@ -18,0 +22,2 @@
++        self.policy = None
++        self.permission_result = None
+@@ -23,3 +28,9 @@
+-            result = self.client.call(
+-                "heartbeat", {"version": __version__, "telemetry": snapshot(self.state_dir)}
+-            )
++            report = operational_snapshot(self.state_dir, self.policy)
++            payload = {
++                "version": __version__,
++                "telemetry": snapshot(self.state_dir),
++                "observability": report,
++            }
++            if self.permission_result is not None:
++                payload["permission_result"] = self.permission_result
++            result = self.client.call("heartbeat", payload)
+@@ -33 +44,8 @@
+-                    apply(self.state_dir, result.body.get("policy"), self.agent_id)
++                    self.policy = result.body.get("policy")
++                    if apply(self.state_dir, self.policy, self.agent_id):
++                        record_applied(self.state_dir)
++                    request = result.body.get("permission_request")
++                    if isinstance(request, dict):
++                        self.permission_result = check(
++                            request, self.config_path, self.policy, self.agent_id
++                        )
+--- a/agent/src/agent_center/main.py
++++ b/agent/src/agent_center/main.py
+@@ -58,0 +59 @@
++            config_path=config.config_path,
+--- a/agent/src/agent_center/mtr_helper.py
++++ b/agent/src/agent_center/mtr_helper.py
+@@ -14 +14 @@
+-from . import mtr
++from . import __version__, mtr
+@@ -106,0 +107,11 @@
++def authorize_layers(args, local, ceiling):
++    for layer, policy in (("base", local), ("ceiling", ceiling)):
++        try:
++            mtr.authorize(args, policy["allowed_networks"], policy["allowed_dns_names"])
++        except mtr.MtrError as error:
++            if str(error) != "policy_denied":
++                raise
++            return layer
++    return None
++
++
+@@ -113,0 +125,39 @@
++    if request == {"op": "observe", "protocol_version": 1}:
++        # Only allowlisted target policy fields; no paths, credentials or full configuration.
++        fields = ("allowed_networks", "allowed_dns_names")
++        return {
++            "ok": True,
++            "schema_version": 1,
++            "base": {key: local[key] for key in fields},
++            "ceiling": {key: ceiling[key] for key in fields},
++            "helper": {
++                "name": "mtr",
++                "version": __version__,
++                "installed": True,
++                "service_active": None,
++                "socket_available": True,
++                "authenticated": True,
++                "healthy": mtr.raw_ready(),
++            },
++        }
++    if (
++        set(request) == {"op", "input"}
++        and request["op"] == "check"
++        and isinstance(request["input"], dict)
++    ):
++        layer = authorize_layers(request["input"], local, ceiling)
++        if layer:
++            return {
++                "ok": False,
++                "schema_version": 1,
++                "layer": layer,
++                "reason": "POLICY_BASE_DENIED" if layer == "base" else "ADMIN_CEILING_DENIED",
++            }
++        if not mtr.raw_ready():
++            return {
++                "ok": False,
++                "schema_version": 1,
++                "layer": "helper",
++                "reason": "HELPER_UNHEALTHY",
++            }
++        return {"ok": True, "schema_version": 1}
+@@ -125,2 +175,2 @@
+-    for policy in (local, ceiling):
+-        mtr.authorize(args, policy["allowed_networks"], policy["allowed_dns_names"])
++    if authorize_layers(args, local, ceiling):
++        raise mtr.MtrError("policy_denied")
+--- a/app/app/Agent/Protocol.php
++++ b/app/app/Agent/Protocol.php
+@@ -10 +10 @@
+-    public const VERSIONS = ['0.5.2', '0.5.3', '0.5.4', '0.5.5', '0.5.6', '0.5.7', '0.5.8', '0.5.9', '0.6.0', '0.6.1', '0.6.2'];
++    public const VERSIONS = ['0.5.2', '0.5.3', '0.5.4', '0.5.5', '0.5.6', '0.5.7', '0.5.8', '0.5.9', '0.6.0', '0.6.1', '0.6.2', '0.6.3'];
+--- a/app/app/Http/Controllers/Agent/ProtocolController.php
++++ b/app/app/Http/Controllers/Agent/ProtocolController.php
+@@ -5,0 +6 @@
++use App\Agent\Observability;
+@@ -31 +32 @@
+-            $metadata = $a->metadata ?? [];
++            $metadata = Observability::receive($a, $r->validated());
+@@ -43 +44 @@
+-        return response()->json(['status' => 'ok', 'policy' => Protocol::policy($a->id, ($a->metadata['task_protocol'] ?? 0) === 1, ManagedSettings::current($a))]);
++        return response()->json(['status' => 'ok', 'permission_request' => Observability::pending($a), 'policy' => Protocol::policy($a->id, ($a->metadata['task_protocol'] ?? 0) === 1, ManagedSettings::current($a))]);
+--- a/app/app/Http/Requests/Agent/ProtocolRequest.php
++++ b/app/app/Http/Requests/Agent/ProtocolRequest.php
+@@ -4,0 +5 @@
++use App\Agent\Observability;
+@@ -24 +25 @@
+-            'agent.heartbeat' => ['version' => ['required', 'string', 'regex:/^[0-9]+\\.[0-9]+\\.[0-9]+$/D', 'max:30'],
++            'agent.heartbeat' => [...Observability::rules(), 'version' => ['required', 'string', 'regex:/^[0-9]+\\.[0-9]+\\.[0-9]+$/D', 'max:30'],
+--- a/app/app/Policies/AgentPolicy.php
++++ b/app/app/Policies/AgentPolicy.php
+@@ -33,0 +34,5 @@
++    public function observe(User $u, Agent $a): bool
++    {
++        return $this->revoke($u, $a);
++    }
++
+--- a/app/app/Services/Audit.php
++++ b/app/app/Services/Audit.php
+@@ -14 +14 @@
+-        if (! in_array($event, ['agent.release_quarantined', 'agent.recovery_requested', 'agent.recovery_verified', 'agent.maintenance_saved', 'agent.maintenance_checked', 'agent.maintenance_removed', 'agent.release_published', 'agent.settings_updated', 'backup.settings_updated', 'backup.requested', 'agent.created', 'agent.deleted', 'agent.enrollment_requested', 'agent.enrollment_approved', 'agent.update_requested', 'agent.update_authorized', 'agent.update_approved', 'agent.update_started', 'agent.update_completed', 'agent.update_failed', 'agent.rollback_requested', 'agent.rollback_completed', 'agent.rollback_failed', 'conversation.transitioned', 'conversation.rollout_updated', 'auth.login_success', 'auth.login_failed', 'auth.logout', 'auth.password_changed', 'user.created', 'user.updated', 'user.disabled', 'tenant.created', 'tenant.updated', 'agent.enrollment_created', 'agent.enrolled', 'agent.capabilities_updated', 'agent.revoked', 'diagnostic.created', 'diagnostic.started', 'diagnostic.cancel_requested', 'diagnostic.cancelled', 'diagnostic.completed', 'diagnostic.failed', 'profile.created', 'profile.updated', 'skill.enabled', 'skill.schema_updated', 'skill.disabled', 'knowledge.created', 'knowledge.version_created', 'knowledge.published', 'knowledge.superseded', 'knowledge.rollback_created', 'knowledge.archived', 'prompt.created', 'prompt.version_created', 'prompt.published', 'prompt.superseded', 'prompt.rollback_created', 'prompt.archived', 'llm.provider_created', 'llm.provider_updated', 'llm.secret_updated', 'llm.model_created', 'llm.binding_updated'], true)) {
++        if (! in_array($event, ['agent.permission_requested', 'agent.release_quarantined', 'agent.recovery_requested', 'agent.recovery_verified', 'agent.maintenance_saved', 'agent.maintenance_checked', 'agent.maintenance_removed', 'agent.release_published', 'agent.settings_updated', 'backup.settings_updated', 'backup.requested', 'agent.created', 'agent.deleted', 'agent.enrollment_requested', 'agent.enrollment_approved', 'agent.update_requested', 'agent.update_authorized', 'agent.update_approved', 'agent.update_started', 'agent.update_completed', 'agent.update_failed', 'agent.rollback_requested', 'agent.rollback_completed', 'agent.rollback_failed', 'conversation.transitioned', 'conversation.rollout_updated', 'auth.login_success', 'auth.login_failed', 'auth.logout', 'auth.password_changed', 'user.created', 'user.updated', 'user.disabled', 'tenant.created', 'tenant.updated', 'agent.enrollment_created', 'agent.enrolled', 'agent.capabilities_updated', 'agent.revoked', 'diagnostic.created', 'diagnostic.started', 'diagnostic.cancel_requested', 'diagnostic.cancelled', 'diagnostic.completed', 'diagnostic.failed', 'profile.created', 'profile.updated', 'skill.enabled', 'skill.schema_updated', 'skill.disabled', 'knowledge.created', 'knowledge.version_created', 'knowledge.published', 'knowledge.superseded', 'knowledge.rollback_created', 'knowledge.archived', 'prompt.created', 'prompt.version_created', 'prompt.published', 'prompt.superseded', 'prompt.rollback_created', 'prompt.archived', 'llm.provider_created', 'llm.provider_updated', 'llm.secret_updated', 'llm.model_created', 'llm.binding_updated'], true)) {
+--- a/app/routes/web.php
++++ b/app/routes/web.php
+@@ -5,0 +6 @@
++use App\Http\Controllers\Agent\ObservabilityController;
+@@ -47,0 +49 @@
++    Route::post('/{agent}/permission-check', [ObservabilityController::class, 'check'])->whereUuid('agent')->middleware('throttle:6,1')->name('agents.permission-check');
+--- a/app/resources/views/agents/detail.blade.php
++++ b/app/resources/views/agents/detail.blade.php
+@@ -12,0 +13,2 @@
++@include('agents.observability')
++
+--- a/app/tests/Feature/DiagnosticsTest.php
++++ b/app/tests/Feature/DiagnosticsTest.php
+@@ -288 +288 @@
+-        $this->assertSame(30, (int) DB::selectOne("SELECT count(*) n FROM pg_class WHERE relnamespace='public'::regnamespace AND relrowsecurity AND relforcerowsecurity")->n);
++        $this->assertSame(31, (int) DB::selectOne("SELECT count(*) n FROM pg_class WHERE relnamespace='public'::regnamespace AND relrowsecurity AND relforcerowsecurity")->n);
+--- a/app/tests/Feature/KnowledgePromptTest.php
++++ b/app/tests/Feature/KnowledgePromptTest.php
+@@ -55 +55 @@
+-        }$this->assertSame(30, (int) DB::selectOne("SELECT count(*) n FROM pg_class WHERE relnamespace='public'::regnamespace AND relforcerowsecurity")->n);
++        }$this->assertSame(31, (int) DB::selectOne("SELECT count(*) n FROM pg_class WHERE relnamespace='public'::regnamespace AND relforcerowsecurity")->n);

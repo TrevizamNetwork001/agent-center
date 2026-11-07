@@ -1,0 +1,10 @@
+Laravel via scripts/test.sh: PASS, 266 tests, 2015 assertions; isolated PostgreSQL, FORCE RLS, migrations up/down.
+Python: PASS, 149 tests, non-root UID 65534.
+Pint: PASS, 8 feature/integration files. Ruff: PASS, agent/src and agent/tests.
+Build: PASS, Node24/Vite, disposable copy, no lockfile changes.
+Visual: PASS, 6 static Laravel fixtures, 390/900/1440, light/dark; not live systemd evidence.
+Integration patch roundtrip: PASS, 16 explicitly selected files, expected SHA256s.
+Native systemd: NOT RUN, saved VM maintenance access expired.
+Lifecycle update/rollback over real systemd for 0.6.3: NOT RUN.
+15-minute native observation: NOT STARTED. Historical 0.6.2 results are not reused as V1 evidence.
+Production publishing/operational Agent updates: NONE.
