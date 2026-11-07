@@ -1,0 +1,52 @@
+[
+  {
+    "path": "app/Agent/Observability.php",
+    "before": null,
+    "after": "78c22117d912aba0e586eb6206f998ffec08f61d342d62c2dff6aeccaca2574a"
+  },
+  {
+    "path": "app/Http/Controllers/Agent/ObservabilityController.php",
+    "before": null,
+    "after": "39e6ef4c00bac2ccaf6d46c721e8c18ed51bd8a31fe0c8d2c329aa80931420e6"
+  },
+  {
+    "path": "resources/views/agents/observability.blade.php",
+    "before": null,
+    "after": "4fdbd786de91534336b91d6ca7a4452d1b0ed6dfa7a502c610c4c0efa05976dc"
+  },
+  {
+    "path": "app/Agent/Protocol.php",
+    "before": "957c2bc4f51fef96a2e2cbf0bb4ef0f178f7d4698c3329cd1fb32dcb9ba45c32",
+    "after": "9d8c937a17e9b7f8d412eec7cb7a43db9af58944d71e1ccdd59f4d02b0679bf4"
+  },
+  {
+    "path": "app/Http/Controllers/Agent/ProtocolController.php",
+    "before": "61695878835a3117c5c28a3a24d205d215ad02a7751298dc44b238e337087230",
+    "after": "fd519f21d3b4e12b125951c6ea27d61fe64bdf014c3f5eb477e1f3fdfe3cabb2"
+  },
+  {
+    "path": "app/Http/Requests/Agent/ProtocolRequest.php",
+    "before": "108cc6849f10f5eacf832a37c1210b8bcf03084302866a0a0171b241616a6cc7",
+    "after": "cb4bcba62536ff5a3d32b32ea45886a30ba821fcb3d5b46c0806013153e044ff"
+  },
+  {
+    "path": "app/Policies/AgentPolicy.php",
+    "before": "9e7a9b191a8e97165a73bc1798448d792a70c339d53fffb1035f8ff457ee0c82",
+    "after": "b646e1b4bbf85a236925b208684af7e264724bc9d002e7210aae6b6d46c69253"
+  },
+  {
+    "path": "app/Services/Audit.php",
+    "before": "0ba2fe8199365f27d8388b99ececb672a0ae9cfcf9f28e466c8ddf5fcdfd9a4a",
+    "after": "b97fccd9f96f13ce56b104d86a57eb99ea1a187c1ac4fef2780a1250f01fe12b"
+  },
+  {
+    "path": "resources/views/agents/detail.blade.php",
+    "before": "3a35232d1639627a18bc387367719e57056aa476377f9197f9ca07f4f26d275a",
+    "after": "163db1cc8cba280c1dff3f6d33ad85e8c2ffc9ac96a11d507b46610ade6fd24e"
+  },
+  {
+    "path": "routes/web.php",
+    "before": "6c981146137a209c01a3d503a9c65ec4a856238e1c9d250d53a4bb5e5c92bdfa",
+    "after": "1ec84c99266e2bd506131fe5fa20b258e1a7454da0d41bc95ada938cd86ec354"
+  }
+]

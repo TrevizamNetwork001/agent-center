@@ -1,0 +1,698 @@
+[
+  {
+    "timestamp": "2026-11-07T18:46:06.657976+00:00",
+    "elapsed_seconds": 4.379299934953451e-05,
+    "systemd": {
+      "MainPID": "117370",
+      "NRestarts": "0",
+      "MemoryCurrent": "18157568",
+      "CPUUsageNSec": "2099825000",
+      "ActiveState": "active"
+    },
+    "process": {
+      "Uid": "987\t987\t987\t987",
+      "Gid": "987\t987\t987\t987",
+      "CapEff": "0000000000000000",
+      "CapPrm": "0000000000000000",
+      "CapBnd": "0000000000000000",
+      "CapAmb": "0000000000000000",
+      "NoNewPrivs": "1",
+      "VmRSS": "32680 kB",
+      "Threads": "3"
+    },
+    "fds": 8,
+    "presence": {
+      "version": "0.6.3",
+      "state": "ONLINE",
+      "heartbeat_successes": 43,
+      "poll_successes": 118,
+      "capabilities": [
+        "agent_info",
+        "icmp_ping:v1",
+        "dns_lookup:v1",
+        "tcp_connect:v1",
+        "traceroute:v1",
+        "http_probe:v1",
+        "mtr_path_analysis:v1"
+      ],
+      "capabilities_announced": true
+    },
+    "presence_age_seconds": 0.11704707145690918,
+    "journal_integrity": "ok",
+    "journal_counts": {
+      "executions": 87,
+      "events": 348
+    },
+    "identity_preserved": true,
+    "base_config_preserved": true,
+    "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+    "helper_ready": true,
+    "timer_active": true,
+    "policy_hashes": {
+      "config": "4082b1fec3c93d8a766283e0b719efa252e630763fd2caf69f912b71f0597843",
+      "ceiling": "251e7a3a3d8ec0689be652b2c08c3c27524451384fbe9c41964cd7838aba1daa",
+      "lifecycle_policy": "5033ea624236c4d9c5d44482b7a30ca5bbdfc659edb5fa238951a53933dd8d04",
+      "managed": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+    },
+    "helper_sha256": "14f9f8ba6abd08fa6a301a19ce4c987a8ef554bfa205c9e3aa0182937cccfdf5",
+    "new_errors": 0
+  },
+  {
+    "timestamp": "2026-11-07T18:46:36.658166+00:00",
+    "elapsed_seconds": 30.00027752299502,
+    "systemd": {
+      "MainPID": "117370",
+      "NRestarts": "0",
+      "MemoryCurrent": "18161664",
+      "CPUUsageNSec": "2158177000",
+      "ActiveState": "active"
+    },
+    "process": {
+      "Uid": "987\t987\t987\t987",
+      "Gid": "987\t987\t987\t987",
+      "CapEff": "0000000000000000",
+      "CapPrm": "0000000000000000",
+      "CapBnd": "0000000000000000",
+      "CapAmb": "0000000000000000",
+      "NoNewPrivs": "1",
+      "VmRSS": "32680 kB",
+      "Threads": "3"
+    },
+    "fds": 8,
+    "presence": {
+      "version": "0.6.3",
+      "state": "ONLINE",
+      "heartbeat_successes": 44,
+      "poll_successes": 122,
+      "capabilities": [
+        "agent_info",
+        "icmp_ping:v1",
+        "dns_lookup:v1",
+        "tcp_connect:v1",
+        "traceroute:v1",
+        "http_probe:v1",
+        "mtr_path_analysis:v1"
+      ],
+      "capabilities_announced": true
+    },
+    "presence_age_seconds": 3.516925811767578,
+    "journal_integrity": "ok",
+    "journal_counts": {
+      "executions": 87,
+      "events": 348
+    },
+    "identity_preserved": true,
+    "base_config_preserved": true,
+    "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+    "helper_ready": true,
+    "timer_active": true,
+    "policy_hashes": {
+      "config": "4082b1fec3c93d8a766283e0b719efa252e630763fd2caf69f912b71f0597843",
+      "ceiling": "251e7a3a3d8ec0689be652b2c08c3c27524451384fbe9c41964cd7838aba1daa",
+      "lifecycle_policy": "5033ea624236c4d9c5d44482b7a30ca5bbdfc659edb5fa238951a53933dd8d04",
+      "managed": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+    },
+    "helper_sha256": "14f9f8ba6abd08fa6a301a19ce4c987a8ef554bfa205c9e3aa0182937cccfdf5",
+    "new_errors": 0
+  },
+  {
+    "timestamp": "2026-11-07T18:47:06.658080+00:00",
+    "elapsed_seconds": 60.000184293996426,
+    "systemd": {
+      "MainPID": "117370",
+      "NRestarts": "0",
+      "MemoryCurrent": "18186240",
+      "CPUUsageNSec": "2230918000",
+      "ActiveState": "active"
+    },
+    "process": {
+      "Uid": "987\t987\t987\t987",
+      "Gid": "987\t987\t987\t987",
+      "CapEff": "0000000000000000",
+      "CapPrm": "0000000000000000",
+      "CapBnd": "0000000000000000",
+      "CapAmb": "0000000000000000",
+      "NoNewPrivs": "1",
+      "VmRSS": "32692 kB",
+      "Threads": "3"
+    },
+    "fds": 9,
+    "presence": {
+      "version": "0.6.3",
+      "state": "CLAIM",
+      "heartbeat_successes": 46,
+      "poll_successes": 126,
+      "capabilities": [
+        "agent_info",
+        "icmp_ping:v1",
+        "dns_lookup:v1",
+        "tcp_connect:v1",
+        "traceroute:v1",
+        "http_probe:v1",
+        "mtr_path_analysis:v1"
+      ],
+      "capabilities_announced": true
+    },
+    "presence_age_seconds": 0.21852755546569824,
+    "journal_integrity": "ok",
+    "journal_counts": {
+      "executions": 87,
+      "events": 348
+    },
+    "identity_preserved": true,
+    "base_config_preserved": true,
+    "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+    "helper_ready": true,
+    "timer_active": true,
+    "policy_hashes": {
+      "config": "4082b1fec3c93d8a766283e0b719efa252e630763fd2caf69f912b71f0597843",
+      "ceiling": "251e7a3a3d8ec0689be652b2c08c3c27524451384fbe9c41964cd7838aba1daa",
+      "lifecycle_policy": "5033ea624236c4d9c5d44482b7a30ca5bbdfc659edb5fa238951a53933dd8d04",
+      "managed": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+    },
+    "helper_sha256": "14f9f8ba6abd08fa6a301a19ce4c987a8ef554bfa205c9e3aa0182937cccfdf5",
+    "new_errors": 0
+  },
+  {
+    "timestamp": "2026-11-07T18:47:36.658221+00:00",
+    "elapsed_seconds": 90.00033330998849,
+    "systemd": {
+      "MainPID": "117370",
+      "NRestarts": "0",
+      "MemoryCurrent": "18427904",
+      "CPUUsageNSec": "2300796000",
+      "ActiveState": "active"
+    },
+    "process": {
+      "Uid": "987\t987\t987\t987",
+      "Gid": "987\t987\t987\t987",
+      "CapEff": "0000000000000000",
+      "CapPrm": "0000000000000000",
+      "CapBnd": "0000000000000000",
+      "CapAmb": "0000000000000000",
+      "NoNewPrivs": "1",
+      "VmRSS": "32692 kB",
+      "Threads": "3"
+    },
+    "fds": 8,
+    "presence": {
+      "version": "0.6.3",
+      "state": "ONLINE",
+      "heartbeat_successes": 47,
+      "poll_successes": 131,
+      "capabilities": [
+        "agent_info",
+        "icmp_ping:v1",
+        "dns_lookup:v1",
+        "tcp_connect:v1",
+        "traceroute:v1",
+        "http_probe:v1",
+        "mtr_path_analysis:v1"
+      ],
+      "capabilities_announced": true
+    },
+    "presence_age_seconds": 2.1530919075012207,
+    "journal_integrity": "ok",
+    "journal_counts": {
+      "executions": 87,
+      "events": 348
+    },
+    "identity_preserved": true,
+    "base_config_preserved": true,
+    "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+    "helper_ready": true,
+    "timer_active": true,
+    "policy_hashes": {
+      "config": "4082b1fec3c93d8a766283e0b719efa252e630763fd2caf69f912b71f0597843",
+      "ceiling": "251e7a3a3d8ec0689be652b2c08c3c27524451384fbe9c41964cd7838aba1daa",
+      "lifecycle_policy": "5033ea624236c4d9c5d44482b7a30ca5bbdfc659edb5fa238951a53933dd8d04",
+      "managed": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+    },
+    "helper_sha256": "14f9f8ba6abd08fa6a301a19ce4c987a8ef554bfa205c9e3aa0182937cccfdf5",
+    "new_errors": 0
+  },
+  {
+    "timestamp": "2026-11-07T18:48:06.658128+00:00",
+    "elapsed_seconds": 120.00022462999914,
+    "systemd": {
+      "MainPID": "117370",
+      "NRestarts": "0",
+      "MemoryCurrent": "18178048",
+      "CPUUsageNSec": "2365223000",
+      "ActiveState": "active"
+    },
+    "process": {
+      "Uid": "987\t987\t987\t987",
+      "Gid": "987\t987\t987\t987",
+      "CapEff": "0000000000000000",
+      "CapPrm": "0000000000000000",
+      "CapBnd": "0000000000000000",
+      "CapAmb": "0000000000000000",
+      "NoNewPrivs": "1",
+      "VmRSS": "32696 kB",
+      "Threads": "3"
+    },
+    "fds": 8,
+    "presence": {
+      "version": "0.6.3",
+      "state": "ONLINE",
+      "heartbeat_successes": 49,
+      "poll_successes": 134,
+      "capabilities": [
+        "agent_info",
+        "icmp_ping:v1",
+        "dns_lookup:v1",
+        "tcp_connect:v1",
+        "traceroute:v1",
+        "http_probe:v1",
+        "mtr_path_analysis:v1"
+      ],
+      "capabilities_announced": true
+    },
+    "presence_age_seconds": 4.752785921096802,
+    "journal_integrity": "ok",
+    "journal_counts": {
+      "executions": 87,
+      "events": 348
+    },
+    "identity_preserved": true,
+    "base_config_preserved": true,
+    "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+    "helper_ready": true,
+    "timer_active": true,
+    "policy_hashes": {
+      "config": "4082b1fec3c93d8a766283e0b719efa252e630763fd2caf69f912b71f0597843",
+      "ceiling": "251e7a3a3d8ec0689be652b2c08c3c27524451384fbe9c41964cd7838aba1daa",
+      "lifecycle_policy": "5033ea624236c4d9c5d44482b7a30ca5bbdfc659edb5fa238951a53933dd8d04",
+      "managed": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+    },
+    "helper_sha256": "14f9f8ba6abd08fa6a301a19ce4c987a8ef554bfa205c9e3aa0182937cccfdf5",
+    "new_errors": 0
+  },
+  {
+    "timestamp": "2026-11-07T18:48:36.658134+00:00",
+    "elapsed_seconds": 150.00022735299717,
+    "systemd": {
+      "MainPID": "117370",
+      "NRestarts": "0",
+      "MemoryCurrent": "18706432",
+      "CPUUsageNSec": "2435897000",
+      "ActiveState": "active"
+    },
+    "process": {
+      "Uid": "987\t987\t987\t987",
+      "Gid": "987\t987\t987\t987",
+      "CapEff": "0000000000000000",
+      "CapPrm": "0000000000000000",
+      "CapBnd": "0000000000000000",
+      "CapAmb": "0000000000000000",
+      "NoNewPrivs": "1",
+      "VmRSS": "32696 kB",
+      "Threads": "3"
+    },
+    "fds": 8,
+    "presence": {
+      "version": "0.6.3",
+      "state": "ONLINE",
+      "heartbeat_successes": 50,
+      "poll_successes": 139,
+      "capabilities": [
+        "agent_info",
+        "icmp_ping:v1",
+        "dns_lookup:v1",
+        "tcp_connect:v1",
+        "traceroute:v1",
+        "http_probe:v1",
+        "mtr_path_analysis:v1"
+      ],
+      "capabilities_announced": true
+    },
+    "presence_age_seconds": 0.20424723625183105,
+    "journal_integrity": "ok",
+    "journal_counts": {
+      "executions": 87,
+      "events": 348
+    },
+    "identity_preserved": true,
+    "base_config_preserved": true,
+    "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+    "helper_ready": true,
+    "timer_active": true,
+    "policy_hashes": {
+      "config": "4082b1fec3c93d8a766283e0b719efa252e630763fd2caf69f912b71f0597843",
+      "ceiling": "251e7a3a3d8ec0689be652b2c08c3c27524451384fbe9c41964cd7838aba1daa",
+      "lifecycle_policy": "5033ea624236c4d9c5d44482b7a30ca5bbdfc659edb5fa238951a53933dd8d04",
+      "managed": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+    },
+    "helper_sha256": "14f9f8ba6abd08fa6a301a19ce4c987a8ef554bfa205c9e3aa0182937cccfdf5",
+    "new_errors": 0
+  },
+  {
+    "timestamp": "2026-11-07T18:49:06.658137+00:00",
+    "elapsed_seconds": 180.00023264999618,
+    "systemd": {
+      "MainPID": "117370",
+      "NRestarts": "0",
+      "MemoryCurrent": "18436096",
+      "CPUUsageNSec": "2507250000",
+      "ActiveState": "active"
+    },
+    "process": {
+      "Uid": "987\t987\t987\t987",
+      "Gid": "987\t987\t987\t987",
+      "CapEff": "0000000000000000",
+      "CapPrm": "0000000000000000",
+      "CapBnd": "0000000000000000",
+      "CapAmb": "0000000000000000",
+      "NoNewPrivs": "1",
+      "VmRSS": "32696 kB",
+      "Threads": "3"
+    },
+    "fds": 8,
+    "presence": {
+      "version": "0.6.3",
+      "state": "ONLINE",
+      "heartbeat_successes": 52,
+      "poll_successes": 143,
+      "capabilities": [
+        "agent_info",
+        "icmp_ping:v1",
+        "dns_lookup:v1",
+        "tcp_connect:v1",
+        "traceroute:v1",
+        "http_probe:v1",
+        "mtr_path_analysis:v1"
+      ],
+      "capabilities_announced": true
+    },
+    "presence_age_seconds": 0.5681817531585693,
+    "journal_integrity": "ok",
+    "journal_counts": {
+      "executions": 87,
+      "events": 348
+    },
+    "identity_preserved": true,
+    "base_config_preserved": true,
+    "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+    "helper_ready": true,
+    "timer_active": true,
+    "policy_hashes": {
+      "config": "4082b1fec3c93d8a766283e0b719efa252e630763fd2caf69f912b71f0597843",
+      "ceiling": "251e7a3a3d8ec0689be652b2c08c3c27524451384fbe9c41964cd7838aba1daa",
+      "lifecycle_policy": "5033ea624236c4d9c5d44482b7a30ca5bbdfc659edb5fa238951a53933dd8d04",
+      "managed": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+    },
+    "helper_sha256": "14f9f8ba6abd08fa6a301a19ce4c987a8ef554bfa205c9e3aa0182937cccfdf5",
+    "new_errors": 0
+  },
+  {
+    "timestamp": "2026-11-07T18:49:36.658024+00:00",
+    "elapsed_seconds": 210.00011152398656,
+    "systemd": {
+      "MainPID": "117370",
+      "NRestarts": "0",
+      "MemoryCurrent": "18186240",
+      "CPUUsageNSec": "2552947000",
+      "ActiveState": "active"
+    },
+    "process": {
+      "Uid": "987\t987\t987\t987",
+      "Gid": "987\t987\t987\t987",
+      "CapEff": "0000000000000000",
+      "CapPrm": "0000000000000000",
+      "CapBnd": "0000000000000000",
+      "CapAmb": "0000000000000000",
+      "NoNewPrivs": "1",
+      "VmRSS": "32696 kB",
+      "Threads": "3"
+    },
+    "fds": 8,
+    "presence": {
+      "version": "0.6.3",
+      "state": "ONLINE",
+      "heartbeat_successes": 53,
+      "poll_successes": 146,
+      "capabilities": [
+        "agent_info",
+        "icmp_ping:v1",
+        "dns_lookup:v1",
+        "tcp_connect:v1",
+        "traceroute:v1",
+        "http_probe:v1",
+        "mtr_path_analysis:v1"
+      ],
+      "capabilities_announced": true
+    },
+    "presence_age_seconds": 3.538175344467163,
+    "journal_integrity": "ok",
+    "journal_counts": {
+      "executions": 87,
+      "events": 348
+    },
+    "identity_preserved": true,
+    "base_config_preserved": true,
+    "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+    "helper_ready": true,
+    "timer_active": true,
+    "policy_hashes": {
+      "config": "4082b1fec3c93d8a766283e0b719efa252e630763fd2caf69f912b71f0597843",
+      "ceiling": "251e7a3a3d8ec0689be652b2c08c3c27524451384fbe9c41964cd7838aba1daa",
+      "lifecycle_policy": "5033ea624236c4d9c5d44482b7a30ca5bbdfc659edb5fa238951a53933dd8d04",
+      "managed": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+    },
+    "helper_sha256": "14f9f8ba6abd08fa6a301a19ce4c987a8ef554bfa205c9e3aa0182937cccfdf5",
+    "new_errors": 0
+  },
+  {
+    "timestamp": "2026-11-07T18:50:06.658116+00:00",
+    "elapsed_seconds": 240.00021752998873,
+    "systemd": {
+      "MainPID": "117370",
+      "NRestarts": "0",
+      "MemoryCurrent": "18452480",
+      "CPUUsageNSec": "2608523000",
+      "ActiveState": "active"
+    },
+    "process": {
+      "Uid": "987\t987\t987\t987",
+      "Gid": "987\t987\t987\t987",
+      "CapEff": "0000000000000000",
+      "CapPrm": "0000000000000000",
+      "CapBnd": "0000000000000000",
+      "CapAmb": "0000000000000000",
+      "NoNewPrivs": "1",
+      "VmRSS": "32696 kB",
+      "Threads": "3"
+    },
+    "fds": 8,
+    "presence": {
+      "version": "0.6.3",
+      "state": "DEGRADED",
+      "heartbeat_successes": 54,
+      "poll_successes": 148,
+      "capabilities": [
+        "agent_info",
+        "icmp_ping:v1",
+        "dns_lookup:v1",
+        "tcp_connect:v1",
+        "traceroute:v1",
+        "http_probe:v1",
+        "mtr_path_analysis:v1"
+      ],
+      "capabilities_announced": true
+    },
+    "presence_age_seconds": 2.8142364025115967,
+    "journal_integrity": "ok",
+    "journal_counts": {
+      "executions": 87,
+      "events": 348
+    },
+    "identity_preserved": true,
+    "base_config_preserved": true,
+    "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+    "helper_ready": true,
+    "timer_active": true,
+    "policy_hashes": {
+      "config": "4082b1fec3c93d8a766283e0b719efa252e630763fd2caf69f912b71f0597843",
+      "ceiling": "251e7a3a3d8ec0689be652b2c08c3c27524451384fbe9c41964cd7838aba1daa",
+      "lifecycle_policy": "5033ea624236c4d9c5d44482b7a30ca5bbdfc659edb5fa238951a53933dd8d04",
+      "managed": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+    },
+    "helper_sha256": "14f9f8ba6abd08fa6a301a19ce4c987a8ef554bfa205c9e3aa0182937cccfdf5",
+    "new_errors": 1
+  },
+  {
+    "timestamp": "2026-11-07T18:50:36.658150+00:00",
+    "elapsed_seconds": 270.0002435649949,
+    "systemd": {
+      "MainPID": "117370",
+      "NRestarts": "0",
+      "MemoryCurrent": "18190336",
+      "CPUUsageNSec": "2665184000",
+      "ActiveState": "active"
+    },
+    "process": {
+      "Uid": "987\t987\t987\t987",
+      "Gid": "987\t987\t987\t987",
+      "CapEff": "0000000000000000",
+      "CapPrm": "0000000000000000",
+      "CapBnd": "0000000000000000",
+      "CapAmb": "0000000000000000",
+      "NoNewPrivs": "1",
+      "VmRSS": "32696 kB",
+      "Threads": "3"
+    },
+    "fds": 8,
+    "presence": {
+      "version": "0.6.3",
+      "state": "ONLINE",
+      "heartbeat_successes": 56,
+      "poll_successes": 152,
+      "capabilities": [
+        "agent_info",
+        "icmp_ping:v1",
+        "dns_lookup:v1",
+        "tcp_connect:v1",
+        "traceroute:v1",
+        "http_probe:v1",
+        "mtr_path_analysis:v1"
+      ],
+      "capabilities_announced": true
+    },
+    "presence_age_seconds": 2.2265777587890625,
+    "journal_integrity": "ok",
+    "journal_counts": {
+      "executions": 87,
+      "events": 348
+    },
+    "identity_preserved": true,
+    "base_config_preserved": true,
+    "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+    "helper_ready": true,
+    "timer_active": true,
+    "policy_hashes": {
+      "config": "4082b1fec3c93d8a766283e0b719efa252e630763fd2caf69f912b71f0597843",
+      "ceiling": "251e7a3a3d8ec0689be652b2c08c3c27524451384fbe9c41964cd7838aba1daa",
+      "lifecycle_policy": "5033ea624236c4d9c5d44482b7a30ca5bbdfc659edb5fa238951a53933dd8d04",
+      "managed": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+    },
+    "helper_sha256": "14f9f8ba6abd08fa6a301a19ce4c987a8ef554bfa205c9e3aa0182937cccfdf5",
+    "new_errors": 1
+  },
+  {
+    "timestamp": "2026-11-07T18:51:06.658195+00:00",
+    "elapsed_seconds": 300.0003037439892,
+    "systemd": {
+      "MainPID": "117370",
+      "NRestarts": "0",
+      "MemoryCurrent": "18456576",
+      "CPUUsageNSec": "2730269000",
+      "ActiveState": "active"
+    },
+    "process": {
+      "Uid": "987\t987\t987\t987",
+      "Gid": "987\t987\t987\t987",
+      "CapEff": "0000000000000000",
+      "CapPrm": "0000000000000000",
+      "CapBnd": "0000000000000000",
+      "CapAmb": "0000000000000000",
+      "NoNewPrivs": "1",
+      "VmRSS": "32700 kB",
+      "Threads": "3"
+    },
+    "fds": 9,
+    "presence": {
+      "version": "0.6.3",
+      "state": "CLAIM",
+      "heartbeat_successes": 58,
+      "poll_successes": 155,
+      "capabilities": [
+        "agent_info",
+        "icmp_ping:v1",
+        "dns_lookup:v1",
+        "tcp_connect:v1",
+        "traceroute:v1",
+        "http_probe:v1",
+        "mtr_path_analysis:v1"
+      ],
+      "capabilities_announced": true
+    },
+    "presence_age_seconds": 1.3445699214935303,
+    "journal_integrity": "ok",
+    "journal_counts": {
+      "executions": 87,
+      "events": 348
+    },
+    "identity_preserved": true,
+    "base_config_preserved": true,
+    "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+    "helper_ready": true,
+    "timer_active": true,
+    "policy_hashes": {
+      "config": "4082b1fec3c93d8a766283e0b719efa252e630763fd2caf69f912b71f0597843",
+      "ceiling": "251e7a3a3d8ec0689be652b2c08c3c27524451384fbe9c41964cd7838aba1daa",
+      "lifecycle_policy": "5033ea624236c4d9c5d44482b7a30ca5bbdfc659edb5fa238951a53933dd8d04",
+      "managed": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+    },
+    "helper_sha256": "14f9f8ba6abd08fa6a301a19ce4c987a8ef554bfa205c9e3aa0182937cccfdf5",
+    "new_errors": 1
+  },
+  {
+    "timestamp": "2026-11-07T18:51:36.658126+00:00",
+    "elapsed_seconds": 330.00021930799994,
+    "systemd": {
+      "MainPID": "117370",
+      "NRestarts": "0",
+      "MemoryCurrent": "18194432",
+      "CPUUsageNSec": "2791714000",
+      "ActiveState": "active"
+    },
+    "process": {
+      "Uid": "987\t987\t987\t987",
+      "Gid": "987\t987\t987\t987",
+      "CapEff": "0000000000000000",
+      "CapPrm": "0000000000000000",
+      "CapBnd": "0000000000000000",
+      "CapAmb": "0000000000000000",
+      "NoNewPrivs": "1",
+      "VmRSS": "32700 kB",
+      "Threads": "3"
+    },
+    "fds": 8,
+    "presence": {
+      "version": "0.6.3",
+      "state": "ONLINE",
+      "heartbeat_successes": 59,
+      "poll_successes": 160,
+      "capabilities": [
+        "agent_info",
+        "icmp_ping:v1",
+        "dns_lookup:v1",
+        "tcp_connect:v1",
+        "traceroute:v1",
+        "http_probe:v1",
+        "mtr_path_analysis:v1"
+      ],
+      "capabilities_announced": true
+    },
+    "presence_age_seconds": 1.6213293075561523,
+    "journal_integrity": "ok",
+    "journal_counts": {
+      "executions": 87,
+      "events": 348
+    },
+    "identity_preserved": true,
+    "base_config_preserved": true,
+    "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+    "helper_ready": true,
+    "timer_active": true,
+    "policy_hashes": {
+      "config": "4082b1fec3c93d8a766283e0b719efa252e630763fd2caf69f912b71f0597843",
+      "ceiling": "251e7a3a3d8ec0689be652b2c08c3c27524451384fbe9c41964cd7838aba1daa",
+      "lifecycle_policy": "5033ea624236c4d9c5d44482b7a30ca5bbdfc659edb5fa238951a53933dd8d04",
+      "managed": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+    },
+    "helper_sha256": "14f9f8ba6abd08fa6a301a19ce4c987a8ef554bfa205c9e3aa0182937cccfdf5",
+    "new_errors": 2
+  }
+]

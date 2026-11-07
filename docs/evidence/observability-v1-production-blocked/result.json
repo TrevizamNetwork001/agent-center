@@ -1,0 +1,128 @@
+{
+  "result": "AGENT OBSERVABILITY V1 PRODUCTION BLOCKED",
+  "reason": "Updater exited 1 repeatedly during observation and Agent entered DEGRADED; no clean 15-minute Agent window",
+  "central_attempt_image": "agent-center-central:observability-v1-f0e77ab-20261107",
+  "central_final_image": "agent-center-central:access-maintenance-2a08663-20261107",
+  "central_rollback_verified": true,
+  "agent_final_version": "0.6.2",
+  "agent_rollback_verified": true,
+  "original_hashes_restored": true,
+  "journal_integrity": "ok",
+  "journal_counts": {
+    "executions": 87,
+    "events": 348
+  },
+  "journal_replaced": false,
+  "operation_id": "400199f4-e03d-45cd-8c41-a9d1511c508c",
+  "operation_original_status": "COMPLETED",
+  "release_sequence": 4,
+  "release_quarantined": true,
+  "highest_committed_sequence_preserved": 4,
+  "central_observation": {
+    "pass": true,
+    "started_utc": "2026-11-07T18:36:34.029583+00:00",
+    "finished_utc": "2026-11-07T18:51:34.911741+00:00",
+    "elapsed_seconds": 900.8821226569999,
+    "samples": 31,
+    "violations": [],
+    "health_initial": "ATEN\u00c7\u00c3O",
+    "health_final": "ATEN\u00c7\u00c3O"
+  },
+  "agent_first_observation": {
+    "pass": false,
+    "started_utc": "2026-11-07T18:33:16.356772+00:00",
+    "finished_utc": "2026-11-07T18:48:16.830119+00:00",
+    "elapsed_seconds": 900.4729733880085,
+    "samples": 31,
+    "violations": [
+      {
+        "sample": 18,
+        "reason": "new_systemd_errors"
+      },
+      {
+        "sample": 19,
+        "reason": "new_systemd_errors"
+      },
+      {
+        "sample": 20,
+        "reason": "new_systemd_errors"
+      },
+      {
+        "sample": 21,
+        "reason": "new_systemd_errors"
+      },
+      {
+        "sample": 22,
+        "reason": "new_systemd_errors"
+      },
+      {
+        "sample": 23,
+        "reason": "new_systemd_errors"
+      },
+      {
+        "sample": 24,
+        "reason": "new_systemd_errors"
+      },
+      {
+        "sample": 25,
+        "reason": "new_systemd_errors"
+      },
+      {
+        "sample": 26,
+        "reason": "new_systemd_errors"
+      },
+      {
+        "sample": 27,
+        "reason": "new_systemd_errors"
+      },
+      {
+        "sample": 28,
+        "reason": "new_systemd_errors"
+      },
+      {
+        "sample": 29,
+        "reason": "new_systemd_errors"
+      },
+      {
+        "sample": 30,
+        "reason": "new_systemd_errors"
+      }
+    ],
+    "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+    "identity_preserved": true,
+    "base_config_preserved": true,
+    "journal_counts_before": {
+      "executions": 87,
+      "events": 348
+    },
+    "journal_counts_after": {
+      "executions": 87,
+      "events": 348
+    },
+    "mtr_ceiling": {
+      "schema_version": 1,
+      "allowed_dns_names": [
+        "google.com"
+      ],
+      "allowed_networks": []
+    },
+    "probes_executed": false,
+    "fds_min": 8,
+    "fds_max": 9,
+    "rss_min_kib": 32492,
+    "rss_max_kib": 32696,
+    "cpu_seconds": 1.966498,
+    "heartbeat_progress": 45,
+    "poll_progress": 125
+  },
+  "agent_second_observation_samples": 12,
+  "agent_second_observation_max_elapsed": 330.00021930799994,
+  "active_tasks": 0,
+  "pending_operations": 0,
+  "health_final": "ATEN\u00c7\u00c3O",
+  "readiness_final": 200,
+  "metadata_reconciled_to_actual_mtr": "0.6.2",
+  "cause_of_exit1": "not available in existing logs; same exit pattern observed before deployment",
+  "r2_changed": false,
+  "policies_privileges_changed": false
+}

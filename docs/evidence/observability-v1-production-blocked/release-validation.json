@@ -1,0 +1,14 @@
+{
+  "version": "0.6.3",
+  "sequence": 4,
+  "sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+  "ed25519_valid": true,
+  "existing_trust_authority": true,
+  "negative_cases_rejected": {
+    "anti_replay": "replay_or_downgrade",
+    "integrity": "artifact_mismatch",
+    "platform": "incompatible_platform",
+    "signature": "invalid_signature"
+  },
+  "production_release_id": "d7a5f106-ba6c-4a47-befb-12724c83d2ee"
+}

@@ -1,0 +1,9 @@
+{
+  "published": true,
+  "image": "agent-center-central:observability-v1-f0e77ab-20261107",
+  "image_id": "sha256:899e90e7daf730cb29c0e4cbe13d8178731a899a046a1ed8ea5d9ef338eab9d8",
+  "only_web_recreated": true,
+  "migrations_needed": false,
+  "readiness": 200,
+  "rollback_executed": false
+}

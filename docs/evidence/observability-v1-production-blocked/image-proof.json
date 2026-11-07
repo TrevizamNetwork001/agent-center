@@ -1,0 +1,18 @@
+{
+  "image": "agent-center-central:observability-v1-f0e77ab-20261107",
+  "image_id": "sha256:899e90e7daf730cb29c0e4cbe13d8178731a899a046a1ed8ea5d9ef338eab9d8",
+  "only_approved_paths": [
+    "app/Agent/Observability.php",
+    "app/Agent/Protocol.php",
+    "app/Http/Controllers/Agent/ObservabilityController.php",
+    "app/Http/Controllers/Agent/ProtocolController.php",
+    "app/Http/Requests/Agent/ProtocolRequest.php",
+    "app/Policies/AgentPolicy.php",
+    "app/Services/Audit.php",
+    "resources/views/agents/detail.blade.php",
+    "resources/views/agents/observability.blade.php",
+    "routes/web.php"
+  ],
+  "no_migration_delta": true,
+  "maintenance_preserved": true
+}

@@ -1,0 +1,9 @@
+{
+  "backup_dir": "/var/backups/agent-center-observability-v1-20261107",
+  "archive_sha256": "55728b46cab7ab9edf172405ce597bce809082054dce5b710ad845aee03742ea",
+  "sqlite_backup_sha256": "95224205a261f290ececdcae7155a88ea469bc09343a57fe33800fcc8ea3f8e6",
+  "sqlite_integrity": "ok",
+  "identity_runtime_config_helper_verified": true,
+  "owner_modes_preserved": true,
+  "policies_units_dropins_preserved": true
+}

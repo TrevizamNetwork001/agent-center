@@ -1,0 +1,17 @@
+{
+  "created_utc": "2026-11-07T18:28:34.071065+00:00",
+  "backup_dir": "/root/observability-v1-production/secure/central",
+  "files": {
+    "roles.sql": "000b1255dcf9fe21ae062bd06d8ef95bdf0ddf71aeb882aa0fff1d10f9b4786d",
+    "configuration.tar.gz": "8cebadaada8b1ded1e9d841dccd185c35dab0de8818f60c77a9fd7ecdb4f4d27",
+    "database.dump": "ba12a22bcfee8515cb10d39ae2d1319a9d794e50393dc39ea7e06acfa92be064"
+  },
+  "dump_format_checked": true,
+  "restored": true,
+  "r2_used": false,
+  "rls_tables": 31,
+  "release_count": 3,
+  "all_migrations_applied": true,
+  "blade_compilation": true,
+  "network": "none"
+}

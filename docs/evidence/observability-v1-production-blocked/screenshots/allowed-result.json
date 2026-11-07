@@ -1,0 +1,14 @@
+{
+  "realProductionData": true,
+  "fixtures": false,
+  "results": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "capabilities": 7,
+      "overflow": false,
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "pass": false,
+  "started_utc": "2026-11-07T18:33:16.356772+00:00",
+  "finished_utc": "2026-11-07T18:48:16.830119+00:00",
+  "elapsed_seconds": 900.4729733880085,
+  "samples": 31,
+  "violations": [
+    {
+      "sample": 18,
+      "reason": "new_systemd_errors"
+    },
+    {
+      "sample": 19,
+      "reason": "new_systemd_errors"
+    },
+    {
+      "sample": 20,
+      "reason": "new_systemd_errors"
+    },
+    {
+      "sample": 21,
+      "reason": "new_systemd_errors"
+    },
+    {
+      "sample": 22,
+      "reason": "new_systemd_errors"
+    },
+    {
+      "sample": 23,
+      "reason": "new_systemd_errors"
+    },
+    {
+      "sample": 24,
+      "reason": "new_systemd_errors"
+    },
+    {
+      "sample": 25,
+      "reason": "new_systemd_errors"
+    },
+    {
+      "sample": 26,
+      "reason": "new_systemd_errors"
+    },
+    {
+      "sample": 27,
+      "reason": "new_systemd_errors"
+    },
+    {
+      "sample": 28,
+      "reason": "new_systemd_errors"
+    },
+    {
+      "sample": 29,
+      "reason": "new_systemd_errors"
+    },
+    {
+      "sample": 30,
+      "reason": "new_systemd_errors"
+    }
+  ],
+  "runtime_sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480",
+  "identity_preserved": true,
+  "base_config_preserved": true,
+  "journal_counts_before": {
+    "executions": 87,
+    "events": 348
+  },
+  "journal_counts_after": {
+    "executions": 87,
+    "events": 348
+  },
+  "mtr_ceiling": {
+    "schema_version": 1,
+    "allowed_dns_names": [
+      "google.com"
+    ],
+    "allowed_networks": []
+  },
+  "probes_executed": false,
+  "fds_min": 8,
+  "fds_max": 9,
+  "rss_min_kib": 32492,
+  "rss_max_kib": 32696,
+  "cpu_seconds": 1.966498,
+  "heartbeat_progress": 45,
+  "poll_progress": 125
+}

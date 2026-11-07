@@ -1,0 +1,54 @@
+{
+  "realProductionData": true,
+  "fixtures": false,
+  "results": [
+    {
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "capabilities": 7,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "capabilities": 7,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 900,
+      "theme": "light",
+      "status": 200,
+      "capabilities": 7,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 900,
+      "theme": "dark",
+      "status": 200,
+      "capabilities": 7,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "capabilities": 7,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "capabilities": 7,
+      "overflow": false,
+      "errors": []
+    }
+  ]
+}

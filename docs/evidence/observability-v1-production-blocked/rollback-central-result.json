@@ -1,0 +1,8 @@
+{
+  "rollback_verified": true,
+  "image": "agent-center-central:access-maintenance-2a08663-20261107",
+  "image_id": "sha256:fc4e7485b3789afcc9a673acc289f2722a72d5cb4697328184eac72daa3e3f78",
+  "readiness": 200,
+  "other_containers_preserved": true,
+  "database_restored": false
+}

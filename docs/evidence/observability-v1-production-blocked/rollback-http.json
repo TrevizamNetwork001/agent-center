@@ -1,0 +1,45 @@
+{
+  "https GET /login": {
+    "status": 200,
+    "redirect_to_https": false,
+    "hsts": true,
+    "secure_session_cookie": true,
+    "csrf_form": true
+  },
+  "https POST /login": {
+    "status": 419,
+    "redirect_to_https": false,
+    "hsts": true
+  },
+  "https GET /agents": {
+    "status": 302,
+    "redirect_to_https": true,
+    "hsts": true
+  },
+  "https GET /operations": {
+    "status": 302,
+    "redirect_to_https": true,
+    "hsts": true
+  },
+  "https GET /health/live": {
+    "status": 200,
+    "redirect_to_https": false,
+    "hsts": true,
+    "response": {
+      "status": "alive"
+    }
+  },
+  "https GET /health/ready": {
+    "status": 200,
+    "redirect_to_https": false,
+    "hsts": true,
+    "response": {
+      "status": "ready"
+    }
+  },
+  "http GET /login": {
+    "status": 308,
+    "redirect_to_https": true,
+    "hsts": false
+  }
+}
