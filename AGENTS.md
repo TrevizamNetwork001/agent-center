@@ -9,11 +9,16 @@
 - Nenhum secret em logs, respostas, commits ou documentação.
 - LLM sem autoridade operacional; decisões operacionais exigem validação determinística e autorização.
 - Skills somente por allowlist explícita.
-- Nenhuma ação de device nesta fase.
+- Device freeze obrigatório; acesso a equipamentos e ações de device exigem autorização operacional específica.
 - Migrations futuras exclusivamente em Laravel.
 - Alterações operacionais devem possuir rollback documentado e preservar dados.
-- Preservar separação entre Central e Agent; Agent não implementado nesta fase.
+- Preservar separação entre Laravel Central e Python Agent.
 - Não tocar serviços não relacionados da VPS.
-- Fase 1 apenas: infraestrutura, Laravel base, health, backup e testes. Proibido implementar Agent API, enrollment, heartbeat, diagnostics, Task Engine, Profiles, Skills, Knowledge, Prompts, LLM, Conversation, Telegram, WhatsApp, RAG, MTR, device access e Huawei.
+- Arquitetura operacional atual: Laravel Central, Agent API, Task Engine, Diagnostics, Profiles e Skills, Knowledge e LLM, Conversation Engine, Lifecycle Manager, Agent 0.6.2 e MTR seguro.
+- Manutenção, correções e evolução dos módulos existentes são permitidas dentro do escopo autorizado em cada solicitação; novas Skills e melhorias não exigem revisão destas instruções, mas continuam sujeitas à allowlist e às demais regras de segurança.
+- Preservar RBAC, PostgreSQL FORCE RLS, isolamento por tenant, autenticação da Central e do Agent, CSRF, TLS, auditoria e limites operacionais.
+- Releases do Agent devem ser assinadas e distribuídas pelo Lifecycle Manager existente, com validação de compatibilidade, testes em laboratório, backup e rollback que preserve dados.
+- Deploy de produção, atualização do Agent real, ampliação de privilégios, acesso a equipamentos e mudanças destrutivas exigem autorização operacional específica. Esta regra não permite shell nem comandos arbitrários.
+- Novos módulos ou integrações dependem do escopo explicitamente autorizado; a arquitetura existente não autoriza automaticamente Telegram, WhatsApp, RAG ou operações em equipamentos.
 - Secrets em arquivos fora do Git com permissões restritas. Não expor PostgreSQL/FPM/worker publicamente.
 - Ler este arquivo antes de alterar o projeto; executar validações pertinentes e git diff --check.
