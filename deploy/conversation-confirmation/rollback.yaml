@@ -1,0 +1,3 @@
+services:
+  web:
+    image: agent-center-central:rag-v1-final-20261111

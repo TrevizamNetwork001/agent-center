@@ -1,0 +1,8 @@
+{
+  "base": "sha256:fcfa83717242a742a5c51ae36999166c055e47aa0144f2aef18dc6874d98efda",
+  "candidate": "sha256:44439b47357d2037461492497feb05ccfad131ae0682cd563ed98c59c91ab0d2",
+  "base_layers_preserved": true,
+  "added_layers": 2,
+  "source_hashes_match_candidate": true,
+  "production_deployed": false
+}

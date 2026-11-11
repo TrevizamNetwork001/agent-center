@@ -21,6 +21,7 @@ use App\Tenancy\TenantContext;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class Engine
 {
@@ -159,7 +160,28 @@ class Engine
                 }
             } elseif ($intent === Intent::Confirm && $state === State::Confirmation && isset($c->context_json['pending'])) {
                 $p = $c->context_json['pending'];
-                $this->start($c, $i, $p['profile'], $p['target'], $prefix, ($p['mtr_requested'] ?? false) === true);
+                // The row/user locks fence confirmation consumption and task creation
+                // in the same transaction. A blocked attempt requires a new request.
+                $c->context_json = array_diff_key($c->context_json, array_flip(['pending']));
+                $this->transition($c, State::FollowUp, 'confirmation_consumed');
+                try {
+                    $planner = app(Planner::class);
+                    if (! is_string($p['target'] ?? null) || ! $p['target'] || ! is_string($p['profile'] ?? null) || ! $p['profile']) {
+                        $this->reply($c, 'Confirmação invalidada: destino ou perfil pendente ausente. Nenhuma tarefa foi criada; solicite um novo diagnóstico.');
+                    } elseif (($mentioned = $det->confirmationTarget($safe)) !== null && $planner->target($mentioned) !== $planner->target($p['target'])) {
+                        $this->reply($c, 'Confirmação invalidada: o destino informado difere do destino pendente. Nenhuma tarefa foi criada; solicite um novo diagnóstico para o destino desejado.');
+                    } else {
+                        $this->reply($c, 'Confirmação processada para '.$p['target'].'.');
+                        $this->start($c, $i, $p['profile'], $p['target'], $prefix, ($p['mtr_requested'] ?? false) === true);
+                    }
+                } catch (ValidationException $e) {
+                    $this->reply($c, 'Diagnóstico bloqueado: '.implode(' ', $e->validator->errors()->all()).' Nenhuma tarefa foi criada; solicite um novo diagnóstico.');
+                }
+            } elseif ($intent === Intent::Confirm) {
+                if ($state === State::Confirmation) {
+                    $this->transition($c, State::FollowUp, 'confirmation_missing');
+                }
+                $this->reply($c, 'Não há confirmação pendente válida. Nenhuma nova tarefa foi criada.');
             } elseif ($intent === Intent::Start || $intent === Intent::Another || $intent === Intent::Target) {
                 $target = $det->target($safe);
                 $profile = $intent === Intent::Target && $state === State::Target ? ($c->context_json['requested_profile'] ?? 'SITE_LENTO') : $det->profile($safe);
@@ -209,7 +231,7 @@ class Engine
         $agents = Agent::where('status', 'active')->whereNull('revoked_at')->get()->filter(fn ($a) => ($a->metadata['task_protocol'] ?? 0) === 1);
         $a = isset($c->context_json['agent_id']) ? $agents->firstWhere('id', $c->context_json['agent_id']) : ($agents->count() === 1 ? $agents->first() : null);
         if (! $p || ! $a) {
-            $this->reply($c, 'Não há Profile/Agent disponível ou a seleção de Agent é necessária. Nenhuma tarefa foi criada; abra uma conversa selecionando um Agent autorizado.');
+            $this->reply($c, ! $p ? 'Profile pendente indisponível ou desabilitado. Nenhuma tarefa foi criada.' : 'Agent indisponível ou seleção de Agent necessária. Nenhuma tarefa foi criada; abra uma conversa selecionando um Agent autorizado.');
 
             return;
         }
@@ -301,6 +323,9 @@ class Engine
         abort_unless($previous->permits($next), 409, 'Transição de conversa inválida.');
         if ($previous === $next) {
             return;
+        }
+        if (in_array($next, [State::Closed, State::Cancelled], true)) {
+            $c->context_json = array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel']));
         }
         $c->state = $next->value;
         $c->status = match ($next) {

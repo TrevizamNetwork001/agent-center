@@ -21,6 +21,7 @@ use App\Models\Diagnostic;
 use App\Models\DiagnosticConclusion;
 use App\Models\DiagnosticInterpretation;
 use App\Models\DiagnosticPlan;
+use App\Models\Profile;
 use App\Models\Skill;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -353,5 +354,205 @@ class ConversationTest extends IdentityTestCase
         $c = $this->say($c, 'Faz um MTR mais completo.');
         $this->assertSame($count, Diagnostic::count());
         $this->assertStringContainsString('MTR indisponível', ConversationMessage::latest('sequence')->first()->body);
+    }
+
+    private function pendingConfirmation(): Conversation
+    {
+        return $this->say($this->conversation(), 'Outro diagnóstico para google.com');
+    }
+
+    public function test_operator_exact_confirmation_advances_and_preserves_history(): void
+    {
+        $c = $this->pendingConfirmation();
+        $this->assertSame('WAITING_FOR_CONFIRMATION', $c->fresh()->state);
+        $profile = $c->context_json['pending']['profile'];
+        $this->assertStringContainsString('Confirma um novo diagnóstico para google.com?', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first()->body);
+        $c = $this->say($c, 'Sim, confirmo o diagnóstico de google.com.');
+        $this->assertSame('DIAGNOSTIC_RUNNING', $c->fresh()->state);
+        $this->assertSame($profile, $c->context_json['last_profile']);
+        $this->assertSame('google.com', Diagnostic::sole()->target);
+        $this->assertArrayNotHasKey('pending', $c->fresh()->context_json);
+        $this->assertSame('CONFIRM', ConversationMessage::where('sender_type', 'user')->latest('sequence')->first()->detected_intent);
+        $this->assertSame(1, DB::table('conversation_events')->where('event_type', 'confirmation_consumed')->count());
+        app(Tasks::class)->tick();
+        $this->assertGreaterThan(0, AgentTask::count());
+        $this->actingAs($this->operator)->get('/conversations/'.$c->id)->assertOk()->assertSee('Confirmação processada')->assertSee('Sim, confirmo o diagnóstico de google.com.')->assertSee('Vou verificar a conectividade');
+        $this->context()->forUser($this->operator);
+        $c = $this->finish($c);
+        $this->actingAs($this->operator)->get('/conversations/'.$c->id)->assertOk()->assertSee(Classifier::NORMAL);
+    }
+
+    public function test_natural_and_short_confirmations_use_pending_context_once(): void
+    {
+        foreach (['Sim', 'Confirmo', 'Pode executar', 'Sim, pode verificar', 'Sim, confirmo o diagnóstico de google.com'] as $body) {
+            $c = $this->pendingConfirmation();
+            $before = Diagnostic::count();
+            $key = (string) Str::uuid();
+            $c = $this->say($c, $body, $key);
+            $this->assertSame('DIAGNOSTIC_RUNNING', $c->state, $body);
+            $messages = ConversationMessage::where('conversation_id', $c->id)->count();
+            $this->say($c, $body, $key); // HTTP retry, same request key
+            $this->assertSame($messages, ConversationMessage::where('conversation_id', $c->id)->count());
+            $this->say($c, $body); // double click with a new key
+            app(Engine::class)->sync($this->identity(), $c);
+            $c = $this->finish($c);
+            $this->say($c, $body); // late confirmation after completion
+            $this->assertSame($before + 1, Diagnostic::count());
+            $this->assertArrayNotHasKey('pending', $c->fresh()->context_json);
+        }
+    }
+
+    public function test_affirmative_without_pending_never_authorizes(): void
+    {
+        foreach (['Sim', 'Sim, pode verificar', 'Sim, confirmo o diagnóstico de google.com'] as $body) {
+            $c = $this->say($this->conversation(), $body);
+            $this->assertSame('ACTIVE', $c->state);
+        }
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_denial_cancel_close_and_old_confirmation_invalidate_pending(): void
+    {
+        foreach (['Não', 'Cancela', 'Pode encerrar'] as $body) {
+            $c = $this->say($this->pendingConfirmation(), $body);
+            $this->assertArrayNotHasKey('pending', $c->fresh()->context_json);
+            $state = $c->state;
+            $this->say($c, 'Sim, confirmo o diagnóstico de google.com.');
+            $this->assertSame($state, $c->fresh()->state);
+        }
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_different_target_or_missing_pending_data_never_falls_back(): void
+    {
+        $c = $this->say($this->pendingConfirmation(), 'Sim, confirmo o diagnóstico de example.com');
+        $this->assertSame('FOLLOW_UP', $c->state);
+        $this->assertStringContainsString('difere do destino pendente', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first()->body);
+        foreach (['target', 'profile'] as $field) {
+            $c = $this->pendingConfirmation();
+            $ctx = $c->context_json;
+            unset($ctx['pending'][$field]);
+            $c->context_json = $ctx;
+            $c->save();
+            $c = $this->say($c, 'Sim');
+            $this->assertSame('FOLLOW_UP', $c->fresh()->state);
+            $this->assertArrayNotHasKey('pending', $c->context_json);
+            $this->assertStringContainsString('pendente ausente', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first()->body);
+        }
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_blocked_confirmation_is_consumed_and_actual_cause_is_visible(): void
+    {
+        $c = $this->pendingConfirmation();
+        Skill::where('key', 'dns_lookup')->update(['enabled' => false]);
+        $c = $this->say($c, 'Sim');
+        $this->assertSame('FOLLOW_UP', $c->state);
+        $this->assertArrayNotHasKey('pending', $c->fresh()->context_json);
+        $this->assertStringContainsString('Skills necessárias não estão disponíveis', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first()->body);
+        Skill::where('key', 'dns_lookup')->update(['enabled' => true]);
+        $this->say($c, 'Sim');
+        $this->assertSame(0, Diagnostic::count());
+        $c = $this->pendingConfirmation();
+        $this->agent->forceFill(['revoked_at' => now()])->save();
+        $c = $this->say($c, 'Confirmo');
+        $this->assertSame('FOLLOW_UP', $c->state);
+        $this->assertStringContainsString('Agent indisponível', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first()->body);
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_invalid_pending_target_is_explained_and_consumed(): void
+    {
+        $c = $this->pendingConfirmation();
+        $c->context_json = ['pending' => ['target' => 'https://google.com?secret=no', 'profile' => 'GOOGLE_YOUTUBE']];
+        $c->save();
+        $c = $this->say($c, 'Sim');
+        $this->assertSame('FOLLOW_UP', $c->fresh()->state);
+        $this->assertArrayNotHasKey('pending', $c->context_json);
+        $this->assertStringContainsString('Diagnóstico bloqueado:', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first()->body);
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_pending_confirmation_http_rbac_tenant_csrf_and_refresh(): void
+    {
+        $c = $this->pendingConfirmation();
+        $payload = ['request_key' => (string) Str::uuid(), 'body' => 'Sim, confirmo o diagnóstico de google.com.'];
+        $this->actingAs($this->admin)->postJson('/conversations/'.$c->id.'/messages', $payload)->assertForbidden();
+        $this->flushSession();
+        $this->actingAs($this->other)->postJson('/conversations/'.$c->id.'/messages', $payload)->assertNotFound();
+        $this->flushSession();
+        $this->actingAs($this->viewer)->postJson('/conversations/'.$c->id.'/messages', $payload)->assertForbidden();
+        $this->flushSession();
+        $this->app['env'] = 'production';
+        $this->actingAs($this->operator)->postJson('/conversations/'.$c->id.'/messages', $payload)->assertStatus(419);
+        $this->app['env'] = 'testing';
+        $this->flushSession();
+        for ($n = 0; $n < 2; $n++) {
+            $this->actingAs($this->operator)->get('/conversations/'.$c->id)->assertOk()->assertSee('Confirma um novo diagnóstico');
+        }
+        $this->context()->forUser($this->operator);
+        $this->assertSame('WAITING_FOR_CONFIRMATION', $c->fresh()->state);
+        $this->assertSame(0, Diagnostic::count());
+        $this->postJson('/conversations/'.$c->id.'/messages', $payload)->assertOk();
+        $this->postJson('/conversations/'.$c->id.'/messages', $payload)->assertOk();
+        $this->context()->forUser($this->operator);
+        $this->assertSame(1, Diagnostic::count());
+        $this->assertSame('DIAGNOSTIC_RUNNING', $c->fresh()->state);
+    }
+
+    public function test_previous_confirmation_request_key_cannot_confirm_a_new_scope(): void
+    {
+        $c = $this->pendingConfirmation();
+        $key = (string) Str::uuid();
+        $c = $this->say($c, 'Sim', $key);
+        $c = $this->finish($c);
+        $c = $this->say($c, 'Outro diagnóstico para example.com');
+        $this->say($c, 'Sim', $key);
+        $this->assertSame('WAITING_FOR_CONFIRMATION', $c->fresh()->state);
+        $this->assertSame('example.com', $c->fresh()->context_json['pending']['target']);
+        $this->assertSame(1, Diagnostic::count());
+    }
+
+    public function test_profile_disabled_and_missing_pending_are_explained(): void
+    {
+        $c = $this->pendingConfirmation();
+        Profile::where('key', $c->context_json['pending']['profile'])->update(['enabled' => false]);
+        $c = $this->say($c, 'Sim');
+        $this->assertStringContainsString('Profile pendente indisponível', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first()->body);
+        $c = $this->pendingConfirmation();
+        $c->context_json = [];
+        $c->save();
+        $c = $this->say($c, 'Sim');
+        $this->assertSame('FOLLOW_UP', $c->fresh()->state);
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_explicit_ipv6_different_destination_is_rejected(): void
+    {
+        $c = $this->say($this->pendingConfirmation(), 'Sim, confirmo o diagnóstico de 2001:db8::1');
+        $this->assertSame('FOLLOW_UP', $c->fresh()->state);
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertStringContainsString('difere do destino pendente', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first()->body);
+    }
+
+    public function test_agent_policy_denial_is_returned_as_operational_result(): void
+    {
+        $c = $this->say($this->pendingConfirmation(), 'Sim');
+        $engine = app(Tasks::class);
+        $engine->tick();
+        for ($n = 0; $n < 4; $n++) {
+            $task = $engine->claim($this->agent);
+            if (! $task) {
+                break;
+            }
+            $engine->operation($this->agent, 'start', $task);
+            $engine->operation($this->agent, 'result', $task + ['result' => ['ok' => false, 'error' => 'policy_denied']]);
+        }
+        $c = app(Engine::class)->sync($this->identity(), $c);
+        $this->assertSame('DIAGNOSTIC_COMPLETED', $c->fresh()->state);
+        $this->assertSame(1, Diagnostic::count());
+        $this->assertStringContainsString('política do Agent', ConversationMessage::where('conversation_id', $c->id)->where('message_type', 'result')->sole()->body);
+        $this->say($c, 'Sim');
+        $this->assertSame(1, Diagnostic::count());
     }
 }

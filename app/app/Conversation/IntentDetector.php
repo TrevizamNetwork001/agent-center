@@ -18,6 +18,17 @@ class IntentDetector
         if (preg_match('/^(como (devo|posso|diagnosticar|investigar|verificar)|qual (e |eh )?((o|a|nosso|nossa) )*(procedimento|guia)|consulte (a )?knowledge|na knowledge|o que diz (a )?knowledge)\b/', $s)) {
             return Intent::Knowledge;
         }
+        if ($state === State::Confirmation && preg_match('/^(nao|negativo)\b/', $s)) {
+            return Intent::Deny;
+        }
+        // Recognize replies before diagnostic keywords, including outside the pending
+        // state so a late/repeated affirmative cannot become a new request.
+        if (preg_match('/^(nao|negativo|nao quero)(?:[,.! ]+(?:confirmo|pode executar|o diagnostico))?[.! ]*$/', $s)) {
+            return Intent::Deny;
+        }
+        if (preg_match('~^(?:(?:sim[, ]+)?(?:confirmo|confirmar|pode executar|pode verificar)|sim|pode|fechou|ok)(?: (?:o |a )?(?:diagnostico|verificacao|teste|coleta mtr))?(?: (?:de|para|em|no alvo) (?:https://)?[a-z0-9][a-z0-9.:/\[\]-]*)?[.! ]*$~', $s)) {
+            return Intent::Confirm;
+        }
         if (preg_match('/\b(mtr|teste de rota|analisa a perda|perda de pacotes ate|parte do caminho|aumentando a latencia)\b/', $s)) {
             return Intent::Path;
         }
@@ -33,12 +44,6 @@ class IntentDetector
         if (preg_match('/\b(testa|teste|testar|verificar|verifique|diagnostico|conectividade)\b/', $s)) {
             return Intent::Start;
         }
-        if (preg_match('/^(sim|confirmo|pode|pode executar|confirmar|fechou|ok)[.! ]*$/', $s)) {
-            return Intent::Confirm;
-        }
-        if (preg_match('/^(nao|negativo|nao quero)[.! ]*$/', $s)) {
-            return Intent::Deny;
-        }
         if (preg_match('/\b(obrigad[oa]|valeu|agradeco)\b/', $s)) {
             return Intent::Acknowledge;
         }
@@ -50,6 +55,14 @@ class IntentDetector
         }
 
         return Intent::Unknown;
+    }
+
+    public function confirmationTarget(string $body): ?string
+    {
+        // Extract the entire explicit destination, including IPv6, rather than
+        // guessing a host from another word in the affirmative reply.
+        return preg_match('/\b(?:de|para|em|no alvo)\s+(\S+)[.! ]*$/i', trim($body), $match)
+            ? rtrim($match[1], '.!') : null;
     }
 
     public function target(string $s): ?string
