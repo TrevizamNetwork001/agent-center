@@ -14,6 +14,18 @@ use Tests\IntelligenceTestCase;
 
 class LlmIdentityTest extends IntelligenceTestCase
 {
+    public function test_platform_administrator_can_attest_in_explicit_tenant_without_bypassing_user_rls(): void
+    {
+        config(['llm.allowed_hosts' => ['api.openai.com']]);
+        $p = $this->provider(['base_url' => 'https://api.openai.com/v1']);
+        $this->artisan('agent-center:register-llm-identity', ['--tenant' => (string) $this->a->id,
+            '--actor' => (string) $this->platform->id, '--provider' => $p->id, '--organization' => 'org-lab',
+            '--project' => 'proj_lab', '--tracking' => 'key_lab',
+            '--secret-event' => (string) $this->data($p->id)['secret_event_id']])->assertSuccessful();
+        $this->context()->forUser($this->admin);
+        $this->assertSame($this->platform->id, $p->fresh()->config['administrative_identity']['attested_by']);
+    }
+
     public function test_administrative_command_records_only_in_selected_tenant_and_clears_context(): void
     {
         config(['llm.allowed_hosts' => ['api.openai.com']]);

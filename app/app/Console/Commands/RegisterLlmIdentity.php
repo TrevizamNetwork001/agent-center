@@ -22,7 +22,9 @@ class RegisterLlmIdentity extends Command
                 return self::FAILURE;
             }
             $tenant = (int) $this->option('tenant');
-            $context->apply($tenant, (int) $this->option('actor'));
+            // Resolve only the actor's own row before selecting a tenant. A platform
+            // administrator has tenant_id NULL and is excluded by a tenant scope.
+            $context->apply(userId: (int) $this->option('actor'));
             $actor = User::findOrFail((int) $this->option('actor'));
             $context->forUser($actor, $tenant);
             abort_unless($context->tenantId === $tenant, 403);

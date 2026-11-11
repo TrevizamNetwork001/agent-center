@@ -12,8 +12,9 @@ class Client
         $attempts = 0;
         $status = null;
         $usage = [];
-        $finish = function (array $result) use ($start, &$attempts, &$status, &$usage): array {
-            return $result + ['http_status' => $status, 'duration_ms' => (int) ((hrtime(true) - $start) / 1000000), 'attempts' => $attempts, 'usage' => $usage];
+        $requestId = null;
+        $finish = function (array $result) use ($start, &$attempts, &$status, &$usage, &$requestId): array {
+            return $result + ['http_status' => $status, 'duration_ms' => (int) ((hrtime(true) - $start) / 1000000), 'attempts' => $attempts, 'usage' => $usage, 'request_id' => $requestId];
         };
         if ($cancelled && $cancelled()) {
             return $finish(['error' => 'cancelled']);
@@ -59,6 +60,7 @@ class Client
                 return $finish(['error' => in_array($e->getMessage(), ['ssrf_blocked', 'dns_failure'], true) ? $e->getMessage() : 'transport_failure']);
             }
             $status = $r['status'] ?? null;
+            $requestId = is_string($r['request_id'] ?? null) && preg_match('/^[A-Za-z0-9_-]{1,128}$/D', $r['request_id']) ? $r['request_id'] : null;
             if (($status === 429 || $status >= 500) && $attempt + 1 < $maxAttempts) {
                 usleep(100000);
 

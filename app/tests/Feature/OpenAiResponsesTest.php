@@ -11,6 +11,17 @@ use Tests\IntelligenceTestCase;
 
 class OpenAiResponsesTest extends IntelligenceTestCase
 {
+    public function test_request_identifier_is_preserved_but_arbitrary_header_values_are_rejected(): void
+    {
+        [$p, $m] = $this->configure();
+        foreach (['req_lab_123' => 'req_lab_123', 'invalid header with spaces' => null] as $provided => $expected) {
+            $this->transport([...$this->success(['summary' => 'ok', 'explanation' => 'Synthetic.', 'next_steps' => []]), 'request_id' => $provided]);
+            $r = app(Client::class)->call($p, $m, [['role' => 'user', 'content' => 'JSON test']]);
+            $this->assertSame($expected, $r['request_id']);
+            $this->assertSame(1, $r['attempts']);
+        }
+    }
+
     private function configure(): array
     {
         config(['llm.allowed_hosts' => ['api.openai.com']]);

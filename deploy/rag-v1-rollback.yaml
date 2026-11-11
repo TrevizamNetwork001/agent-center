@@ -1,0 +1,4 @@
+# Application-only rollback; preserve RAG/Knowledge/history tables and audit.
+services:
+  web:
+    image: agent-center-central:agent064-web-audit-20261110
