@@ -7,6 +7,7 @@ class Presentation
     public static function event(string $event): string
     {
         return match ($event) {
+            'telegram.link_admin_assigned' => 'ID Telegram associado a um colaborador pelo administrador',
             'telegram.configured' => 'Token da API do bot validado e salvo',
             'telegram.webhook_changed' => 'Recebimento de mensagens atualizado',
             'telegram.link_code_created' => 'Código para vincular a conta criado',

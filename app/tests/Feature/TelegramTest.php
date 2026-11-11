@@ -100,6 +100,147 @@ class TelegramTest extends IntelligenceTestCase
         $this->assertSame(1, Diagnostic::count());
     }
 
+    private function associationData(int $userId, string $telegramId = '67890'): array
+    {
+        return ['bot_id' => $this->bot->id, 'generation' => $this->bot->generation, 'user_id' => $userId, 'telegram_user_id' => $telegramId, 'association_ack' => '1'];
+    }
+
+    public function test_administrator_can_associate_existing_colleague_and_replay_is_idempotent(): void
+    {
+        config(['telegram.admin_association_enabled' => true]);
+        $data = $this->associationData($this->operator->id);
+        for ($n = 0; $n < 2; $n++) {
+            $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', $data)->assertRedirect(route('telegram.index').'#company-groups');
+            $this->scope();
+        }
+        $link = Link::where('user_id', $this->operator->id)->sole();
+        $this->assertSame('ACTIVE', $link->status);
+        $this->assertSame('67890', (string) $link->telegram_user_id);
+        $this->assertSame('ACTIVE', Member::where('link_id', $link->id)->sole()->status);
+        $audit = DB::table('audit_events')->where('event_type', 'telegram.link_admin_assigned')->sole();
+        $this->assertSame($this->admin->id, $audit->user_id);
+        $this->assertSame($this->operator->id, $audit->entity_id);
+        $this->assertSame($link->id, json_decode($audit->metadata, true)['link_id']);
+        $this->receive('Boa tarde!', 67890);
+        $this->process();
+        $this->assertSame('PROCESSED', Update::latest('update_id')->first()->status);
+        $this->assertSame($this->operator->id, Conversation::findOrFail($link->fresh()->conversation_id)->user_id);
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame('operator', $this->operator->fresh()->role->value);
+    }
+
+    public function test_association_requires_enabled_feature_native_admin_and_explicit_acknowledgement(): void
+    {
+        $data = $this->associationData($this->operator->id);
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', $data)->assertForbidden();
+        config(['telegram.admin_association_enabled' => true]);
+        $this->flushSession();
+        $this->actingAs($this->operator)->postJson('/integrations/telegram/members/associate', $data)->assertForbidden();
+        $this->flushSession();
+        $this->actingAs($this->viewer)->postJson('/integrations/telegram/members/associate', $data)->assertForbidden();
+        $this->flushSession();
+        unset($data['association_ack']);
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', $data)->assertUnprocessable()->assertJsonValidationErrors('association_ack');
+        $this->scope();
+        $this->assertSame(0, Link::count());
+    }
+
+    public function test_association_rejects_cross_tenant_users_and_protected_account_fields(): void
+    {
+        config(['telegram.admin_association_enabled' => true]);
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', $this->associationData($this->other->id))->assertNotFound();
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', [...$this->associationData($this->operator->id), 'tenant_id' => $this->b->id, 'role' => 'tenant_admin'])->assertUnprocessable()->assertJsonValidationErrors(['tenant_id', 'role']);
+        $this->scope();
+        $this->assertSame(0, Link::count());
+        $this->assertSame(0, Member::count());
+    }
+
+    public function test_association_rejects_viewers_disabled_users_invalid_ids_and_old_bot_generation(): void
+    {
+        config(['telegram.admin_association_enabled' => true]);
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', $this->associationData($this->viewer->id))->assertUnprocessable();
+        $this->scope();
+        $this->operator->forceFill(['status' => 'disabled'])->save();
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', $this->associationData($this->operator->id))->assertUnprocessable();
+        foreach (['-10012345', '0', '12345678901234567', 'not-a-number'] as $id) {
+            $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', $this->associationData($this->admin->id, $id))->assertUnprocessable()->assertJsonValidationErrors('telegram_user_id');
+        }
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', [...$this->associationData($this->admin->id), 'generation' => (string) Str::uuid()])->assertConflict();
+        $this->scope();
+        $this->assertSame(0, Link::count());
+    }
+
+    public function test_administrator_cannot_steal_an_id_or_silently_replace_an_existing_link(): void
+    {
+        config(['telegram.admin_association_enabled' => true]);
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', $this->associationData($this->operator->id))->assertRedirect();
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', $this->associationData($this->admin->id))->assertUnprocessable()->assertJsonValidationErrors('telegram_user_id');
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', $this->associationData($this->operator->id, '78901'))->assertUnprocessable()->assertJsonValidationErrors('user_id');
+        $this->scope();
+        $this->assertSame(1, Link::count());
+        $this->assertSame('ACTIVE', Link::sole()->status);
+        $this->assertSame('67890', (string) Link::sole()->telegram_user_id);
+    }
+
+    public function test_admin_association_does_not_destroy_a_colleagues_self_pairing_code(): void
+    {
+        config(['telegram.admin_association_enabled' => true]);
+        $this->context()->forUser($this->operator);
+        app(Accounts::class)->issue($this->operator, $this->bot);
+        $this->scope();
+        $old = Link::where('user_id', $this->operator->id)->sole();
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', $this->associationData($this->operator->id))->assertUnprocessable()->assertJsonValidationErrors('user_id');
+        $this->scope();
+        $this->assertSame('CODE', $old->fresh()->status);
+        $this->assertSame(1, Link::count());
+        $this->assertSame(0, Member::count());
+    }
+
+    public function test_association_can_be_saved_but_does_not_bypass_required_password_change(): void
+    {
+        config(['telegram.admin_association_enabled' => true]);
+        $this->operator->forceFill(['must_change_password' => true])->save();
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', $this->associationData($this->operator->id))->assertRedirect();
+        $this->scope();
+        $this->assertTrue($this->operator->fresh()->must_change_password);
+        $this->receive('Boa tarde!', 67890);
+        $this->process();
+        $this->assertSame('DENIED', Update::latest('update_id')->first()->status);
+        $this->assertSame(0, Conversation::count());
+        $this->operator->forceFill(['must_change_password' => false])->save();
+        $this->receive('Boa tarde!', 67890);
+        $this->process();
+        $this->assertSame('PROCESSED', Update::latest('update_id')->first()->status);
+        $this->assertSame(1, Conversation::count());
+    }
+
+    public function test_explicit_member_revocation_blocks_assigned_identity_even_without_a_group(): void
+    {
+        config(['telegram.admin_association_enabled' => true]);
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', $this->associationData($this->operator->id))->assertRedirect();
+        $this->scope();
+        $this->assertFalse($this->bot->fresh()->restrict_members);
+        $link = Link::where('user_id', $this->operator->id)->sole();
+        $this->assertTrue(app(Access::class)->allows($link));
+        app(Groups::class)->revokeMember(Member::where('link_id', $link->id)->sole(), $this->admin);
+        $this->assertFalse(app(Access::class)->allows($link));
+        $this->receive('Boa tarde!', 67890);
+        $this->process();
+        $this->assertSame('DENIED', Update::latest('update_id')->first()->status);
+        $this->assertSame(0, Conversation::count());
+    }
+
+    public function test_association_interface_lists_only_tenant_colleagues_and_shows_administrative_origin(): void
+    {
+        config(['telegram.admin_association_enabled' => true]);
+        $this->actingAs($this->admin)->get('/integrations/telegram')->assertOk()->assertSee('Colaborador cadastrado')->assertSee($this->operator->name)->assertDontSee($this->other->name)->assertDontSee('Cada colaborador precisa confirmar a própria identidade');
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/members/associate', $this->associationData($this->operator->id))->assertRedirect();
+        $this->actingAs($this->admin)->get('/integrations/telegram')->assertOk()->assertSee('Associado pelo administrador');
+        $this->flushSession();
+        $this->actingAs($this->operator)->get('/integrations/telegram')->assertOk()->assertSee('Identidade associada pelo administrador')->assertDontSee('data-tg-admin-association', false);
+    }
+
     private Bot $bot;
 
     private int $serial = 10;

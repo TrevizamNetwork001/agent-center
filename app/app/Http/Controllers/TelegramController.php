@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Role;
 use App\Models\AuditEvent;
+use App\Models\User;
 use App\Telegram\Accounts;
 use App\Telegram\Bot;
 use App\Telegram\Client;
@@ -38,7 +40,11 @@ class TelegramController extends Controller
         $members = $admin ? Member::latest('approved_at')->paginate(20, ['*'], 'members_page')->withQueryString()->fragment('company-groups') : collect();
         $verifiedLinks = $admin ? Link::where('status', 'ACTIVE')->where('bot_id', $bot?->id)->whereIn('id', $members->pluck('link_id'))->get(['id', 'user_id', 'telegram_user_id']) : collect();
 
-        return response()->view('telegram.index', compact('admin', 'bot', 'links', 'failures', 'events', 'updates', 'pending', 'setup', 'groups', 'members', 'verifiedLinks'))->header('Cache-Control', 'no-store, private');
+        $companyUsers = $admin ? User::where('tenant_id', app(TenantContext::class)->tenantId)->whereIn('role', [Role::TenantAdmin, Role::Operator])->orderBy('name')->get(['id', 'name', 'role', 'status', 'must_change_password']) : collect();
+        $linkIds = $links->pluck('id')->merge($verifiedLinks->pluck('id'))->unique()->all();
+        $administratorLinks = AuditEvent::where('event_type', 'telegram.link_admin_assigned')->whereIn('metadata->link_id', $linkIds)->get(['metadata'])->map(fn ($event) => $event->metadata['link_id'])->all();
+
+        return response()->view('telegram.index', compact('admin', 'bot', 'links', 'failures', 'events', 'updates', 'pending', 'setup', 'groups', 'members', 'verifiedLinks', 'companyUsers', 'administratorLinks'))->header('Cache-Control', 'no-store, private');
     }
 
     public function save(Request $r, Accounts $accounts)

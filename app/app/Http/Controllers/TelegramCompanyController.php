@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Telegram\AdministratorAssociation;
 use App\Telegram\Bot;
 use App\Telegram\Group;
 use App\Telegram\Groups;
@@ -12,6 +13,18 @@ use Illuminate\Support\Facades\Gate;
 
 class TelegramCompanyController extends Controller
 {
+    public function associate(Request $request, AdministratorAssociation $associations)
+    {
+        Gate::authorize('manage-intelligence');
+        abort_unless(config('telegram.admin_association_enabled'), 403);
+        $data = $request->validate(['bot_id' => 'required|uuid', 'generation' => 'required|uuid', 'user_id' => 'required|integer|min:1', 'telegram_user_id' => ['required', 'regex:/^[1-9][0-9]{0,15}$/D'], 'association_ack' => 'accepted', 'tenant_id' => 'prohibited', 'role' => 'prohibited', 'status' => 'prohibited']);
+        $bot = Bot::whereKey($data['bot_id'])->firstOrFail();
+        abort_unless($bot->generation === $data['generation'], 409);
+        $associations->assign($request->user(), $bot, (int) $data['user_id'], (int) $data['telegram_user_id']);
+
+        return redirect()->to(route('telegram.index').'#company-groups')->with('success', 'ID Telegram associado ao colaborador e autorização registrada. As permissões e a troca de senha obrigatória da conta continuam valendo. O colaborador deve abrir o bot no Telegram para iniciar a conversa.');
+    }
+
     public function issue(Request $request, Groups $groups)
     {
         Gate::authorize('manage-intelligence');

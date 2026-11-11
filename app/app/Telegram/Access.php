@@ -16,6 +16,11 @@ class Access
             return false;
         }
 
-        return (! $group && ! $bot->restrict_members) || Member::where('bot_id', $bot->id)->where('link_id', $link->id)->where('status', 'ACTIVE')->sharedLock()->first() !== null;
+        $member = Member::where('bot_id', $bot->id)->where('link_id', $link->id)->sharedLock()->first();
+        if ($member && $member->status !== 'ACTIVE') {
+            return false;
+        }
+
+        return (! $group && ! $bot->restrict_members) || $member !== null;
     }
 }

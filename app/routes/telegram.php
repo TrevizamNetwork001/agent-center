@@ -11,6 +11,7 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->prefix('integra
         Route::post('/groups/{group}/approve', [TelegramCompanyController::class, 'approve'])->whereUuid('group')->name('groups.approve');
         Route::post('/groups/{group}/revoke', [TelegramCompanyController::class, 'revoke'])->whereUuid('group')->name('groups.revoke');
         Route::post('/members', [TelegramCompanyController::class, 'allow'])->name('members.allow');
+        Route::post('/members/associate', [TelegramCompanyController::class, 'associate'])->name('members.associate');
         Route::post('/members/{member}/revoke', [TelegramCompanyController::class, 'deny'])->whereUuid('member')->name('members.revoke');
         Route::post('/bot', [TelegramController::class, 'save'])->name('save');
         Route::post('/webhook', [TelegramController::class, 'register'])->name('register');
