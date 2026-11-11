@@ -25,7 +25,8 @@ class Language
         $result = ['text' => $fallback, 'metadata' => ['language_status' => 'LOCAL', 'tone' => $tone['style']]];
         // Greetings, acknowledgments, context changes, technical/serious messages and
         // every operational turn are deterministic and never spend LLM budget.
-        if (! in_array($intent, [Intent::Social, Intent::Unknown], true) || $tone['style'] === 'TECHNICAL' || $tone['severity'] === 'SERIOUS' || mb_strlen($body) < 9 || app(ConversationToneDetector::class)->preference($body) !== null || preg_match('/\b(rede|carroca|lento|travando)\b/', Str::lower(Str::ascii($body))) || preg_match('/\b(confirmacao|confirmar)\b/', Str::lower(Str::ascii($body)))) {
+        $wellbeing = app(SocialText::class)->wellbeing($body);
+        if (! in_array($intent, [Intent::Social, Intent::Unknown], true) || $tone['style'] === 'TECHNICAL' || $tone['severity'] === 'SERIOUS' || (mb_strlen($body) < 9 && ! $wellbeing) || app(ConversationToneDetector::class)->preference($body) !== null || preg_match('/\b(rede|carroca|lento|travando)\b/', Str::lower(Str::ascii($body))) || preg_match('/\b(confirmacao|confirmar)\b/', Str::lower(Str::ascii($body)))) {
             return $result;
         }
         $b = LlmBinding::whereIn('purpose', ['diagnostic_explanation', 'knowledge_assistance'])->where('enabled', true)->orderBy('purpose')->get()->first(fn ($binding) => ($binding->config['allow_conversation_language'] ?? false) === true);
@@ -52,12 +53,12 @@ class Language
         // Only the speaker's recent sanitized text is sent. No device, credential,
         // Knowledge dump, operational result or unrelated tenant data leaves here.
         $history = ConversationMessage::where('conversation_id', $c->id)->where('sender_type', 'user')->orderByDesc('sequence')->limit(3)->pluck('body')->reverse()->map(fn ($s) => mb_substr(Text::clean($s), 0, 300))->values()->all();
-        $data = ['speaker_messages' => $history, 'tone' => $tone['style'], 'severity' => $tone['severity'], 'known_destination' => isset($c->context_json['pending']['target']) || isset($c->context_json['provided_target']) || $c->current_target !== null, 'pending_confirmation' => isset($c->context_json['pending']), 'diagnostic_running' => $c->state === State::Running->value];
+        $data = ['speaker_messages' => $history, 'social_act' => $wellbeing ? 'ASK_ASSISTANT_WELLBEING' : 'CONVERSATION', 'tone' => $tone['style'], 'severity' => $tone['severity'], 'known_destination' => isset($c->context_json['pending']['target']) || isset($c->context_json['provided_target']) || $c->current_target !== null, 'pending_confirmation' => isset($c->context_json['pending']), 'diagnostic_running' => $c->state === State::Running->value];
         $vars = ['classification' => 'CONVERSATIONAL_NO_EVIDENCE', 'profile' => 'CONVERSATION', 'target' => '', 'knowledge' => '[]', 'evidence' => json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)];
         $response = [];
         try {
             $renderer = app(PromptRenderer::class);
-            $messages = [['role' => 'system', 'content' => self::BOUNDARY], ['role' => 'user', 'content' => json_encode(['administrative_template' => $renderer->render($version->system_template, $vars)."\n".$renderer->render($version->user_template ?? '{{evidence}}', $vars), 'conversation' => $data], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)]];
+            $messages = [['role' => 'system', 'content' => self::BOUNDARY.' When social_act is ASK_ASSISTANT_WELLBEING, answer the social question directly with your availability as a virtual assistant; you have no human feelings. Acknowledge the speaker naturally, optionally ask how they are. Do not replace that answer with a generic invitation to continue, or claim the network is healthy.'], ['role' => 'user', 'content' => json_encode(['administrative_template' => $renderer->render($version->system_template, $vars)."\n".$renderer->render($version->user_template ?? '{{evidence}}', $vars), 'conversation' => $data], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)]];
             $limited = clone $provider;
             $limited->timeout = min(10, $provider->timeout);
             $response = app(Client::class)->call($limited, $model, $messages);
@@ -113,13 +114,22 @@ class Language
         if (str_contains($s, 'confirmacao') || str_contains($s, 'confirmar')) {
             return 'A confirmação vale somente para o destino e o perfil que estão pendentes. Ela é consumida uma única vez; uma mensagem de conversa não autoriza um novo diagnóstico.';
         }
-        if ($tone['style'] === 'TECHNICAL' || $tone['severity'] === 'SERIOUS') {
+        if (app(SocialText::class)->wellbeing($body)) {
+            $formal = in_array($tone['style'], ['FORMAL', 'TECHNICAL'], true) || $tone['severity'] === 'SERIOUS';
+            $availability = $formal ? ['Estou à disposição para ajudar.', 'Estou aqui e disponível para ajudar.'] : ['Tudo certo por aqui, pronto pra ajudar!', 'Por aqui, tudo certo! Estou à disposição.'];
+            $followup = $formal ? ['Como você está?', 'E você, está tudo bem?'] : ['E você, tá bem?', 'Como estão as coisas por aí?'];
+            $choices = [];
+            foreach ($availability as $opening) {
+                foreach ($followup as $question) {
+                    $choices[] = $opening.' '.$question;
+                }
+            }
+        } elseif ($tone['style'] === 'TECHNICAL' || $tone['severity'] === 'SERIOUS') {
             $known = $c->context_json['pending']['target'] ?? $c->context_json['provided_target'] ?? $c->current_target;
             $scope = $known ? 'O destino '.$known.' já está registrado.' : 'Quando começou e qual é o alcance da perda ou indisponibilidade?';
 
             return 'Entendi o relato. Ainda não há evidências suficientes para atribuir uma causa. '.$scope.' Nenhuma ação em equipamentos foi iniciada.';
-        }
-        if ($intent === Intent::Greeting) {
+        } elseif ($intent === Intent::Greeting) {
             $salutation = match (true) {
                 str_contains($s, 'bao') => 'Bão.', str_contains($s, 'boa tarde') => 'Boa tarde!', str_contains($s, 'bom dia') => 'Bom dia!', str_contains($s, 'boa noite') => 'Boa noite!',
                 $tone['style'] === 'RELAXED' => 'Opa!', default => 'Olá!',

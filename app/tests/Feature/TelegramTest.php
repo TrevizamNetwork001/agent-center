@@ -47,6 +47,59 @@ use Tests\IntelligenceTestCase;
 
 class TelegramTest extends IntelligenceTestCase
 {
+    public function test_social_delivery_is_identical_to_web_history_without_automatic_history_link(): void
+    {
+        $link = $this->link();
+        $this->say('ce ta bao ?');
+        $c = $this->conversation($link);
+        $m = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->firstOrFail();
+        $this->assertSame('SOCIAL', ConversationMessage::where('conversation_id', $c->id)->where('sender_type', 'user')->latest('sequence')->value('detected_intent'));
+        $this->actingAs($this->admin)->get('/conversations/'.$c->id)->assertOk()->assertSee($m->body);
+        $this->scope();
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => ($r['text'] ?? '') === $m->body);
+        Http::assertNotSent(fn ($r) => str_contains($r['text'] ?? '', 'Histórico:'));
+        $before = ConversationMessage::count();
+        $this->say('/historico');
+        $this->assertSame($c->id, $link->fresh()->conversation_id);
+        $this->assertSame($before, ConversationMessage::count());
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => ($r['text'] ?? '') === 'Histórico: '.route('conversations.show', $c->id));
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_history_command_cannot_expose_a_different_owners_conversation(): void
+    {
+        $link = $this->link();
+        $other = app(Engine::class)->create(Identity::web($this->admin), (string) Str::uuid());
+        $other->forceFill(['user_id' => $this->operator->id])->save();
+        $link->forceFill(['conversation_id' => $other->id])->save();
+        $this->say('/history');
+        $this->assertSame('DENIED', Update::latest('update_id')->first()->status);
+        $this->deliverAll();
+        Http::assertNotSent(fn ($r) => str_contains($r['text'] ?? '', $other->id));
+    }
+
+    public function test_diagnostic_delivery_retains_history_but_following_social_message_does_not(): void
+    {
+        $link = $this->link();
+        $this->agent();
+        $this->say('Teste google.com');
+        $this->say('Sim, confirmo');
+        $c = $this->conversation($link);
+        $this->assertNotNull($c->current_diagnostic_id);
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', 'Histórico: '.route('conversations.show', $c->id)));
+        $this->api();
+        $this->say('ce ta bao ?');
+        $m = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->firstOrFail();
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => ($r['text'] ?? '') === $m->body);
+        Http::assertNotSent(fn ($r) => str_contains($r['text'] ?? '', 'Histórico:'));
+        $this->assertSame(1, Diagnostic::count());
+    }
+
     private Bot $bot;
 
     private int $serial = 10;
@@ -823,8 +876,8 @@ class TelegramTest extends IntelligenceTestCase
         $this->assertCount(2, $contexts);
         $this->assertSame(2, $contexts->pluck('conversation_id')->unique()->count());
         $this->deliverAll();
-        Http::assertSent(fn ($r) => (string) ($r['chat_id'] ?? '') === (string) $group->chat_id && ($r['message_thread_id'] ?? null) === 7 && str_contains($r['text'] ?? '', 'Histórico:'));
-        Http::assertSent(fn ($r) => (string) ($r['chat_id'] ?? '') === (string) $group->chat_id && ($r['message_thread_id'] ?? null) === 8 && str_contains($r['text'] ?? '', 'Histórico:'));
+        Http::assertSent(fn ($r) => (string) ($r['chat_id'] ?? '') === (string) $group->chat_id && ($r['message_thread_id'] ?? null) === 7 && str_contains($r['text'] ?? '', 'Grupo:') && ! str_contains($r['text'] ?? '', 'Histórico:'));
+        Http::assertSent(fn ($r) => (string) ($r['chat_id'] ?? '') === (string) $group->chat_id && ($r['message_thread_id'] ?? null) === 8 && str_contains($r['text'] ?? '', 'Grupo:') && ! str_contains($r['text'] ?? '', 'Histórico:'));
     }
 
     public function test_revoking_company_member_cancels_confirmation_and_suppresses_delivery(): void

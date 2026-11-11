@@ -88,7 +88,9 @@ class Deliver implements ShouldQueue
                             }
                             $body = $heading."\n\n".$body;
                         }
-                        $body .= "\n\nHistórico: ".route('conversations.show', $o->conversation_id);
+                        if (mb_strlen($m->body) > 2300 || in_array($m->message_type, ['result', 'interpretation'], true) || isset($m->metadata['diagnostic_id'])) {
+                            $body .= "\n\nHistórico: ".route('conversations.show', $o->conversation_id);
+                        }
                     }
                 }
                 if (! $allowed) {

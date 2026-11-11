@@ -68,6 +68,9 @@ class IntentDetector
         if (preg_match('/\b(bng|pppoe|radius|bgp|olt|onu|rede|carroca|perda de pacotes|fora do ar|sem conexao|incidente)\b/', $s)) {
             return Intent::Social;
         }
+        if (app(SocialText::class)->wellbeing($body)) {
+            return Intent::Social;
+        }
         if (preg_match('/^(bom dia|boa tarde|boa noite|ola|oi|e ai|salve|fala)\b/', $s)) {
             return Intent::Greeting;
         }

@@ -19,6 +19,7 @@ use App\Models\ConversationMessage;
 use App\Models\ConversationSetting;
 use App\Models\Diagnostic;
 use App\Models\LlmBinding;
+use App\Models\LlmProvider;
 use App\Rag\Answer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -27,6 +28,75 @@ use Tests\IntelligenceTestCase;
 
 class NaturalConversationTest extends IntelligenceTestCase
 {
+    public function test_informal_social_messages_have_relevant_local_responses_and_never_create_tasks(): void
+    {
+        $client = $this->client();
+        $c = $this->conversation();
+        foreach (['ce ta bao ?', 'cê tá bão?', 'tá tudo certo?', 'e aí meu rei?', 'salve calabreso', 'fala consagrado', 'como vc tá?', 'suave por aí?', 'Como você está?'] as $body) {
+            $c = $this->say($c, $body);
+            $m = $this->last($c);
+            $this->assertContains(ConversationMessage::where('conversation_id', $c->id)->where('sender_type', 'user')->latest('sequence')->value('detected_intent'), ['SOCIAL', 'GREETING']);
+            $this->assertStringNotContainsString('Pode continuar, estou acompanhando', $m->body);
+            $this->assertStringNotContainsString('Entendi o relato', $m->body);
+            $this->assertSame('ACTIVE', $c->state);
+        }
+        $this->assertCount(0, $client->calls);
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_wellbeing_timeout_and_budget_fallback_answer_the_question_with_variation(): void
+    {
+        $this->binding();
+        $client = $this->client(['error' => 'timeout']);
+        $c = $this->conversation();
+        $last = null;
+        for ($n = 0; $n < 4; $n++) {
+            $c = $this->say($c, 'ce ta bao ?');
+            $m = $this->last($c);
+            $this->assertSame('FALLBACK', $m->metadata['language_status']);
+            $this->assertMatchesRegularExpression('/(Tudo certo|tudo certo)/u', $m->body);
+            $this->assertNotSame($last, $m->body);
+            $last = $m->body;
+        }
+        $this->assertCount(3, $client->calls);
+        $this->assertSame('rate_limited', $m->metadata['language_reason']);
+        $payload = json_decode($client->calls[0]['messages'][1]['content'], true);
+        $this->assertSame('ASK_ASSISTANT_WELLBEING', $payload['conversation']['social_act']);
+        $this->assertSame(10, $client->calls[0]['timeout']);
+        $this->assertSame(15, LlmProvider::sole()->timeout);
+        $this->assertSame(0, AgentTask::count());
+    }
+
+    public function test_wellbeing_during_incident_and_confirmation_preserves_operational_context(): void
+    {
+        $this->binding();
+        $client = $this->client();
+        $c = $this->say($this->conversation(), 'Outro diagnóstico para google.com');
+        $pending = $c->context_json['pending'];
+        $c = $this->say($c, 'Meu BNG está com perda de pacotes');
+        $c = $this->say($c, 'ce ta bao ?');
+        $this->assertStringContainsString('ajudar.', $this->last($c)->body);
+        $this->assertStringNotContainsString('Entendi o relato', $this->last($c)->body);
+        $this->assertSame('SERIOUS', $c->context_json['tone']['severity']);
+        $this->assertEquals($pending, $c->context_json['pending']);
+        $this->assertSame('WAITING_FOR_CONFIRMATION', $c->state);
+        $this->assertSame(0, AgentTask::count());
+        $this->assertCount(0, $client->calls);
+        $c = $this->say($c, 'Não confirmo');
+        $this->assertArrayNotHasKey('pending', $c->fresh()->context_json);
+    }
+
+    public function test_social_recognition_does_not_override_deterministic_intents(): void
+    {
+        $detector = app(IntentDetector::class);
+        foreach (['Sim, confirmo o diagnóstico de google.com' => Intent::Confirm, 'ce ta bao? cancela' => Intent::Cancel, 'ce ta bao? teste google.com' => Intent::Start, 'ce ta bao? consulte a Knowledge' => Intent::Knowledge, 'Não quero esse diagnóstico' => Intent::Deny] as $body => $intent) {
+            $this->assertSame($intent, $detector->detect($body, State::Confirmation));
+        }
+        $this->assertSame(Intent::Social, $detector->detect('ce ta bao ?', State::Confirmation));
+        $this->assertSame(Intent::Social, $detector->detect('como está a rede?', State::Active));
+    }
+
     protected function setUp(): void
     {
         parent::setUp();

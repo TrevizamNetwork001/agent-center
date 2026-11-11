@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -94,7 +95,14 @@ class Runner
                     } elseif (in_array($text, ['/unlink', '/desvincular'], true)) {
                         $this->notice($bot, $chat, 'Para revogar seu vínculo, envie /desvincular confirmar. Confirmações pendentes serão invalidadas.', $link, $group, $group ? $context : null);
                     } elseif (in_array($text, ['/help', '/ajuda', '/start'], true)) {
-                        $this->notice($bot, $chat, 'Sou o assistente virtual do Agent Center. Converse normalmente ou use /knowledge pergunta, /status, /cancelar, /agents, /nova [UUID do Agent] e /desvincular. Diagnósticos exigem autorização e confirmação. Nunca envie senhas ou tokens.', $link, $group, $group ? $context : null);
+                        $this->notice($bot, $chat, 'Sou o assistente virtual do Agent Center. Converse normalmente ou use /historico, /knowledge pergunta, /status, /cancelar, /agents, /nova [UUID do Agent] e /desvincular. Diagnósticos exigem autorização e confirmação. Nunca envie senhas ou tokens.', $link, $group, $group ? $context : null);
+                    } elseif (in_array($text, ['/historico', '/history'], true)) {
+                        $c = $context->conversation_id ? Conversation::findOrFail($context->conversation_id) : null;
+                        if ($c) {
+                            Gate::forUser($identity->user)->authorize('view', $c);
+                            abort_unless($c->channel === $identity->channel && $c->contact_id === $identity->contactId && $c->telegram_context_id === $identity->scopeId, 403);
+                        }
+                        $this->notice($bot, $chat, $c ? 'Histórico: '.route('conversations.show', $c->id) : 'Seu histórico aparecerá depois da primeira mensagem nesta conversa.', $link, $group, $group ? $context : null);
                     } elseif ($text === '/agents') {
                         $agents = Agent::where('status', 'active')->whereNull('revoked_at')->get()->filter(fn ($a) => ($a->metadata['task_protocol'] ?? 0) === 1);
                         $this->notice($bot, $chat, $agents->isEmpty() ? 'Nenhum Agent autorizado disponível.' : 'Agents autorizados (use /nova UUID para selecionar):'."\n".$agents->take(20)->map(fn ($a) => $a->name.' — '.$a->id)->implode("\n"), $link, $group, $group ? $context : null);

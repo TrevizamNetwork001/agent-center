@@ -16,7 +16,7 @@ class ConversationToneDetector
             $style = match (true) {
                 (bool) preg_match('/\b(bng|pppoe|radius|bgp|olt|onu|dns|tcp|tls|ipv6|lease)\b/', $s) => 'TECHNICAL',
                 (bool) preg_match('/\b(poderia|por gentileza|por favor|prezado|verificar a conectividade)\b/', $s) => 'FORMAL',
-                (bool) preg_match('/\b(mano|valeu|parceiro|consagrado|meu rei|calabreso|salve|fechou|bao|trem|carroca|to|e ai|kkkk*)\b/', $s) => 'RELAXED',
+                (bool) preg_match('/\b(mano|valeu|parceiro|consagrado|meu rei|calabreso|salve|fechou|bao|trem|carroca|to|e ai|ce|vc|suave|kkkk*)\b/', $s) => 'RELAXED',
                 default => $style,
             };
         }
