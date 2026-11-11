@@ -1,6 +1,6 @@
 @extends('layout')
 @section('title','Telegram')
-@push('head')<link rel="stylesheet" href="{{asset('telegram.css')}}?v=2"><script src="{{asset('telegram.js')}}?v=2" defer></script>@endpush
+@push('head')<link rel="stylesheet" href="{{asset('telegram.css')}}?v=3"><script src="{{asset('telegram.js')}}?v=2" defer></script>@endpush
 @section('content')
 <div class="tg-setup" data-tg-wizard data-current-step="{{$setup['current']}}">
 <div class="page-header"><div><div class="eyebrow">CANAIS · CONFIGURAÇÃO GUIADA</div><h1>Telegram, passo a passo.</h1><p>Conecte sua empresa, identifique quem pode conversar e confira cada etapa.</p></div><a class="button button-secondary" href="{{route('telegram.index')}}">Atualizar progresso</a></div>
