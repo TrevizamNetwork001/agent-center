@@ -45,7 +45,8 @@ class ConversationController extends Controller
 
     public function send(ConversationRequest $r, Conversation $conversation, Engine $engine)
     {
-        $c = $engine->send(app(WebAdapter::class)->identity($r), $conversation, $r->validated('request_key'), $r->validated('body'));
+        $message = app(WebAdapter::class)->message($r);
+        $c = $engine->send($message->identity, $conversation, $message->requestKey, $message->body);
 
         return $r->expectsJson() ? response()->json(['url' => route('conversations.show', $c)]) : redirect()->route('conversations.show', $c);
     }

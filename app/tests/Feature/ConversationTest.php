@@ -144,7 +144,8 @@ class ConversationTest extends IdentityTestCase
         $c = $this->say($this->conversation(), 'E aí, bão? Tô com um trem agarrado aqui.');
         $text = ConversationMessage::latest('sequence')->first()->body;
         $this->assertStringContainsString('Bão.', $text);
-        $this->assertStringContainsString('agarrando', $text);
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertStringNotContainsString('Qual site', $text);
         $tone = app(ConversationToneDetector::class)->detect(['Mano, testa esse site aí']);
         $this->assertSame('INFORMAL', $tone['formality']);
         $this->assertSame('NOT_INFERRED', $tone['regionality']);
@@ -255,7 +256,7 @@ class ConversationTest extends IdentityTestCase
         }$this->assertSame(Intent::Close, $d->detect('não precisa mais', State::Completed));
         $this->assertSame(Intent::Target, $d->detect('youtube.com', State::Target));
         $this->assertSame(Intent::Continue, $d->detect('mas continua travando', State::Completed));
-        $this->assertCount(14, Intent::cases());
+        $this->assertCount(17, Intent::cases());
     }
 
     public function test_message_limit_rate_limit_and_immutable_payload(): void

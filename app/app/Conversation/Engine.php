@@ -59,7 +59,7 @@ class Engine
             $c = new Conversation;
             $c->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $i->tenantId, 'user_id' => $i->user->id, 'channel' => 'web', 'status' => 'OPEN', 'state' => 'NEW', 'creation_key' => $key, 'context_json' => $ctx, 'started_at' => now(), 'last_activity_at' => now()])->save();
             $this->transition($c, State::Active, 'created');
-            $this->reply($c, 'Qual conectividade você quer verificar? Informe o site ou peça um diagnóstico.');
+            $this->reply($c, 'Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?');
             $c->save();
 
             return $c;
@@ -92,7 +92,12 @@ class Engine
             $c->last_intent = $intent->value;
             $c->last_activity_at = now();
             $recent = ConversationMessage::where('conversation_id', $c->id)->where('sender_type', 'user')->orderByDesc('sequence')->limit(4)->pluck('body')->reverse()->all();
-            $tone = app(ConversationToneDetector::class)->detect($recent);
+            $toneDetector = app(ConversationToneDetector::class);
+            if (($preference = $toneDetector->preference($safe)) !== null) {
+                $c->context_json = [...$c->context_json, 'tone_preference' => $preference];
+            }
+            $tone = $toneDetector->detect($recent, $c->context_json['tone_preference'] ?? null);
+            $c->context_json = [...$c->context_json, 'tone' => $tone];
             $prefix = app(ConversationToneDetector::class)->prefix($safe, $tone);
             $state = State::from($c->state);
             if ($state === State::Closed) {
@@ -112,10 +117,35 @@ class Engine
                         $this->reply($c, $prefix.'O diagnóstico continua em execução.');
                     }
                 } elseif (in_array($state, [State::Target, State::Confirmation, State::Active], true) && $intent === Intent::Acknowledge) {
-                    $this->reply($c, $prefix.'Continuo aguardando a informação ou confirmação pendente.');
+                    $this->reply($c, 'Por nada! O contexto está salvo; podemos continuar quando você quiser.');
                 } else {
                     $this->transition($c, State::Closed, 'closed');
-                    $this->reply($c, $prefix.'Por nada. Conversa encerrada.');
+                    $this->reply($c, $intent === Intent::Acknowledge ? 'Por nada! Conversa encerrada, com o histórico preservado.' : 'Até mais! O histórico da conversa fica preservado.');
+                }
+            } elseif (preg_match('/\b(ssh|huawei|bgp|shell|nmap|iperf)\b|device_/i', $safe)) {
+                $this->reply($c, 'Essa operação não está disponível. Nenhuma Skill ou tarefa foi executada.');
+            } elseif (in_array($intent, [Intent::Greeting, Intent::Social, Intent::Topic, Intent::Unknown], true)) {
+                if ($intent === Intent::Topic) {
+                    $c->context_json = array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'provided_target']));
+                    if ($state === State::Confirmation) {
+                        $this->transition($c, State::FollowUp, 'topic_changed');
+                    }
+                }
+                if ($intent !== Intent::Greeting) {
+                    $c->context_json = [...$c->context_json, 'topic' => ['kind' => $intent->value, 'text' => mb_substr($safe, 0, 300)]];
+                    if ($intent !== Intent::Topic && ($provided = $det->target($safe)) !== null) {
+                        try {
+                            app(Planner::class)->target($provided);
+                            $c->context_json = [...$c->context_json, 'provided_target' => $provided];
+                        } catch (ValidationException) {
+                            // Unvalidated conversational data never becomes an execution target.
+                        }
+                    }
+                }
+                $response = app(Language::class)->reply($c, $i, $intent, $safe, $tone);
+                $this->message($c, 'system', 'text', $response['text'], null, $response['metadata']);
+                if ($response['metadata']['language_status'] !== 'LOCAL') {
+                    app(Audit::class)->record('conversation.language_rendered', $i->user, $c->tenant_id, 'conversation', metadata: ['conversation_id' => $c->id, ...$response['metadata']]);
                 }
             } elseif ($intent === Intent::Path) {
                 $target = $det->target($safe) ?? $c->current_target;
@@ -136,8 +166,6 @@ class Engine
                     $this->transition($c, State::Confirmation, 'execution_confirmation');
                     $this->reply($c, 'Confirma coleta MTR ICMP e TCP/443 no alvo '.$target.'? Profile e evidências anteriores serão preservados. A política local deve autorizar o destino.');
                 }
-            } elseif (preg_match('/\b(ssh|huawei|bgp|shell|nmap|iperf)\b|device_/i', $safe)) {
-                $this->reply($c, 'Essa operação não está disponível. Nenhuma Skill ou tarefa foi executada.');
             } elseif ($intent === Intent::Confirm && ($c->context_json['confirm_cancel'] ?? false)) {
                 $this->cancel($c, $i);
             } elseif ($intent === Intent::Deny) {
@@ -183,7 +211,7 @@ class Engine
                 }
                 $this->reply($c, 'Não há confirmação pendente válida. Nenhuma nova tarefa foi criada.');
             } elseif ($intent === Intent::Start || $intent === Intent::Another || $intent === Intent::Target) {
-                $target = $det->target($safe);
+                $target = $det->target($safe) ?? ($c->context_json['provided_target'] ?? null);
                 $profile = $intent === Intent::Target && $state === State::Target ? ($c->context_json['requested_profile'] ?? 'SITE_LENTO') : $det->profile($safe);
                 if ($state === State::Completed || $state === State::FollowUp || $intent === Intent::Another) {
                     $target ??= $c->current_target;
@@ -244,7 +272,7 @@ class Engine
         $d = app(Tasks::class)->create($p, $a, $target, $i->user, ['mtr_requested' => $mtr, 'related_diagnostic_id' => $c->current_diagnostic_id]);
         $history = $c->context_json['diagnostic_ids'] ?? [];
         $history[] = $d->id;
-        $c->forceFill(['current_profile_id' => $p->id, 'current_diagnostic_id' => $d->id, 'current_target' => $target, 'context_json' => ['agent_id' => $a->id, 'last_profile' => $p->key, 'diagnostic_ids' => array_slice($history, -100)]]);
+        $c->forceFill(['current_profile_id' => $p->id, 'current_diagnostic_id' => $d->id, 'current_target' => $target, 'context_json' => [...array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'requested_profile', 'provided_target'])), 'agent_id' => $a->id, 'last_profile' => $p->key, 'diagnostic_ids' => array_slice($history, -100)]]);
         $this->transition($c, State::Running, 'diagnostic_started');
         $this->reply($c, $prefix.'Vou verificar a conectividade de '.$target.' e apresentar os resultados.', ['diagnostic_id' => $d->id]);
     }

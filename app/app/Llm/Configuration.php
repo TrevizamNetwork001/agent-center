@@ -60,7 +60,7 @@ class Configuration
             $tenant = app(TenantContext::class)->tenantId;
             DB::select('SELECT pg_advisory_xact_lock(7715,?::integer)', [$tenant]);
             $b = LlmBinding::where('purpose', $d['purpose'])->first() ?? new LlmBinding;
-            $b->forceFill(['id' => $b->id ?? (string) Str::uuid(), 'tenant_id' => $tenant, 'purpose' => $d['purpose'], 'provider_id' => $p->id, 'model_id' => $m->id, 'prompt_id' => $prompt->id, 'enabled' => (bool) ($d['enabled'] ?? false), 'config' => ['allow_external_context' => (bool) ($d['allow_external_context'] ?? false)]])->save();
+            $b->forceFill(['id' => $b->id ?? (string) Str::uuid(), 'tenant_id' => $tenant, 'purpose' => $d['purpose'], 'provider_id' => $p->id, 'model_id' => $m->id, 'prompt_id' => $prompt->id, 'enabled' => (bool) ($d['enabled'] ?? false), 'config' => ['allow_external_context' => (bool) ($d['allow_external_context'] ?? false), 'allow_conversation_language' => in_array($d['purpose'], ['diagnostic_explanation', 'knowledge_assistance'], true) && (bool) ($d['allow_conversation_language'] ?? false)]])->save();
             app(Audit::class)->record('llm.binding_updated', $u, $tenant, 'binding', metadata: ['binding_id' => $b->id]);
 
             return $b;

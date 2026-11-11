@@ -9,11 +9,23 @@ class IntentDetector
     public function detect(string $body, State $state): Intent
     {
         $s = Str::lower(Str::ascii(trim($body)));
+        if (preg_match('/^(nao[, ]+)?(?:nao quero|nao confirmo|nao pode|nao execute)\b/', $s)) {
+            return Intent::Deny;
+        }
+        if (preg_match('/^(?:tchau|ate mais|ate logo|falou)[.! ]*$/', $s)) {
+            return Intent::Close;
+        }
         if (preg_match('/\b(cancela|cancelar|pare|parar|interrompa)\b/', $s)) {
             return Intent::Cancel;
         }
         if (preg_match('/\b(era so isso|era isso|resolveu|pode encerrar|nao precisa mais|encerra|encerrar)\b/', $s)) {
             return Intent::Close;
+        }
+        if (preg_match('/^(mudando de assunto|vamos falar de outra coisa|deixa (isso|pra la)|outro assunto)\b/', $s)) {
+            return Intent::Topic;
+        }
+        if (preg_match('/\b(knowledge|base de conhecimento)\b/', $s)) {
+            return Intent::Knowledge;
         }
         if (preg_match('/^(como (devo|posso|diagnosticar|investigar|verificar)|qual (e |eh )?((o|a|nosso|nossa) )*(procedimento|guia)|consulte (a )?knowledge|na knowledge|o que diz (a )?knowledge)\b/', $s)) {
             return Intent::Knowledge;
@@ -49,6 +61,18 @@ class IntentDetector
         }
         if (preg_match('/\b(ajuda|help|como funciona)\b/', $s)) {
             return Intent::Help;
+        }
+        if (app(ConversationToneDetector::class)->preference($body) !== null) {
+            return Intent::Social;
+        }
+        if (preg_match('/\b(bng|pppoe|radius|bgp|olt|onu|rede|carroca|perda de pacotes|fora do ar|sem conexao|incidente)\b/', $s)) {
+            return Intent::Social;
+        }
+        if (preg_match('/^(bom dia|boa tarde|boa noite|ola|oi|e ai|salve|fala)\b/', $s)) {
+            return Intent::Greeting;
+        }
+        if (preg_match('/\b(tudo (bem|certo)|como (vai|voce esta)|e voce|kkkk*|haha|rsrs|piada|brincadeira)\b/', $s)) {
+            return Intent::Social;
         }
         if ($this->target($body) !== null) {
             return Intent::Target;

@@ -11,7 +11,7 @@ class Audit
 {
     public function record(string $event, ?User $actor = null, ?int $tenantId = null, ?string $entity = null, ?int $entityId = null, array $metadata = []): void
     {
-        if ($event !== 'llm.identity_registered' && ! in_array($event, ['rag.reindexed', 'rag.searched', 'rag.answered', 'agent.permission_requested', 'agent.release_quarantined', 'agent.recovery_requested', 'agent.recovery_verified', 'agent.maintenance_saved', 'agent.maintenance_checked', 'agent.maintenance_removed', 'agent.release_published', 'agent.settings_updated', 'backup.settings_updated', 'backup.requested', 'agent.created', 'agent.deleted', 'agent.enrollment_requested', 'agent.enrollment_approved', 'agent.update_requested', 'agent.update_authorized', 'agent.update_approved', 'agent.update_started', 'agent.update_completed', 'agent.update_failed', 'agent.rollback_requested', 'agent.rollback_completed', 'agent.rollback_failed', 'conversation.transitioned', 'conversation.rollout_updated', 'auth.login_success', 'auth.login_failed', 'auth.logout', 'auth.password_changed', 'user.created', 'user.updated', 'user.disabled', 'tenant.created', 'tenant.updated', 'agent.enrollment_created', 'agent.enrolled', 'agent.capabilities_updated', 'agent.revoked', 'diagnostic.created', 'diagnostic.started', 'diagnostic.cancel_requested', 'diagnostic.cancelled', 'diagnostic.completed', 'diagnostic.failed', 'profile.created', 'profile.updated', 'skill.enabled', 'skill.schema_updated', 'skill.disabled', 'knowledge.created', 'knowledge.version_created', 'knowledge.published', 'knowledge.superseded', 'knowledge.rollback_created', 'knowledge.archived', 'prompt.created', 'prompt.version_created', 'prompt.published', 'prompt.superseded', 'prompt.rollback_created', 'prompt.archived', 'llm.provider_created', 'llm.provider_updated', 'llm.secret_updated', 'llm.model_created', 'llm.binding_updated'], true)) {
+        if ($event !== 'llm.identity_registered' && ! in_array($event, ['conversation.language_rendered', 'rag.reindexed', 'rag.searched', 'rag.answered', 'agent.permission_requested', 'agent.release_quarantined', 'agent.recovery_requested', 'agent.recovery_verified', 'agent.maintenance_saved', 'agent.maintenance_checked', 'agent.maintenance_removed', 'agent.release_published', 'agent.settings_updated', 'backup.settings_updated', 'backup.requested', 'agent.created', 'agent.deleted', 'agent.enrollment_requested', 'agent.enrollment_approved', 'agent.update_requested', 'agent.update_authorized', 'agent.update_approved', 'agent.update_started', 'agent.update_completed', 'agent.update_failed', 'agent.rollback_requested', 'agent.rollback_completed', 'agent.rollback_failed', 'conversation.transitioned', 'conversation.rollout_updated', 'auth.login_success', 'auth.login_failed', 'auth.logout', 'auth.password_changed', 'user.created', 'user.updated', 'user.disabled', 'tenant.created', 'tenant.updated', 'agent.enrollment_created', 'agent.enrolled', 'agent.capabilities_updated', 'agent.revoked', 'diagnostic.created', 'diagnostic.started', 'diagnostic.cancel_requested', 'diagnostic.cancelled', 'diagnostic.completed', 'diagnostic.failed', 'profile.created', 'profile.updated', 'skill.enabled', 'skill.schema_updated', 'skill.disabled', 'knowledge.created', 'knowledge.version_created', 'knowledge.published', 'knowledge.superseded', 'knowledge.rollback_created', 'knowledge.archived', 'prompt.created', 'prompt.version_created', 'prompt.published', 'prompt.superseded', 'prompt.rollback_created', 'prompt.archived', 'llm.provider_created', 'llm.provider_updated', 'llm.secret_updated', 'llm.model_created', 'llm.binding_updated'], true)) {
             throw new InvalidArgumentException('Evento não permitido.');
         }
         $safe = [];
@@ -23,6 +23,19 @@ class Audit
             }
             if (is_int($metadata['secret_event_id'] ?? null) && $metadata['secret_event_id'] > 0) {
                 $safe['secret_event_id'] = $metadata['secret_event_id'];
+            }
+        }
+        if ($event === 'conversation.language_rendered') {
+            if (in_array($metadata['language_status'] ?? null, ['ASSISTED', 'FALLBACK'], true)) {
+                $safe['language_status'] = $metadata['language_status'];
+            }
+            foreach (['input_tokens', 'output_tokens', 'total_tokens', 'prompt_tokens', 'completion_tokens'] as $field) {
+                if (is_int($metadata['usage'][$field] ?? null) && $metadata['usage'][$field] >= 0) {
+                    $safe['usage'][$field] = $metadata['usage'][$field];
+                }
+            }
+            if (is_string($metadata['request_id'] ?? null) && preg_match('/^[A-Za-z0-9_-]{1,128}$/D', $metadata['request_id'])) {
+                $safe['request_id'] = $metadata['request_id'];
             }
         }
         if (str_starts_with($event, 'rag.')) {
