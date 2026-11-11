@@ -1,0 +1,90 @@
+{
+    "status": "PASS",
+    "engine": "production published runtime",
+    "openai_requests": 3,
+    "max_output_tokens_each": 1024,
+    "store": false,
+    "no_operational_records_created": true,
+    "test_records_rolled_back": true,
+    "telegram_delivery": "formatting captured; no external Telegram send",
+    "transcript": [
+        {
+            "channel": "web",
+            "input": "ce ta bao?",
+            "response": "Tudo certo por aqui! E você, tá bem?",
+            "social_act": "ASK_ASSISTANT_WELLBEING",
+            "tone": "RELAXED",
+            "state": "ACTIVE",
+            "language_status": "ASSISTED",
+            "reason": null,
+            "usage": {
+                "input_tokens": 682,
+                "total_tokens": 719,
+                "output_tokens": 37
+            }
+        },
+        {
+            "channel": "web",
+            "input": "Tô bão também, meu rei! Kkkkk",
+            "response": "Que bom! 😄",
+            "social_act": "SHARE_USER_WELLBEING",
+            "tone": "RELAXED",
+            "state": "ACTIVE",
+            "language_status": "ASSISTED",
+            "reason": null,
+            "usage": {
+                "input_tokens": 756,
+                "total_tokens": 787,
+                "output_tokens": 31
+            }
+        },
+        {
+            "channel": "web",
+            "input": "Rapaz, o YouTube tá uma carroça hoje 😂",
+            "response": "Poxa, é chato quando fica assim! Tá demorando pra abrir os vídeos ou eles ficam travando durante a reprodução?",
+            "social_act": "ROUTINE_SLOWNESS",
+            "tone": "RELAXED",
+            "state": "ACTIVE",
+            "language_status": "ASSISTED",
+            "reason": null,
+            "usage": {
+                "input_tokens": 820,
+                "total_tokens": 872,
+                "output_tokens": 52
+            }
+        },
+        {
+            "channel": "telegram",
+            "input": "ce ta bao?",
+            "response": "Tudo certo por aqui! Como estão as coisas por aí?",
+            "social_act": "ASK_ASSISTANT_WELLBEING",
+            "tone": "RELAXED",
+            "state": "ACTIVE",
+            "language_status": "FALLBACK",
+            "reason": "rate_limited",
+            "usage": []
+        },
+        {
+            "channel": "telegram",
+            "input": "Tô bão também, meu rei! Kkkkk",
+            "response": "Aí sim! 😄",
+            "social_act": "SHARE_USER_WELLBEING",
+            "tone": "RELAXED",
+            "state": "ACTIVE",
+            "language_status": "FALLBACK",
+            "reason": "rate_limited",
+            "usage": []
+        },
+        {
+            "channel": "telegram",
+            "input": "Rapaz, o YouTube tá uma carroça hoje 😂",
+            "response": "Pelo que você contou, tá difícil usar youtube.com. Os vídeos demoram pra começar ou ficam parando no meio?",
+            "social_act": "ROUTINE_SLOWNESS",
+            "tone": "RELAXED",
+            "state": "ACTIVE",
+            "language_status": "FALLBACK",
+            "reason": "rate_limited",
+            "usage": []
+        }
+    ]
+}

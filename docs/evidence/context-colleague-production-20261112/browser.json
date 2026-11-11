@@ -1,0 +1,157 @@
+{
+  "status": "PASS",
+  "readOnly": true,
+  "results": [
+    {
+      "key": "wizard",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "negativeValidationOnly": true,
+      "noActualAssociation": true,
+      "csrf": 419,
+      "invalidId": 422,
+      "missingConsent": 422
+    },
+    {
+      "key": "groups",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "events",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "profile",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "wizard",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "groups",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "events",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "profile",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "wizard",
+      "width": 768,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "groups",
+      "width": 768,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "events",
+      "width": 768,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "profile",
+      "width": 768,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "wizard",
+      "width": 768,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "groups",
+      "width": 768,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "events",
+      "width": 768,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "profile",
+      "width": 768,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "wizard",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "groups",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "events",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "profile",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "wizard",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "groups",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "events",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "profile",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+[
+  {
+    "path": "app/Conversation/Language.php",
+    "sha256": "c63dd3a6401120b182c2f7dd4ddb2d2583066f96f791963cf1a85f8a2d3dfe62"
+  },
+  {
+    "path": "app/Http/Controllers/TelegramCompanyController.php",
+    "sha256": "5b19fad3aca1f2c41813d0d033a6015656f3be1f036e9c84636cc8c75381a29f"
+  },
+  {
+    "path": "app/Http/Controllers/TelegramController.php",
+    "sha256": "23fa9e85d177c12f62cd0baaf23b741506db59cb302e3ca4e3eec4160bda72f3"
+  },
+  {
+    "path": "app/Services/Audit.php",
+    "sha256": "136190f0d2caade269a43fc08d152be173b286cff6fba3700b4fe713539afbf9"
+  },
+  {
+    "path": "app/Telegram/Access.php",
+    "sha256": "f0cbccb6167e5273eda130722b1164649d5d07cf36fedcf1d42255ddb6ba29f8"
+  },
+  {
+    "path": "app/Telegram/AdministratorAssociation.php",
+    "sha256": "7489705284ac0bf789dbece6b9f5839fc1096864b52988a585263cbf989fdf80"
+  },
+  {
+    "path": "app/Telegram/Presentation.php",
+    "sha256": "4056dd425f37d7b26e450d3a94bb884cf16f87999bd4f8abdb8d94bb3da9da0e"
+  },
+  {
+    "path": "config/telegram.php",
+    "sha256": "f517740fa4b0c9a387c38f2f3937e34dd52a5cbeff08e58e13982930357c8277"
+  },
+  {
+    "path": "resources/views/telegram/companies.blade.php",
+    "sha256": "3b896aec449dff79b59db5918fc89e5b6e14725d986a03aad3623d0669668d22"
+  },
+  {
+    "path": "resources/views/telegram/index.blade.php",
+    "sha256": "383b468e1a125af2d8d1aff8956f2b84898e830a382b16d7abcc97398b8af636"
+  },
+  {
+    "path": "routes/telegram.php",
+    "sha256": "5cfa5257184dee29b9851a2f013d6a45b619abcca3b6dcc2acccc4dae7d051e7"
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "runtime_file_hashes_match_source": 11,
+  "production_activated": false,
+  "runtime_commit": "6dcb5d8f13be37c1150dbc441bb78221f58a0847",
+  "image_id": "sha256:d1ec6e84558828604a114086ce0e97c30e00e90af94f0a1ef75fe14288d9941c"
+}

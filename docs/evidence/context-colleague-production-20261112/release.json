@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "runtime_file_hashes_match_source": 11,
+  "production_activated": true,
+  "runtime_commit": "6dcb5d8f13be37c1150dbc441bb78221f58a0847",
+  "image_id": "sha256:d1ec6e84558828604a114086ce0e97c30e00e90af94f0a1ef75fe14288d9941c",
+  "image": "agent-center-central:context-colleague-v1-20261112",
+  "source_commit": "d91a3a078623654fbcfa8c505de5c9f2090f1315",
+  "backup": "20261111T234836Z",
+  "administrative_assignment_enabled": "web only; existing runtime identity/access checks remain active"
+}
