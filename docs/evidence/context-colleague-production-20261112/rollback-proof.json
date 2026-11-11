@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "previous_language_restored": true,
+  "membership_revocation_guard_preserved": true,
+  "database_rollback": false
+}
