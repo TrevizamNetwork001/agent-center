@@ -31,3 +31,5 @@ SELECT format('GRANT SELECT, INSERT ON TABLE public.agent_release_quarantines TO
 SELECT format('GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.%I TO %I',tablename,:'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('rag_documents','rag_chunks') \gexec
 
 SELECT format('GRANT SELECT, INSERT, UPDATE ON TABLE public.%I TO %I',tablename,:'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('telegram_bots','telegram_links','telegram_updates','telegram_outbox') \gexec
+
+SELECT format('GRANT SELECT, INSERT, UPDATE ON TABLE public.%I TO %I',tablename,:'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('telegram_groups','telegram_members','telegram_group_contexts') \gexec

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Gate;
 // Future adapters must establish a verified identity and authorization, never just a phone number.
 final readonly class Identity
 {
-    public function __construct(public int $tenantId, public User $user, public string $channel = 'web', public ?string $contactId = null) {}
+    public function __construct(public int $tenantId, public User $user, public string $channel = 'web', public ?string $contactId = null, public ?string $scopeId = null) {}
 
     public static function web(User $user): self
     {

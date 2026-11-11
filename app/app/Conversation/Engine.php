@@ -17,7 +17,10 @@ use App\Models\DiagnosticInterpretation;
 use App\Models\Profile;
 use App\Rag\Answer;
 use App\Services\Audit;
+use App\Telegram\Access;
 use App\Telegram\Bot;
+use App\Telegram\Group;
+use App\Telegram\GroupContext;
 use App\Telegram\Link;
 use App\Tenancy\TenantContext;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +40,11 @@ class Engine
         abort_unless(in_array($i->channel, ['web', 'telegram'], true) && $i->tenantId === app(TenantContext::class)->tenantId, 403);
         if ($i->channel === 'telegram') {
             abort_unless(Link::whereKey($i->contactId)->where('user_id', $i->user->id)->where('status', 'ACTIVE')->exists() && Bot::where('enabled', true)->exists() && config('telegram.enabled'), 403);
+            $link = Link::findOrFail($i->contactId);
+            $context = $i->scopeId ? GroupContext::whereKey($i->scopeId)->where('link_id', $link->id)->firstOrFail() : null;
+            $group = $context ? Group::whereKey($context->group_id)->sharedLock()->firstOrFail() : null;
+            abort_unless(app(Access::class)->allows($link, $group), 403);
+            abort_if($context && $context->generation !== $group->generation, 403);
         }
         abort_unless(ConversationSetting::where('enabled', true)->sharedLock()->first() !== null, 403, 'Conversa desabilitada neste tenant.');
     }
@@ -62,7 +70,7 @@ class Engine
                 $ctx['agent_id'] = $a->id;
             }
             $c = new Conversation;
-            $c->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $i->tenantId, 'user_id' => $i->user->id, 'channel' => $i->channel, 'contact_id' => $i->contactId, 'status' => 'OPEN', 'state' => 'NEW', 'creation_key' => $key, 'context_json' => $ctx, 'started_at' => now(), 'last_activity_at' => now()])->save();
+            $c->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $i->tenantId, 'user_id' => $i->user->id, 'channel' => $i->channel, 'contact_id' => $i->contactId, 'telegram_context_id' => $i->scopeId, 'status' => 'OPEN', 'state' => 'NEW', 'creation_key' => $key, 'context_json' => $ctx, 'started_at' => now(), 'last_activity_at' => now()])->save();
             $this->transition($c, State::Active, 'created');
             $this->reply($c, 'Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?');
             $c->save();
@@ -76,7 +84,7 @@ class Engine
         return DB::transaction(function () use ($i, $conversation, $key, $body) {
             $this->allowed($i);
             Gate::forUser($i->user)->authorize('send', $conversation);
-            abort_unless($conversation->channel === $i->channel && ($i->channel !== 'telegram' || $conversation->contact_id === $i->contactId), 403);
+            abort_unless($conversation->channel === $i->channel && ($i->channel !== 'telegram' || ($conversation->contact_id === $i->contactId && $conversation->telegram_context_id === $i->scopeId)), 403);
             $this->userLock($i);
             $digest = hash_hmac('sha256', $body, (string) config('app.key'));
             $duplicate = ConversationMessage::where('request_user_id', $i->user->id)->where('request_key', $key)->first();
@@ -304,7 +312,7 @@ class Engine
         return DB::transaction(function () use ($i, $conversation) {
             $this->allowed($i);
             Gate::forUser($i->user)->authorize('view', $conversation);
-            abort_unless($conversation->channel === $i->channel && ($i->channel !== 'telegram' || $conversation->contact_id === $i->contactId), 403);
+            abort_unless($conversation->channel === $i->channel && ($i->channel !== 'telegram' || ($conversation->contact_id === $i->contactId && $conversation->telegram_context_id === $i->scopeId)), 403);
             $c = Conversation::whereKey($conversation->id)->lockForUpdate()->firstOrFail();
             $this->synchronize($c);
             $c->save();

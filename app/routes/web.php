@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountProfileController;
 use App\Http\Controllers\Agent\BootstrapController;
 use App\Http\Controllers\Agent\MaintenanceController;
 use App\Http\Controllers\Agent\ManagementController;
@@ -128,3 +129,9 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->group(function 
 });
 
 require __DIR__.'/telegram.php';
+
+Route::middleware(['auth', 'auth.session', 'password.changed'])->group(function () {
+    Route::get('/account/profile', [AccountProfileController::class, 'edit'])->name('account.edit');
+    Route::patch('/account/profile', [AccountProfileController::class, 'update'])->middleware('throttle:10,1')->name('account.update');
+    Route::get('/account/avatar', [AccountProfileController::class, 'avatar'])->name('account.avatar');
+});

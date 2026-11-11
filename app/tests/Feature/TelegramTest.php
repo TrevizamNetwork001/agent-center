@@ -17,17 +17,24 @@ use App\Models\ConversationSetting;
 use App\Models\Diagnostic;
 use App\Models\DiagnosticConclusion;
 use App\Rag\Index;
+use App\Telegram\Access;
 use App\Telegram\Accounts;
 use App\Telegram\Bot;
 use App\Telegram\Client;
 use App\Telegram\Deliver;
+use App\Telegram\Group;
+use App\Telegram\GroupContext;
+use App\Telegram\Groups;
 use App\Telegram\Ingress;
 use App\Telegram\Link;
+use App\Telegram\Member;
 use App\Telegram\Outbound;
 use App\Telegram\ProcessUpdate;
 use App\Telegram\Runner;
+use App\Telegram\SetupProgress;
 use App\Telegram\Sweep;
 use App\Telegram\Update;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Client\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -201,7 +208,7 @@ class TelegramTest extends IntelligenceTestCase
 
     public function test_groups_forwarded_bot_messages_and_stale_updates_are_ignored(): void
     {
-        $this->receive('Knowledge', 12345, null, ['chat' => ['id' => 12345, 'type' => 'group']]);
+        $this->receive('Knowledge', 12345, null, ['chat' => ['id' => -100000001, 'type' => 'group']]);
         $this->receive('Knowledge', 12345, null, ['forward_origin' => ['type' => 'user']]);
         $this->receive('Knowledge', 12345, null, ['via_bot' => ['id' => 1]]);
         $this->receive('Knowledge', 12345, null, ['from' => ['id' => 12345, 'is_bot' => true]]);
@@ -661,6 +668,7 @@ class TelegramTest extends IntelligenceTestCase
         $this->assertSame(0, AgentTask::count());
         $this->assertSame(1, Update::where('status', 'IGNORED')->count());
     }
+
     public function test_platform_administrator_identity_stays_in_the_verified_tenant_in_a_worker(): void
     {
         $this->context()->forUser($this->platform, $this->a->id);
@@ -691,4 +699,253 @@ class TelegramTest extends IntelligenceTestCase
         $this->assertNull(Conversation::find($conversation->id));
     }
 
+    private function groupMessage(string $text, int $sender = 12345, int $chat = -100000001, int $thread = 0): array
+    {
+        $out = $this->receive($text, $sender, extra: ['chat' => ['id' => $chat, 'type' => 'supergroup', 'title' => 'Empresa A'], 'message_thread_id' => $thread]);
+        $this->process();
+
+        return $out;
+    }
+
+    private function companyGroup(string $mode = 'private'): array
+    {
+        $link = $this->link();
+        [$group, $code] = app(Groups::class)->issue($this->admin, $this->bot, $mode, $mode === 'group');
+        $this->groupMessage('/vincular_grupo@lab_fixture_bot '.$code);
+        app(Groups::class)->approve($group->fresh(), $this->admin);
+
+        return [$group->fresh(), $link];
+    }
+
+    private function collaborator(): Link
+    {
+        $this->context()->forUser($this->operator);
+        $code = app(Accounts::class)->issue($this->operator, $this->bot);
+        $this->receive('/start '.$code, 23456);
+        $this->process();
+        $link = Link::where('user_id', $this->operator->id)->sole();
+        $this->context()->forUser($this->operator);
+        app(Accounts::class)->approve($link, $this->operator);
+        $this->scope();
+
+        return $link->fresh();
+    }
+
+    public function test_group_pairing_requires_verified_requesting_administrator_and_panel_confirmation(): void
+    {
+        $this->link();
+        [$group, $code] = app(Groups::class)->issue($this->admin, $this->bot, 'private', false);
+        $this->groupMessage('/vincular_grupo@lab_fixture_bot '.$code, 99999);
+        $this->assertSame('CODE', $group->fresh()->status);
+        $this->groupMessage('/vincular_grupo@lab_fixture_bot '.$code);
+        $this->assertSame('AWAITING_APPROVAL', $group->fresh()->status);
+        $this->assertNull($group->fresh()->code_hash);
+        $this->assertSame(0, Conversation::count());
+        app(Groups::class)->approve($group->fresh(), $this->admin);
+        $this->assertSame('ACTIVE', $group->fresh()->status);
+        $this->assertTrue($this->bot->fresh()->restrict_members);
+        $this->assertSame(1, Member::where('status', 'ACTIVE')->count());
+    }
+
+    public function test_group_public_responses_require_explicit_visibility_acknowledgment(): void
+    {
+        $this->link();
+        $this->actingAs($this->admin)->postJson('/integrations/telegram/groups/code', ['reply_mode' => 'group'])->assertUnprocessable();
+        $this->assertSame(0, Group::count());
+        $this->flushSession();
+        $this->actingAs($this->operator)->postJson('/integrations/telegram/groups/code', ['reply_mode' => 'private'])->assertForbidden();
+    }
+
+    public function test_unknown_group_other_bot_and_unaddressed_group_chatter_are_ignored(): void
+    {
+        $r = $this->groupMessage('@lab_fixture_bot Boa tarde!', chat: -100009999);
+        $this->assertTrue($r['ignored']);
+        $this->companyGroup();
+        $before = Update::count();
+        $this->assertTrue($this->groupMessage('Conversa normal da equipe')['ignored']);
+        $this->assertTrue($this->groupMessage('/help@another_bot')['ignored']);
+        $this->assertSame($before, Update::count());
+    }
+
+    public function test_unknown_people_get_only_identification_notice_in_group_and_private(): void
+    {
+        $this->companyGroup();
+        $this->groupMessage('@lab_fixture_bot Teste google.com', 99999);
+        $this->receive('Teste google.com', 99999);
+        $this->process();
+        $this->assertSame(0, Conversation::count());
+        $this->assertSame(0, Diagnostic::count());
+        $notices = Outbound::whereNull('link_id')->whereNotNull('body_cipher')->get()->map(fn ($o) => Crypt::decryptString($o->body_cipher));
+        $this->assertSame(2, $notices->filter(fn ($body) => $body === Access::DENIED)->count());
+    }
+
+    public function test_linked_collaborator_requires_company_approval_in_both_places(): void
+    {
+        [$group] = $this->companyGroup();
+        $link = $this->collaborator();
+        $this->receive('Boa tarde!', 23456);
+        $this->process();
+        $this->groupMessage('@lab_fixture_bot Boa tarde!', 23456);
+        $this->assertSame(0, Conversation::count());
+        app(Groups::class)->authorizeMember($this->bot, $link, $this->admin);
+        $this->receive('Boa tarde!', 23456);
+        $this->process();
+        $this->groupMessage('@lab_fixture_bot Boa tarde!', 23456);
+        $private = $link->fresh()->conversation_id;
+        $context = GroupContext::where('group_id', $group->id)->where('link_id', $link->id)->sole();
+        $this->assertNotNull($private);
+        $this->assertNotSame($private, $context->conversation_id);
+        $this->assertSame($this->operator->id, Conversation::findOrFail($context->conversation_id)->user_id);
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_group_private_mode_sends_content_only_to_verified_private_chat(): void
+    {
+        [$group, $link] = $this->companyGroup();
+        $this->groupMessage('@lab_fixture_bot Boa tarde!');
+        $this->deliverAll();
+        $rows = Outbound::where('group_id', $group->id)->whereNotNull('message_id')->get();
+        $this->assertNotEmpty($rows);
+        foreach ($rows as $row) {
+            $this->assertSame((string) $link->chat_id, (string) $row->chat_id);
+            $this->assertSame('SENT', $row->status);
+        }
+        Http::assertNotSent(fn ($r) => (string) ($r['chat_id'] ?? '') === (string) $group->chat_id && isset($r['text']) && str_contains($r['text'], 'Histórico:'));
+        Http::assertSent(fn ($r) => (string) ($r['chat_id'] ?? '') === (string) $link->chat_id && str_contains($r['text'] ?? '', 'no mesmo grupo'));
+    }
+
+    public function test_group_public_mode_keeps_topics_and_user_contexts_separate(): void
+    {
+        [$group, $link] = $this->companyGroup('group');
+        $this->groupMessage('@lab_fixture_bot Boa tarde!', thread: 7);
+        $this->groupMessage('@lab_fixture_bot Boa tarde!', thread: 8);
+        $contexts = GroupContext::where('group_id', $group->id)->where('link_id', $link->id)->get();
+        $this->assertCount(2, $contexts);
+        $this->assertSame(2, $contexts->pluck('conversation_id')->unique()->count());
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => (string) ($r['chat_id'] ?? '') === (string) $group->chat_id && ($r['message_thread_id'] ?? null) === 7 && str_contains($r['text'] ?? '', 'Histórico:'));
+        Http::assertSent(fn ($r) => (string) ($r['chat_id'] ?? '') === (string) $group->chat_id && ($r['message_thread_id'] ?? null) === 8 && str_contains($r['text'] ?? '', 'Histórico:'));
+    }
+
+    public function test_revoking_company_member_cancels_confirmation_and_suppresses_delivery(): void
+    {
+        [$group, $link] = $this->companyGroup();
+        $agent = $this->agent();
+        $this->groupMessage('/nova@lab_fixture_bot '.$agent->id);
+        $this->groupMessage('@lab_fixture_bot Teste google.com');
+        $context = GroupContext::where('link_id', $link->id)->sole();
+        $conversation = Conversation::findOrFail($context->conversation_id);
+        $this->assertSame('WAITING_FOR_CONFIRMATION', $conversation->state);
+        $member = Member::where('link_id', $link->id)->sole();
+        app(Groups::class)->revokeMember($member, $this->admin);
+        $this->assertSame('CANCELLED', $conversation->fresh()->state);
+        app(Groups::class)->authorizeMember($this->bot, $link, $this->admin);
+        $this->groupMessage('@lab_fixture_bot Sim');
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+        $this->assertTrue(Outbound::where('group_id', $group->id)->where('status', 'SUPPRESSED')->exists());
+    }
+
+    public function test_group_revocation_fences_queued_updates_and_cannot_expose_context_to_private_identity(): void
+    {
+        [$group, $link] = $this->companyGroup();
+        $this->groupMessage('@lab_fixture_bot Boa tarde!');
+        $context = GroupContext::where('link_id', $link->id)->sole();
+        $identity = app(Accounts::class)->identity($link);
+        try {
+            app(Engine::class)->send($identity, Conversation::findOrFail($context->conversation_id), (string) Str::uuid(), 'Sim');
+            $this->fail('Private identity must not authorize group context');
+        } catch (HttpException $error) {
+            $this->assertSame(403, $error->getStatusCode());
+        }
+        app(Groups::class)->revoke($group, $this->admin);
+        $this->deliverAll();
+        $this->assertSame(0, Outbound::where('group_id', $group->id)->whereNotNull('message_id')->where('status', 'SENT')->count());
+    }
+
+    public function test_group_and_member_routes_reject_cross_tenant_ids_and_unverified_numeric_ids(): void
+    {
+        [$group] = $this->companyGroup();
+        $member = Member::sole();
+        $this->flushSession();
+        $this->actingAs($this->other)->post('/integrations/telegram/groups/'.$group->id.'/revoke')->assertNotFound();
+        $this->actingAs($this->other)->post('/integrations/telegram/members/'.$member->id.'/revoke')->assertNotFound();
+        $this->flushSession();
+        $this->actingAs($this->admin)->post('/integrations/telegram/members', ['telegram_user_id' => '9999999'])->assertSessionHasErrors('telegram_user_id');
+        $this->scope();
+        $this->assertSame('ACTIVE', $group->fresh()->status);
+        $this->context()->apply();
+        foreach (['telegram_groups', 'telegram_members', 'telegram_group_contexts'] as $table) {
+            $this->assertSame(0, DB::table($table)->count());
+            $this->assertFalse((bool) DB::selectOne('SELECT has_table_privilege(current_user, ?, ?) AS allowed', [$table, 'DELETE'])->allowed);
+        }
+    }
+
+    public function test_setup_guide_tracks_own_identity_and_real_delivery_not_another_users_link(): void
+    {
+        $link = $this->link();
+        $this->actingAs($this->operator)->get('/integrations/telegram')->assertOk()->assertViewHas('setup', fn ($setup) => ! $setup['linked'] && $setup['current'] === 3);
+        $this->scope();
+        $this->say('Boa tarde!');
+        $before = app(SetupProgress::class)->forUser($this->admin, $this->bot);
+        $this->assertFalse($before['tested']);
+        $this->deliverAll();
+        $after = app(SetupProgress::class)->forUser($this->admin, $this->bot);
+        $this->assertTrue($after['tested']);
+        $this->assertSame(5, $after['completed']);
+        $this->assertSame($link->id, $after['link']->id);
+    }
+
+    public function test_group_replay_cannot_move_a_message_to_another_topic(): void
+    {
+        $this->companyGroup('group');
+        $extra = ['chat' => ['id' => -100000001, 'type' => 'supergroup'], 'message_thread_id' => 7];
+        $this->receive('@lab_fixture_bot Boa tarde!', 12345, 98765, $extra);
+        $this->process();
+        $this->assertTrue($this->receive('@lab_fixture_bot Boa tarde!', 12345, 98765, $extra)['duplicate']);
+        $this->expectException(HttpException::class);
+        $extra['message_thread_id'] = 8;
+        $this->receive('@lab_fixture_bot Boa tarde!', 12345, 98765, $extra);
+    }
+
+    public function test_group_permission_is_revalidated_before_knowledge_sources_are_sent(): void
+    {
+        [$group, $link] = $this->companyGroup();
+        $item = app(Versioning::class)->publish($this->knowledge(['content' => 'O procedimento de lentidão exige evidências. Verifique DNS e HTTPS separadamente.']), $this->admin);
+        app(Index::class)->rebuild($this->admin);
+        $provider = $this->provider();
+        $model = $this->model($provider);
+        $prompt = app(Versioning::class)->publish($this->prompt(['purpose' => 'knowledge_assistance']), $this->admin);
+        app(Configuration::class)->binding(['purpose' => 'knowledge_assistance', 'model_id' => $model->id, 'prompt_id' => $prompt->id, 'enabled' => true, 'allow_external_context' => true], $this->admin);
+        $this->app->instance(\App\Llm\Client::class, new class extends \App\Llm\Client
+        {
+            public function call($p, $m, array $messages, ?callable $cancelled = null, string $purpose = 'diagnostic'): array
+            {
+                return ['output' => ['answer' => 'O procedimento exige evidências de DNS e HTTPS.', 'sources' => DB::table('rag_chunks')->pluck('id')->all()]];
+            }
+        });
+        $this->groupMessage('/knowledge@lab_fixture_bot Qual o procedimento de lentidão?');
+        $context = GroupContext::where('link_id', $link->id)->sole();
+        $message = ConversationMessage::where('conversation_id', $context->conversation_id)->latest('sequence')->firstOrFail();
+        $this->assertNotEmpty($message->metadata['rag_sources']);
+        $out = Outbound::where('message_id', $message->id)->sole();
+        app(Versioning::class)->archive($item, $this->admin);
+        (new Deliver($this->a->id, $out->id))->handle(app(Client::class));
+        $this->scope();
+        $this->assertSame('SUPPRESSED', $out->fresh()->status);
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_runtime_cannot_drop_group_schema_or_history(): void
+    {
+        $this->companyGroup();
+        $migration = require database_path('migrations/2026_11_12_000002_add_telegram_companies.php');
+        try {
+            DB::transaction(fn () => $migration->down());
+            $this->fail('Schema rollback must not drop a configured group');
+        } catch (QueryException $error) {
+            $this->assertSame('42501', $error->getCode());
+        }
+        $this->assertSame(1, Group::where('status', 'ACTIVE')->count());
+    }
 }

@@ -37,6 +37,9 @@ class Accounts
                     $this->revoke($link, $user);
                 }
             }
+            if ($bot->exists) {
+                Group::where('bot_id', $bot->id)->where('status', '!=', 'REVOKED')->update(['status' => 'REVOKED', 'code_hash' => null, 'revoked_at' => now()]);
+            }
             $bot->forceFill(['id' => $bot->id ?? (string) Str::uuid(), 'tenant_id' => $tenant, 'token_cipher' => Crypt::encryptString($token), 'token_fingerprint' => hash_hmac('sha256', $token, config('app.key')), 'secret_cipher' => Crypt::encryptString(Str::random(64)), 'username' => $me['result']['username'], 'telegram_bot_id' => $me['result']['id'], 'generation' => (string) Str::uuid(), 'enabled' => false, 'webhook_status' => 'NOT_REGISTERED', 'last_error' => null])->save();
             $this->audit('telegram.configured', $user);
 
@@ -62,6 +65,7 @@ class Accounts
             $active = $enabled && $r['status'] === 'OK';
             if (! $active) {
                 $locked->generation = (string) Str::uuid();
+                Group::where('bot_id', $locked->id)->where('status', '!=', 'REVOKED')->update(['status' => 'REVOKED', 'code_hash' => null, 'revoked_at' => now()]);
                 foreach (Link::where('bot_id', $locked->id)->where('status', '!=', 'REVOKED')->lockForUpdate()->get() as $link) {
                     $this->revoke($link, $user);
                 }

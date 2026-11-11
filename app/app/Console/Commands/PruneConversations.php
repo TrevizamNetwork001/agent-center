@@ -29,6 +29,7 @@ class PruneConversations extends Command
                 if ($this->option('apply')) {
                     foreach ($rows as $row) {
                         // Privileged retention also clears channel references; ordinary runtime keeps no DELETE grant.
+                        DB::table('telegram_group_contexts')->where('conversation_id', $row->id)->update(['conversation_id' => null, 'cursor' => 0]);
                         DB::table('telegram_links')->where('conversation_id', $row->id)->update(['conversation_id' => null, 'cursor' => 0]);
                         DB::table('telegram_outbox')->where('conversation_id', $row->id)->delete();
                         DB::table('conversation_events')->where('conversation_id', $row->id)->delete();

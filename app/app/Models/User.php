@@ -15,7 +15,7 @@ class User extends Authenticatable
 
     protected $fillable = ['name', 'email'];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'avatar_path', 'avatar_mime'];
 
     protected static function booted(): void
     {

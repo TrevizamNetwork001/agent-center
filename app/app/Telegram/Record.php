@@ -17,7 +17,7 @@ abstract class Record extends Model
 
     protected function casts(): array
     {
-        return ['enabled' => 'boolean', 'tenant_id' => 'integer', 'user_id' => 'integer', 'cursor' => 'integer', 'attempts' => 'integer', 'expires_at' => 'immutable_datetime', 'message_date' => 'immutable_datetime', 'next_attempt_at' => 'immutable_datetime'];
+        return ['enabled' => 'boolean', 'tenant_id' => 'integer', 'user_id' => 'integer', 'cursor' => 'integer', 'attempts' => 'integer', 'restrict_members' => 'boolean', 'shared_ack' => 'boolean', 'thread_id' => 'integer', 'requested_by' => 'integer', 'verified_at' => 'immutable_datetime', 'expires_at' => 'immutable_datetime', 'message_date' => 'immutable_datetime', 'next_attempt_at' => 'immutable_datetime'];
     }
 
     protected static function booted(): void

@@ -7,9 +7,12 @@ use App\Telegram\Accounts;
 use App\Telegram\Bot;
 use App\Telegram\Client;
 use App\Telegram\Deliver;
+use App\Telegram\Group;
 use App\Telegram\Ingress;
 use App\Telegram\Link;
+use App\Telegram\Member;
 use App\Telegram\Outbound;
+use App\Telegram\SetupProgress;
 use App\Telegram\Update;
 use App\Tenancy\TenantContext;
 use Illuminate\Http\Request;
@@ -30,7 +33,12 @@ class TelegramController extends Controller
         $updates = $admin ? Update::whereIn('status', ['FAILED', 'DENIED'])->latest('created_at')->limit(20)->get() : collect();
         $pending = $admin ? Outbound::where('status', 'PENDING')->count() : 0;
 
-        return response()->view('telegram.index', compact('admin', 'bot', 'links', 'failures', 'events', 'updates', 'pending'))->header('Cache-Control', 'no-store, private');
+        $setup = app(SetupProgress::class)->forUser($r->user(), $bot);
+        $groups = $admin ? Group::latest('created_at')->paginate(10, ['*'], 'groups_page')->withQueryString()->fragment('company-groups') : collect();
+        $members = $admin ? Member::latest('approved_at')->paginate(20, ['*'], 'members_page')->withQueryString()->fragment('company-groups') : collect();
+        $verifiedLinks = $admin ? Link::where('status', 'ACTIVE')->where('bot_id', $bot?->id)->whereIn('id', $members->pluck('link_id'))->get(['id', 'user_id', 'telegram_user_id']) : collect();
+
+        return response()->view('telegram.index', compact('admin', 'bot', 'links', 'failures', 'events', 'updates', 'pending', 'setup', 'groups', 'members', 'verifiedLinks'))->header('Cache-Control', 'no-store, private');
     }
 
     public function save(Request $r, Accounts $accounts)
