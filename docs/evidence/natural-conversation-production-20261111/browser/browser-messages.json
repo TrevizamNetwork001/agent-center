@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "tlsVerification": true,
+  "phase": "messages",
+  "authentication": "temporary native Laravel session; no bypass endpoint; password login not repeated",
+  "results": [
+    {
+      "idempotentRetry": 200,
+      "conflictingRetry": 409,
+      "csrf": 419,
+      "refreshPreservesHistory": true
+    }
+  ],
+  "errors": []
+}

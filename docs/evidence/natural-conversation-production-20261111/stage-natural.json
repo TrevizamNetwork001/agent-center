@@ -1,0 +1,46 @@
+{
+    "status": "PASS",
+    "database": "agent_center_lab",
+    "external_inference": "disabled; deterministic Client failure fixture",
+    "turns": [
+        {
+            "user": "Boa tarde, meu consagrado!",
+            "assistant": "Boa tarde! Bom te ver por aqui!",
+            "intent": "GREETING",
+            "tone": "RELAXED"
+        },
+        {
+            "user": "Salve, calabreso! Tudo certo?",
+            "assistant": "Opa! Pode chegar, estou por aqui.",
+            "intent": "GREETING",
+            "tone": "RELAXED"
+        },
+        {
+            "user": "Rapaz, o YouTube tá uma carroça hoje kkk",
+            "assistant": "Vamos por partes: em que momento você percebeu a lentidão? Ainda não tenho medições para apontar uma causa.",
+            "intent": "SOCIAL",
+            "tone": "RELAXED"
+        },
+        {
+            "user": "Meu BNG está apresentando perda de pacotes.",
+            "assistant": "Entendi o relato. Ainda não há evidências suficientes para atribuir uma causa. O destino youtube.com já está registrado. Nenhuma ação em equipamentos foi iniciada.",
+            "intent": "SOCIAL",
+            "tone": "TECHNICAL"
+        },
+        {
+            "user": "Obrigado, meu rei!",
+            "assistant": "Por nada! O contexto está salvo; podemos continuar quando você quiser.",
+            "intent": "ACKNOWLEDGE",
+            "tone": "TECHNICAL"
+        }
+    ],
+    "context_preserved": true,
+    "tone_adapts": true,
+    "formal_preference": true,
+    "farewell_closes": true,
+    "affirmative_without_pending_denied": true,
+    "failure_fallback": true,
+    "duplicate_message_calls": 1,
+    "no_diagnostics_or_tasks_created": true,
+    "transaction_rolled_back": true
+}

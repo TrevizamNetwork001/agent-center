@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "base_image": "sha256:298c13106ae36db3659b8e3c8a9ece156f27939e8bdbc2583550a431f54e7ced",
+  "candidate_image": "sha256:314435c174bde09744c4c09d59b2f9799c17b5c89be3a85fbf573b66a075201a",
+  "runtime_files": 16,
+  "single_overlay_layer": true,
+  "existing_layers_preserved": true,
+  "runtime_user": "www-data",
+  "confirmation_already_published_not_reapplied": true
+}

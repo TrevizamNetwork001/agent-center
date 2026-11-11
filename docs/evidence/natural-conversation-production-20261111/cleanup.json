@@ -1,0 +1,435 @@
+{
+    "status": "PASS",
+    "conversations": {
+        "social": {
+            "id": "5a2253bf-734d-439b-a04c-5a29e5d937a6",
+            "state": "CLOSED",
+            "provided_target": "youtube.com",
+            "tone": {
+                "style": "TECHNICAL",
+                "severity": "SERIOUS",
+                "formality": "NATURAL",
+                "verbosity": "CONCISE",
+                "technical_level": "TECHNICAL",
+                "directness": "NEUTRAL",
+                "regionality": "NOT_INFERRED",
+                "confidence": 0.85
+            },
+            "tone_preference": null,
+            "pending_confirmation": false,
+            "diagnostic_id": null,
+            "messages": [
+                {
+                    "sender": "system",
+                    "body": "Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?",
+                    "intent": null,
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "user",
+                    "body": "Boa tarde, meu consagrado!",
+                    "intent": "GREETING",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Boa tarde! Bom te ver por aqui!",
+                    "intent": null,
+                    "tone": "RELAXED",
+                    "language_status": "LOCAL",
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "user",
+                    "body": "Salve, calabreso! Tudo certo?",
+                    "intent": "GREETING",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Opa! Pode chegar, estou por aqui.",
+                    "intent": null,
+                    "tone": "RELAXED",
+                    "language_status": "LOCAL",
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "user",
+                    "body": "Rapaz, o YouTube tá uma carroça hoje kkk",
+                    "intent": "SOCIAL",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Vamos por partes: em que momento você percebeu a lentidão? Ainda não tenho medições para apontar uma causa.",
+                    "intent": null,
+                    "tone": "RELAXED",
+                    "language_status": "LOCAL",
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "user",
+                    "body": "Meu BNG está apresentando perda de pacotes.",
+                    "intent": "SOCIAL",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Entendi o relato. Ainda não há evidências suficientes para atribuir uma causa. O destino youtube.com já está registrado. Nenhuma ação em equipamentos foi iniciada.",
+                    "intent": null,
+                    "tone": "TECHNICAL",
+                    "language_status": "LOCAL",
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "user",
+                    "body": "Obrigado, meu rei!",
+                    "intent": "ACKNOWLEDGE",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Por nada! O contexto está salvo; podemos continuar quando você quiser.",
+                    "intent": null,
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "user",
+                    "body": "Pode encerrar",
+                    "intent": "CLOSE",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Até mais! O histórico da conversa fica preservado.",
+                    "intent": null,
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                }
+            ]
+        },
+        "openai": {
+            "id": "d7a6bc18-c01b-4b45-bc89-534c9d0dcbbd",
+            "state": "CLOSED",
+            "provided_target": null,
+            "tone": {
+                "style": "RELAXED",
+                "severity": "ROUTINE",
+                "formality": "INFORMAL",
+                "verbosity": "CONCISE",
+                "technical_level": "GENERAL",
+                "directness": "NEUTRAL",
+                "regionality": "NOT_INFERRED",
+                "confidence": 0.85
+            },
+            "tone_preference": null,
+            "pending_confirmation": false,
+            "diagnostic_id": null,
+            "messages": [
+                {
+                    "sender": "system",
+                    "body": "Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?",
+                    "intent": null,
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "user",
+                    "body": "Boa tarde, meu consagrado!",
+                    "intent": "GREETING",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Boa tarde! Bom te ver por aqui!",
+                    "intent": null,
+                    "tone": "RELAXED",
+                    "language_status": "LOCAL",
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "user",
+                    "body": "E você, como é ajudar num plantão tranquilo?",
+                    "intent": "SOCIAL",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Boa tarde! Num plantão tranquilo, dá para conversar com mais calma e esclarecer dúvidas sem correria. Sou o assistente virtual do Agent Center. Como está o plantão por aí?",
+                    "intent": null,
+                    "tone": "RELAXED",
+                    "language_status": "ASSISTED",
+                    "language_reason": null,
+                    "usage": {
+                        "input_tokens": 513,
+                        "total_tokens": 577,
+                        "output_tokens": 64
+                    },
+                    "request_id": "req_b7264c71a5ff4ba1981fd615afdb5959"
+                },
+                {
+                    "sender": "user",
+                    "body": "Pode encerrar",
+                    "intent": "CLOSE",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Até mais! O histórico da conversa fica preservado.",
+                    "intent": null,
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                }
+            ]
+        },
+        "formal": {
+            "id": "c03ee93d-f015-4f91-ab3a-fc854d4d6c12",
+            "state": "CANCELLED",
+            "provided_target": null,
+            "tone": {
+                "style": "FORMAL",
+                "severity": "ROUTINE",
+                "formality": "FORMAL",
+                "verbosity": "CONCISE",
+                "confidence": 0.85,
+                "directness": "DIRECT",
+                "regionality": "NOT_INFERRED",
+                "technical_level": "GENERAL"
+            },
+            "tone_preference": "FORMAL",
+            "pending_confirmation": false,
+            "diagnostic_id": null,
+            "messages": [
+                {
+                    "sender": "system",
+                    "body": "Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?",
+                    "intent": null,
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "user",
+                    "body": "Boa tarde, por gentileza.",
+                    "intent": "GREETING",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Boa tarde! É um prazer ajudar.",
+                    "intent": null,
+                    "tone": "FORMAL",
+                    "language_status": "LOCAL",
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "user",
+                    "body": "Prefiro um tom formal.",
+                    "intent": "SOCIAL",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Combinado, a preferência de tom está salva para esta conversa.",
+                    "intent": null,
+                    "tone": "FORMAL",
+                    "language_status": "LOCAL",
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "user",
+                    "body": "Vamos mudar de assunto.",
+                    "intent": "UNKNOWN",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Boa tarde. Certamente, podemos mudar de assunto. Sobre qual tema gostaria de conversar?",
+                    "intent": null,
+                    "tone": "FORMAL",
+                    "language_status": "ASSISTED",
+                    "language_reason": null,
+                    "usage": {
+                        "input_tokens": 514,
+                        "total_tokens": 558,
+                        "output_tokens": 44
+                    },
+                    "request_id": "req_9e34bf2fa1d549798868a36d9e6b1722"
+                },
+                {
+                    "sender": "user",
+                    "body": "Não, cancela.",
+                    "intent": "CANCEL",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Cancelamento solicitado. Evidências preservadas; tarefas ativas encerram pelo protocolo nativo de cancelamento.",
+                    "intent": null,
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                }
+            ]
+        },
+        "safety": {
+            "id": "d8883960-3a9a-4dee-9dc7-a47c34ed348b",
+            "state": "CLOSED",
+            "provided_target": null,
+            "tone": {
+                "style": "CASUAL",
+                "severity": "ROUTINE",
+                "formality": "NATURAL",
+                "verbosity": "CONCISE",
+                "technical_level": "GENERAL",
+                "directness": "NEUTRAL",
+                "regionality": "NOT_INFERRED",
+                "confidence": 0.5
+            },
+            "tone_preference": null,
+            "pending_confirmation": false,
+            "diagnostic_id": null,
+            "messages": [
+                {
+                    "sender": "system",
+                    "body": "Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?",
+                    "intent": null,
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "user",
+                    "body": "Sim, confirmo o diagnóstico de google.com.",
+                    "intent": "CONFIRM",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Não há confirmação pendente válida. Nenhuma nova tarefa foi criada.",
+                    "intent": null,
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "user",
+                    "body": "Pode encerrar",
+                    "intent": "CLOSE",
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                },
+                {
+                    "sender": "system",
+                    "body": "Até mais! O histórico da conversa fica preservado.",
+                    "intent": null,
+                    "tone": null,
+                    "language_status": null,
+                    "language_reason": null,
+                    "usage": [],
+                    "request_id": null
+                }
+            ]
+        }
+    },
+    "all_without_diagnostics": true,
+    "temporary_native_session_removed": true
+}

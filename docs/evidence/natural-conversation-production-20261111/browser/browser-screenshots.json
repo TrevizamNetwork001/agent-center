@@ -1,0 +1,177 @@
+{
+  "status": "PASS",
+  "tlsVerification": true,
+  "phase": "screenshots",
+  "authentication": "temporary native Laravel session; no bypass endpoint; password login not repeated",
+  "results": [
+    {
+      "key": "social",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "openai",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "formal",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "safety",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "social",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "openai",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "formal",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "safety",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "social",
+      "width": 768,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "openai",
+      "width": 768,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "formal",
+      "width": 768,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "safety",
+      "width": 768,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "social",
+      "width": 768,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "openai",
+      "width": 768,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "formal",
+      "width": 768,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "safety",
+      "width": 768,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "social",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "openai",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "formal",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "safety",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "social",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "openai",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "formal",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "safety",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    }
+  ],
+  "errors": []
+}

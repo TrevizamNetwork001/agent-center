@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "protected_tables_unchanged_after_activation": 16,
+  "only_authorized_binding_flag_changed_from_baseline": true,
+  "tasks_before_after": 97,
+  "diagnostics_before_after": 28,
+  "agent_configuration_unchanged": true,
+  "non_web_images_unchanged": true,
+  "worker_note": "Existing hourly --max-time=3600 restart at 18:28:21Z before web publication; same image/config, no deploy action",
+  "other_non_web_containers_unchanged": true,
+  "unrelated_dirty_files_preserved": true,
+  "tls": true,
+  "force_rls": true,
+  "health": "VERDE"
+}

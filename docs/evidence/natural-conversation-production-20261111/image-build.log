@@ -1,0 +1,38 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 127B 0.0s done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/agent-center-central:conversation-confirmation-20261111
+#2 DONE 0.1s
+
+#3 [internal] load .dockerignore
+#3 transferring context:
+#3 transferring context: 76B 0.0s done
+#3 DONE 0.1s
+
+#4 [internal] load build context
+#4 transferring context: 75.28kB 0.0s done
+#4 DONE 0.1s
+
+#5 [1/2] FROM docker.io/library/agent-center-central:conversation-confirmation-20261111@sha256:298c13106ae36db3659b8e3c8a9ece156f27939e8bdbc2583550a431f54e7ced
+#5 resolve docker.io/library/agent-center-central:conversation-confirmation-20261111@sha256:298c13106ae36db3659b8e3c8a9ece156f27939e8bdbc2583550a431f54e7ced
+#5 resolve docker.io/library/agent-center-central:conversation-confirmation-20261111@sha256:298c13106ae36db3659b8e3c8a9ece156f27939e8bdbc2583550a431f54e7ced 0.1s done
+#5 DONE 0.5s
+
+#6 [2/2] COPY overlay/ /var/www/html/
+#6 DONE 0.2s
+
+#7 exporting to image
+#7 exporting layers
+#7 exporting layers 0.4s done
+#7 exporting manifest sha256:7888b74254668b04512bbc60f18a252b16b03a652bb86bc8847985f526917394 0.1s done
+#7 exporting config sha256:712437347dd9ac8adc6aa11d53e93cba5b66b4047c28039dd92019842b0875e9 0.0s done
+#7 exporting attestation manifest sha256:fc8d5492618dcafb26376892f90c8cf348ac854dc7fb8e979bc7ef08d5eba76f
+#7 exporting attestation manifest sha256:fc8d5492618dcafb26376892f90c8cf348ac854dc7fb8e979bc7ef08d5eba76f 0.1s done
+#7 exporting manifest list sha256:314435c174bde09744c4c09d59b2f9799c17b5c89be3a85fbf573b66a075201a 0.1s done
+#7 naming to docker.io/library/agent-center-central:natural-conversation-v1-20261111
+#7 naming to docker.io/library/agent-center-central:natural-conversation-v1-20261111 done
+#7 unpacking to docker.io/library/agent-center-central:natural-conversation-v1-20261111 0.1s done
+#7 DONE 1.0s

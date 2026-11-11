@@ -97,7 +97,7 @@ services:
     command: [php, artisan, migrate, '--force']
   web:
     <<: *app
-    image: agent-center-central:conversation-confirmation-20261111
+    image: agent-center-central:natural-conversation-v1-20261111
     environment:
       <<: *app-env
       AGENT_MAINTENANCE_TARGETS: ${AGENT_MAINTENANCE_TARGETS:-}

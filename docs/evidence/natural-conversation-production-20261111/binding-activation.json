@@ -1,0 +1,8 @@
+{
+    "status": "PASS",
+    "action": "activate",
+    "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+    "provider_model_prompt_preserved": true,
+    "only_config_field_changed": "allow_conversation_language",
+    "language_enabled": true
+}

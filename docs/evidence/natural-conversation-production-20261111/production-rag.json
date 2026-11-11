@@ -1,0 +1,12 @@
+{
+    "status": "PASS",
+    "database": "agent_center",
+    "retrieval": true,
+    "source_revalidated": true,
+    "source_view_rendered": true,
+    "cross_tenant_denied": true,
+    "revocation": true,
+    "answer_without_evidence": "no_match",
+    "external_network_calls": 0,
+    "temporary_knowledge_rolled_back": true
+}

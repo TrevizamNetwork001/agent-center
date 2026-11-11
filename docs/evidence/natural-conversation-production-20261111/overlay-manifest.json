@@ -1,0 +1,105 @@
+{
+  "status": "PASS",
+  "base_image": "sha256:298c13106ae36db3659b8e3c8a9ece156f27939e8bdbc2583550a431f54e7ced",
+  "runtime_files": [
+    {
+      "path": "app/Conversation/ChannelAdapter.php",
+      "base_sha256": "ec169125c5daec94e7d6bd756e54c8a5392b03da7060a715722aa98390340cda",
+      "published_sha256": "0f37401aee31f261ff37c923f33530d5eef10f82fbd1aab119622576451f609d",
+      "preserves_deployed_adjustments": false
+    },
+    {
+      "path": "app/Conversation/ConversationToneDetector.php",
+      "base_sha256": "b557d26d0d72b9c10124628b15d5d9958f92a3a5177215bdec395987f906d262",
+      "published_sha256": "04e838c83da2430fdf0b2142634578f964d6b6283ffd80d48e7bd1bf12379785",
+      "preserves_deployed_adjustments": false
+    },
+    {
+      "path": "app/Conversation/Engine.php",
+      "base_sha256": "5d60aafc184bd654bcbeca287fce19503ac2a556476759407ca04757ed1554c7",
+      "published_sha256": "8f3be772eafeb27784d00067a569183afd790767bfd3d53d8388d832f8486052",
+      "preserves_deployed_adjustments": false
+    },
+    {
+      "path": "app/Conversation/IncomingMessage.php",
+      "base_sha256": null,
+      "published_sha256": "f8e28ea258138753daf4d1f7c2dc91740e188f22c8ca170d192344e4f62748fc",
+      "preserves_deployed_adjustments": false
+    },
+    {
+      "path": "app/Conversation/Intent.php",
+      "base_sha256": "9a86212af049d9172210ec5fe12d35afd575f301754e4d618138508f8ed01f01",
+      "published_sha256": "b659dd6ce726e2306456bc7d054dd381188ea90abc6263e1f6138d9207d0e355",
+      "preserves_deployed_adjustments": false
+    },
+    {
+      "path": "app/Conversation/IntentDetector.php",
+      "base_sha256": "ba0647d33c76346573556200a9a214646e40be0632031e35ee7c25bef7263253",
+      "published_sha256": "aefc1ecb547993afcd75f3ffa6b822026acfe27891e96c167b918b135bd1f1a7",
+      "preserves_deployed_adjustments": false
+    },
+    {
+      "path": "app/Conversation/Language.php",
+      "base_sha256": null,
+      "published_sha256": "b2ca3f05cc2c861bbe7c8591fdeb02fc2b4c36a02c3d148ca20bd0907416ffc0",
+      "preserves_deployed_adjustments": false
+    },
+    {
+      "path": "app/Conversation/WebAdapter.php",
+      "base_sha256": "5528812c8cbbbf90003a4c643a8b0e613f2ce833f2638a1b26008393d5d93e31",
+      "published_sha256": "95e1b97b43940ce2d748a34ccf01f2f87b14ff8d0d4dcf7b70a5a86471671382",
+      "preserves_deployed_adjustments": false
+    },
+    {
+      "path": "app/Http/Controllers/ConversationController.php",
+      "base_sha256": "7d687a51990a0e38ac2421baaa425f3aa43836fc092cac17e6d313521101207e",
+      "published_sha256": "12512317ae45e5220c87bc7996fef3d8d3ab61470d787a861e169fb11dbfda79",
+      "preserves_deployed_adjustments": false
+    },
+    {
+      "path": "app/Http/Requests/LlmRequest.php",
+      "base_sha256": "8282ee67ccb023e82430c10329cf1141b210f9375584472d82b40d45842d0e49",
+      "published_sha256": "5a1e16453d228b9fa5824afa8020e52270d1f7a6bda790f38af2237fb31147e3",
+      "preserves_deployed_adjustments": false
+    },
+    {
+      "path": "app/Llm/Configuration.php",
+      "base_sha256": "965d36d54f338796a565c01b01882dffa63a8b7dfcd941777562fbba1afdbf60",
+      "published_sha256": "502ca906e9d25aa953f57bee66d8a09ec937eb71741f8f9c30c1249416a0e7f6",
+      "preserves_deployed_adjustments": false
+    },
+    {
+      "path": "app/Services/Audit.php",
+      "base_sha256": "6c187f13454ccc6222c26de81687715a3a2058bb8c0d553cf08fca2d435ffe2a",
+      "published_sha256": "18d5cece062e7e5324f226c56d91da986dfe1ac6843e5c50e8f0eb6afaf788cb",
+      "preserves_deployed_adjustments": true
+    },
+    {
+      "path": "public/conversation.js",
+      "base_sha256": "5e847c37e01acbc227495796f4ca0bd63e9dd1800829036665a173b6ae2f2c41",
+      "published_sha256": "20910de00d97e901040472e925213c1294a437abf51a506d74932a643ce50559",
+      "preserves_deployed_adjustments": false
+    },
+    {
+      "path": "resources/views/conversations/panel.blade.php",
+      "base_sha256": "7d72c68ab0a277e401710c1ba5eafd27fa17fd53cb7ca31151daa4cbbcf4f38c",
+      "published_sha256": "599475932d52aaf36e56e009ee33df2289f8aafc7a1f1e63d57808c3eab7a9aa",
+      "preserves_deployed_adjustments": false
+    },
+    {
+      "path": "resources/views/conversations/show.blade.php",
+      "base_sha256": "6cc2ae899b422750a21018469fbff7e588ded280b9c8e1ada23ad2cb16865335",
+      "published_sha256": "495e86319812197662decaacea35b82cb76e0b854a799a9f96d5f1dff20b98b9",
+      "preserves_deployed_adjustments": false
+    },
+    {
+      "path": "resources/views/intelligence/llm.blade.php",
+      "base_sha256": "5cc574930a5c01429d516cbf6292f11849b0abd1fa462f6110489453548c9063",
+      "published_sha256": "beb664d6bde0ee05cfa7b7b7101918deea665385baa71d44219e682bdb6ab863",
+      "preserves_deployed_adjustments": true
+    }
+  ],
+  "existing_confirmation_branch_identical": true,
+  "cancel_and_transition_methods_identical": true,
+  "task_engine_rag_client_unchanged": true
+}

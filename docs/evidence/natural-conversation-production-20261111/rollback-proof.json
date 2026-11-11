@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "previous_image_present": "sha256:298c13106ae36db3659b8e3c8a9ece156f27939e8bdbc2583550a431f54e7ced",
+  "no_database_schema_change": true,
+  "backup_restore_verified": "20261111T182621Z",
+  "binding_prior_flag_saved_privately": true,
+  "previous_public_js_saved": true,
+  "rollback_preserves_history_and_provider_configuration": true,
+  "rollback_not_required": true,
+  "compose_override_changes_only_web_image": true
+}
