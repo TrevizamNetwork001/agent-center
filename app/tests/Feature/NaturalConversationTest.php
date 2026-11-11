@@ -76,7 +76,8 @@ class NaturalConversationTest extends IntelligenceTestCase
         $pending = $c->context_json['pending'];
         $c = $this->say($c, 'Meu BNG está com perda de pacotes');
         $c = $this->say($c, 'ce ta bao ?');
-        $this->assertStringContainsString('ajudar.', $this->last($c)->body);
+        $this->assertMatchesRegularExpression('/tudo certo/iu', $this->last($c)->body);
+        $this->assertStringNotContainsString('😄', $this->last($c)->body);
         $this->assertStringNotContainsString('Entendi o relato', $this->last($c)->body);
         $this->assertSame('SERIOUS', $c->context_json['tone']['severity']);
         $this->assertEquals($pending, $c->context_json['pending']);
@@ -95,6 +96,85 @@ class NaturalConversationTest extends IntelligenceTestCase
         }
         $this->assertSame(Intent::Social, $detector->detect('ce ta bao ?', State::Confirmation));
         $this->assertSame(Intent::Social, $detector->detect('como está a rede?', State::Active));
+    }
+
+    public function test_real_three_turn_sequence_keeps_both_sides_in_context_and_no_tasks(): void
+    {
+        $this->binding();
+        $client = $this->client();
+        $c = $this->conversation();
+        $previous = null;
+        foreach (['ce ta bao?', 'Tô bão também, meu rei! Kkkkk', 'Rapaz, o YouTube tá uma carroça hoje 😂'] as $body) {
+            $c = $this->say($c, $body);
+            $reply = $this->last($c);
+            $payload = json_decode(end($client->calls)['messages'][1]['content'], true)['conversation'];
+            $this->assertSame('RELAXED', $payload['tone']);
+            $this->assertSame('ACTIVE', $c->state);
+            $this->assertSame($body, end($payload['recent_turns'])['text']);
+            if ($previous !== null) {
+                $this->assertContains($previous, array_column($payload['recent_turns'], 'text'));
+            }
+            $previous = $reply->body;
+            $this->assertStringNotContainsString('assistente virtual', $reply->body);
+            $this->assertStringNotContainsString('disponível', $reply->body);
+            $this->assertLessThanOrEqual(800, array_sum(array_map(fn ($turn) => mb_strlen($turn['text']), $payload['recent_turns'])));
+        }
+        $this->assertCount(3, $client->calls);
+        $this->assertSame('ROUTINE_SLOWNESS', $reply->metadata['social_act']);
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_timeout_sequence_fallback_acknowledges_answer_and_asks_one_relevant_question(): void
+    {
+        $this->binding();
+        $client = $this->client(['error' => 'timeout']);
+        $c = $this->say($this->conversation(), 'ce ta bao?');
+        $c = $this->say($c, 'Tô bão também, meu rei! Kkkkk');
+        $reply = $this->last($c);
+        $this->assertSame('SHARE_USER_WELLBEING', $reply->metadata['social_act']);
+        $this->assertStringNotContainsString('?', $reply->body);
+        $this->assertStringNotContainsString('disponível', $reply->body);
+        $c = $this->say($c, 'Rapaz, o YouTube tá uma carroça hoje 😂');
+        $reply = $this->last($c);
+        $this->assertSame('FALLBACK', $reply->metadata['language_status']);
+        $this->assertSame('timeout', $reply->metadata['language_reason']);
+        $this->assertStringContainsString('vídeos', $reply->body);
+        $this->assertSame(1, substr_count($reply->body, '?'));
+        $this->assertStringNotContainsString('medições', $reply->body);
+        $this->assertStringNotContainsString('disponível', $reply->body);
+        $this->assertCount(3, $client->calls);
+        $this->assertSame(0, AgentTask::count());
+    }
+
+    public function test_institutional_boilerplate_is_rejected_but_does_not_trigger_another_call(): void
+    {
+        $this->binding();
+        $client = $this->client(['output' => ['summary' => 'Que bom! Sigo disponível como assistente virtual do Agent Center.', 'next_steps' => []]]);
+        $c = $this->say($this->conversation(), 'Tô bão também, meu rei! Kkkkk');
+        $reply = $this->last($c);
+        $this->assertSame('invalid_output', $reply->metadata['language_reason']);
+        $this->assertStringNotContainsString('assistente virtual', $reply->body);
+        $this->assertStringNotContainsString('disponível', $reply->body);
+        $this->assertCount(1, $client->calls);
+    }
+
+    public function test_generator_history_excludes_operational_and_rag_assistant_content_and_redacts_secrets(): void
+    {
+        $this->binding();
+        $client = $this->client();
+        $c = $this->conversation();
+        foreach (['result', 'interpretation', 'text'] as $type) {
+            $c->sequence++;
+            $m = new ConversationMessage;
+            $m->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $c->tenant_id, 'conversation_id' => $c->id, 'sender_type' => 'system', 'message_type' => $type, 'body' => 'SENSITIVE_DIAGNOSTIC_OR_RAG_CONTEXT', 'sequence' => $c->sequence, 'metadata' => $type === 'text' ? ['rag_sources' => ['fixture-source']] : [], 'created_at' => now()])->save();
+        }
+        $c->save();
+        $c = $this->say($c, 'ce ta bao? senha: fixture-private-password');
+        $payload = json_encode($client->calls);
+        $this->assertStringNotContainsString('SENSITIVE_DIAGNOSTIC_OR_RAG_CONTEXT', $payload);
+        $this->assertStringNotContainsString('fixture-private-password', $payload);
+        $this->assertSame(0, AgentTask::count());
     }
 
     protected function setUp(): void
