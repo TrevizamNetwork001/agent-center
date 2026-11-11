@@ -1,0 +1,45 @@
+{
+  "externalProvider": "deterministic transport fixture, not live inference",
+  "results": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "search": true,
+      "answer": true,
+      "source": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "search": true,
+      "answer": true,
+      "source": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "search": true,
+      "answer": true,
+      "source": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "search": true,
+      "answer": true,
+      "source": true,
+      "overflow": false,
+      "errors": []
+    }
+  ],
+  "noMatch": true,
+  "crossTenantSource": 404,
+  "crossTenantConversation": 404,
+  "csrf": 419
+}

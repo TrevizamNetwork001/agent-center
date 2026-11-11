@@ -1,0 +1,43 @@
+{
+  "tenant_id": 1,
+  "model": "gpt-6.1-sol",
+  "prompt": "Assistente NOC Knowledge",
+  "binding": "knowledge_assistance",
+  "configuration_valid": true,
+  "credential_changed": false,
+  "organization_ownership_verified": false,
+  "organization_verification_gap": "The existing adapter does not capture organization identity; successful API access alone does not establish the organization credited by billing.",
+  "tests": [
+    {
+      "adapter": "operational",
+      "endpoint_path": "/v1/chat/completions",
+      "network_calls": 1,
+      "http_status": 200,
+      "latency_ms": 4476.75,
+      "usage": {"prompt_tokens": 282, "completion_tokens": 108, "total_tokens": 390},
+      "response_valid": true,
+      "error": null
+    },
+    {
+      "adapter": "candidate",
+      "endpoint_path": "/v1/responses",
+      "network_calls": 1,
+      "http_status": 200,
+      "latency_ms": 5047,
+      "usage": {"input_tokens": 498, "output_tokens": 54, "total_tokens": 552},
+      "response_valid": true,
+      "synthetic_source_verified": true,
+      "production_database_retrieval": false,
+      "error": null
+    }
+  ],
+  "total_network_calls": 2,
+  "total_tokens": 942,
+  "automatic_network_retries": 0,
+  "production_deployed": false,
+  "production_migrated": false,
+  "operations_health_before_publication": "VERDE",
+  "https_login_status": 200,
+  "https_readiness_status": 200,
+  "tls_verification_result": 0
+}

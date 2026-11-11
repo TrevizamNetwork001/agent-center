@@ -1,0 +1,36 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 150B 0.0s done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/agent-center-central:agent064-web-audit-20261110
+#2 DONE 0.1s
+
+#3 [internal] load .dockerignore
+#3 transferring context:
+#3 transferring context: 2B done
+#3 DONE 0.1s
+
+#4 [internal] load build context
+#4 transferring context: 84.92kB 0.0s done
+#4 DONE 0.1s
+
+#5 [1/2] FROM docker.io/library/agent-center-central:agent064-web-audit-20261110@sha256:7d00bfbe1a852f6b2823fec4ae2adcd8ced8fadf51f8973f805b2aa169df4dc3
+#5 resolve docker.io/library/agent-center-central:agent064-web-audit-20261110@sha256:7d00bfbe1a852f6b2823fec4ae2adcd8ced8fadf51f8973f805b2aa169df4dc3 0.1s done
+#5 DONE 0.4s
+
+#6 [2/2] COPY --chown=www-data:www-data overlay/app/ /var/www/html/
+#6 DONE 0.2s
+
+#7 exporting to image
+#7 exporting layers
+#7 exporting layers 0.2s done
+#7 exporting manifest sha256:e6d38ade380d9ba8396751fbc86f0abd55bceccecaf1cfed8e8d6a725bea384d 0.0s done
+#7 exporting config sha256:80554830e43ec79d11a6e1fb17f3d776fd2ac5065dc4f37e0e962af2a3eba2ed 0.0s done
+#7 exporting attestation manifest sha256:04f8268d60944ff82850a733de91e77fc14ca65503842b638bff283494e7e9c0
+#7 exporting attestation manifest sha256:04f8268d60944ff82850a733de91e77fc14ca65503842b638bff283494e7e9c0 0.0s done
+#7 exporting manifest list sha256:0ae5e0bf183aab63f43042754636d51965eba84d6200d4b7a92fdf5ceba1036f 0.0s done
+#7 naming to docker.io/library/agent-center-central:rag-v1-candidate-20261111 done
+#7 unpacking to docker.io/library/agent-center-central:rag-v1-candidate-20261111 0.1s done
+#7 DONE 0.7s
