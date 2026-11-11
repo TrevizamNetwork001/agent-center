@@ -1,0 +1,197 @@
+{
+    "status": "PASS",
+    "scope": "LAB only; real OpenAI; separate three-turn conversations; each scenario rolled back, no real Telegram transport",
+    "requests": 3,
+    "max_output_tokens_each": 1024,
+    "store": false,
+    "timeout_seconds_max": 10,
+    "operational_counts_unchanged": true,
+    "transcript": [
+        {
+            "channel": "web",
+            "input": "ce ta bao?",
+            "response": "Tudo certo por aqui! E você, tá bem?",
+            "state": "ACTIVE",
+            "metadata": {
+                "tone": "RELAXED",
+                "usage": {
+                    "input_tokens": 682,
+                    "total_tokens": 719,
+                    "output_tokens": 37
+                },
+                "model_id": "60131360-de58-405f-9eb1-c63433048fb7",
+                "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+                "request_id": "req_e37b6d76a6b44591963c15da282ac3ab",
+                "social_act": "ASK_ASSISTANT_WELLBEING",
+                "provider_id": "b6cf9cf8-ff17-49ed-b1a4-6fb757158ed8",
+                "language_status": "ASSISTED",
+                "context_sequences": [
+                    2
+                ],
+                "prompt_version_id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876"
+            },
+            "generator_context": {
+                "recent_turns": [
+                    {
+                        "role": "user",
+                        "text": "ce ta bao?"
+                    }
+                ],
+                "social_act": "ASK_ASSISTANT_WELLBEING",
+                "conversation_state": "ACTIVE",
+                "tone": "RELAXED",
+                "severity": "ROUTINE",
+                "known_destination": false,
+                "pending_confirmation": false,
+                "diagnostic_running": false
+            }
+        },
+        {
+            "channel": "web",
+            "input": "Tô bão também, meu rei! Kkkkk",
+            "response": "Que bom! 😄",
+            "state": "ACTIVE",
+            "metadata": {
+                "tone": "RELAXED",
+                "usage": {
+                    "input_tokens": 756,
+                    "total_tokens": 787,
+                    "output_tokens": 31
+                },
+                "model_id": "60131360-de58-405f-9eb1-c63433048fb7",
+                "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+                "request_id": "req_8afa0a4cf1bc48c99c35802c8177ccf3",
+                "social_act": "SHARE_USER_WELLBEING",
+                "provider_id": "b6cf9cf8-ff17-49ed-b1a4-6fb757158ed8",
+                "language_status": "ASSISTED",
+                "context_sequences": [
+                    2,
+                    3,
+                    4
+                ],
+                "prompt_version_id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876"
+            },
+            "generator_context": {
+                "recent_turns": [
+                    {
+                        "role": "user",
+                        "text": "ce ta bao?"
+                    },
+                    {
+                        "role": "assistant",
+                        "text": "Tudo certo por aqui! E você, tá bem?"
+                    },
+                    {
+                        "role": "user",
+                        "text": "Tô bão também, meu rei! Kkkkk"
+                    }
+                ],
+                "social_act": "SHARE_USER_WELLBEING",
+                "conversation_state": "ACTIVE",
+                "tone": "RELAXED",
+                "severity": "ROUTINE",
+                "known_destination": false,
+                "pending_confirmation": false,
+                "diagnostic_running": false
+            }
+        },
+        {
+            "channel": "web",
+            "input": "Rapaz, o YouTube tá uma carroça hoje 😂",
+            "response": "Poxa, é chato quando fica assim! Tá demorando pra abrir os vídeos ou eles ficam parando no meio?",
+            "state": "ACTIVE",
+            "metadata": {
+                "tone": "RELAXED",
+                "usage": {
+                    "input_tokens": 820,
+                    "total_tokens": 871,
+                    "output_tokens": 51
+                },
+                "model_id": "60131360-de58-405f-9eb1-c63433048fb7",
+                "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+                "request_id": "req_223d3f238d8d4218b43af395818eeadc",
+                "social_act": "ROUTINE_SLOWNESS",
+                "provider_id": "b6cf9cf8-ff17-49ed-b1a4-6fb757158ed8",
+                "language_status": "ASSISTED",
+                "context_sequences": [
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ],
+                "prompt_version_id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876"
+            },
+            "generator_context": {
+                "recent_turns": [
+                    {
+                        "role": "user",
+                        "text": "ce ta bao?"
+                    },
+                    {
+                        "role": "assistant",
+                        "text": "Tudo certo por aqui! E você, tá bem?"
+                    },
+                    {
+                        "role": "user",
+                        "text": "Tô bão também, meu rei! Kkkkk"
+                    },
+                    {
+                        "role": "assistant",
+                        "text": "Que bom! 😄"
+                    },
+                    {
+                        "role": "user",
+                        "text": "Rapaz, o YouTube tá uma carroça hoje 😂"
+                    }
+                ],
+                "social_act": "ROUTINE_SLOWNESS",
+                "conversation_state": "ACTIVE",
+                "tone": "RELAXED",
+                "severity": "ROUTINE",
+                "known_destination": true,
+                "pending_confirmation": false,
+                "diagnostic_running": false
+            }
+        },
+        {
+            "channel": "telegram",
+            "input": "ce ta bao?",
+            "response": "Tudo certo por aqui! Como estão as coisas por aí?",
+            "state": "ACTIVE",
+            "metadata": {
+                "tone": "RELAXED",
+                "social_act": "ASK_ASSISTANT_WELLBEING",
+                "language_reason": "rate_limited",
+                "language_status": "FALLBACK"
+            },
+            "generator_context": null
+        },
+        {
+            "channel": "telegram",
+            "input": "Tô bão também, meu rei! Kkkkk",
+            "response": "Aí sim! 😄",
+            "state": "ACTIVE",
+            "metadata": {
+                "tone": "RELAXED",
+                "social_act": "SHARE_USER_WELLBEING",
+                "language_reason": "rate_limited",
+                "language_status": "FALLBACK"
+            },
+            "generator_context": null
+        },
+        {
+            "channel": "telegram",
+            "input": "Rapaz, o YouTube tá uma carroça hoje 😂",
+            "response": "Pelo que você contou, tá difícil usar youtube.com. Os vídeos demoram pra começar ou ficam parando no meio?",
+            "state": "ACTIVE",
+            "metadata": {
+                "tone": "RELAXED",
+                "social_act": "ROUTINE_SLOWNESS",
+                "language_reason": "rate_limited",
+                "language_status": "FALLBACK"
+            },
+            "generator_context": null
+        }
+    ]
+}

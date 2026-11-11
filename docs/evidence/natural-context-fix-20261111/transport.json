@@ -1,0 +1,45 @@
+{
+    "status": "PASS",
+    "transport": "Telegram fixture, native ingress\/runner\/deliver",
+    "conversation": "51a98a7f-b401-4e2b-84fe-7bf78540207d",
+    "transcript": [
+        {
+            "input": "ce ta bao?",
+            "response": "Por aqui, tudo certo! E você, tá bem?",
+            "metadata": {
+                "tone": "RELAXED",
+                "social_act": "ASK_ASSISTANT_WELLBEING",
+                "language_status": "LOCAL"
+            },
+            "state": "ACTIVE",
+            "telegram_matches_panel_history": true,
+            "history_footer": false
+        },
+        {
+            "input": "Tô bão também, meu rei! Kkkkk",
+            "response": "Boa! Que bom que tá tudo certo.",
+            "metadata": {
+                "tone": "RELAXED",
+                "social_act": "SHARE_USER_WELLBEING",
+                "language_status": "LOCAL"
+            },
+            "state": "ACTIVE",
+            "telegram_matches_panel_history": true,
+            "history_footer": false
+        },
+        {
+            "input": "Rapaz, o YouTube tá uma carroça hoje 😂",
+            "response": "Essa lentidão atrapalha, hein. Os vídeos demoram pra começar ou ficam parando no meio?",
+            "metadata": {
+                "tone": "RELAXED",
+                "social_act": "ROUTINE_SLOWNESS",
+                "language_status": "LOCAL"
+            },
+            "state": "ACTIVE",
+            "telegram_matches_panel_history": true,
+            "history_footer": false
+        }
+    ],
+    "history_command_same_conversation": true,
+    "operational_counts_unchanged": true
+}
