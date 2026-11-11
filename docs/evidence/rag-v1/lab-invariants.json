@@ -1,0 +1,26 @@
+{
+    "tenants": 2,
+    "rag_rls": [
+        {
+            "relname": "rag_chunks",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        },
+        {
+            "relname": "rag_documents",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        }
+    ],
+    "runtime": {
+        "rolsuper": false,
+        "rolbypassrls": false
+    },
+    "agents": 0,
+    "tasks": 0,
+    "diagnostics": 0,
+    "documents": 1,
+    "chunks": 1,
+    "conversation_messages": 14,
+    "rag_audit_events": 18
+}

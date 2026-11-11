@@ -27,3 +27,5 @@ SELECT format('GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.agent_mainte
 GRANT SELECT, INSERT ON TABLE public.agent_releases TO :"runtime_user";
 
 SELECT format('GRANT SELECT, INSERT ON TABLE public.agent_release_quarantines TO %I', :'runtime_user') WHERE to_regclass('public.agent_release_quarantines') IS NOT NULL \gexec
+
+SELECT format('GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.%I TO %I',tablename,:'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('rag_documents','rag_chunks') \gexec

@@ -15,6 +15,9 @@ class IntentDetector
         if (preg_match('/\b(era so isso|era isso|resolveu|pode encerrar|nao precisa mais|encerra|encerrar)\b/', $s)) {
             return Intent::Close;
         }
+        if (preg_match('/^(como (devo|posso|diagnosticar|investigar|verificar)|qual (e |eh )?((o|a|nosso|nossa) )*(procedimento|guia)|consulte (a )?knowledge|na knowledge|o que diz (a )?knowledge)\b/', $s)) {
+            return Intent::Knowledge;
+        }
         if (preg_match('/\b(mtr|teste de rota|analisa a perda|perda de pacotes ate|parte do caminho|aumentando a latencia)\b/', $s)) {
             return Intent::Path;
         }

@@ -9,6 +9,7 @@ use App\Models\KnowledgeVersion;
 use App\Models\Prompt;
 use App\Models\PromptVersion;
 use App\Models\User;
+use App\Rag\Index;
 use App\Services\Audit;
 use App\Tenancy\TenantContext;
 use Illuminate\Support\Facades\DB;
@@ -100,6 +101,9 @@ class Versioning
             $this->transition($item, $version, 'PUBLISHED', $u);
             $item->forceFill(['current_version_id' => $version, 'draft_version_id' => null, 'status' => 'PUBLISHED'])->save();
             $this->event($item, 'published', $u, $version);
+            if ($item instanceof KnowledgeItem) {
+                app(Index::class)->refresh($item);
+            }
 
             return $item->fresh();
         });
@@ -131,6 +135,9 @@ class Versioning
                 $this->transition($item, $id, 'ARCHIVED', $u);
             }$item->forceFill(['status' => 'ARCHIVED', 'draft_version_id' => null])->save();
             $this->event($item, 'archived', $u);
+            if ($item instanceof KnowledgeItem) {
+                app(Index::class)->refresh($item);
+            }
         });
     }
 }

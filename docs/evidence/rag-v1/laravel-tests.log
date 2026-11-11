@@ -1,0 +1,37 @@
+PHPUnit 12.5.43 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.27
+Configuration: /var/www/html/phpunit.xml
+
+...............................................................  63 / 292 ( 21%)
+............................................................... 126 / 292 ( 43%)
+............................................................... 189 / 292 ( 64%)
+............................................................... 252 / 292 ( 86%)
+........................................                        292 / 292 (100%)
+
+Time: 02:07.407, Memory: 77.00 MB
+
+OK (292 tests, 2154 assertions)
+
+   INFO  Rolling back migrations.
+
+  2026_11_07_210000_create_rag_index ............................ 45.53ms DONE
+  2026_11_07_180000_add_maintenance_access_lifetime ............. 19.48ms DONE
+  2026_11_07_150000_create_agent_release_quarantines ............ 42.28ms DONE
+  2026_11_06_153500_add_password_to_agent_maintenance_accesses .. 11.55ms DONE
+  2026_11_06_120000_create_agent_maintenance_accesses ........... 25.31ms DONE
+  2026_11_06_100000_create_agent_releases ....................... 19.48ms DONE
+  2026_11_06_000000_allow_mtr_path_analysis ...................... 1.95ms DONE
+  2026_11_05_220000_add_diagnostic_performance .................. 15.26ms DONE
+  2026_11_05_140000_add_agent_deleted_at ......................... 4.47ms DONE
+  2026_11_04_220000_agent_update_intents ........................ 20.23ms DONE
+  2026_11_04_210000_create_conversation_platform ................ 69.46ms DONE
+  2026_11_04_210000_agent_operations ............................ 63.31ms DONE
+  2026_11_04_200000_create_knowledge_and_llm ................... 198.48ms DONE
+  2026_11_04_190000_add_operational_read_indexes ................ 16.64ms DONE
+  2026_11_04_180000_create_diagnostic_engine ................... 116.56ms DONE
+  2026_11_04_170000_create_agents_and_enrollments ............... 31.90ms DONE
+  2026_11_04_160000_create_identity_and_audit .................. 153.81ms DONE
+  0001_01_01_000002_create_jobs_table ........................... 57.81ms DONE
+  0001_01_01_000001_create_cache_table .......................... 20.40ms DONE
+  0001_01_01_000000_create_users_table .......................... 47.07ms DONE

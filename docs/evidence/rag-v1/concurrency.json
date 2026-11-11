@@ -1,0 +1,7 @@
+{
+    "result": "PASS",
+    "publish_cycles": 6,
+    "reindex_cycles": 6,
+    "consistent_snapshots": 26,
+    "agent_tasks": 0
+}

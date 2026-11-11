@@ -15,6 +15,7 @@ use App\Models\Diagnostic;
 use App\Models\DiagnosticConclusion;
 use App\Models\DiagnosticInterpretation;
 use App\Models\Profile;
+use App\Rag\Answer;
 use App\Services\Audit;
 use App\Tenancy\TenantContext;
 use Illuminate\Support\Facades\DB;
@@ -95,6 +96,10 @@ class Engine
             $state = State::from($c->state);
             if ($state === State::Closed) {
                 $this->reply($c, 'Conversa encerrada. Uma nova solicitação de teste abre outra conversa.');
+            } elseif ($intent === Intent::Knowledge) {
+                $answer = app(Answer::class)->run($i->user, $safe);
+                $references = array_map(fn ($s) => array_intersect_key($s, array_flip(['id', 'document_id', 'version_id', 'version_number', 'position', 'offset_start', 'offset_end'])), $answer['sources']);
+                $this->message($c, 'system', 'text', $answer['answer'], null, ['rag_status' => $answer['status'], 'rag_sources' => array_column($answer['sources'], 'id'), 'rag_references' => $references, 'rag_provenance' => $answer['provenance']]);
             } elseif ($intent === Intent::Cancel) {
                 $this->cancel($c, $i);
             } elseif ($intent === Intent::Close || $intent === Intent::Acknowledge) {

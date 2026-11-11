@@ -17,6 +17,7 @@ use App\Http\Controllers\KnowledgeController;
 use App\Http\Controllers\LlmController;
 use App\Http\Controllers\OperationsController;
 use App\Http\Controllers\PromptController;
+use App\Http\Controllers\RagController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -78,6 +79,10 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->group(function 
 });
 
 Route::middleware(['auth', 'auth.session', 'password.changed'])->group(function () {
+    Route::get('/knowledge/rag', [RagController::class, 'index'])->middleware('throttle:conversation-sync')->name('rag.index');
+    Route::post('/knowledge/rag/search', [RagController::class, 'index'])->middleware('throttle:conversation-sync')->name('rag.search');
+    Route::post('/knowledge/rag/reindex', [RagController::class, 'reindex'])->middleware('throttle:llm-call')->name('rag.reindex');
+    Route::get('/knowledge/sources/{source}', [RagController::class, 'source'])->whereUuid('source')->name('rag.source');
     Route::get('/knowledge', [KnowledgeController::class, 'index'])->name('knowledge.index');
     Route::get('/knowledge/create', [KnowledgeController::class, 'create'])->name('knowledge.create');
     Route::post('/knowledge', [KnowledgeController::class, 'store'])->name('knowledge.store');

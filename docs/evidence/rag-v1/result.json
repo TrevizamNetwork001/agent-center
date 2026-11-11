@@ -1,0 +1,17 @@
+{
+  "status": "AGENT CENTER RAG V1 LAB PASS",
+  "production": "PRODUCTION DEPLOY PENDING",
+  "implementation_commit": "4637daf",
+  "laravel": {"tests": 292, "assertions": 2154, "rag_tests": 24, "result": "PASS"},
+  "postgresql": {"separate_lab": true, "tenants": 2, "runtime_superuser": false, "runtime_bypassrls": false, "new_tables_force_rls": 2, "migration_up_down": "PASS"},
+  "concurrency": {"publish_cycles": 6, "reindex_cycles": 6, "consistent_snapshots": 26, "result": "PASS"},
+  "browser": {"widths": [1440,390], "themes": ["light","dark"], "screenshots": 14, "result": "PASS", "csrf_missing": 419, "cross_tenant_source": 404, "cross_tenant_conversation": 404},
+  "llm_demo": "Deterministic external-transport fixture; real Laravel Client, JSON parser, credentials encryption, authorization, retrieval and source validation. No live commercial-model inference claimed.",
+  "checks": {"pint_files": 27, "pint": "PASS", "php_lint": "PASS", "vite_build": "PASS", "secret_scan_git_index": "PASS", "diff_check": "PASS"},
+  "operational_tasks_in_demo": 0,
+  "production_deployed": false,
+  "python_changed": false,
+  "lifecycle_changed": false,
+  "observability_changed": false,
+  "quarantine_changed": false
+}

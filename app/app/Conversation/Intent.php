@@ -4,6 +4,7 @@ namespace App\Conversation;
 
 enum Intent: string
 {
+    case Knowledge = 'KNOWLEDGE_QUESTION';
     case Path = 'REQUEST_NETWORK_PATH';
     case Start = 'START_DIAGNOSTIC';
     case Continue = 'CONTINUE_DIAGNOSTIC';
