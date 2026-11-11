@@ -65,7 +65,7 @@ class WebUxTest extends IdentityTestCase
     public function test_workspace_navigation_preserves_role_boundaries_and_tenant_context(): void
     {
         $this->actingAs($this->admin)->get('/dashboard')->assertOk()
-            ->assertSee('TENANT CONTEXT')->assertSee('data-theme-toggle', false)
+            ->assertSee('TENANT · Tenant A')->assertSee('data-theme-toggle', false)
             ->assertSee(route('profiles.index'), false)->assertSee(route('llm.index'), false);
         $this->flushSession();
         $this->actingAs($this->viewer)->get('/dashboard')->assertOk()
@@ -73,7 +73,7 @@ class WebUxTest extends IdentityTestCase
             ->assertDontSee(route('backups.settings'), false);
         $this->flushSession();
         $this->actingAs($this->platform)->get('/dashboard')->assertOk()
-            ->assertSee('PLATFORM CONTEXT')->assertSee(route('backups.settings'), false);
+            ->assertSee('PLATAFORMA · selecione um tenant')->assertSee(route('backups.settings'), false);
     }
 
     public function test_platform_admin_can_return_from_client_context_without_exposing_action_to_client(): void
@@ -81,7 +81,7 @@ class WebUxTest extends IdentityTestCase
         $this->actingAs($this->platform)->withSession(['active_tenant_id' => $this->a->id])
             ->get('/dashboard')->assertOk()->assertSee('Voltar à plataforma');
         $this->post('/tenant-context', [])->assertRedirect('/dashboard');
-        $this->get('/dashboard')->assertOk()->assertSee('PLATFORM CONTEXT')->assertDontSee('Voltar à plataforma');
+        $this->get('/dashboard')->assertOk()->assertSee('PLATAFORMA · selecione um tenant')->assertDontSee('Voltar à plataforma');
         $this->flushSession();
         $this->actingAs($this->admin)->get('/dashboard')->assertOk()->assertDontSee('Voltar à plataforma');
         $this->post('/tenant-context', [])->assertForbidden();
