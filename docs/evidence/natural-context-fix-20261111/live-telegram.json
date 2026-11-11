@@ -1,0 +1,158 @@
+{
+    "status": "PASS",
+    "scope": "LAB only; real OpenAI; separate three-turn conversations; each scenario rolled back, no real Telegram transport",
+    "requests": 3,
+    "max_output_tokens_each": 1024,
+    "store": false,
+    "timeout_seconds_max": 10,
+    "operational_counts_unchanged": true,
+    "transcript": [
+        {
+            "channel": "telegram",
+            "input": "ce ta bao?",
+            "response": "Tudo certo por aqui! E você, tá bem?",
+            "state": "ACTIVE",
+            "metadata": {
+                "tone": "RELAXED",
+                "usage": {
+                    "input_tokens": 682,
+                    "total_tokens": 719,
+                    "output_tokens": 37
+                },
+                "model_id": "60131360-de58-405f-9eb1-c63433048fb7",
+                "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+                "request_id": "req_37b9c3a241b046009efddf728eac57ae",
+                "social_act": "ASK_ASSISTANT_WELLBEING",
+                "provider_id": "b6cf9cf8-ff17-49ed-b1a4-6fb757158ed8",
+                "language_status": "ASSISTED",
+                "context_sequences": [
+                    2
+                ],
+                "prompt_version_id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876"
+            },
+            "generator_context": {
+                "recent_turns": [
+                    {
+                        "role": "user",
+                        "text": "ce ta bao?"
+                    }
+                ],
+                "social_act": "ASK_ASSISTANT_WELLBEING",
+                "conversation_state": "ACTIVE",
+                "tone": "RELAXED",
+                "severity": "ROUTINE",
+                "known_destination": false,
+                "pending_confirmation": false,
+                "diagnostic_running": false
+            }
+        },
+        {
+            "channel": "telegram",
+            "input": "Tô bão também, meu rei! Kkkkk",
+            "response": "Aí sim! Que bom que tá bem!",
+            "state": "ACTIVE",
+            "metadata": {
+                "tone": "RELAXED",
+                "usage": {
+                    "input_tokens": 756,
+                    "total_tokens": 792,
+                    "output_tokens": 36
+                },
+                "model_id": "60131360-de58-405f-9eb1-c63433048fb7",
+                "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+                "request_id": "req_f299da29781a4e4c9520db29a8881433",
+                "social_act": "SHARE_USER_WELLBEING",
+                "provider_id": "b6cf9cf8-ff17-49ed-b1a4-6fb757158ed8",
+                "language_status": "ASSISTED",
+                "context_sequences": [
+                    2,
+                    3,
+                    4
+                ],
+                "prompt_version_id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876"
+            },
+            "generator_context": {
+                "recent_turns": [
+                    {
+                        "role": "user",
+                        "text": "ce ta bao?"
+                    },
+                    {
+                        "role": "assistant",
+                        "text": "Tudo certo por aqui! E você, tá bem?"
+                    },
+                    {
+                        "role": "user",
+                        "text": "Tô bão também, meu rei! Kkkkk"
+                    }
+                ],
+                "social_act": "SHARE_USER_WELLBEING",
+                "conversation_state": "ACTIVE",
+                "tone": "RELAXED",
+                "severity": "ROUTINE",
+                "known_destination": false,
+                "pending_confirmation": false,
+                "diagnostic_running": false
+            }
+        },
+        {
+            "channel": "telegram",
+            "input": "Rapaz, o YouTube tá uma carroça hoje 😂",
+            "response": "Poxa, é chato quando fica assim! Os vídeos demoram pra começar ou ficam parando no meio?",
+            "state": "ACTIVE",
+            "metadata": {
+                "tone": "RELAXED",
+                "usage": {
+                    "input_tokens": 830,
+                    "total_tokens": 879,
+                    "output_tokens": 49
+                },
+                "model_id": "60131360-de58-405f-9eb1-c63433048fb7",
+                "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+                "request_id": "req_0cf99fe4c96543e0ab738744c865701f",
+                "social_act": "ROUTINE_SLOWNESS",
+                "provider_id": "b6cf9cf8-ff17-49ed-b1a4-6fb757158ed8",
+                "language_status": "ASSISTED",
+                "context_sequences": [
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ],
+                "prompt_version_id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876"
+            },
+            "generator_context": {
+                "recent_turns": [
+                    {
+                        "role": "user",
+                        "text": "ce ta bao?"
+                    },
+                    {
+                        "role": "assistant",
+                        "text": "Tudo certo por aqui! E você, tá bem?"
+                    },
+                    {
+                        "role": "user",
+                        "text": "Tô bão também, meu rei! Kkkkk"
+                    },
+                    {
+                        "role": "assistant",
+                        "text": "Aí sim! Que bom que tá bem!"
+                    },
+                    {
+                        "role": "user",
+                        "text": "Rapaz, o YouTube tá uma carroça hoje 😂"
+                    }
+                ],
+                "social_act": "ROUTINE_SLOWNESS",
+                "conversation_state": "ACTIVE",
+                "tone": "RELAXED",
+                "severity": "ROUTINE",
+                "known_destination": true,
+                "pending_confirmation": false,
+                "diagnostic_running": false
+            }
+        }
+    ]
+}

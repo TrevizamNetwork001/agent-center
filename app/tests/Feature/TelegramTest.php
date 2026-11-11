@@ -241,6 +241,57 @@ class TelegramTest extends IntelligenceTestCase
         $this->actingAs($this->operator)->get('/integrations/telegram')->assertOk()->assertSee('Identidade associada pelo administrador')->assertDontSee('data-tg-admin-association', false);
     }
 
+    public function test_contextual_sequence_in_separate_telegram_messages_and_authorized_transition(): void
+    {
+        $link = $this->link();
+        $provider = $this->provider();
+        $model = $this->model($provider);
+        $prompt = app(Versioning::class)->publish($this->prompt(), $this->admin);
+        app(Configuration::class)->binding(['purpose' => 'diagnostic_explanation', 'model_id' => $model->id, 'prompt_id' => $prompt->id, 'enabled' => true, 'allow_external_context' => true, 'allow_conversation_language' => true], $this->admin);
+        $client = new class extends \App\Llm\Client
+        {
+            public array $contexts = [];
+
+            public function call($p, $m, array $messages, ?callable $cancelled = null, string $purpose = 'diagnostic'): array
+            {
+                $this->contexts[] = json_decode($messages[1]['content'], true)['conversation'];
+
+                return ['error' => 'timeout'];
+            }
+        };
+        $this->app->instance(\App\Llm\Client::class, $client);
+        foreach (['ce ta bao?', 'Tô bão também, meu rei! Kkkkk', 'Rapaz, o YouTube tá uma carroça hoje 😂'] as $body) {
+            $this->say($body);
+            $c = $this->conversation($link);
+            $m = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->firstOrFail();
+            $this->assertSame('RELAXED', $m->metadata['tone']);
+            $this->assertSame('FALLBACK', $m->metadata['language_status']);
+            $this->assertStringNotContainsString('assistente virtual', $m->body);
+            $this->assertStringNotContainsString('disponível', $m->body);
+            $this->assertSame('ACTIVE', $c->state);
+        }
+        $this->assertCount(3, $client->contexts);
+        $this->assertSame(['user', 'assistant', 'user', 'assistant', 'user'], array_column($client->contexts[2]['recent_turns'], 'role'));
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => ($r['text'] ?? '') === $m->body);
+        $this->assertStringContainsString('vídeos', $m->body);
+        $this->agent();
+        $this->say('Outro diagnóstico para youtube.com');
+        $pending = $this->conversation($link)->context_json['pending'];
+        $this->say('Tô bão também, meu rei! Kkkkk');
+        $this->assertEquals($pending, $this->conversation($link)->context_json['pending']);
+        $this->assertSame(0, Diagnostic::count());
+        $this->say('Sim, confirmo');
+        $this->assertSame(1, Diagnostic::count());
+        $before = ConversationMessage::count();
+        $this->say('/historico');
+        $this->assertSame($before, ConversationMessage::count());
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => ($r['text'] ?? '') === 'Histórico: '.route('conversations.show', $c->id));
+    }
+
     private Bot $bot;
 
     private int $serial = 10;

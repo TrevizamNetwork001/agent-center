@@ -1,0 +1,76 @@
+{
+    "note": "Reconstruction, not captured historical HTTP payload; administrative prompt hashes only, original language boundary is in baseline commit 4e5b1d5",
+    "turns": [
+        {
+            "input": "ce ta bao?",
+            "intent": "SOCIAL",
+            "state": "ACTIVE",
+            "state_basis": "Only NEW to ACTIVE transition in conversation_events; no later transition",
+            "tone": "RELAXED",
+            "language_status": "ASSISTED",
+            "fallback_used": false,
+            "origin": "OpenAI per stored usage and request_id",
+            "generator_context_reconstructed_from_published_source_and_history": {
+                "speaker_messages": [
+                    "ce ta bao ?",
+                    "boa noite  meu consagrado  bao ?",
+                    "ce ta bao?"
+                ],
+                "social_act": "ASK_ASSISTANT_WELLBEING",
+                "tone": "RELAXED",
+                "severity": "ROUTINE",
+                "known_destination": false,
+                "pending_confirmation": false,
+                "diagnostic_running": false
+            },
+            "prompt_version": {
+                "id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876",
+                "system_template_sha256": "dade24ccc8796dee7d3bc9f03f8af424a8f6a4fb7613153e9145052987f3f4e5",
+                "user_template_sha256": "da04d75e1310767a0834a8351c60fa67e0188eb3a17317cc2259eb26ceea992c"
+            },
+            "response": "Boa noite! Tô por aqui, disponível como assistente virtual da Agent Center. E você, tá bem?"
+        },
+        {
+            "input": "Tô bão também, meu rei! Kkkkk",
+            "intent": "SOCIAL",
+            "state": "ACTIVE",
+            "state_basis": "Only NEW to ACTIVE transition in conversation_events; no later transition",
+            "tone": "RELAXED",
+            "language_status": "ASSISTED",
+            "fallback_used": false,
+            "origin": "OpenAI per stored usage and request_id",
+            "generator_context_reconstructed_from_published_source_and_history": {
+                "speaker_messages": [
+                    "boa noite  meu consagrado  bao ?",
+                    "ce ta bao?",
+                    "Tô bão também, meu rei! Kkkkk"
+                ],
+                "social_act": "CONVERSATION",
+                "tone": "RELAXED",
+                "severity": "ROUTINE",
+                "known_destination": false,
+                "pending_confirmation": false,
+                "diagnostic_running": false
+            },
+            "prompt_version": {
+                "id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876",
+                "system_template_sha256": "dade24ccc8796dee7d3bc9f03f8af424a8f6a4fb7613153e9145052987f3f4e5",
+                "user_template_sha256": "da04d75e1310767a0834a8351c60fa67e0188eb3a17317cc2259eb26ceea992c"
+            },
+            "response": "Que bom! Por aqui, sigo disponível como assistente virtual do Agent Center."
+        },
+        {
+            "input": "Rapaz, o YouTube tá uma carroça hoje 😂",
+            "intent": "SOCIAL",
+            "state": "ACTIVE",
+            "state_basis": "Only NEW to ACTIVE transition in conversation_events; no later transition",
+            "tone": "RELAXED",
+            "language_status": "LOCAL",
+            "fallback_used": false,
+            "origin": "Language::local routine slowness branch; no generator call",
+            "generator_context_reconstructed_from_published_source_and_history": null,
+            "prompt_version": null,
+            "response": "Vamos por partes: em que momento você percebeu a lentidão? Ainda não tenho medições para apontar uma causa."
+        }
+    ]
+}
