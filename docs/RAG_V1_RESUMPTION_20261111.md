@@ -18,7 +18,7 @@ Imagem candidata local existente: agent-center-central:rag-v1-candidate-20261111
 
 Migration: app/database/migrations/2026_11_07_210000_create_rag_index.php. Nenhuma migration/grant aplicada em produção. Rollback previsto em RAG_V1_IMPLEMENTATION.md: restaurar imagem/configuração anterior e preservar Knowledge, versões, histórico e tabelas RAG; não executar down destrutivo em produção.
 
-Log focado existente nesta rodada: 66 testes e 388 assertions, PASS. Browser existente: desktop/mobile, claro/escuro, fontes, ausência de conhecimento, isolamento 404 e CSRF 419, PASS, com transporte determinístico. A suíte completa em reexecução tem resultado separado no relatório final; não usar o primeiro log com falha de AuditTimezoneTest como PASS.
+Log focado existente nesta rodada: 66 testes e 388 assertions, PASS. Browser existente: desktop/mobile, claro/escuro, fontes, ausência de conhecimento, isolamento 404 e CSRF 419, PASS, com transporte determinístico. Reexecução completa encerrada: 304 testes, 2264 assertions, PASS, 118,059 segundos; log preservado em docs/evidence/rag-v1-resumption-20261111/laravel-tests.log. Não usar o primeiro log com falha de AuditTimezoneTest como PASS.
 
 Snapshot somente leitura da Central: Operations Health VERDE, PostgreSQL/TLS, workers e probes independentes VERDE. Evidência em docs/evidence/rag-v1-resumption-20261111/health.json. A razão authenticated_request_completed é o rótulo interno do serviço: a coleta foi CLI e não comprova login HTTP novo. O estado de backup/R2 é leitura do monitor existente; nenhuma operação R2 foi disparada.
 
