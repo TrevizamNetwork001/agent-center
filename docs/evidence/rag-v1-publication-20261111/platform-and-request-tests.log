@@ -1,0 +1,129 @@
+Installing dependencies from lock file (including require-dev)
+Verifying lock file contents can be installed on current platform.
+Nothing to install, update or remove
+Generating optimized autoload files
+> Illuminate\Foundation\ComposerScripts::postAutoloadDump
+> @php artisan package:discover --ansi
+
+   INFO  Discovering packages.
+
+  laravel/pail .......................................................... DONE
+  laravel/pao ........................................................... DONE
+  laravel/tinker ........................................................ DONE
+  nesbot/carbon ......................................................... DONE
+  nunomaduro/collision .................................................. DONE
+  nunomaduro/termwind ................................................... DONE
+
+81 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+
+   INFO  Preparing database.
+
+  Creating migration table ...................................... 23.04ms DONE
+
+   INFO  Running migrations.
+
+  0001_01_01_000000_create_users_table .......................... 32.21ms DONE
+  0001_01_01_000001_create_cache_table .......................... 27.41ms DONE
+  0001_01_01_000002_create_jobs_table ........................... 45.64ms DONE
+  2026_11_04_160000_create_identity_and_audit .................. 171.21ms DONE
+  2026_11_04_170000_create_agents_and_enrollments ............... 40.53ms DONE
+  2026_11_04_180000_create_diagnostic_engine ................... 181.28ms DONE
+  2026_11_04_190000_add_operational_read_indexes ................ 56.75ms DONE
+  2026_11_04_200000_create_knowledge_and_llm ................... 313.89ms DONE
+  2026_11_04_210000_agent_operations ............................ 37.87ms DONE
+  2026_11_04_210000_create_conversation_platform ............... 118.36ms DONE
+  2026_11_04_220000_agent_update_intents ........................ 59.78ms DONE
+  2026_11_05_140000_add_agent_deleted_at ......................... 3.65ms DONE
+  2026_11_05_220000_add_diagnostic_performance .................. 12.40ms DONE
+  2026_11_06_000000_allow_mtr_path_analysis ...................... 3.96ms DONE
+  2026_11_06_100000_create_agent_releases ....................... 30.18ms DONE
+  2026_11_06_120000_create_agent_maintenance_accesses ........... 49.24ms DONE
+  2026_11_06_153500_add_password_to_agent_maintenance_accesses .. 11.62ms DONE
+  2026_11_07_150000_create_agent_release_quarantines ............ 76.01ms DONE
+  2026_11_07_180000_add_maintenance_access_lifetime ............. 13.60ms DONE
+  2026_11_07_210000_create_rag_index ............................ 52.75ms DONE
+
+SET
+SET
+ALTER ROLE
+GRANT
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+PHPUnit 12.5.43 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.27
+Configuration: /var/www/html/phpunit.xml
+
+...............                                                   15 / 15 (100%)
+
+Time: 00:03.189, Memory: 54.50 MB
+
+OK (15 tests, 99 assertions)
+
+   INFO  Rolling back migrations.
+
+  2026_11_07_210000_create_rag_index ............................ 28.47ms DONE
+  2026_11_07_180000_add_maintenance_access_lifetime .............. 9.21ms DONE
+  2026_11_07_150000_create_agent_release_quarantines ............ 22.08ms DONE
+  2026_11_06_153500_add_password_to_agent_maintenance_accesses .. 10.80ms DONE
+  2026_11_06_120000_create_agent_maintenance_accesses ........... 16.62ms DONE
+  2026_11_06_100000_create_agent_releases ....................... 25.61ms DONE
+  2026_11_06_000000_allow_mtr_path_analysis ...................... 0.41ms DONE
+  2026_11_05_220000_add_diagnostic_performance ................... 8.44ms DONE
+  2026_11_05_140000_add_agent_deleted_at ......................... 4.39ms DONE
+  2026_11_04_220000_agent_update_intents ........................ 23.28ms DONE
+  2026_11_04_210000_create_conversation_platform ................ 68.50ms DONE
+  2026_11_04_210000_agent_operations ............................ 35.37ms DONE
+  2026_11_04_200000_create_knowledge_and_llm ................... 191.45ms DONE
+  2026_11_04_190000_add_operational_read_indexes ................ 16.24ms DONE
+  2026_11_04_180000_create_diagnostic_engine ................... 129.69ms DONE
+  2026_11_04_170000_create_agents_and_enrollments ............... 26.10ms DONE
+  2026_11_04_160000_create_identity_and_audit ................... 62.74ms DONE
+  0001_01_01_000002_create_jobs_table ........................... 21.44ms DONE
+  0001_01_01_000001_create_cache_table .......................... 15.65ms DONE
+  0001_01_01_000000_create_users_table .......................... 21.39ms DONE

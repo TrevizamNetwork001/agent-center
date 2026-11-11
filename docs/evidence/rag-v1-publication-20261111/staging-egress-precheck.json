@@ -1,0 +1,29 @@
+{
+    "utc": "2026-11-11T16:46:39+00:00",
+    "environment": "isolated_agent_center_lab",
+    "real_call_budget": 1,
+    "retrieval": {
+        "document_id": "1396e428-298c-40ae-badd-39caa017a830",
+        "version_id": "885269c8-ccf5-4b66-994d-955f79bba3d5",
+        "source_id": "246b58fb-6a3c-4ecd-9d30-eb49aeb8e101",
+        "title": "RAGZK71 referência sintética"
+    },
+    "openai": {
+        "error": "ssrf_blocked",
+        "http_status": null,
+        "duration_ms": 8,
+        "attempts": 0,
+        "usage": [],
+        "request_id": null
+    },
+    "conversation": {
+        "id": "647c574c-091b-4892-ad5c-88f00d8b9b01",
+        "rag_status": "provider_unavailable",
+        "sources": [],
+        "answer": "Não foi possível gerar uma resposta pelo LLM. A Knowledge permanece disponível; tente novamente ou consulte a busca."
+    },
+    "status": "BLOCKED",
+    "failure_class": "RuntimeException",
+    "error": "real_rag_failed",
+    "network_calls": 0
+}

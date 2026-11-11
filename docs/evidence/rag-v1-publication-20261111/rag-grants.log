@@ -1,0 +1,6 @@
+GRANT
+    relname    | relrowsecurity | relforcerowsecurity
+---------------+----------------+---------------------
+ rag_chunks    | t              | t
+ rag_documents | t              | t
+(2 rows)

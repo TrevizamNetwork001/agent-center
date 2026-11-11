@@ -1,0 +1,26 @@
+{
+    "utc": "2026-11-11T16:48:26+00:00",
+    "health": "VERDE",
+    "conversation_setting": null,
+    "knowledge_items": 0,
+    "tasks": 97,
+    "agents": [
+        {
+            "id": "c88457e9-748f-4906-982a-166d0ee0f6d3",
+            "version": "0.6.4",
+            "status": "active"
+        },
+        {
+            "id": "570d3ee9-6d10-40d8-85dc-893a36da9043",
+            "version": "unavailable",
+            "status": "revoked"
+        }
+    ],
+    "quarantine_count": 2,
+    "migration_applied": false,
+    "role": {
+        "name": "agent_center_runtime",
+        "rolsuper": false,
+        "rolbypassrls": false
+    }
+}

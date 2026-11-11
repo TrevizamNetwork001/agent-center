@@ -1,0 +1,38 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 144B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/agent-center-central:rag-v1-candidate-20261111
+#2 DONE 0.1s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 2.56kB done
+#4 DONE 0.0s
+
+#5 [1/2] FROM docker.io/library/agent-center-central:rag-v1-candidate-20261111@sha256:0ae5e0bf183aab63f43042754636d51965eba84d6200d4b7a92fdf5ceba1036f
+#5 resolve docker.io/library/agent-center-central:rag-v1-candidate-20261111@sha256:0ae5e0bf183aab63f43042754636d51965eba84d6200d4b7a92fdf5ceba1036f 0.1s done
+#5 DONE 0.1s
+
+#5 [1/2] FROM docker.io/library/agent-center-central:rag-v1-candidate-20261111@sha256:0ae5e0bf183aab63f43042754636d51965eba84d6200d4b7a92fdf5ceba1036f
+#5 CACHED
+
+#6 [2/2] COPY --chown=www-data:www-data overlay/ /var/www/html/
+#6 DONE 0.1s
+
+#7 exporting to image
+#7 exporting layers
+#7 exporting layers 0.2s done
+#7 exporting manifest sha256:206d1107c13262ed6878c0ee78c0438edc06a323361f8f68f8eee16bae4e0feb 0.0s done
+#7 exporting config sha256:ca61d187aac82f1a07866d435b93500d7e4e9026e7a56448ca05a6db14b447c2 0.1s done
+#7 exporting attestation manifest sha256:e1b1a1e4e65e96ef9ac11ce64428b143ce58246fbb7b79fc42bee77a00c5ab99
+#7 exporting attestation manifest sha256:e1b1a1e4e65e96ef9ac11ce64428b143ce58246fbb7b79fc42bee77a00c5ab99 0.1s done
+#7 exporting manifest list sha256:fcfa83717242a742a5c51ae36999166c055e47aa0144f2aef18dc6874d98efda 0.0s done
+#7 naming to docker.io/library/agent-center-central:rag-v1-final-20261111 done
+#7 unpacking to docker.io/library/agent-center-central:rag-v1-final-20261111 0.0s done
+#7 DONE 0.7s

@@ -1,0 +1,51 @@
+{
+  "environment": "production",
+  "authentication": "temporary Laravel native session established by authorized backend smoke; password login not exercised",
+  "externalCalls": 0,
+  "noMatch": true,
+  "wrongTenantDenied": true,
+  "tasksUnchanged": true,
+  "document": "52a6305b-0a46-4702-8bc3-f767ea21767a",
+  "source": "0d604226-1567-445a-bc74-cdb2b66f301e",
+  "conversation": "3ff54a95-35db-4e2d-8734-95072491ad13",
+  "screens": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "retrieval": true,
+      "source": true,
+      "conversation": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "retrieval": true,
+      "source": true,
+      "conversation": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "retrieval": true,
+      "source": true,
+      "conversation": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "retrieval": true,
+      "source": true,
+      "conversation": true,
+      "overflow": false,
+      "errors": []
+    }
+  ],
+  "unauthenticatedRedirectToLogin": true,
+  "status": "PASS"
+}
