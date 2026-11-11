@@ -1,0 +1,49 @@
+{
+    "status": "PASS",
+    "scope": "LAB only; real OpenAI, no real Telegram transport",
+    "requests": 2,
+    "max_output_tokens_each": 1024,
+    "store": false,
+    "timeout_seconds_max": 10,
+    "operational_counts_unchanged": true,
+    "transcript": [
+        {
+            "channel": "web",
+            "input": "ce ta bao ?",
+            "response": "Tô por aqui, disponível como assistente virtual do Agent Center! E você, tá bem?",
+            "metadata": {
+                "tone": "RELAXED",
+                "usage": {
+                    "input_tokens": 572,
+                    "total_tokens": 618,
+                    "output_tokens": 46
+                },
+                "model_id": "60131360-de58-405f-9eb1-c63433048fb7",
+                "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+                "request_id": "req_c6837205cf214d1a8ef3df9292e2d381",
+                "provider_id": "b6cf9cf8-ff17-49ed-b1a4-6fb757158ed8",
+                "language_status": "ASSISTED",
+                "prompt_version_id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876"
+            }
+        },
+        {
+            "channel": "telegram",
+            "input": "ce ta bao ?",
+            "response": "Tô por aqui, disponível como assistente virtual do Agent Center! E você, tá bem?",
+            "metadata": {
+                "tone": "RELAXED",
+                "usage": {
+                    "input_tokens": 572,
+                    "total_tokens": 618,
+                    "output_tokens": 46
+                },
+                "model_id": "60131360-de58-405f-9eb1-c63433048fb7",
+                "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+                "request_id": "req_75a0d1893b1044b8b0063d41f74903c3",
+                "provider_id": "b6cf9cf8-ff17-49ed-b1a4-6fb757158ed8",
+                "language_status": "ASSISTED",
+                "prompt_version_id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876"
+            }
+        }
+    ]
+}

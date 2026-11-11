@@ -1,0 +1,9 @@
+{
+    "input": "ce ta bao ?",
+    "intent": "UNKNOWN",
+    "response": "Pode continuar, estou acompanhando o contexto.",
+    "language_status": "FALLBACK",
+    "language_reason": "timeout",
+    "tone": "RELAXED",
+    "usage": []
+}

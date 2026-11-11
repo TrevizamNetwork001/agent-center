@@ -1,0 +1,27 @@
+{
+    "status": "PASS",
+    "transport": "Telegram fixture, native ingress\/runner\/deliver",
+    "conversation": "176d9193-879a-4ae4-bcda-29b5d8fdf118",
+    "transcript": [
+        {
+            "input": "ce ta bao ?",
+            "response": "Por aqui, tudo certo! Estou à disposição. E você, tá bem?",
+            "telegram_matches_panel_history": true,
+            "history_footer": false
+        },
+        {
+            "input": "salve calabreso",
+            "response": "Opa! Tudo certo por aqui. Como vai?",
+            "telegram_matches_panel_history": true,
+            "history_footer": false
+        },
+        {
+            "input": "como vc tá?",
+            "response": "Tudo certo por aqui, pronto pra ajudar! E você, tá bem?",
+            "telegram_matches_panel_history": true,
+            "history_footer": false
+        }
+    ],
+    "history_command_same_conversation": true,
+    "operational_counts_unchanged": true
+}

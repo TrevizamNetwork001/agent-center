@@ -1,0 +1,17 @@
+{
+  "url": "http://127.0.0.1:18807/conversations/23ddeb5b-1182-4a82-bb49-6d3750690639",
+  "transcript": [
+    {
+      "input": "ce ta bao ?",
+      "response": "Tudo certo por aqui, pronto pra ajudar! Como estão as coisas por aí?"
+    },
+    {
+      "input": "salve calabreso",
+      "response": "Opa! Pode chegar, estou por aqui."
+    },
+    {
+      "input": "como vc tá?",
+      "response": "Por aqui, tudo certo! Estou à disposição. Como estão as coisas por aí?"
+    }
+  ]
+}
