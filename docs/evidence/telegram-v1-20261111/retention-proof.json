@@ -1,0 +1,9 @@
+{
+    "status": "PASS",
+    "database": "agent_center_telegram_lab",
+    "expired_history_removed": true,
+    "link_identity_preserved": true,
+    "conversation_pointer_cleared": true,
+    "expired_outbox_references_removed": true,
+    "runtime_delete_permissions_not_expanded": true
+}

@@ -1,0 +1,14 @@
+{
+  "browser/admin-1440-dark.png": "dd520c183532ce8ec2d94981631c042d8c3d9b2a75b4825eaf35c8ed1d17e99a",
+  "browser/admin-1440-light.png": "d9d7cb96f5f9d49d93dffbf98fefda8eb6c24f4988d300a749604c898a576f2c",
+  "browser/admin-390-dark.png": "8bcb3acfd453542dd216bb42e5c1cb102aaf8c9f5bd9dba54e7fecba308ce849",
+  "browser/admin-390-light.png": "18864dec0608c0e8782f5304e1d474e966f12cdd8213d74094a3753bc989b927",
+  "browser/admin-768-dark.png": "69b13c64db8bea78a7ae2c118f8f0c6cd281d322f42793daa3cf282779aa0d3c",
+  "browser/admin-768-light.png": "a909d07d104bb401d14b7d40aecef1f3a69cb18d34728432c926d6e2fa73a5e6",
+  "browser/history-1440-dark.png": "5e21534e66097157334428e05a2c7f1a5adc4b217c9f9c349780603e58cbd282",
+  "browser/history-1440-light.png": "46978a53e45d1109a436a05b04a0913ca6511c79bd39dcf22af7534982f86195",
+  "browser/history-390-dark.png": "1a05399b2ca66d41c9bb1cdde7514544a017156dbc467ef854c9aa8139b3e095",
+  "browser/history-390-light.png": "7e452d6465ada5853a11c4870ca59c07d550880bb2ef4d581cdb5a020939593c",
+  "browser/openai-real-desktop.png": "7bf93b11920c07cb5f1c5bf854bab836f46ce8464327ad91863ba006a3acd306",
+  "browser/openai-real-mobile.png": "4be718268bdf9f1bcd9eaee08b3d53f6ba98bdacf74d3de994c1f899c6579f01"
+}

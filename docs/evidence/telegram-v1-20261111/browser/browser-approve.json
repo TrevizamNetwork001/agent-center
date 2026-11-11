@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "phase": "approve",
+  "transport": "Telegram API fixture; no real bot credentials",
+  "results": [
+    {
+      "duplicate": 200,
+      "conflict": 409
+    }
+  ],
+  "errors": []
+}

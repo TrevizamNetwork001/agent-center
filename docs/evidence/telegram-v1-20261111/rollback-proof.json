@@ -1,0 +1,8 @@
+{
+    "status": "PASS",
+    "database": "agent_center_telegram_lab",
+    "destructive_down_refused_with_history": true,
+    "migration_and_all_channel_tables_preserved": true,
+    "functional_disable_and_revocation": "covered by TelegramTest and browser-revoke.json",
+    "production_rollback_not_executed": true
+}

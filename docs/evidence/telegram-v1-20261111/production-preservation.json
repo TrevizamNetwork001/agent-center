@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "head": "c65d949",
+  "image": "agent-center-central:natural-conversation-v1-20261111",
+  "image_id": "sha256:314435c174bde09744c4c09d59b2f9799c17b5c89be3a85fbf573b66a075201a",
+  "healthy": "healthy",
+  "protected_configuration_unchanged": true,
+  "tasks": 97,
+  "diagnostics": 28,
+  "health": "VERDE",
+  "no_production_deploy_or_migrations": true
+}

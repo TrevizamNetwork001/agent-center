@@ -1,0 +1,73 @@
+{
+    "status": "PASS",
+    "transport": "Telegram HTTP API fixture, real database queue",
+    "link_status": "REVOKED",
+    "state": "ACTIVE",
+    "tone": {
+        "style": "TECHNICAL",
+        "severity": "SERIOUS",
+        "formality": "NATURAL",
+        "verbosity": "CONCISE",
+        "confidence": 0.85,
+        "directness": "NEUTRAL",
+        "regionality": "NOT_INFERRED",
+        "technical_level": "TECHNICAL"
+    },
+    "target": "youtube.com",
+    "pending": false,
+    "tasks": 0,
+    "diagnostics": 0,
+    "messages": [
+        {
+            "sender_type": "system",
+            "body": "Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?"
+        },
+        {
+            "sender_type": "user",
+            "body": "Boa tarde, meu consagrado!"
+        },
+        {
+            "sender_type": "system",
+            "body": "Boa tarde! Bom te ver por aqui!"
+        },
+        {
+            "sender_type": "user",
+            "body": "Salve, calabreso! Tudo certo?"
+        },
+        {
+            "sender_type": "system",
+            "body": "Opa! Pode chegar, estou por aqui."
+        },
+        {
+            "sender_type": "user",
+            "body": "Rapaz, o YouTube tá uma carroça hoje kkk"
+        },
+        {
+            "sender_type": "system",
+            "body": "Vamos por partes: em que momento você percebeu a lentidão? Ainda não tenho medições para apontar uma causa."
+        },
+        {
+            "sender_type": "user",
+            "body": "Meu BNG está apresentando perda de pacotes."
+        },
+        {
+            "sender_type": "system",
+            "body": "Entendi o relato. Ainda não há evidências suficientes para atribuir uma causa. O destino youtube.com já está registrado. Nenhuma ação em equipamentos foi iniciada."
+        },
+        {
+            "sender_type": "user",
+            "body": "Obrigado, meu rei!"
+        },
+        {
+            "sender_type": "system",
+            "body": "Por nada! O contexto está salvo; podemos continuar quando você quiser."
+        }
+    ],
+    "updates": {
+        "PROCESSED": 7
+    },
+    "outbox": {
+        "SENT": 8,
+        "UNKNOWN": 1
+    }
+}

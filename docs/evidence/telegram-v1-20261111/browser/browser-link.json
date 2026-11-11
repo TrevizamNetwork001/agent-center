@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "phase": "link",
+  "transport": "Telegram API fixture; no real bot credentials",
+  "results": [
+    {
+      "csrf": 419,
+      "webhookSecretRejected": 401,
+      "linkCommandAccepted": 200
+    }
+  ],
+  "errors": []
+}

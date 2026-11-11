@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "phase": "disable",
+  "transport": "Telegram API fixture; no real bot credentials",
+  "results": [
+    {
+      "disabledInPanel": true,
+      "disabledIngress": 404
+    }
+  ],
+  "errors": []
+}

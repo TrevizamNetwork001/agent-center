@@ -1,0 +1,92 @@
+{
+  "status": "PASS",
+  "phase": "screenshots",
+  "transport": "Telegram API fixture; no real bot credentials",
+  "results": [
+    {
+      "key": "admin",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "history",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "admin",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "history",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "admin",
+      "width": 768,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "history",
+      "width": 768,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "admin",
+      "width": 768,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "history",
+      "width": 768,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "admin",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "history",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "admin",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "history",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    }
+  ],
+  "errors": []
+}

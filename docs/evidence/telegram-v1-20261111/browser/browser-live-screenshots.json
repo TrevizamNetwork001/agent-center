@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "phase": "live-screenshots",
+  "transport": "Telegram API fixture; no real bot credentials",
+  "results": [],
+  "errors": []
+}

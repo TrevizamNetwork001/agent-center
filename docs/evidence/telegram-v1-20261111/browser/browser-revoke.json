@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "phase": "revoke",
+  "transport": "Telegram API fixture; no real bot credentials",
+  "results": [
+    {
+      "revokedInPanel": true,
+      "lateConfirmationAcceptedOnlyForSafeProcessing": 200
+    }
+  ],
+  "errors": []
+}

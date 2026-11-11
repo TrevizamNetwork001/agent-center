@@ -1,0 +1,32 @@
+{
+    "status": "PASS",
+    "database": "agent_center_telegram_lab",
+    "telegram_transport": "fixture; no real Telegram bot credential available",
+    "openai_transport": "real HTTPS via existing authorized binding",
+    "api_calls": 1,
+    "max_output_tokens": 1024,
+    "store": false,
+    "transcript": [
+        {
+            "user": "\/nova",
+            "assistant": "Olá! Bom te ver por aqui!",
+            "language_status": "LOCAL",
+            "reason": null,
+            "usage": [],
+            "request_id": null
+        },
+        {
+            "user": "E você, como é ajudar num plantão tranquilo?",
+            "assistant": "Olá! Num plantão tranquilo, posso ajudar a organizar ideias e esclarecer dúvidas na conversa. Sou o assistente virtual do Agent Center — não sinto a rotina como uma pessoa, mas posso acompanhar o papo por aqui.",
+            "language_status": "ASSISTED",
+            "reason": null,
+            "usage": {
+                "input_tokens": 501,
+                "total_tokens": 569,
+                "output_tokens": 68
+            },
+            "request_id": "req_24091794841e45aaae21cff3dd214f42"
+        }
+    ],
+    "no_operational_side_effects": true
+}
