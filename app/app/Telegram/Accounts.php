@@ -121,7 +121,9 @@ class Accounts
     {
         abort_unless($link->status === 'ACTIVE' && Tenant::whereKey($link->tenant_id)->where('status', 'active')->exists(), 403);
         $ctx = app(TenantContext::class);
-        $ctx->apply($link->tenant_id, $link->user_id);
+        // Load only the linked user through the existing self RLS policy. Platform
+        // administrators have no tenant_id; restore the verified tenant after loading.
+        $ctx->apply(userId: $link->user_id);
         $user = User::findOrFail($link->user_id);
         abort_unless($user->tenant_id === $link->tenant_id || $user->tenant_id === null, 403);
         $ctx->forUser($user, $link->tenant_id);

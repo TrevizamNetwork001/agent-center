@@ -661,4 +661,34 @@ class TelegramTest extends IntelligenceTestCase
         $this->assertSame(0, AgentTask::count());
         $this->assertSame(1, Update::where('status', 'IGNORED')->count());
     }
+    public function test_platform_administrator_identity_stays_in_the_verified_tenant_in_a_worker(): void
+    {
+        $this->context()->forUser($this->platform, $this->a->id);
+        $code = app(Accounts::class)->issue($this->platform, $this->bot);
+        $this->say('/start '.$code);
+        $link = Link::where('user_id', $this->platform->id)->sole();
+        $this->context()->forUser($this->platform, $this->a->id);
+        app(Accounts::class)->approve($link, $this->platform);
+        // Workers start with a tenant, without an authenticated browser user.
+        $this->context()->apply($this->a->id);
+        $identity = app(Accounts::class)->identity($link->fresh());
+        $this->assertSame($this->platform->id, $identity->user->id);
+        $this->assertNull($identity->user->tenant_id);
+        $this->assertSame($this->a->id, $identity->tenantId);
+        $this->assertSame($this->a->id, $this->context()->tenantId);
+        $this->say('Boa tarde!');
+        $this->assertSame(0, Update::where('status', '!=', 'PROCESSED')->count());
+        $conversation = $this->conversation($link);
+        $this->assertSame($this->platform->id, $conversation->user_id);
+        $this->assertSame($this->a->id, $conversation->tenant_id);
+        $this->assertSame('telegram', $conversation->channel);
+        $this->deliverAll();
+        $this->assertTrue(Outbound::where('link_id', $link->id)->where('status', 'SENT')->exists());
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+        $this->context()->forUser($this->other);
+        $this->assertNull(Link::find($link->id));
+        $this->assertNull(Conversation::find($conversation->id));
+    }
+
 }
