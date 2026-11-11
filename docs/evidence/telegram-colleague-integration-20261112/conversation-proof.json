@@ -1,0 +1,54 @@
+{
+    "status": "PASS",
+    "runtime": "actual combined candidate image",
+    "identity": "existing colleague assigned by administrator",
+    "telegram_transport": "fixture; signed ingress and native runner\/deliver",
+    "llm": "no external call; local fallback with opt-in absent",
+    "history_preserved": true,
+    "no_operations_created": true,
+    "test_records_rolled_back": true,
+    "transcript": [
+        {
+            "channel": "web",
+            "input": "ce ta bao?",
+            "response": "Tudo certo por aqui! Como estão as coisas por aí?",
+            "state": "ACTIVE",
+            "social_act": "ASK_ASSISTANT_WELLBEING"
+        },
+        {
+            "channel": "web",
+            "input": "Tô bão também, meu rei! Kkkkk",
+            "response": "Aí sim! 😄",
+            "state": "ACTIVE",
+            "social_act": "SHARE_USER_WELLBEING"
+        },
+        {
+            "channel": "web",
+            "input": "Rapaz, o YouTube tá uma carroça hoje 😂",
+            "response": "Pelo que você contou, tá difícil usar youtube.com. Os vídeos demoram pra começar ou ficam parando no meio?",
+            "state": "ACTIVE",
+            "social_act": "ROUTINE_SLOWNESS"
+        },
+        {
+            "channel": "telegram",
+            "input": "ce ta bao?",
+            "response": "Por aqui, tudo certo! E você, tá bem?",
+            "state": "ACTIVE",
+            "social_act": "ASK_ASSISTANT_WELLBEING"
+        },
+        {
+            "channel": "telegram",
+            "input": "Tô bão também, meu rei! Kkkkk",
+            "response": "Boa! Que bom que tá tudo certo.",
+            "state": "ACTIVE",
+            "social_act": "SHARE_USER_WELLBEING"
+        },
+        {
+            "channel": "telegram",
+            "input": "Rapaz, o YouTube tá uma carroça hoje 😂",
+            "response": "Essa lentidão atrapalha, hein. Os vídeos demoram pra começar ou ficam parando no meio?",
+            "state": "ACTIVE",
+            "social_act": "ROUTINE_SLOWNESS"
+        }
+    ]
+}

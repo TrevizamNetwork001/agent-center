@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "groups": [
+    {
+      "group": 0,
+      "tests": 145,
+      "assertions": 940
+    },
+    {
+      "group": 1,
+      "tests": 135,
+      "assertions": 986
+    },
+    {
+      "group": 2,
+      "tests": 143,
+      "assertions": 1039
+    }
+  ],
+  "total_tests": 423,
+  "total_assertions": 2965,
+  "disjoint_files": 41,
+  "all_41_test_files_covered": true,
+  "task_engine_concurrency": "PASS",
+  "reason_for_groups": "Single long executor run was interrupted; complete suite rerun in three disjoint serial groups using scripts/test.sh and fresh PostgreSQL database each time."
+}

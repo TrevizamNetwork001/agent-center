@@ -1,0 +1,12 @@
+{
+  "app/app/Conversation/Language.php": true,
+  "app/app/Http/Controllers/TelegramCompanyController.php": true,
+  "app/app/Http/Controllers/TelegramController.php": true,
+  "app/app/Services/Audit.php": true,
+  "app/app/Telegram/Access.php": true,
+  "app/app/Telegram/Presentation.php": true,
+  "app/config/telegram.php": true,
+  "app/resources/views/telegram/companies.blade.php": true,
+  "app/resources/views/telegram/index.blade.php": true,
+  "app/routes/telegram.php": true
+}

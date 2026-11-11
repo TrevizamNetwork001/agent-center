@@ -1,0 +1,21 @@
+{
+    "status": "PASS",
+    "telegram_transport": "fixture only, native signed ingress\/runner\/deliver",
+    "scenarios": [
+        {
+            "channel": "private",
+            "identified_existing_colleague": true,
+            "tenant_id": 1,
+            "state": "ACTIVE"
+        },
+        {
+            "channel": "supergroup",
+            "identified_existing_colleague": true,
+            "tenant_id": 1,
+            "state": "ACTIVE"
+        }
+    ],
+    "different_private_and_group_contexts": true,
+    "no_tasks_or_diagnostics_created": true,
+    "account_role_unchanged": "operator"
+}

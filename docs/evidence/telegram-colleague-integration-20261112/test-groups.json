@@ -1,0 +1,57 @@
+{
+  "files": 41,
+  "groups": [
+    [
+      "tests/Feature/TelegramTest.php",
+      "tests/Feature/AgentOperationsTest.php",
+      "tests/Feature/AuthorizationTest.php",
+      "tests/Feature/AgentObservabilityTest.php",
+      "tests/Feature/OpenAiResponsesTest.php",
+      "tests/Feature/AgentSingleConfirmationTest.php",
+      "tests/Feature/KnowledgePromptTest.php",
+      "tests/Feature/DiagnosticPerformanceTest.php",
+      "tests/Feature/SignedReleaseCatalogTest.php",
+      "tests/Feature/AgentUpdateVisibilityTest.php",
+      "tests/Feature/LlmHttpTest.php",
+      "tests/Unit/SocialTextTest.php",
+      "tests/Unit/ComponentReleaseAvailabilityTest.php"
+    ],
+    [
+      "tests/Feature/ConversationTest.php",
+      "tests/Feature/RagTest.php",
+      "tests/Feature/AuthenticationTest.php",
+      "tests/Feature/LlmSafetyTest.php",
+      "tests/Feature/DiagnosticLogicReviewTest.php",
+      "tests/Feature/AgentApiTest.php",
+      "tests/Feature/TenantIsolationTest.php",
+      "tests/Feature/AccountProfileTest.php",
+      "tests/Feature/ReleaseQuarantineTest.php",
+      "tests/Feature/AgentAutomaticDownloadTest.php",
+      "tests/Feature/OperationalSkillsTest.php",
+      "tests/Feature/AgentDeletionTest.php",
+      "tests/Feature/AgentRecoveryTest.php",
+      "tests/Feature/AuditTimezoneTest.php"
+    ],
+    [
+      "tests/Feature/DiagnosticsTest.php",
+      "tests/Feature/NaturalConversationTest.php",
+      "tests/Feature/WebUxTest.php",
+      "tests/Feature/AgentMaintenanceTest.php",
+      "tests/Feature/AgentManagedSettingsTest.php",
+      "tests/Feature/MtrPathTest.php",
+      "tests/Unit/DiagnosticPolicyTest.php",
+      "tests/Feature/LlmIdentityTest.php",
+      "tests/Feature/BackupSettingsTest.php",
+      "tests/Feature/DnsPolicyRegressionTest.php",
+      "tests/Feature/AgentBootstrapTest.php",
+      "tests/Feature/HealthTest.php",
+      "tests/Feature/BootstrapTest.php",
+      "tests/Feature/ExampleTest.php"
+    ]
+  ],
+  "estimated_test_methods": [
+    136,
+    135,
+    135
+  ]
+}
