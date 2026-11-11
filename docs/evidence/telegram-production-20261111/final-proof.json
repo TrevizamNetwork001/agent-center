@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "image": "sha256:295da05c82115134c28b4d5e860a130c50e2b351215404d56cb713387d2aac20",
+  "tag": "agent-center-central:telegram-v1-20261111",
+  "health": "VERDE",
+  "tasks": 97,
+  "diagnostics": 28,
+  "protected_tables_preserved": 15,
+  "additional_migrations": 1,
+  "telegram_force_rls_tables": 4,
+  "runtime_privileges_preserved": true,
+  "functional_rollback_rehearsed": true,
+  "diagnostic_worker_nginx_postgres_not_recreated": true,
+  "unrelated_dirty_files_preserved": true,
+  "external_telegram": "PENDING: no authorized bot configured; no real Telegram transport exercised"
+}

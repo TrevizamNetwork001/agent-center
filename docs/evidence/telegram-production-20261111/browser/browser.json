@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "results": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "overflow": false,
+      "botConfigured": false,
+      "passwordField": true
+    },
+    {
+      "csrf": 419,
+      "tenantTamper": 422
+    },
+    {
+      "sharedEngineHistory": 200
+    },
+    {
+      "path": "/conversations",
+      "status": 200
+    },
+    {
+      "path": "/knowledge/rag",
+      "status": 200
+    },
+    {
+      "path": "/advanced/llm",
+      "status": 200
+    },
+    {
+      "path": "/operations",
+      "status": 200
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false,
+      "botConfigured": false,
+      "passwordField": true
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "status": 200,
+      "overflow": false,
+      "botConfigured": false,
+      "passwordField": true
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false,
+      "botConfigured": false,
+      "passwordField": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "overflow": false,
+      "botConfigured": false,
+      "passwordField": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false,
+      "botConfigured": false,
+      "passwordField": true
+    },
+    {
+      "unauthenticatedRedirect": true,
+      "login": 200
+    }
+  ],
+  "javascriptErrors": []
+}

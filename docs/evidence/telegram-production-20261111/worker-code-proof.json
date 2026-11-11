@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "authoritative_baseline": "currently published web image",
+  "identical_critical_files": 72,
+  "worker_adopts_published_web_files": [
+    "app/Agent/MaintenanceSsh.php",
+    "app/Agent/Operations.php",
+    "app/Agent/ReleaseAvailability.php",
+    "app/Agent/ReleaseQuarantine.php",
+    "app/Agent/Releases.php",
+    "app/Llm/Client.php",
+    "app/Llm/Configuration.php",
+    "app/Llm/CurlTransport.php",
+    "app/Llm/IdentityRegistry.php",
+    "app/Models/AgentMaintenanceAccess.php",
+    "app/Models/AgentRelease.php",
+    "app/Models/AgentReleaseQuarantine.php",
+    "app/Rag/Answer.php",
+    "app/Rag/Index.php",
+    "app/Rag/Response.php",
+    "app/Rag/Retrieval.php"
+  ],
+  "diagnostic_worker_unchanged": true
+}

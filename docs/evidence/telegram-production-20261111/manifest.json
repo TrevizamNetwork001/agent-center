@@ -1,0 +1,122 @@
+[
+  {
+    "path": "app/Console/Commands/PruneConversations.php",
+    "sha256": "9469e70843b34b029181d375e5c19eb07c44d545850fd772d2520bb8de41f6b8"
+  },
+  {
+    "path": "app/Conversation/Engine.php",
+    "sha256": "c193095f2c278b8174ad0a2cfba208cdd539c94b6ffa7478d9a0d0df4dec7302"
+  },
+  {
+    "path": "app/Http/Controllers/TelegramController.php",
+    "sha256": "17052b5fe2c50691817d2f73cf14bf2c7258b79ccf19a35f3dacac89b189e9e2"
+  },
+  {
+    "path": "app/Providers/AppServiceProvider.php",
+    "sha256": "5a148fa8bc3296ae6b5594bc848479cc813e69769f7bf92aa3c3720d8ef145dc"
+  },
+  {
+    "path": "app/Services/Audit.php",
+    "sha256": "e739d554bb279823c229cb4ba4e5a5cae7e1cd226d62a46f405f58831cb5dff0"
+  },
+  {
+    "path": "app/Telegram/Accounts.php",
+    "sha256": "2d17d1c2af3ac9f6a3a24fdc177171742fb1b14ec4ad2f8c1943111435e581dc"
+  },
+  {
+    "path": "app/Telegram/Bot.php",
+    "sha256": "b64131003f5a4a902ae43aab5b744389e5c05696dc8e3de574f279533e0c779e"
+  },
+  {
+    "path": "app/Telegram/Client.php",
+    "sha256": "5f2bd503b262fc78bd5f1d3de01ac6790dfcf4553b5aedb545abb1a113053fc0"
+  },
+  {
+    "path": "app/Telegram/Deliver.php",
+    "sha256": "c8d48c8ff512f76c91cf2178fed29866e9707a14ae40db9d85a56188db724729"
+  },
+  {
+    "path": "app/Telegram/Ingress.php",
+    "sha256": "c9422403eb138b93c66696c73f8e29eb7bb7100bb77f63a3dd9378048d9cb190"
+  },
+  {
+    "path": "app/Telegram/Link.php",
+    "sha256": "588466c40f6a244ae08f87f25a669bcb93fc7ef090eccf4087257d41115ecc1e"
+  },
+  {
+    "path": "app/Telegram/Outbound.php",
+    "sha256": "d9ccc01e93279157ff31a2fbd3884a00979ab8be00a2411e0c0003daf3dc19d1"
+  },
+  {
+    "path": "app/Telegram/ProcessUpdate.php",
+    "sha256": "ef5d687448db64f108fbad887c1a5946bcc932bc9ce4579e696777a37ddaf43d"
+  },
+  {
+    "path": "app/Telegram/Record.php",
+    "sha256": "d12ef98cd76da8e2fad50adcc2fc717fad746fe7b381f6da2f9248ee0280d947"
+  },
+  {
+    "path": "app/Telegram/Runner.php",
+    "sha256": "138d91e9b1181d49760c788f72133d903356ef20d0af3fdb47a15e164d5b53c5"
+  },
+  {
+    "path": "app/Telegram/Sweep.php",
+    "sha256": "7a07d2e14975c640b66649bd548200b56cdf1ec83a49d9461d5bff4927017762"
+  },
+  {
+    "path": "app/Telegram/TelegramAdapter.php",
+    "sha256": "e771075513280b7608164576fdca22947cff358721af5b93abbdcac560c391f7"
+  },
+  {
+    "path": "app/Telegram/Update.php",
+    "sha256": "4e3f6bbf8ff07fd09fc82d1cd0b5198cd22e27545482f90e2073614159cd2050"
+  },
+  {
+    "path": "bootstrap/app.php",
+    "sha256": "a88d815f23790804142e6d5b88bf69d9fad9dd6a964318ffe6c53b16fadd417f"
+  },
+  {
+    "path": "config/telegram.php",
+    "sha256": "4bcb166b2b5cb1cda411d5054da901a078f47e33bc1e6ca6c6b0b5aac1255c3a"
+  },
+  {
+    "path": "database/migrations/2026_11_12_000001_add_telegram_channel.php",
+    "sha256": "89148f5721f609f7f83793cfd68f8d9d03de8acd52b6699ec77741e86cac2a2d"
+  },
+  {
+    "path": "resources/views/conversations/panel.blade.php",
+    "sha256": "7188389d7b2e73f9e60cca6971b16561f9003962e2ba651d13c238614bb0d0b1"
+  },
+  {
+    "path": "resources/views/conversations/show.blade.php",
+    "sha256": "fd89192ea5bc12f5f55af759c1f818bc21fc1f8cf4d932953d17034559b7e5f7"
+  },
+  {
+    "path": "resources/views/layout.blade.php",
+    "sha256": "295ac90d3e687e8945214aaf6bc455b5708d745d92d177bb03bd64431d964500"
+  },
+  {
+    "path": "resources/views/telegram/index.blade.php",
+    "sha256": "cc0dcda830993d7e1be52dd6d62344a8cc047e3dc165d8d0594b801704ce8948"
+  },
+  {
+    "path": "resources/views/telegram/link-code.blade.php",
+    "sha256": "2183c9ab43dbd4febb0fd0f97a58068fc243a340db5ec8fd7e5c1b41a124baf5"
+  },
+  {
+    "path": "routes/api.php",
+    "sha256": "8e1ffb8bb2970c0754195eb54cd3229bdc3763efd486e5e7f379ee56fe2c2a56"
+  },
+  {
+    "path": "routes/console.php",
+    "sha256": "47de0d161eb38e640661f99ccab90f4c42b55521a73464511f6380de4b74ab0b"
+  },
+  {
+    "path": "routes/telegram.php",
+    "sha256": "ea316289e9c00894052c5512852b8d941418bc8ad3487cf3b846c810fac28015"
+  },
+  {
+    "path": "routes/web.php",
+    "sha256": "86b61c2bd40a53957742d38c605f0794dfb153bf4503c3d0cf65bff55108ab79"
+  }
+]

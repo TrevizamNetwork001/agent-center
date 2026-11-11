@@ -1,0 +1,38 @@
+{
+    "status": "PASS",
+    "runtime": "Laravel queue worker, shared Conversation Engine",
+    "channel": "web identity; no Telegram transport or bot simulated in production",
+    "conversation_id": "fa0e46b0-e832-4066-830c-efd3555ec019",
+    "api_calls": 1,
+    "max_output_tokens": 1024,
+    "store": false,
+    "transcript": [
+        {
+            "input": "Boa tarde, meu consagrado!",
+            "reply": "Boa tarde! Bom te ver por aqui!",
+            "language_status": "LOCAL",
+            "usage": [],
+            "request_id": null
+        },
+        {
+            "input": "E você, como é ajudar num plantão tranquilo?",
+            "reply": "Boa tarde! Num plantão tranquilo, dá para conversar com calma e ajudar a organizar as ideias. Sou o assistente virtual do Agent Center. Como está o plantão por aí?",
+            "language_status": "ASSISTED",
+            "usage": {
+                "input_tokens": 513,
+                "total_tokens": 576,
+                "output_tokens": 63
+            },
+            "request_id": "req_2bc9d04cf76b48dd9f6af63c337b564d"
+        },
+        {
+            "input": "Obrigado, meu rei!",
+            "reply": "Por nada! O contexto está salvo; podemos continuar quando você quiser.",
+            "language_status": null,
+            "usage": [],
+            "request_id": null
+        }
+    ],
+    "closed_state": "CLOSED",
+    "no_new_tasks_or_diagnostics": true
+}

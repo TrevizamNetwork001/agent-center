@@ -1,0 +1,8 @@
+{
+  "get_denied": 403,
+  "unknown_bot_post": 404,
+  "oversized_body": 413,
+  "status": "PASS",
+  "existing_panel_acl_preserved": true,
+  "telegram_transport_exercised": false
+}

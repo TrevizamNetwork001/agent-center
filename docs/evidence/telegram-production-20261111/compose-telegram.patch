@@ -1,0 +1,45 @@
+--- compose-before.yaml
++++ compose-telegram.yaml
+@@ -32,6 +32,8 @@
+     SESSION_SECURE_COOKIE: ${SESSION_SECURE_COOKIE:-false}
+     CACHE_STORE: database
+     QUEUE_CONNECTION: database
++    TELEGRAM_ENABLED: 'true'
++    TELEGRAM_TENANTS: '1'
+   restart: unless-stopped
+   init: true
+   security_opt: [no-new-privileges:true]
+@@ -97,7 +99,7 @@
+     command: [php, artisan, migrate, '--force']
+   web:
+     <<: *app
+-    image: agent-center-central:natural-conversation-v1-20261111
++    image: agent-center-central:telegram-v1-20261111
+     environment:
+       <<: *app-env
+       AGENT_MAINTENANCE_TARGETS: ${AGENT_MAINTENANCE_TARGETS:-}
+@@ -115,6 +117,12 @@
+       retries: 5
+   worker:
+     <<: *app
++    image: agent-center-central:telegram-v1-20261111
++    networks: [backend, maintenance_egress]
++    volumes:
++      - app_storage:/var/www/html/storage
++      - ../secrets/postgres/ca.crt:/run/pg-tls/ca.crt:ro
++      - ../secrets/llm-master.key:/run/secrets/llm-master.key:ro
+     command: [php, artisan, queue:work, '--sleep=3', '--tries=3', '--timeout=60', '--max-time=3600']
+     stop_grace_period: 75s
+     healthcheck:
+@@ -123,6 +131,11 @@
+       timeout: 5s
+       start_period: 30s
+       retries: 5
++  telegram-scheduler:
++    <<: *app
++    image: agent-center-central:telegram-v1-20261111
++    command: [php, artisan, 'schedule:work']
++    stop_grace_period: 30s
+   diagnostic-worker:
+     <<: *app
+     command: [php, artisan, 'agent-center:diagnostic-worker']
