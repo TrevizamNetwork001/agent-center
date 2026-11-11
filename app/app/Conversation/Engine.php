@@ -17,6 +17,8 @@ use App\Models\DiagnosticInterpretation;
 use App\Models\Profile;
 use App\Rag\Answer;
 use App\Services\Audit;
+use App\Telegram\Bot;
+use App\Telegram\Link;
 use App\Tenancy\TenantContext;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -32,7 +34,10 @@ class Engine
 
     private function allowed(Identity $i): void
     {
-        abort_unless($i->channel === 'web' && $i->tenantId === app(TenantContext::class)->tenantId, 403);
+        abort_unless(in_array($i->channel, ['web', 'telegram'], true) && $i->tenantId === app(TenantContext::class)->tenantId, 403);
+        if ($i->channel === 'telegram') {
+            abort_unless(Link::whereKey($i->contactId)->where('user_id', $i->user->id)->where('status', 'ACTIVE')->exists() && Bot::where('enabled', true)->exists() && config('telegram.enabled'), 403);
+        }
         abort_unless(ConversationSetting::where('enabled', true)->sharedLock()->first() !== null, 403, 'Conversa desabilitada neste tenant.');
     }
 
@@ -57,7 +62,7 @@ class Engine
                 $ctx['agent_id'] = $a->id;
             }
             $c = new Conversation;
-            $c->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $i->tenantId, 'user_id' => $i->user->id, 'channel' => 'web', 'status' => 'OPEN', 'state' => 'NEW', 'creation_key' => $key, 'context_json' => $ctx, 'started_at' => now(), 'last_activity_at' => now()])->save();
+            $c->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $i->tenantId, 'user_id' => $i->user->id, 'channel' => $i->channel, 'contact_id' => $i->contactId, 'status' => 'OPEN', 'state' => 'NEW', 'creation_key' => $key, 'context_json' => $ctx, 'started_at' => now(), 'last_activity_at' => now()])->save();
             $this->transition($c, State::Active, 'created');
             $this->reply($c, 'Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?');
             $c->save();
@@ -71,6 +76,7 @@ class Engine
         return DB::transaction(function () use ($i, $conversation, $key, $body) {
             $this->allowed($i);
             Gate::forUser($i->user)->authorize('send', $conversation);
+            abort_unless($conversation->channel === $i->channel && ($i->channel !== 'telegram' || $conversation->contact_id === $i->contactId), 403);
             $this->userLock($i);
             $digest = hash_hmac('sha256', $body, (string) config('app.key'));
             $duplicate = ConversationMessage::where('request_user_id', $i->user->id)->where('request_key', $key)->first();
@@ -162,7 +168,7 @@ class Engine
 
                         return $c;
                     }
-                    $c->context_json = [...$c->context_json, 'pending' => ['profile' => $profile, 'target' => $target, 'mtr_requested' => true]];
+                    $c->context_json = [...$c->context_json, 'pending' => ['issued_at' => now()->timestamp, 'profile' => $profile, 'target' => $target, 'mtr_requested' => true]];
                     $this->transition($c, State::Confirmation, 'execution_confirmation');
                     $this->reply($c, 'Confirma coleta MTR ICMP e TCP/443 no alvo '.$target.'? Profile e evidências anteriores serão preservados. A política local deve autorizar o destino.');
                 }
@@ -180,7 +186,7 @@ class Engine
             } elseif ($intent === Intent::Continue) {
                 $this->transition($c, State::FollowUp, 'continue');
                 if ($c->current_diagnostic_id && ($c->context_json['last_profile'] ?? '') !== 'PERDA_LATENCIA' && $this->canDeepen($c)) {
-                    $c->context_json = [...$c->context_json, 'pending' => ['profile' => 'PERDA_LATENCIA', 'target' => $c->current_target]];
+                    $c->context_json = [...$c->context_json, 'pending' => ['issued_at' => now()->timestamp, 'profile' => 'PERDA_LATENCIA', 'target' => $c->current_target]];
                     $this->transition($c, State::Confirmation, 'deeper_scope');
                     $this->reply($c, $prefix.'As evidências anteriores estão preservadas. Posso investigar perda e latência no mesmo alvo, sem repetir o diagnóstico anterior. Confirma?');
                 } else {
@@ -220,8 +226,8 @@ class Engine
                     $c->context_json = [...$c->context_json, 'requested_profile' => $profile];
                     $this->transition($c, State::Target, 'target_requested');
                     $this->reply($c, $prefix.'Qual site você quer testar?');
-                } elseif (in_array($state, [State::Completed, State::FollowUp, State::Confirmation], true) || $intent === Intent::Another || ($intent === Intent::Target && $state !== State::Target)) {
-                    $c->context_json = [...$c->context_json, 'pending' => ['profile' => $profile, 'target' => $target]];
+                } elseif ($i->channel === 'telegram' || in_array($state, [State::Completed, State::FollowUp, State::Confirmation], true) || $intent === Intent::Another || ($intent === Intent::Target && $state !== State::Target)) {
+                    $c->context_json = [...$c->context_json, 'pending' => ['issued_at' => now()->timestamp, 'profile' => $profile, 'target' => $target]];
                     $this->transition($c, State::Confirmation, 'execution_confirmation');
                     $this->reply($c, $prefix.'Confirma um novo diagnóstico para '.$target.'? As evidências anteriores serão preservadas.');
                 } else {
@@ -298,6 +304,7 @@ class Engine
         return DB::transaction(function () use ($i, $conversation) {
             $this->allowed($i);
             Gate::forUser($i->user)->authorize('view', $conversation);
+            abort_unless($conversation->channel === $i->channel && ($i->channel !== 'telegram' || $conversation->contact_id === $i->contactId), 403);
             $c = Conversation::whereKey($conversation->id)->lockForUpdate()->firstOrFail();
             $this->synchronize($c);
             $c->save();

@@ -4,6 +4,7 @@ use App\Http\Controllers\Agent\BootstrapController;
 use App\Http\Controllers\Agent\ProtocolController;
 use App\Http\Controllers\Agent\ReleaseController;
 use App\Http\Controllers\Agent\UpdateController;
+use App\Http\Controllers\TelegramController;
 use App\Http\Middleware\AgentOriginLimit;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +23,5 @@ Route::prefix('v1/agent')->middleware(AgentOriginLimit::class)->group(function (
 
     });
 });
+
+Route::post('/telegram/{tenant}/{bot}', [TelegramController::class, 'webhook'])->whereNumber('tenant')->whereUuid('bot')->middleware('throttle:telegram-ingress')->name('telegram.webhook');

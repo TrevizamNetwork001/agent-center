@@ -38,6 +38,8 @@ class AppServiceProvider extends ServiceProvider
         });
         Gate::define('manage-platform-backups', fn (User $user) => $user->role === Role::PlatformAdmin && $user->status === 'active');
         RateLimiter::for('platform-backups', fn ($request) => Limit::perMinute(6)->by('platform-backups:'.$request->user()->id));
+        RateLimiter::for('telegram-admin', fn ($r) => Limit::perMinute(10)->by('telegram-admin:'.$r->user()->id));
+        RateLimiter::for('telegram-ingress', fn ($r) => Limit::perMinute(300)->by('telegram-ingress:'.hash('sha256', (string) $r->ip())));
         Gate::policy(Conversation::class, ConversationPolicy::class);
         RateLimiter::for('conversation-message', fn ($r) => [Limit::perMinute(20)->by('conversation-user:'.$r->user()->id), Limit::perMinute(120)->by('conversation-tenant:'.app(TenantContext::class)->tenantId)]);
         RateLimiter::for('conversation-sync', fn ($r) => Limit::perMinute(60)->by('conversation-sync:'.$r->user()->id));

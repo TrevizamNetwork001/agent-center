@@ -126,3 +126,5 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->group(function 
     Route::get('/agent-requests', [BootstrapController::class, 'index'])->name('agent-requests.index');
     Route::post('/agent-requests/{requestId}/accept', [BootstrapController::class, 'accept'])->whereUuid('requestId')->name('agent-requests.accept');
 });
+
+require __DIR__.'/telegram.php';
