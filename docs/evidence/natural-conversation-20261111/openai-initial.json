@@ -1,0 +1,61 @@
+{
+    "environment": "isolated agent_center_lab",
+    "utc": "2026-11-11T17:21:07+00:00",
+    "real_request_budget": 2,
+    "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+    "transcript": [
+        {
+            "user": "Boa tarde, meu consagrado!",
+            "assistant": "Boa tarde! Bom te ver por aqui!",
+            "language_status": "LOCAL",
+            "language_reason": null,
+            "usage": [],
+            "request_id": null
+        },
+        {
+            "user": "Conte uma piada leve sobre um plantão tranquilo.",
+            "assistant": "Um pouco de bom humor ajuda no plantão! Só não vale culpar a rede antes de olhar as evidências.",
+            "language_status": "FALLBACK",
+            "language_reason": "timeout",
+            "usage": [],
+            "request_id": null
+        },
+        {
+            "user": "E você, como é ajudar num plantão tranquilo?",
+            "assistant": "Pode continuar, estou acompanhando o contexto.",
+            "language_status": "FALLBACK",
+            "language_reason": "invalid_output",
+            "usage": {
+                "input_tokens": 513,
+                "total_tokens": 596,
+                "output_tokens": 83
+            },
+            "request_id": "req_84d08a3f3db74412b01db8f89b0bf256"
+        }
+    ],
+    "no_operational_side_effects": true,
+    "network_calls": 2,
+    "openai": [
+        {
+            "error": "timeout",
+            "http_status": null,
+            "duration_ms": 6021,
+            "attempts": 1,
+            "usage": [],
+            "request_id": null
+        },
+        {
+            "http_status": 200,
+            "duration_ms": 4296,
+            "attempts": 1,
+            "usage": {
+                "input_tokens": 513,
+                "output_tokens": 83,
+                "total_tokens": 596
+            },
+            "request_id": "req_84d08a3f3db74412b01db8f89b0bf256"
+        }
+    ],
+    "status": "BLOCKED",
+    "binding_restored": true
+}

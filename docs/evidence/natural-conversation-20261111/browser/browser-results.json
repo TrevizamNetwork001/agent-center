@@ -1,0 +1,222 @@
+{
+  "status": "PASS",
+  "inference": "deterministic guarded LAB transport fixture; real OpenAI evidence is separate",
+  "captureOnly": false,
+  "results": [
+    {
+      "key": "social",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "technical",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "confirmation",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "failure",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "knowledge",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "social",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "technical",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "confirmation",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "failure",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "knowledge",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "social",
+      "width": 768,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "technical",
+      "width": 768,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "confirmation",
+      "width": 768,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "failure",
+      "width": 768,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "knowledge",
+      "width": 768,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "social",
+      "width": 768,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "technical",
+      "width": 768,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "confirmation",
+      "width": 768,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "failure",
+      "width": 768,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "knowledge",
+      "width": 768,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "social",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "technical",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "confirmation",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "failure",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "knowledge",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "social",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "technical",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "confirmation",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "failure",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "key": "knowledge",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "overflow": false
+    }
+  ],
+  "duplicate": 200,
+  "conflictingRetry": 409,
+  "crossTenant": 404,
+  "csrf": 419,
+  "errors": []
+}

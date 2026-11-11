@@ -1,0 +1,337 @@
+{
+    "runtime_role": {
+        "rolname": "rag_runtime",
+        "rolsuper": false,
+        "rolbypassrls": false
+    },
+    "rls": [
+        {
+            "relname": "conversation_events",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        },
+        {
+            "relname": "conversation_messages",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        },
+        {
+            "relname": "conversations",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        },
+        {
+            "relname": "llm_bindings",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        },
+        {
+            "relname": "llm_providers",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        },
+        {
+            "relname": "prompts",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        },
+        {
+            "relname": "rag_chunks",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        },
+        {
+            "relname": "rag_documents",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        }
+    ],
+    "environment": "synthetic transport\/Agent fixture, no probes or real device",
+    "conversations": {
+        "social": {
+            "state": "ACTIVE",
+            "messages": [
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?",
+                    "intent": null,
+                    "language_status": null
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "Boa tarde, meu consagrado!",
+                    "intent": "GREETING",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Boa tarde! Bom te ver por aqui!",
+                    "intent": null,
+                    "language_status": "LOCAL"
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "E aí, meu rei, tudo certo?",
+                    "intent": "GREETING",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Opa! Pode chegar, estou por aqui.",
+                    "intent": null,
+                    "language_status": "LOCAL"
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "Salve, calabreso!",
+                    "intent": "GREETING",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Opa! Tudo certo por aqui. Como vai?",
+                    "intent": null,
+                    "language_status": "LOCAL"
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "Fala, meu parceiro!",
+                    "intent": "GREETING",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Opa! Bom te ver por aqui!",
+                    "intent": null,
+                    "language_status": "LOCAL"
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "Conta uma piada leve de plantão",
+                    "intent": "SOCIAL",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "O cabo disse que precisava de espaço. Era só um problema de conexão! Um pouco de humor cabe no plantão tranquilo.",
+                    "intent": null,
+                    "language_status": "ASSISTED"
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "Prefiro um tom formal.",
+                    "intent": "SOCIAL",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Combinado, a preferência de tom está salva para esta conversa.",
+                    "intent": null,
+                    "language_status": "LOCAL"
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "Boa tarde, por gentileza.",
+                    "intent": "GREETING",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Boa tarde! É um prazer ajudar.",
+                    "intent": null,
+                    "language_status": "LOCAL"
+                }
+            ]
+        },
+        "technical": {
+            "state": "ACTIVE",
+            "messages": [
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?",
+                    "intent": null,
+                    "language_status": null
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "Rapaz, a rede tá uma carroça hoje kkkk",
+                    "intent": "SOCIAL",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Vamos por partes: em que momento você percebeu a lentidão? Ainda não tenho medições para apontar uma causa.",
+                    "intent": null,
+                    "language_status": "LOCAL"
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "Meu BNG está apresentando perda de pacotes.",
+                    "intent": "SOCIAL",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Entendi o relato. Ainda não há evidências suficientes para atribuir uma causa. Quando começou e qual é o alcance da perda ou indisponibilidade? Nenhuma ação em equipamentos foi iniciada.",
+                    "intent": null,
+                    "language_status": "LOCAL"
+                }
+            ]
+        },
+        "confirmation": {
+            "state": "DIAGNOSTIC_COMPLETED",
+            "messages": [
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?",
+                    "intent": null,
+                    "language_status": null
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "Outro diagnóstico para google.com",
+                    "intent": "REQUEST_ANOTHER_TEST",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Confirma um novo diagnóstico para google.com? As evidências anteriores serão preservadas.",
+                    "intent": null,
+                    "language_status": null
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "Fala, meu parceiro!",
+                    "intent": "GREETING",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Opa! Pode chegar, estou por aqui.",
+                    "intent": null,
+                    "language_status": "LOCAL"
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "Sim, confirmo o diagnóstico de google.com.",
+                    "intent": "CONFIRM",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Confirmação processada para google.com.",
+                    "intent": null,
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Fechou. Vou verificar a conectividade de google.com e apresentar os resultados.",
+                    "intent": null,
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "result",
+                    "body": "INCONCLUSIVO\nVerificações bloqueadas pela política do Agent; evidências insuficientes para concluir no escopo testado.",
+                    "intent": null,
+                    "language_status": null
+                }
+            ]
+        },
+        "failure": {
+            "state": "ACTIVE",
+            "messages": [
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?",
+                    "intent": null,
+                    "language_status": null
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "Conta uma piada com falha do modelo",
+                    "intent": "SOCIAL",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Essa veio para animar o plantão! Estou por aqui.",
+                    "intent": null,
+                    "language_status": "FALLBACK"
+                }
+            ]
+        },
+        "knowledge": {
+            "state": "ACTIVE",
+            "messages": [
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?",
+                    "intent": null,
+                    "language_status": null
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "O que a Knowledge diz sobre lentidão?",
+                    "intent": "KNOWLEDGE_QUESTION",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "O procedimento publicado orienta a comparar DNS, TCP e HTTPS. Ainda são necessárias evidências do diagnóstico; nenhuma sondagem foi iniciada.",
+                    "intent": null,
+                    "language_status": null
+                },
+                {
+                    "sender": "user",
+                    "type": "text",
+                    "body": "O que a Knowledge diz sobre galaxiazxq977?",
+                    "intent": "KNOWLEDGE_QUESTION",
+                    "language_status": null
+                },
+                {
+                    "sender": "system",
+                    "type": "text",
+                    "body": "Não encontrei informações suficientes na Knowledge disponível para responder com segurança a essa pergunta.",
+                    "intent": null,
+                    "language_status": null
+                }
+            ]
+        }
+    },
+    "status": "PASS"
+}
