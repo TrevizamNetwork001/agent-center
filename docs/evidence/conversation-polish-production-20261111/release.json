@@ -1,0 +1,8 @@
+{
+  "runtime_commit": "1cd656120f16f9a4ce07937f016195031538ed25",
+  "image": "agent-center-central:conversation-polish-v1-20261111",
+  "image_id": "sha256:bf26123e9a6447a1879432c861277616cd2c10d11bb50dc9b098c2d4d9d87d94",
+  "runtime_file_hashes_verified": 8,
+  "backup": "20261111T224009Z",
+  "authorization": "User explicitly authorized conversation polish publication and requested navigation scroll correction"
+}

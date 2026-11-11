@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "results": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "scrollY": 400,
+      "navMovesWithPage": true,
+      "tabsWork": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "scrollY": 400,
+      "navMovesWithPage": true,
+      "tabsWork": true
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "scrollY": 400,
+      "navMovesWithPage": true,
+      "tabsWork": true
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "scrollY": 400,
+      "navMovesWithPage": true,
+      "tabsWork": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "scrollY": 400,
+      "navMovesWithPage": true,
+      "tabsWork": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "scrollY": 400,
+      "navMovesWithPage": true,
+      "tabsWork": true
+    }
+  ]
+}

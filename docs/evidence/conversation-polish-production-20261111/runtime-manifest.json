@@ -1,0 +1,34 @@
+[
+  {
+    "path": "app/Conversation/ConversationToneDetector.php",
+    "sha256": "9c1023e964eb12bcf36a2649cb1c4d520057465b2fee385e4efdbb94b9543c74"
+  },
+  {
+    "path": "app/Conversation/IntentDetector.php",
+    "sha256": "1a0f0f00c3b8d91e2029894f1e4f41419bb4f74b616988b3a5d435d234a10be9"
+  },
+  {
+    "path": "app/Conversation/Language.php",
+    "sha256": "42b45189252e91f1af5f4b85e8e74b09a6a1471fcbaf4de83cb4285b482dc369"
+  },
+  {
+    "path": "app/Conversation/SocialText.php",
+    "sha256": "72c85fe88899cab43fb5892533a0ffe8f4ba0080561f9e0c9a6d074488285687"
+  },
+  {
+    "path": "app/Telegram/Deliver.php",
+    "sha256": "dc7889bba31e4c78ae8edb94534bbbab3466d3fb2c479bff66a9b6538c282d80"
+  },
+  {
+    "path": "app/Telegram/Runner.php",
+    "sha256": "dda76c99e3933b8262fe9db6cf7853b044149c8cf5bb223baa4a521b8d3f3d62"
+  },
+  {
+    "path": "public/telegram.css",
+    "sha256": "811c572327022fb9fd7700641368e20f2bca6c428858e74c12ea5da6d78652ba"
+  },
+  {
+    "path": "resources/views/telegram/index.blade.php",
+    "sha256": "9701d9acf23d8c3e60111d0933155cfdb7b0e0e03175f1fe73c2f1688f5f3552"
+  }
+]

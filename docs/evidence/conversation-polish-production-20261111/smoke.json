@@ -1,0 +1,34 @@
+{
+    "status": "PASS",
+    "engine": "production published runtime",
+    "openai_requests": 2,
+    "max_output_tokens_each": 1024,
+    "store": false,
+    "no_operational_records_created": true,
+    "test_records_rolled_back": true,
+    "telegram_delivery": "formatting captured; no external Telegram send",
+    "transcript": [
+        {
+            "channel": "web",
+            "input": "ce ta bao ?",
+            "response": "Tô por aqui, disponível como assistente virtual do Agent Center! E você, tá bem?",
+            "language_status": "ASSISTED",
+            "usage": {
+                "input_tokens": 572,
+                "total_tokens": 618,
+                "output_tokens": 46
+            }
+        },
+        {
+            "channel": "telegram",
+            "input": "ce ta bao ?",
+            "response": "Tô por aqui, disponível como assistente virtual do Agent Center! E você, tá bem?",
+            "language_status": "ASSISTED",
+            "usage": {
+                "input_tokens": 572,
+                "total_tokens": 618,
+                "output_tokens": 46
+            }
+        }
+    ]
+}

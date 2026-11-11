@@ -1,0 +1,21 @@
+# Polimento da conversa — PUBLICADO
+
+Autorização específica posterior ao laboratório: usuário confirmou “pode seguir”, “com ele também”. Também solicitou corrigir as opções “Configuração guiada / Grupos e colaboradores / Operação” que ficavam soltas sobre o conteúdo ao rolar a página.
+
+Produção atualizada para a imagem `agent-center-central:conversation-polish-v1-20261111`, sobre a imagem compatível de grupos/perfil já publicada. Código do polimento `ea6cd1a`, evidências de laboratório `064ce7b`, correção de navegação `1cd6561`. O relatório de laboratório é histórico; sua restrição de publicação foi satisfeita pela autorização posterior registrada aqui.
+
+Entregue: reconhecimento de perguntas sociais informais, uso autorizado e limitado do LLM, resposta local pertinente durante indisponibilidade, confirmação operacional preservada; histórico Telegram sob demanda com `/historico` ou `/history`, mantendo links úteis de diagnóstico e fontes verificadas do RAG. A navegação das três áreas acompanha a rolagem normal da página, sem a barra sticky sobre o conteúdo. Versão do CSS atualizada para evitar cache antigo. Nenhuma mudança de autorização, schema, credencial ou vínculo.
+
+Validação anterior do código: 409 testes Laravel/PostgreSQL, 2.809 assertions, concorrência Task Engine, RLS, Pint, build e secret scan aprovados. Após o ajuste de CSS, navegador verificou rolagem e funcionamento das três áreas em 1440/768/390 e claro/escuro, seis combinações. O código PHP testado permaneceu idêntico. Oito arquivos de runtime da imagem foram conferidos por SHA-256 contra o código revisado.
+
+Backup local `20261111T224009Z`, sem replicação externa adicional nesta operação. Restore em banco isolado aprovado: 16 tabelas protegidas, configuração do Agent preservada e credencial OpenAI decifrável com chave do backup. Publicação por fast-forward preservando alterações locais de outras tarefas. Atualizados apenas web, worker e telegram-scheduler; configuração do migrator aponta à imagem compatível. Sem execução de migrações e sem reiniciar diagnostic-worker, Agent ou outros serviços.
+
+Pós-publicação: TLS, PDO com verify-full, fila database→worker→cache, assets e readiness aprovados. Navegador autenticado somente leitura: 24 combinações de páginas/tamanho/tema, navegação sem flutuar, eventos em português e São Paulo aprovados. Sessão temporária de validação removida. Health VERDE; 16 tabelas protegidas idênticas antes/depois, credenciais decifráveis, configuração do Agent e arquivos locais alheios preservados. Tarefas 97 e diagnósticos 28 inalterados.
+
+Smoke no runtime publicado: duas chamadas OpenAI reais e limitadas, uma por identidade Web e Telegram, responderam a “ce ta bao ?” com “Tô por aqui, disponível como assistente virtual do Agent Center! E você, tá bem?”. Uso informado: 618 tokens por chamada (572 entrada, 46 saída); teto 1.024 de saída, dez segundos e store=false. Precedência de confirmação explícita conferida. A formatação nativa Telegram foi capturada por transporte de teste e correspondeu exatamente à mensagem exibida no histórico, sem rodapé social. Não houve envio externo ao Telegram nesse smoke. Todos os registros transitórios de teste foram revertidos em transação, sem criar tarefas/diagnósticos nem trocar a conversa atual do usuário. O bot real está conectado ao runtime publicado e pode ser usado normalmente.
+
+Rollback compatível: preservar banco, histórico, grupos e avatares. Restaurar a configuração de imagem anterior `telegram-guided-company-profile-20261111` para web/worker/telegram-scheduler, limpar views e repetir prechecks. Não executar migrate:rollback nem restaurar dump sobre produção. Script e configuração anterior preservados em `/root/conversation-polish-production-20261111/rollback.sh` e `compose-before.yaml`. A correção CSS pode ser revertida isoladamente para v2 se necessário, sem tocar dados; o rollback de imagem não exige essa reversão visual.
+
+Evidências sanitizadas em [evidence/conversation-polish-production-20261111](evidence/conversation-polish-production-20261111). Sessões, tokens, chaves e arquivos de ambiente não fazem parte do Git. Nenhuma alteração em Python Agent, Lifecycle, Observability, R2 ou equipamentos.
+
+Resultado: **AGENT CENTER CONVERSATION POLISH PRODUCTION PASS**.

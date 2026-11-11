@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "protected_tables_unchanged": 16,
+  "health": "VERDE",
+  "agent_configuration_unchanged": true,
+  "credentials_decryptable": true,
+  "unrelated_dirty_files_preserved": true,
+  "tasks": 97,
+  "diagnostics": 28
+}
