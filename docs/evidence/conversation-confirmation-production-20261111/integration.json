@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "source_commit": "d15c7b7",
+  "integrated_commit": "3f6975385e65ffb9d3e2a8774d443e1c7565466a",
+  "patch_id_identical": true,
+  "compose_changed_fields": [
+    "services.web.image"
+  ],
+  "unrelated_dirty_files_preserved": true
+}

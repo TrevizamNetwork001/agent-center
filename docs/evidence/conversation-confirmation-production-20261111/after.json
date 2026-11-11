@@ -1,0 +1,350 @@
+{
+    "database": "agent_center",
+    "utc": "2026-11-11T17:52:21+00:00",
+    "protected_data": {
+        "migrations": {
+            "count": 20,
+            "sha256": "7d87e1f208285ca01cfd2ffa7d75841b9c0053072b0d73d0df3e66c5d93a1517"
+        },
+        "llm_providers": {
+            "count": 1,
+            "sha256": "5636ea1a467d45d57e0963a7e1011328039e175c3dcde18562328547c509fdde"
+        },
+        "llm_models": {
+            "count": 1,
+            "sha256": "81ee7322db2ffc518bf1c438bf920479149d3b26ee5c426ed5abf01f03fd6a86"
+        },
+        "llm_bindings": {
+            "count": 1,
+            "sha256": "3b077fe8a72952f7ebd85939fec49662f53f0f29fce1333e5fc668ded4fbbc4e"
+        },
+        "prompts": {
+            "count": 1,
+            "sha256": "eb97235f7fb1d4dcdc66f424f9c247bc1f7dc3d4a9bcfe2673a27dbff1031208"
+        },
+        "prompt_version_contents": {
+            "count": 1,
+            "sha256": "7d8e55bde93b7d985fa021bee6645690205125ea7a4c4bcf97b53af7ab34da39"
+        },
+        "knowledge_items": {
+            "count": 1,
+            "sha256": "637e69e09efc60b54f72094654b4db41c9162b968acd79cd0a01a53baa7955d2"
+        },
+        "knowledge_version_contents": {
+            "count": 1,
+            "sha256": "15319e905bc00d840ab7226445d2393e9e5ad20fda8bb8023d9fda5094110887"
+        },
+        "rag_documents": {
+            "count": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "rag_chunks": {
+            "count": 0,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "agent_releases": {
+            "count": 5,
+            "sha256": "3d991e229d87afa6f7f02c73be18ef80e8d8eb18d3fe225068ea3e57d3956893"
+        },
+        "agent_release_quarantines": {
+            "count": 2,
+            "sha256": "d77fa2a0f8d968c8507d7a371276ee316c055117950ab48514d46aa9d052a0f4"
+        },
+        "agent_operations": {
+            "count": 22,
+            "sha256": "50f7ec871d0ca4c0f3d0898057fad4e25f029d62b25e1ec9ef6235de54f971b5"
+        },
+        "agent_maintenance_accesses": {
+            "count": 1,
+            "sha256": "2145c7217d691f4990e67003d713641b4f22858fda8ba9ce4bce1e9c3ae4d108"
+        },
+        "profiles": {
+            "count": 8,
+            "sha256": "04fd469d224bab83237d1c821408f583981963490631e10c5884cf3b744cba7b"
+        },
+        "skills": {
+            "count": 10,
+            "sha256": "dee2020c89f5091763857f53200f1375fe0fe387f2aabd01d008cfec06c455a0"
+        }
+    },
+    "agent_configuration_sha256": "4a724b5396fc4a9c179b79d7988673439fb25a0f652a49260281a8f9bc6a8e65",
+    "tasks": 97,
+    "diagnostics": 28,
+    "rls": [
+        {
+            "relname": "conversation_events",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        },
+        {
+            "relname": "conversation_messages",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        },
+        {
+            "relname": "conversations",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        },
+        {
+            "relname": "rag_chunks",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        },
+        {
+            "relname": "rag_documents",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        }
+    ],
+    "runtime": {
+        "rolname": "agent_center_runtime",
+        "rolsuper": false,
+        "rolbypassrls": false
+    },
+    "pdo_tls": true,
+    "providers_decryptable": {
+        "b6cf9cf8-ff17-49ed-b1a4-6fb757158ed8": true
+    },
+    "health": {
+        "database": true,
+        "worker": true,
+        "agents_total": 1,
+        "agents_online": 1,
+        "heartbeat_age": 11,
+        "poll_age": 1,
+        "missing_heartbeat": 0,
+        "missing_poll": 0,
+        "today": 1,
+        "indications": 0,
+        "active": 0,
+        "stale": 0,
+        "failed": 0,
+        "state": "VERDE",
+        "checks": [
+            {
+                "component": "laravel_web",
+                "state": "VERDE",
+                "reason": "authenticated_request_completed",
+                "timestamp": "2026-11-11T18:52:21+01:00",
+                "values": {
+                    "request": true
+                },
+                "limit": null
+            },
+            {
+                "component": "postgresql",
+                "state": "VERDE",
+                "reason": "select_1_succeeded",
+                "timestamp": "2026-11-11T18:52:21+01:00",
+                "values": {
+                    "select_1": true
+                },
+                "limit": 1
+            },
+            {
+                "component": "postgresql_tls",
+                "state": "VERDE",
+                "reason": "connection_tls_and_client_verification",
+                "timestamp": "2026-11-11T18:52:21+01:00",
+                "values": {
+                    "tls": true,
+                    "verify_full": true
+                },
+                "limit": true
+            },
+            {
+                "component": "diagnostic_worker",
+                "state": "VERDE",
+                "reason": "functional_loop_recent",
+                "timestamp": "2026-11-11T18:52:21+01:00",
+                "values": {
+                    "work_ms": 11.241341,
+                    "started_at": "2026-11-11T17:52:21.377354Z",
+                    "finished_at": "2026-11-11T17:52:21.388594Z",
+                    "scheduled_wait_ms": 2000,
+                    "loop_age_seconds": 0.138835124,
+                    "iterations": 43144,
+                    "progress": 13,
+                    "same_boot": true
+                },
+                "limit": 15
+            },
+            {
+                "component": "laravel_queue_worker",
+                "state": "VERDE",
+                "reason": "health_job_completed",
+                "timestamp": "2026-11-11T18:52:21+01:00",
+                "values": {
+                    "completed_job_age_seconds": 6.126496388
+                },
+                "limit": 90
+            },
+            {
+                "component": "task_engine",
+                "state": "VERDE",
+                "reason": "active_expired_leases",
+                "timestamp": "2026-11-11T18:52:21+01:00",
+                "values": {
+                    "active": 0,
+                    "expired": 0,
+                    "failures_today": 0
+                },
+                "limit": 0
+            },
+            {
+                "component": "agents",
+                "state": "VERDE",
+                "reason": "heartbeat_and_poll_coverage",
+                "timestamp": "2026-11-11T18:52:21+01:00",
+                "values": {
+                    "total": 1,
+                    "online": 1,
+                    "oldest_heartbeat_seconds": 11,
+                    "oldest_poll_seconds": 1,
+                    "missing_heartbeat": 0,
+                    "missing_poll": 0
+                },
+                "limit": {
+                    "heartbeat_seconds": 60,
+                    "poll_seconds": 30
+                }
+            },
+            {
+                "component": "nginx_external",
+                "state": "VERDE",
+                "reason": "container_functional_health",
+                "timestamp": "2026-11-11T17:51:53.425259+00:00",
+                "values": {
+                    "healthy": true
+                },
+                "limit": true
+            },
+            {
+                "component": "fpm_process",
+                "state": "VERDE",
+                "reason": "container_functional_health",
+                "timestamp": "2026-11-11T17:51:53.425259+00:00",
+                "values": {
+                    "healthy": true
+                },
+                "limit": true
+            },
+            {
+                "component": "postgresql_container",
+                "state": "VERDE",
+                "reason": "container_functional_health",
+                "timestamp": "2026-11-11T17:51:53.425259+00:00",
+                "values": {
+                    "healthy": true
+                },
+                "limit": true
+            },
+            {
+                "component": "queue_container",
+                "state": "VERDE",
+                "reason": "container_functional_health",
+                "timestamp": "2026-11-11T17:51:53.425259+00:00",
+                "values": {
+                    "healthy": true
+                },
+                "limit": true
+            },
+            {
+                "component": "diagnostic_container",
+                "state": "VERDE",
+                "reason": "container_functional_health",
+                "timestamp": "2026-11-11T17:51:53.425259+00:00",
+                "values": {
+                    "healthy": true
+                },
+                "limit": true
+            },
+            {
+                "component": "web_https",
+                "state": "VERDE",
+                "reason": "https_status_probe",
+                "timestamp": "2026-11-11T17:51:53.425259+00:00",
+                "values": {
+                    "http_status": 200
+                },
+                "limit": {
+                    "expected_status": 200
+                }
+            },
+            {
+                "component": "agent_api_external",
+                "state": "VERDE",
+                "reason": "https_status_probe",
+                "timestamp": "2026-11-11T17:51:53.425259+00:00",
+                "values": {
+                    "http_status": 422
+                },
+                "limit": {
+                    "expected_status": 422
+                }
+            },
+            {
+                "component": "http_error_rate",
+                "state": "VERDE",
+                "reason": "sanitized_status_log_5m",
+                "timestamp": "2026-11-11T17:51:53.425259+00:00",
+                "values": {
+                    "requests": 93,
+                    "http_5xx": 0,
+                    "rate": 0
+                },
+                "limit": {
+                    "max_rate": 0.05,
+                    "window_seconds": 300,
+                    "max_samples": 10000
+                }
+            },
+            {
+                "component": "backup_local",
+                "state": "VERDE",
+                "reason": "generation_integrity_verified",
+                "timestamp": "2026-11-11T17:51:53.425259+00:00",
+                "values": {
+                    "age_seconds": 370.1189429759979
+                },
+                "limit": {
+                    "max_age_seconds": 93600
+                }
+            },
+            {
+                "component": "backup_external",
+                "state": "VERDE",
+                "reason": "r2_encrypted_upload_download_verified",
+                "timestamp": "2026-11-11T17:51:53.425259+00:00",
+                "values": {
+                    "age_seconds": 55965.11913371086
+                },
+                "limit": {
+                    "max_age_seconds": 93600
+                }
+            },
+            {
+                "component": "fencing_runtime",
+                "state": "VERDE",
+                "reason": "active_attempt_generation_mismatch",
+                "timestamp": "2026-11-11T18:52:21+01:00",
+                "values": {
+                    "mismatches": 0
+                },
+                "limit": 0
+            },
+            {
+                "component": "agent_maintenance",
+                "state": "VERDE",
+                "reason": "interrupted_or_stalled_operations",
+                "timestamp": "2026-11-11T18:52:21+01:00",
+                "values": {
+                    "uncertain": 0,
+                    "stalled": 0
+                },
+                "limit": 300
+            }
+        ]
+    }
+}

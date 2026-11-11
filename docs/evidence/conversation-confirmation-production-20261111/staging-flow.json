@@ -1,0 +1,26 @@
+{
+    "evidence": {
+        "status": "PASS",
+        "conversation_id": "3d45ba07-16ce-4776-a472-4cedaca25770",
+        "diagnostic_id": "9b9305e8-b2a6-4f80-b08d-26b9871958fb",
+        "confirmation_intent": "CONFIRM",
+        "state_after_confirmation": "DIAGNOSTIC_RUNNING",
+        "pending_consumed": true,
+        "prompt_count": 1,
+        "diagnostics_created": 1,
+        "confirmation_consumed_events": 1,
+        "diagnostic_started_events": 1,
+        "same_key_idempotent": true,
+        "new_key_idempotent": true,
+        "refresh_idempotent": true,
+        "viewer_send_denied_policy_fixture": true,
+        "diagnostic_audit_count": 1,
+        "final_conversation_state": "CLOSED",
+        "final_diagnostic_status": "CANCELLED",
+        "tasks_before": 97,
+        "tasks_after": 97,
+        "probe_execution_prevented": "native cancellation within same outer PostgreSQL transaction before commit",
+        "database": "agent_center_lab",
+        "utc": "2026-11-11T17:50:19+00:00"
+    }
+}

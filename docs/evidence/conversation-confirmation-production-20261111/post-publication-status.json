@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "protected_tables_preserved": 16,
+  "agent_configuration_preserved": true,
+  "non_web_containers_unchanged": true,
+  "health": "VERDE",
+  "tasks_before": 97,
+  "tasks_after": 97,
+  "rag_preserved": true,
+  "openai_configuration_and_key_preserved": true
+}

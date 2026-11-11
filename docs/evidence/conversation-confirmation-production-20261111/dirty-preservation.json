@@ -1,0 +1,5 @@
+{
+  "status": "PASS",
+  "existing_dirty_files_preserved": 59,
+  "compose_additional_change_only": "services.web.image"
+}

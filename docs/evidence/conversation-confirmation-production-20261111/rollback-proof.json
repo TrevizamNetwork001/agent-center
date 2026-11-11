@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "rollback_image": "sha256:fcfa83717242a742a5c51ae36999166c055e47aa0144f2aef18dc6874d98efda",
+  "compose_delta": [
+    "services.web.image"
+  ],
+  "no_database_down_or_restore_required": true,
+  "rollback_executed": false
+}

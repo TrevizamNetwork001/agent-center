@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "base_image": "sha256:fcfa83717242a742a5c51ae36999166c055e47aa0144f2aef18dc6874d98efda",
+  "candidate_image": "sha256:298c13106ae36db3659b8e3c8a9ece156f27939e8bdbc2583550a431f54e7ced",
+  "base_layers_preserved": true,
+  "added_copy_layers": 2,
+  "files": {
+    "app/Conversation/Engine.php": {
+      "base_sha256": "e38b3a8e011bad87e15510cb342b0ed515116aa5a12677cad81ed35a61e3a2b2",
+      "approved_sha256": "5d60aafc184bd654bcbeca287fce19503ac2a556476759407ca04757ed1554c7"
+    },
+    "app/Conversation/IntentDetector.php": {
+      "base_sha256": "b12d0d664e68362c1cce17191079f0f21aeebaad4afbde43bdf3dea0109fdb12",
+      "approved_sha256": "ba0647d33c76346573556200a9a214646e40be0632031e35ee7c25bef7263253"
+    }
+  },
+  "natural_conversation_excluded": true
+}

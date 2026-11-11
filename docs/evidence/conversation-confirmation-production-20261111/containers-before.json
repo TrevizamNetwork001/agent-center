@@ -1,0 +1,27 @@
+{
+  "agent-center-web-1": {
+    "image": "sha256:fcfa83717242a742a5c51ae36999166c055e47aa0144f2aef18dc6874d98efda",
+    "started": "2026-11-11T16:49:16.895219378Z",
+    "health": "healthy"
+  },
+  "agent-center-worker-1": {
+    "image": "sha256:f2d4c1e60312c4a68c3ef5dd9412ab52da2fc0b66d7ae22f6c399b8a88d07b1b",
+    "started": "2026-11-11T17:28:17.271478416Z",
+    "health": "healthy"
+  },
+  "agent-center-diagnostic-worker-1": {
+    "image": "sha256:f2d4c1e60312c4a68c3ef5dd9412ab52da2fc0b66d7ae22f6c399b8a88d07b1b",
+    "started": "2026-11-10T17:27:06.83923917Z",
+    "health": "healthy"
+  },
+  "agent-center-nginx-1": {
+    "image": "sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03",
+    "started": "2026-11-05T18:35:59.838199989Z",
+    "health": "healthy"
+  },
+  "agent-center-postgres-1": {
+    "image": "sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5",
+    "started": "2026-11-05T18:35:59.886933632Z",
+    "health": "healthy"
+  }
+}

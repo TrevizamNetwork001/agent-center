@@ -1,0 +1,57 @@
+{
+  "status": "PASS",
+  "tlsVerification": true,
+  "authentication": "temporary native Laravel session created by authorized CLI validation; no bypass endpoint; password login not repeated",
+  "results": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "conversation": 200,
+      "confirmationPromptCount": 1,
+      "overflow": false,
+      "duplicate": 200,
+      "conflict": 409,
+      "csrf": 419,
+      "health": 200,
+      "rag": 200
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "conversation": 200,
+      "confirmationPromptCount": 1,
+      "overflow": false,
+      "duplicate": null,
+      "conflict": null,
+      "csrf": null,
+      "health": 200,
+      "rag": 200
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "conversation": 200,
+      "confirmationPromptCount": 1,
+      "overflow": false,
+      "duplicate": null,
+      "conflict": null,
+      "csrf": null,
+      "health": 200,
+      "rag": 200
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "conversation": 200,
+      "confirmationPromptCount": 1,
+      "overflow": false,
+      "duplicate": null,
+      "conflict": null,
+      "csrf": null,
+      "health": 200,
+      "rag": 200
+    }
+  ],
+  "anonymousRedirectToLogin": true,
+  "errors": []
+}
