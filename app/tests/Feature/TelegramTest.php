@@ -47,6 +47,83 @@ use Tests\IntelligenceTestCase;
 
 class TelegramTest extends IntelligenceTestCase
 {
+    public function test_idle_private_sweep_enqueues_one_thank_you_and_next_greeting_starts_new_chat(): void
+    {
+        config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+        $link = $this->link();
+        $this->say('boa noite meu chapa');
+        $c = $this->conversation($link);
+        $this->deliverAll();
+        $this->travel(15)->minutes();
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $this->assertSame('CLOSED', $c->fresh()->state);
+        $notice = ConversationMessage::where('event_key', 'idle_closed')->sole();
+        $this->assertSame(1, Outbound::where('message_id', $notice->id)->count());
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $this->assertSame(1, Outbound::where('message_id', $notice->id)->count());
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => ($r['text'] ?? '') === $notice->body);
+        $this->say('Boa noite!');
+        $new = $this->conversation($link);
+        $this->assertNotSame($c->id, $new->id);
+        $this->assertSame('ACTIVE', $new->state);
+        $this->assertSame('ACTIVE', $link->fresh()->status);
+        $this->say('/historico');
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', route('conversations.show', $new->id)));
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+    }
+
+    public function test_idle_respects_fresh_inbox_and_real_history_command_but_not_background_sweep(): void
+    {
+        config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+        $link = $this->link();
+        $this->say('Olá');
+        $c = $this->conversation($link);
+        $this->travel(15)->minutes();
+        $this->receive('/historico');
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $this->assertSame('OPEN', $c->fresh()->status);
+        $this->process();
+        $this->travel(14)->minutes();
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $this->assertSame('OPEN', $c->fresh()->status);
+        $this->travel(1)->minutes();
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $this->assertSame('CLOSED', $c->fresh()->status);
+    }
+
+    public function test_idle_group_topics_are_closed_and_delivered_with_original_scope(): void
+    {
+        config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+        [$group, $link] = $this->companyGroup('group');
+        $this->groupMessage('/nova@lab_fixture_bot', thread: 11);
+        $this->groupMessage('/nova@lab_fixture_bot', thread: 22);
+        $contexts = GroupContext::where('link_id', $link->id)->orderBy('thread_id')->get();
+        $this->assertCount(2, $contexts);
+        $this->travel(15)->minutes();
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        foreach ($contexts as $context) {
+            $c = Conversation::findOrFail($context->conversation_id);
+            $this->assertSame('CLOSED', $c->state);
+            $notice = ConversationMessage::where('conversation_id', $c->id)->where('event_key', 'idle_closed')->sole();
+            $out = Outbound::where('message_id', $notice->id)->sole();
+            $this->assertSame($group->id, $out->group_id);
+            $this->assertSame($context->id, $out->context_id);
+            $this->assertSame($context->thread_id, $out->thread_id);
+            $this->assertSame($group->chat_id, $out->chat_id);
+        }
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+    }
+
     public function test_social_delivery_is_identical_to_web_history_without_automatic_history_link(): void
     {
         $link = $this->link();

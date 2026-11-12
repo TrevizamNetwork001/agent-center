@@ -6,6 +6,7 @@ use App\Agent\Protocol;
 use App\Conversation\ConversationToneDetector;
 use App\Conversation\Engine;
 use App\Conversation\Identity;
+use App\Conversation\IdleSweep;
 use App\Conversation\Intent;
 use App\Conversation\IntentDetector;
 use App\Conversation\State;
@@ -15,6 +16,7 @@ use App\Diagnostics\Engine as Tasks;
 use App\Models\Agent;
 use App\Models\AgentTask;
 use App\Models\Conversation;
+use App\Models\ConversationEvent;
 use App\Models\ConversationMessage;
 use App\Models\ConversationSetting;
 use App\Models\Diagnostic;
@@ -23,6 +25,7 @@ use App\Models\DiagnosticInterpretation;
 use App\Models\DiagnosticPlan;
 use App\Models\Profile;
 use App\Models\Skill;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -31,6 +34,147 @@ use Tests\IdentityTestCase;
 
 class ConversationTest extends IdentityTestCase
 {
+    public function test_idle_closes_at_fifteen_minutes_once_and_preserves_history(): void
+    {
+        config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+        $c = $this->say($this->conversation(), 'Boa noite!');
+        $this->travel(14)->minutes();
+        $this->travel(59)->seconds();
+        $this->assertSame('OPEN', app(Engine::class)->closeIdle($this->identity(), $c)->status);
+        $this->travel(1)->seconds();
+        $c = app(Engine::class)->closeIdle($this->identity(), $c);
+        $this->assertSame('CLOSED', $c->state);
+        $this->assertTrue($c->context_json['closed_due_to_inactivity']);
+        $this->assertNotNull($c->closed_at);
+        $notice = ConversationMessage::where('event_key', 'idle_closed')->sole();
+        $this->assertStringContainsString('15 minutos', $notice->body);
+        $this->assertStringContainsString('Agradeço', $notice->body);
+        $this->assertStringContainsString('histórico', $notice->body);
+        app(Engine::class)->closeIdle($this->identity(), $c);
+        $this->assertSame(1, ConversationMessage::where('event_key', 'idle_closed')->count());
+        $this->assertSame(1, ConversationEvent::where('event_type', 'idle_timeout')->count());
+        $this->assertSame(1, ConversationMessage::where('sender_type', 'user')->count());
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+    }
+
+    public function test_interaction_resets_idle_timer_but_polling_does_not(): void
+    {
+        config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+        $c = $this->conversation();
+        $this->travel(14)->minutes();
+        $c = $this->say($c, 'ce ta bao?');
+        $this->travel(14)->minutes();
+        app(Engine::class)->sync($this->identity(), $c);
+        $this->assertSame('OPEN', app(Engine::class)->closeIdle($this->identity(), $c)->status);
+        $this->travel(1)->minutes();
+        $c = app(Engine::class)->closeIdle($this->identity(), $c);
+        $this->assertSame('CLOSED', $c->state);
+        $this->assertStringContainsString('Valeu', ConversationMessage::where('event_key', 'idle_closed')->sole()->body);
+    }
+
+    public function test_idle_confirmation_is_invalidated_and_new_greeting_opens_another_chat_idempotently(): void
+    {
+        config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+        $c = $this->say($this->conversation(), 'Outro teste google.com');
+        $this->assertSame('WAITING_FOR_CONFIRMATION', $c->state);
+        $this->travel(15)->minutes();
+        $closed = app(Engine::class)->closeIdle($this->identity(), $c);
+        $this->assertArrayNotHasKey('pending', $closed->context_json);
+        $this->assertSame($c->id, $this->say($closed, 'Sim, confirmo')->id);
+        $this->assertSame(0, Diagnostic::count());
+        $key = (string) Str::uuid();
+        $new = $this->say($closed, 'boa noite meu chapa', $key);
+        $this->assertNotSame($c->id, $new->id);
+        $this->assertSame('ACTIVE', $new->state);
+        $this->assertSame($new->id, $this->say($closed, 'boa noite meu chapa', $key)->id);
+        $this->assertSame(2, Conversation::count());
+        $this->assertSame('CLOSED', $c->fresh()->state);
+        $this->assertSame(0, AgentTask::count());
+    }
+
+    public function test_idle_waiting_target_closes_without_a_task_and_explicit_closure_keeps_existing_semantics(): void
+    {
+        config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+        $c = $this->say($this->conversation(), 'Testa um site');
+        $this->assertSame('WAITING_FOR_TARGET', $c->state);
+        $this->travel(15)->minutes();
+        $this->assertSame('CLOSED', app(Engine::class)->closeIdle($this->identity(), $c)->state);
+        $manual = $this->say($this->conversation(), 'Encerrar');
+        $this->assertSame('CLOSED', $manual->state);
+        $this->assertSame($manual->id, $this->say($manual, 'Boa noite')->id);
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_idle_never_cancels_running_diagnostic_and_waits_fifteen_minutes_after_result(): void
+    {
+        config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+        $c = $this->say($this->conversation(), 'Testa YouTube');
+        $id = $c->current_diagnostic_id;
+        $this->travel(40)->minutes();
+        $this->assertSame('DIAGNOSTIC_RUNNING', app(Engine::class)->closeIdle($this->identity(), $c)->state);
+        $this->assertSame('PENDING', Diagnostic::findOrFail($id)->status);
+        $c = $this->finish($c);
+        $this->assertSame('DIAGNOSTIC_COMPLETED', app(Engine::class)->closeIdle($this->identity(), $c)->state);
+        $this->travel(14)->minutes();
+        $this->assertSame('OPEN', app(Engine::class)->closeIdle($this->identity(), $c)->status);
+        $this->travel(1)->minutes();
+        $this->assertSame('CLOSED', app(Engine::class)->closeIdle($this->identity(), $c)->state);
+        $this->assertSame('COMPLETED', Diagnostic::findOrFail($id)->status);
+        $this->assertSame(1, DiagnosticConclusion::where('diagnostic_id', $id)->count());
+        $this->assertSame(1, ConversationMessage::where('message_type', 'result')->count());
+    }
+
+    public function test_idle_sweep_is_opt_in_tenant_scoped_and_uses_owner_identity_including_platform_admin(): void
+    {
+        $c = $this->conversation();
+        $this->context()->forUser($this->platform, $this->a->id);
+        $platformChat = app(Engine::class)->create(Identity::web($this->platform), (string) Str::uuid());
+        $this->context()->forUser($this->other);
+        (new ConversationSetting)->forceFill(['tenant_id' => $this->b->id, 'enabled' => true, 'retention_days' => 30, 'updated_by' => $this->other->id])->save();
+        $other = app(Engine::class)->create(Identity::web($this->other), (string) Str::uuid());
+        $this->travel(15)->minutes();
+        $sweep = app(IdleSweep::class);
+        $this->assertSame(0, $sweep->run($this->a->id));
+        config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+        $this->assertSame(0, $sweep->run($this->b->id));
+        $this->assertSame(2, $sweep->run($this->a->id));
+        $this->assertSame(0, $sweep->run($this->a->id));
+        $this->assertNull($this->context()->tenantId);
+        $this->context()->forUser($this->operator);
+        $this->assertSame('CLOSED', $c->fresh()->state);
+        $this->assertSame('CLOSED', $platformChat->fresh()->state);
+        $this->context()->forUser($this->other);
+        $this->assertSame('OPEN', $other->fresh()->status);
+        $this->assertNull(Conversation::find($c->id));
+    }
+
+    public function test_idle_cannot_close_another_owners_chat(): void
+    {
+        config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+        $c = $this->conversation();
+        $this->travel(15)->minutes();
+        $this->context()->forUser($this->admin);
+        $this->expectException(AuthorizationException::class);
+        app(Engine::class)->closeIdle(Identity::web($this->admin), $c);
+    }
+
+    public function test_idle_sweep_skips_revoked_owner_and_disabled_tenant(): void
+    {
+        config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+        $c = $this->conversation();
+        $this->operator->forceFill(['status' => 'disabled'])->save();
+        $this->travel(15)->minutes();
+        $this->assertSame(0, app(IdleSweep::class)->run($this->a->id));
+        $this->context()->forUser($this->admin);
+        $this->assertSame('OPEN', $c->fresh()->status);
+        $this->assertSame(0, ConversationMessage::where('event_key', 'idle_closed')->count());
+        $this->context()->apply(platform: true);
+        $this->a->forceFill(['status' => 'disabled'])->save();
+        $this->assertSame(0, app(IdleSweep::class)->run($this->a->id));
+        $this->assertNull($this->context()->tenantId);
+    }
+
     private Agent $agent;
 
     protected function setUp(): void

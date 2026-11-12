@@ -97,7 +97,9 @@ class Engine
             $this->synchronize($c);
             $det = app(IntentDetector::class);
             $intent = $det->detect($body, State::from($c->state));
-            if (in_array($c->state, ['CLOSED', 'CANCELLED'], true) && in_array($intent, [Intent::Start, Intent::Another, Intent::Target, Intent::Path], true)) {
+            $idleRestart = $c->state === 'CLOSED' && ($c->context_json['closed_due_to_inactivity'] ?? false)
+                && ! in_array($intent, [Intent::Confirm, Intent::Deny, Intent::Cancel, Intent::Close, Intent::Acknowledge], true);
+            if ($idleRestart || (in_array($c->state, ['CLOSED', 'CANCELLED'], true) && in_array($intent, [Intent::Start, Intent::Another, Intent::Target, Intent::Path], true))) {
                 $c = $this->create($i, (string) Str::uuid(), $c->context_json['agent_id'] ?? null);
             }
             abort_if($c->sequence >= config('conversation.max_messages'), 422, 'Limite desta conversa alcançado. Abra uma nova conversa.');
@@ -315,6 +317,56 @@ class Engine
             abort_unless($conversation->channel === $i->channel && ($i->channel !== 'telegram' || ($conversation->contact_id === $i->contactId && $conversation->telegram_context_id === $i->scopeId)), 403);
             $c = Conversation::whereKey($conversation->id)->lockForUpdate()->firstOrFail();
             $this->synchronize($c);
+            $c->save();
+
+            return $c;
+        });
+    }
+
+    /** Accepted transport commands count as interaction; background polling never does. */
+    public function touch(Identity $i, Conversation $conversation): void
+    {
+        DB::transaction(function () use ($i, $conversation) {
+            $this->allowed($i);
+            Gate::forUser($i->user)->authorize('view', $conversation);
+            abort_unless($conversation->channel === $i->channel && $conversation->contact_id === $i->contactId && $conversation->telegram_context_id === $i->scopeId, 403);
+            $this->userLock($i);
+            Conversation::whereKey($conversation->id)->where('status', 'OPEN')->update(['last_activity_at' => now()]);
+        });
+    }
+
+    public function closeIdle(Identity $i, Conversation $conversation): Conversation
+    {
+        return DB::transaction(function () use ($i, $conversation) {
+            $this->allowed($i);
+            Gate::forUser($i->user)->authorize('view', $conversation);
+            abort_unless($conversation->channel === $i->channel && $conversation->contact_id === $i->contactId && $conversation->telegram_context_id === $i->scopeId, 403);
+            $this->userLock($i);
+            $c = Conversation::whereKey($conversation->id)->lockForUpdate()->firstOrFail();
+            if (! config('conversation.idle_enabled') || ! in_array($i->tenantId, config('conversation.idle_tenants', []), true) || $c->status !== 'OPEN') {
+                return $c;
+            }
+            $this->synchronize($c);
+            $c->save();
+            // An idle chat must never cancel a task or skip the official result.
+            if ($c->state === State::Running->value || ($c->current_diagnostic_id && Diagnostic::whereKey($c->current_diagnostic_id)->whereIn('status', ['PENDING', 'RUNNING'])->exists())) {
+                return $c;
+            }
+            $activity = $c->last_activity_at;
+            $result = ConversationMessage::where('conversation_id', $c->id)->whereIn('message_type', ['result', 'interpretation'])->latest('created_at')->first();
+            if ($result && $result->created_at->gt($activity)) {
+                $activity = $result->created_at;
+            }
+            if ($activity->gt(now()->subMinutes(config('conversation.idle_minutes', 15)))) {
+                return $c;
+            }
+            $this->transition($c, State::Closed, 'idle_timeout');
+            $c->context_json = [...$c->context_json, 'closed_due_to_inactivity' => true];
+            $relaxed = ($c->context_json['tone']['style'] ?? '') === 'RELAXED';
+            $body = $relaxed
+                ? 'Como ficamos 15 minutos sem conversar, vou encerrar este chat por aqui. Valeu pela conversa! O histórico está salvo. Quando precisar, é só mandar outra mensagem.'
+                : 'Como não houve interação por 15 minutos, estou encerrando esta conversa. Agradeço pelo contato! O histórico está preservado. Envie uma nova mensagem quando precisar.';
+            $this->message($c, 'system', 'text', $body, null, ['idle_notice' => true, 'idle_minutes' => 15], eventKey: 'idle_closed');
             $c->save();
 
             return $c;

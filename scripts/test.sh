@@ -21,4 +21,7 @@ docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_
 if [ "${TEST_DIAGNOSTIC_CONCURRENCY:-0}" = 1 ]; then
  docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/diagnostic-concurrency.php
 fi
+if [ "${TEST_CONVERSATION_IDLE_CONCURRENCY:-0}" = 1 ]; then
+ docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/conversation-idle-concurrency.php
+fi
 docker run --rm --network "$test_network" --env-file "$test_owner_env" -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php artisan migrate:rollback --force

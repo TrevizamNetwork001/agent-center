@@ -36,6 +36,9 @@ class Sweep
                         }
                         $identity = app(Accounts::class)->identity($link);
                         $c = app(Engine::class)->sync($identity, Conversation::findOrFail($link->conversation_id));
+                        if (! $this->waiting($bot, $link)) {
+                            $c = app(Engine::class)->closeIdle($identity, $c);
+                        }
                         app(Runner::class)->collect($bot, $link, $c);
                     });
                 } catch (\Throwable) { /* Permissions are checked again for every delivery; no private exception logs. */
@@ -56,6 +59,9 @@ class Sweep
                         $base = app(Accounts::class)->identity($link);
                         $identity = new Identity($base->tenantId, $base->user, $base->channel, $base->contactId, $context->id);
                         $conversation = app(Engine::class)->sync($identity, Conversation::findOrFail($context->conversation_id));
+                        if (! $this->waiting($bot, $link, $context)) {
+                            $conversation = app(Engine::class)->closeIdle($identity, $conversation);
+                        }
                         app(Runner::class)->collect($bot, $link, $conversation, $group, $context);
                     });
                 } catch (\Throwable) {
@@ -70,5 +76,14 @@ class Sweep
         } finally {
             app(TenantContext::class)->apply();
         }
+    }
+
+    private function waiting(Bot $bot, Link $link, ?GroupContext $context = null): bool
+    {
+        return Update::where('bot_id', $bot->id)->where('generation', $bot->generation)
+            ->where('sender_id', $link->telegram_user_id)->where('status', 'PENDING')
+            ->where('message_date', '>', now()->subMinutes(15))
+            ->when($context, fn ($q) => $q->where('group_id', $context->group_id)->where('thread_id', $context->thread_id), fn ($q) => $q->where('chat_type', 'private'))
+            ->exists();
     }
 }

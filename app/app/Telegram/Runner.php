@@ -89,6 +89,9 @@ class Runner
                     $identity = new Identity($base->tenantId, $base->user, $base->channel, $base->contactId, $group ? $context->id : null);
                     $chat = $group && $group->reply_mode === 'private' ? $link->chat_id : $row->chat_id;
                     $text = $incoming->body;
+                    if ($context->conversation_id && in_array($text, ['/help', '/ajuda', '/start', '/historico', '/history', '/agents', '/status', '/resultado', '/unlink', '/desvincular'], true)) {
+                        app(Engine::class)->touch($identity, Conversation::findOrFail($context->conversation_id));
+                    }
                     if ($text === '/unlink confirm' || $text === '/desvincular confirmar') {
                         $accounts->revoke($link, $identity->user);
                         $this->notice($bot, $chat, 'Vínculo revogado. Para acessar novamente, faça um novo vínculo pelo painel.', group: $group);
