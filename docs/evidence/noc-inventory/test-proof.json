@@ -1,0 +1,23 @@
+{
+  "full_suite": {
+    "tests": 535,
+    "assertions": 4322,
+    "status": "PASS"
+  },
+  "concurrency": [
+    "Task Engine claims/fencing/idempotence",
+    "conversation idle",
+    "preflight terminal callbacks"
+  ],
+  "pint": {
+    "files": 329,
+    "status": "PASS"
+  },
+  "frontend_build": "PASS",
+  "isolated_ui_views": 24,
+  "populated_migration_rollback": "REFUSED AS REQUIRED; PostgreSQL CHECK 23514; history retained",
+  "equipment_connections": 0,
+  "agent_tasks_from_inventory": 0,
+  "device_capabilities_available": 0,
+  "preflight_source_unchanged": true
+}

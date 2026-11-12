@@ -1,0 +1,154 @@
+{
+  "status": "PASS",
+  "views": [
+    {
+      "page": "index",
+      "width": 390,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "create",
+      "width": 390,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "detail",
+      "width": 390,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "catalog",
+      "width": 390,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "index",
+      "width": 390,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "create",
+      "width": 390,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "detail",
+      "width": 390,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "catalog",
+      "width": 390,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "index",
+      "width": 768,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "create",
+      "width": 768,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "detail",
+      "width": 768,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "catalog",
+      "width": 768,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "index",
+      "width": 768,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "create",
+      "width": 768,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "detail",
+      "width": 768,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "catalog",
+      "width": 768,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "index",
+      "width": 1440,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "create",
+      "width": 1440,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "detail",
+      "width": 1440,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "catalog",
+      "width": 1440,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "index",
+      "width": 1440,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "create",
+      "width": 1440,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "detail",
+      "width": 1440,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "catalog",
+      "width": 1440,
+      "theme": "dark",
+      "status": "PASS"
+    }
+  ],
+  "keyboard_details": true,
+  "crud_and_deactivation": true,
+  "simulation_labelled": true,
+  "page_errors": [],
+  "scope": "isolated fixtures only; no network equipment"
+}

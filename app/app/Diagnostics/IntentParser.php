@@ -2,6 +2,7 @@
 
 namespace App\Diagnostics;
 
+use App\Noc\IntentInterpreter;
 use Illuminate\Support\Str;
 
 /** Objective parsing is deterministic and independent of Adaptive Tone and LLM output. */
@@ -10,6 +11,9 @@ class IntentParser
     public function parse(string $body): array
     {
         $s = preg_replace('/\s+/', ' ', Str::lower(Str::ascii(trim($body))));
+        if ($device = app(IntentInterpreter::class)->parse($body)) {
+            return $device;
+        }
         $goal = null;
         $ambiguous = false;
         // Explanations and quotations alone do not authorize an operational request.

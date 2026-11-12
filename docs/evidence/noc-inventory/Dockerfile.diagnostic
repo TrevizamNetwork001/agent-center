@@ -1,0 +1,15 @@
+FROM agent-center-central:preflight-real-flow-diagnostic-20261112
+COPY app/app/Noc /var/www/html/app/Noc
+COPY app/app/Models/NocDevice.php app/app/Models/NocDeviceRevision.php app/app/Models/NocSimulation.php /var/www/html/app/Models/
+COPY app/app/Policies/NocDevicePolicy.php /var/www/html/app/Policies/
+COPY app/app/Http/Controllers/NocInventoryController.php /var/www/html/app/Http/Controllers/
+COPY app/app/Http/Requests/NocDeviceRequest.php app/app/Http/Requests/NocActionRequest.php /var/www/html/app/Http/Requests/
+COPY app/app/Conversation/Engine.php app/app/Conversation/PlanningReply.php /var/www/html/app/Conversation/
+COPY app/app/Diagnostics/OperationalIntent.php app/app/Diagnostics/IntentParser.php app/app/Diagnostics/IntentPlanning.php /var/www/html/app/Diagnostics/
+COPY app/app/Providers/AppServiceProvider.php /var/www/html/app/Providers/AppServiceProvider.php
+COPY app/app/Services/Audit.php /var/www/html/app/Services/Audit.php
+COPY app/resources/noc-catalog.json app/resources/noc-fixtures.json /var/www/html/resources/
+COPY app/resources/views/noc /var/www/html/resources/views/noc
+COPY app/resources/views/layout.blade.php /var/www/html/resources/views/layout.blade.php
+COPY app/database/migrations/2026_11_13_000001_create_noc_inventory.php /var/www/html/database/migrations/
+COPY deploy/noc-inventory/web.operational.php /var/www/html/routes/web.php

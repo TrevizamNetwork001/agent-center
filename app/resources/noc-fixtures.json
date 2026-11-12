@@ -1,0 +1,112 @@
+{
+  "bgp-established": {
+    "id": "bgp-established",
+    "label": "BGP estabelecido",
+    "capability_id": "routing.bgp.sessions",
+    "evidence": {
+      "peer": "192.0.2.2",
+      "state": "ESTABLISHED",
+      "uptime_seconds": 3600,
+      "prefixes_received": 42
+    },
+    "classification": "NORMAL",
+    "summary": "Sessão estabelecida apenas na fixture; não representa o equipamento.",
+    "source": "FIXTURE",
+    "simulation": true,
+    "schema_version": 1
+  },
+  "bgp-down": {
+    "id": "bgp-down",
+    "label": "BGP peer down",
+    "capability_id": "routing.bgp.sessions",
+    "evidence": {
+      "peer": "192.0.2.2",
+      "state": "IDLE",
+      "uptime_seconds": 0,
+      "prefixes_received": 0
+    },
+    "classification": "ATTENTION",
+    "summary": "Peer sem sessão na fixture; causa não determinada.",
+    "source": "FIXTURE",
+    "simulation": true,
+    "schema_version": 1
+  },
+  "interface-crc": {
+    "id": "interface-crc",
+    "label": "Interface com CRC",
+    "capability_id": "switching.errors",
+    "evidence": {
+      "interface": "demo-uplink-1",
+      "crc_delta": 120,
+      "window_seconds": 300
+    },
+    "classification": "ATTENTION",
+    "summary": "Erros no intervalo sintético; verificar tendência antes de atribuir causa.",
+    "source": "FIXTURE",
+    "simulation": true,
+    "schema_version": 1
+  },
+  "onu-offline": {
+    "id": "onu-offline",
+    "label": "ONU offline",
+    "capability_id": "ftth.onu.status",
+    "evidence": {
+      "pon": "demo-pon-1",
+      "onu_id": 7,
+      "status": "OFFLINE",
+      "observed_at": "2026-01-01T00:00:00Z"
+    },
+    "classification": "ATTENTION",
+    "summary": "ONU offline no cenário, sem inferir rompimento ou falta de energia.",
+    "source": "FIXTURE",
+    "simulation": true,
+    "schema_version": 1
+  },
+  "optical-low": {
+    "id": "optical-low",
+    "label": "Potência óptica fora da referência",
+    "capability_id": "ftth.optical.signal",
+    "evidence": {
+      "pon": "demo-pon-1",
+      "onu_id": 7,
+      "rx_dbm": -32,
+      "reference": {
+        "minimum_dbm": -27,
+        "maximum_dbm": -8,
+        "scope": "FICTIONAL_DEMO_ONLY"
+      },
+      "source": "FIXTURE"
+    },
+    "classification": "ATTENTION",
+    "summary": "Referência fictícia da demonstração; não é limite universal de ONU, classe óptica ou fabricante.",
+    "source": "FIXTURE",
+    "simulation": true,
+    "schema_version": 1
+  },
+  "pppoe-disconnected": {
+    "id": "pppoe-disconnected",
+    "label": "PPPoE desconectado",
+    "capability_id": "bng.sessions",
+    "evidence": {
+      "session_ref": "demo-subscriber-1",
+      "status": "DISCONNECTED",
+      "uptime_seconds": 0
+    },
+    "classification": "ATTENTION",
+    "summary": "Sem sessão na fixture; sem consultar RADIUS ou credenciais.",
+    "source": "FIXTURE",
+    "simulation": true,
+    "schema_version": 1
+  },
+  "insufficient-data": {
+    "id": "insufficient-data",
+    "label": "Equipamento sem dados suficientes",
+    "capability_id": null,
+    "evidence": {},
+    "classification": "INCONCLUSIVE",
+    "summary": "Ausência de evidência não comprova falha nem normalidade.",
+    "source": "FIXTURE",
+    "simulation": true,
+    "schema_version": 1
+  }
+}

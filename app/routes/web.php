@@ -16,6 +16,7 @@ use App\Http\Controllers\DiagnosticCatalogController;
 use App\Http\Controllers\DiagnosticController;
 use App\Http\Controllers\KnowledgeController;
 use App\Http\Controllers\LlmController;
+use App\Http\Controllers\NocInventoryController;
 use App\Http\Controllers\OperationsController;
 use App\Http\Controllers\PromptController;
 use App\Http\Controllers\RagController;
@@ -134,4 +135,16 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->group(function 
     Route::get('/account/profile', [AccountProfileController::class, 'edit'])->name('account.edit');
     Route::patch('/account/profile', [AccountProfileController::class, 'update'])->middleware('throttle:10,1')->name('account.update');
     Route::get('/account/avatar', [AccountProfileController::class, 'avatar'])->name('account.avatar');
+});
+
+Route::middleware(['auth', 'auth.session', 'password.changed'])->prefix('noc-inventory')->group(function () {
+    Route::get('/', [NocInventoryController::class, 'index'])->name('noc.index');
+    Route::get('/capabilities', [NocInventoryController::class, 'capabilities'])->name('noc.capabilities');
+    Route::get('/create', [NocInventoryController::class, 'create'])->name('noc.create');
+    Route::post('/', [NocInventoryController::class, 'store'])->middleware('throttle:30,1')->name('noc.store');
+    Route::get('/{nocDevice}', [NocInventoryController::class, 'show'])->whereUuid('nocDevice')->name('noc.show');
+    Route::get('/{nocDevice}/edit', [NocInventoryController::class, 'edit'])->whereUuid('nocDevice')->name('noc.edit');
+    Route::put('/{nocDevice}', [NocInventoryController::class, 'update'])->whereUuid('nocDevice')->middleware('throttle:30,1')->name('noc.update');
+    Route::post('/{nocDevice}/deactivate', [NocInventoryController::class, 'deactivate'])->whereUuid('nocDevice')->middleware('throttle:30,1')->name('noc.deactivate');
+    Route::post('/{nocDevice}/simulations', [NocInventoryController::class, 'simulate'])->whereUuid('nocDevice')->middleware('throttle:30,1')->name('noc.simulate');
 });

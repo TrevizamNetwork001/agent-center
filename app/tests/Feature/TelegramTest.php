@@ -18,6 +18,7 @@ use App\Models\ConversationMessage;
 use App\Models\ConversationSetting;
 use App\Models\Diagnostic;
 use App\Models\DiagnosticConclusion;
+use App\Noc\Planning;
 use App\Rag\Index;
 use App\Telegram\Access;
 use App\Telegram\Accounts;
@@ -53,6 +54,25 @@ use Tests\Support\PathReadinessFixture;
 class TelegramTest extends IntelligenceTestCase
 {
     use PathReadinessFixture;
+
+    public function test_noc_device_queries_are_understood_without_profiles_preflight_or_tasks(): void
+    {
+        $link = $this->link();
+        foreach (['Verifique o BGP do NE8000', 'Confira a rota até 8.8.8.8 no roteador', 'Verifique a potência das ONUs'] as $text) {
+            $this->say($text);
+            $c = $this->conversation($link);
+            $m = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first();
+            $this->assertStringContainsString(Planning::UNAVAILABLE, $m->body);
+            $this->assertFalse($m->metadata['noc_planning']['operational_enabled']);
+            $this->assertArrayNotHasKey('pending', $c->context_json);
+            $this->assertArrayNotHasKey('preflight_watch', $c->context_json);
+        }
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, Diagnostic::count());
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', 'consulta ao equipamento ainda não está habilitada'));
+        Http::assertNotSent(fn ($r) => str_contains($r['text'] ?? '', 'Confirma a execução'));
+    }
 
     public function test_real_preflight_pending_then_late_denial_is_short_and_idempotent(): void
     {

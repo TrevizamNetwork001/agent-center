@@ -5,6 +5,8 @@ namespace App\Diagnostics;
 use App\Agent\Protocol;
 use App\Models\Agent;
 use App\Models\Profile;
+use App\Models\User;
+use App\Noc\Planning;
 use Illuminate\Validation\ValidationException;
 
 /** Objective/Profile decisions shared by both channels; no policy mutation. */
@@ -12,12 +14,21 @@ class IntentPlanning
 {
     public function profile(OperationalIntent $intent, ?Agent $agent, array $request = []): string
     {
+        if ($intent->isDevice()) {
+            throw ValidationException::withMessages(['profile_id' => Planning::UNAVAILABLE]);
+        }
+
         return match ($intent) {
             OperationalIntent::Route => ($request['method'] ?? null) === 'traceroute' ? 'CAMINHO_TRACEROUTE' : (($request['protocol'] ?? null) === 'tcp' ? 'MTR_TCP' : 'MTR_ICMP'),
             OperationalIntent::Connectivity => 'CONECTIVIDADE_BASICA', OperationalIntent::Web => 'SITE_NAO_ABRE',
             OperationalIntent::Dns => 'PROBLEMA_DNS', OperationalIntent::Latency => 'PERDA_LATENCIA',
             OperationalIntent::Port => 'PORTA_SERVICO', OperationalIntent::Slowness => ($request['service'] ?? null) === 'google_youtube' ? 'GOOGLE_YOUTUBE' : (($request['content_slow'] ?? false) ? 'CONTEUDO_LENTO' : 'SITE_LENTO'),
         };
+    }
+
+    public function devicePlan(array $request, string $body, User $user): array
+    {
+        return app(Planning::class)->prepare($request, $body, $user);
     }
 
     public function context(Profile $profile, array $request = []): array

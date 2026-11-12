@@ -1,0 +1,1266 @@
+{
+  "version": 1,
+  "categories": {
+    "router": "Roteador",
+    "bng": "BNG/BRAS",
+    "switch": "Switch",
+    "olt": "OLT",
+    "firewall": "Firewall",
+    "radio": "Rádio",
+    "infrastructure": "Servidor de infraestrutura",
+    "other": "Outros"
+  },
+  "manufacturers": {
+    "huawei": "Huawei",
+    "mikrotik": "MikroTik",
+    "cisco": "Cisco",
+    "datacom": "Datacom",
+    "fiberhome": "FiberHome",
+    "zte": "ZTE",
+    "vsol": "VSOL",
+    "intelbras": "Intelbras",
+    "other": "Outros"
+  },
+  "platforms": {
+    "huawei-vrp": {
+      "manufacturer": "huawei",
+      "label": "Huawei VRP",
+      "model_examples": "NE40E, NE8000, ME60, S67xx",
+      "limitations": "Confirmar família, placa, firmware e VRP antes de qualquer integração."
+    },
+    "huawei-olt": {
+      "manufacturer": "huawei",
+      "label": "Huawei OLT",
+      "model_examples": "MA5800",
+      "limitations": "CLI e evidências dependem da release e das placas PON."
+    },
+    "routeros6": {
+      "manufacturer": "mikrotik",
+      "label": "RouterOS 6",
+      "model_examples": "CCR, CRS",
+      "limitations": "Não intercambiar contratos de BGP/OSPF com RouterOS 7."
+    },
+    "routeros7": {
+      "manufacturer": "mikrotik",
+      "label": "RouterOS 7",
+      "model_examples": "CCR, CRS",
+      "limitations": "Versão menor, licença e hardware precisam ser validados."
+    },
+    "cisco-ios": {
+      "manufacturer": "cisco",
+      "label": "Cisco IOS",
+      "model_examples": "Declarar modelo",
+      "limitations": "Modelo e feature set ainda não validados."
+    },
+    "cisco-ios-xe": {
+      "manufacturer": "cisco",
+      "label": "Cisco IOS-XE",
+      "model_examples": "Declarar modelo",
+      "limitations": "Release e hardware ainda não validados."
+    },
+    "cisco-ios-xr": {
+      "manufacturer": "cisco",
+      "label": "Cisco IOS-XR",
+      "model_examples": "Declarar modelo",
+      "limitations": "Não reutilizar contratos IOS/IOS-XE."
+    },
+    "cisco-nx-os": {
+      "manufacturer": "cisco",
+      "label": "Cisco NX-OS",
+      "model_examples": "Declarar modelo",
+      "limitations": "Não presumir capacidades de roteadores IOS."
+    },
+    "datacom-dmos": {
+      "manufacturer": "datacom",
+      "label": "Datacom DmOS",
+      "model_examples": "Declarar modelo",
+      "limitations": "Validar família, firmware e licenças."
+    },
+    "fiberhome-olt": {
+      "manufacturer": "fiberhome",
+      "label": "FiberHome OLT",
+      "model_examples": "Declarar modelo",
+      "limitations": "Modelo, versão e placas PON não validados."
+    },
+    "zte-olt": {
+      "manufacturer": "zte",
+      "label": "ZTE OLT",
+      "model_examples": "Declarar modelo",
+      "limitations": "Modelo, versão e placas PON não validados."
+    },
+    "vsol-olt": {
+      "manufacturer": "vsol",
+      "label": "VSOL OLT",
+      "model_examples": "Declarar modelo",
+      "limitations": "Não presumir equivalência entre GPON e EPON."
+    },
+    "intelbras-olt": {
+      "manufacturer": "intelbras",
+      "label": "Intelbras OLT",
+      "model_examples": "Declarar modelo",
+      "limitations": "Modelo, versão e tecnologia PON não validados."
+    },
+    "other-unverified": {
+      "manufacturer": "other",
+      "label": "Outra / não verificada",
+      "model_examples": "Declarar modelo",
+      "limitations": "Sem contrato específico de plataforma nesta versão."
+    }
+  },
+  "capabilities": {
+    "routing.table": {
+      "id": "routing.table",
+      "objective": "Tabela de roteamento",
+      "category": "routing",
+      "device_categories": [
+        "router",
+        "bng",
+        "firewall"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "prefix": "CIDR",
+          "vrf": "string|null",
+          "next_hop": "IP|null",
+          "protocol": "string"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "routing.fib": {
+      "id": "routing.fib",
+      "objective": "FIB",
+      "category": "routing",
+      "device_categories": [
+        "router",
+        "bng"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "prefix": "CIDR",
+          "next_hops": "array",
+          "installed": "boolean|null"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "routing.bgp.sessions": {
+      "id": "routing.bgp.sessions",
+      "objective": "Sessões BGP",
+      "category": "routing",
+      "device_categories": [
+        "router",
+        "bng"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "peer": "IP",
+          "state": "enum",
+          "uptime_seconds": "integer|null",
+          "prefixes_received": "integer|null"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "SIMULATED"
+    },
+    "routing.bgp.routes": {
+      "id": "routing.bgp.routes",
+      "objective": "Rotas BGP",
+      "category": "routing",
+      "device_categories": [
+        "router",
+        "bng"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "prefix": "CIDR",
+          "as_path": "array|null",
+          "next_hop": "IP|null",
+          "vrf": "string|null"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "routing.ospf.neighbors": {
+      "id": "routing.ospf.neighbors",
+      "objective": "Vizinhos OSPF",
+      "category": "routing",
+      "device_categories": [
+        "router",
+        "bng"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "router_id": "IP",
+          "state": "enum",
+          "interface": "string"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "system.interfaces": {
+      "id": "system.interfaces",
+      "objective": "Interfaces",
+      "category": "system",
+      "device_categories": [
+        "router",
+        "bng",
+        "switch",
+        "firewall",
+        "radio"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "interface": "string",
+          "admin_status": "enum",
+          "oper_status": "enum"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "system.resources": {
+      "id": "system.resources",
+      "objective": "CPU e memória",
+      "category": "system",
+      "device_categories": [
+        "router",
+        "bng",
+        "switch",
+        "olt",
+        "firewall",
+        "radio",
+        "infrastructure"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos",
+        "huawei-olt",
+        "fiberhome-olt",
+        "zte-olt",
+        "vsol-olt",
+        "intelbras-olt"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "cpu_percent": "number|null",
+          "memory_used_bytes": "integer|null",
+          "window_seconds": "integer"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "switching.status": {
+      "id": "switching.status",
+      "objective": "Estado das portas",
+      "category": "switching",
+      "device_categories": [
+        "switch",
+        "router"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "interface": "string",
+          "status": "enum",
+          "speed_bps": "integer|null"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "switching.errors": {
+      "id": "switching.errors",
+      "objective": "CRC e erros",
+      "category": "switching",
+      "device_categories": [
+        "switch",
+        "router"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "interface": "string",
+          "crc_delta": "integer",
+          "window_seconds": "integer"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "SIMULATED"
+    },
+    "switching.flaps": {
+      "id": "switching.flaps",
+      "objective": "Flaps de interface",
+      "category": "switching",
+      "device_categories": [
+        "switch",
+        "router"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "interface": "string",
+          "events": "array",
+          "window_seconds": "integer"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "switching.uplinks": {
+      "id": "switching.uplinks",
+      "objective": "Uplinks",
+      "category": "switching",
+      "device_categories": [
+        "switch",
+        "olt"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos",
+        "huawei-olt",
+        "fiberhome-olt",
+        "zte-olt",
+        "vsol-olt",
+        "intelbras-olt"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "interface": "string",
+          "role_source": "string",
+          "status": "enum"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "switching.vlans": {
+      "id": "switching.vlans",
+      "objective": "VLANs",
+      "category": "switching",
+      "device_categories": [
+        "switch",
+        "router",
+        "olt"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos",
+        "huawei-olt",
+        "fiberhome-olt",
+        "zte-olt",
+        "vsol-olt",
+        "intelbras-olt"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "vlan_id": "integer",
+          "interfaces": "array",
+          "tagging": "enum"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "switching.lldp": {
+      "id": "switching.lldp",
+      "objective": "Vizinhos LLDP",
+      "category": "switching",
+      "device_categories": [
+        "switch",
+        "router"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "local_port": "string",
+          "remote_chassis": "string|null",
+          "remote_port": "string|null"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "ftth.olt.status": {
+      "id": "ftth.olt.status",
+      "objective": "Estado da OLT",
+      "category": "ftth",
+      "device_categories": [
+        "olt"
+      ],
+      "platforms": [
+        "huawei-olt",
+        "fiberhome-olt",
+        "zte-olt",
+        "vsol-olt",
+        "intelbras-olt"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "chassis": "string",
+          "boards": "array",
+          "alarms": "array"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "ftth.onu.status": {
+      "id": "ftth.onu.status",
+      "objective": "ONUs online e offline",
+      "category": "ftth",
+      "device_categories": [
+        "olt"
+      ],
+      "platforms": [
+        "huawei-olt",
+        "fiberhome-olt",
+        "zte-olt",
+        "vsol-olt",
+        "intelbras-olt"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "pon": "string",
+          "onu_id": "integer",
+          "status": "enum",
+          "observed_at": "datetime"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "SIMULATED"
+    },
+    "ftth.optical.signal": {
+      "id": "ftth.optical.signal",
+      "objective": "Potência óptica",
+      "category": "ftth",
+      "device_categories": [
+        "olt"
+      ],
+      "platforms": [
+        "huawei-olt",
+        "fiberhome-olt",
+        "zte-olt",
+        "vsol-olt",
+        "intelbras-olt"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "pon": "string",
+          "onu_id": "integer",
+          "rx_dbm": "number|null",
+          "reference": "object",
+          "source": "string"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "SIMULATED"
+    },
+    "ftth.alarms": {
+      "id": "ftth.alarms",
+      "objective": "Alarmes FTTH",
+      "category": "ftth",
+      "device_categories": [
+        "olt"
+      ],
+      "platforms": [
+        "huawei-olt",
+        "fiberhome-olt",
+        "zte-olt",
+        "vsol-olt",
+        "intelbras-olt"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "alarm_id": "string",
+          "severity": "enum",
+          "raised_at": "datetime|null"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "ftth.disconnects": {
+      "id": "ftth.disconnects",
+      "objective": "Histórico de quedas",
+      "category": "ftth",
+      "device_categories": [
+        "olt"
+      ],
+      "platforms": [
+        "huawei-olt",
+        "fiberhome-olt",
+        "zte-olt",
+        "vsol-olt",
+        "intelbras-olt"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "onu_id": "integer",
+          "events": "array",
+          "retention_seconds": "integer|null"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "ftth.pon.status": {
+      "id": "ftth.pon.status",
+      "objective": "Estado das PONs",
+      "category": "ftth",
+      "device_categories": [
+        "olt"
+      ],
+      "platforms": [
+        "huawei-olt",
+        "fiberhome-olt",
+        "zte-olt",
+        "vsol-olt",
+        "intelbras-olt"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "pon": "string",
+          "admin_status": "enum",
+          "oper_status": "enum",
+          "onu_count": "integer|null"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "bng.sessions": {
+      "id": "bng.sessions",
+      "objective": "Sessões PPPoE",
+      "category": "bng",
+      "device_categories": [
+        "bng",
+        "router"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "session_ref": "pseudonym",
+          "status": "enum",
+          "uptime_seconds": "integer|null"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "SIMULATED"
+    },
+    "bng.authentications": {
+      "id": "bng.authentications",
+      "objective": "Autenticações",
+      "category": "bng",
+      "device_categories": [
+        "bng",
+        "router"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "subscriber_ref": "pseudonym",
+          "result": "enum",
+          "reason": "string|null"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "bng.session.duration": {
+      "id": "bng.session.duration",
+      "objective": "Duração de sessão",
+      "category": "bng",
+      "device_categories": [
+        "bng",
+        "router"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "session_ref": "pseudonym",
+          "uptime_seconds": "integer|null"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "bng.disconnects": {
+      "id": "bng.disconnects",
+      "objective": "Desconexões PPPoE",
+      "category": "bng",
+      "device_categories": [
+        "bng",
+        "router"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "session_ref": "pseudonym",
+          "reason": "string|null",
+          "observed_at": "datetime"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "bng.pools": {
+      "id": "bng.pools",
+      "objective": "Pools de endereços",
+      "category": "bng",
+      "device_categories": [
+        "bng",
+        "router"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "pool_ref": "string",
+          "capacity": "integer|null",
+          "in_use": "integer|null"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    },
+    "bng.statistics": {
+      "id": "bng.statistics",
+      "objective": "Estatísticas operacionais",
+      "category": "bng",
+      "device_categories": [
+        "bng",
+        "router"
+      ],
+      "platforms": [
+        "huawei-vrp",
+        "routeros6",
+        "routeros7",
+        "cisco-ios",
+        "cisco-ios-xe",
+        "cisco-ios-xr",
+        "cisco-nx-os",
+        "datacom-dmos"
+      ],
+      "prerequisites": [
+        "Identidade, modelo, firmware e versão verificados",
+        "Adaptador tipado homologado e autorização por equipamento",
+        "Device freeze respeitado; nenhuma conexão habilitada nesta versão"
+      ],
+      "evidence_schema": {
+        "schema_version": 1,
+        "fields": {
+          "active_sessions": "integer|null",
+          "window_seconds": "integer"
+        },
+        "required_context": [
+          "device_id",
+          "platform",
+          "model",
+          "os_version",
+          "observed_at",
+          "source",
+          "limitations"
+        ]
+      },
+      "limitations": [
+        "Compatibilidade apenas documental; não comprova suporte do modelo/firmware.",
+        "Sem coleta real, sem credenciais e sem executor nesta entrega."
+      ],
+      "implementation_state": "DOCUMENTED"
+    }
+  }
+}

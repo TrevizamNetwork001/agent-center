@@ -21,6 +21,7 @@ use App\Models\Diagnostic;
 use App\Models\DiagnosticConclusion;
 use App\Models\DiagnosticInterpretation;
 use App\Models\Profile;
+use App\Noc\IntentInterpreter;
 use App\Rag\Answer;
 use App\Services\Audit;
 use App\Telegram\Access;
@@ -164,6 +165,9 @@ class Engine
                     $this->transition($c, State::Closed, 'closed');
                     $this->reply($c, $intent === Intent::Acknowledge ? 'Por nada! Conversa encerrada, com o histórico preservado.' : 'Até mais! O histórico da conversa fica preservado.');
                 }
+            } elseif (app(IntentInterpreter::class)->parse($safe) !== null) {
+                // Recognize a closed equipment objective, but only return an unavailable plan.
+                $this->objectiveRequest($c, $i, $safe, $prefix);
             } elseif (preg_match('/\b(ssh|huawei|bgp|shell|nmap|iperf)\b|device_/i', $safe)) {
                 $this->reply($c, 'Essa operação não está disponível. Nenhuma Skill ou tarefa foi executada.');
             } elseif (in_array($intent, [Intent::Greeting, Intent::Social, Intent::Topic, Intent::Unknown], true)) {
@@ -322,6 +326,13 @@ class Engine
         $c->context_json = array_diff_key($c->context_json, ['pending' => true, 'preflight_watch' => true]);
         if ($c->state === State::Confirmation->value) {
             $this->transition($c, State::FollowUp, 'objective_changed');
+        }
+        if ($goal?->isDevice()) {
+            $plan = app(IntentPlanning::class)->devicePlan($request, $body, $i->user);
+            $c->context_json = array_diff_key($c->context_json, array_flip(['objective_question', 'requested_objective']));
+            $this->reply($c, $plan['reply'], ['noc_planning' => array_diff_key($plan, ['reply' => true])]);
+
+            return true;
         }
         $target ??= $c->current_target;
         if ($request['ambiguous'] || ! $goal || $goal === OperationalIntent::Slowness && $target && filter_var($target, FILTER_VALIDATE_IP)) {
