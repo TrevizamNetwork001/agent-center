@@ -98,9 +98,15 @@ class Engine
                 return Conversation::findOrFail($duplicate->conversation_id);
             }
             $c = Conversation::whereKey($conversation->id)->lockForUpdate()->firstOrFail();
-            $this->synchronize($c);
+            $this->synchronize($c, $i);
             $det = app(IntentDetector::class);
             $intent = $det->detect($body, State::from($c->state));
+            // Questions about an existing result are not requests for a new test.
+            if ($c->current_diagnostic_id && in_array($c->state, ['DIAGNOSTIC_COMPLETED', 'FOLLOW_UP'], true)
+                && preg_match('/^(?:quais (?:testes|verificacoes)|o que (?:voce )?(?:testou|verificou)|(?:por que|porque).*(?:normal|falha|inconclusivo|erro|resultado)|o que significa (?:esse |o )?(?:resultado|normal|falha|inconclusivo|erro))\b/', Str::lower(Str::ascii(trim($body))))
+                && ! preg_match('/\b(outro|novo|execute|rode|confirmo|cancelar)\b/', Str::lower(Str::ascii($body)))) {
+                $intent = Intent::Detail;
+            }
             $idleRestart = $c->state === 'CLOSED' && ($c->context_json['closed_due_to_inactivity'] ?? false)
                 && ! in_array($intent, [Intent::Confirm, Intent::Deny, Intent::Cancel, Intent::Close, Intent::Acknowledge], true);
             if ($idleRestart || (in_array($c->state, ['CLOSED', 'CANCELLED'], true) && in_array($intent, [Intent::Start, Intent::Another, Intent::Target, Intent::Path], true))) {
@@ -145,6 +151,12 @@ class Engine
             } elseif (preg_match('/\b(ssh|huawei|bgp|shell|nmap|iperf)\b|device_/i', $safe)) {
                 $this->reply($c, 'Essa operação não está disponível. Nenhuma Skill ou tarefa foi executada.');
             } elseif (in_array($intent, [Intent::Greeting, Intent::Social, Intent::Topic, Intent::Unknown], true)) {
+                if ($c->current_diagnostic_id && $state !== State::Running && preg_match('/\b(quais (?:testes|verificacoes)|o que (?:voce )?(?:testou|verificou)|mais simples)\b/', Str::lower(Str::ascii($safe)))) {
+                    $this->details($c, $tone, $i);
+                    $c->save();
+
+                    return $c;
+                }
                 if ($intent === Intent::Topic) {
                     $c->context_json = array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'provided_target']));
                     if ($state === State::Confirmation) {
@@ -196,8 +208,18 @@ class Engine
             } elseif ($state === State::Running) {
                 $this->reply($c, $prefix.'O diagnóstico atual continua. Você pode acompanhar o progresso ou solicitar cancelamento.');
             } elseif ($intent === Intent::Detail) {
-                $this->details($c, $tone);
+                $this->details($c, $tone, $i);
             } elseif ($intent === Intent::Continue) {
+                if (! preg_match('/\b(aprofundar|outro teste|outro diagnostico|investigue|investigar mais)\b/', Str::lower(Str::ascii($safe)))) {
+                    $official = $c->current_diagnostic_id ? DiagnosticConclusion::where('diagnostic_id', $c->current_diagnostic_id)->first() : null;
+                    $c->context_json = [...$c->context_json, 'topic' => ['kind' => 'DIAGNOSTIC_FOLLOW_UP', 'text' => mb_substr($safe, 0, 300)]];
+                    $this->reply($c, ($official?->classification === 'NORMAL'
+                        ? 'Entendi. Os testes do Agent não mostraram anormalidades no escopo verificado. '
+                        : 'Entendi. As evidências e a conclusão anterior continuam preservadas. ').'A dificuldade ocorre em todos os clientes ou apenas em alguns? Nenhum novo teste foi iniciado.');
+                    $c->save();
+
+                    return $c;
+                }
                 $this->transition($c, State::FollowUp, 'continue');
                 if ($c->current_diagnostic_id && ($c->context_json['last_profile'] ?? '') !== 'PERDA_LATENCIA' && $this->canDeepen($c)) {
                     $c->context_json = [...$c->context_json, 'pending' => ['issued_at' => now()->timestamp, 'profile' => 'PERDA_LATENCIA', 'target' => $c->current_target]];
@@ -219,7 +241,6 @@ class Engine
                     } elseif (($mentioned = $det->confirmationTarget($safe)) !== null && $planner->target($mentioned) !== $planner->target($p['target'])) {
                         $this->reply($c, 'Confirmação invalidada: o destino informado difere do destino pendente. Nenhuma tarefa foi criada; solicite um novo diagnóstico para o destino desejado.');
                     } else {
-                        $this->reply($c, 'Confirmação processada para '.$p['target'].'.');
                         $this->start($c, $i, $p['profile'], $p['target'], $prefix, ($p['mtr_requested'] ?? false) === true);
                     }
                 } catch (ValidationException $e) {
@@ -294,7 +315,10 @@ class Engine
         $history[] = $d->id;
         $c->forceFill(['current_profile_id' => $p->id, 'current_diagnostic_id' => $d->id, 'current_target' => $target, 'context_json' => [...array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'requested_profile', 'provided_target'])), 'agent_id' => $a->id, 'last_profile' => $p->key, 'diagnostic_ids' => array_slice($history, -100)]]);
         $this->transition($c, State::Running, 'diagnostic_started');
-        $this->reply($c, $prefix.'Vou verificar a conectividade de '.$target.' e apresentar os resultados.', ['diagnostic_id' => $d->id]);
+        $phase = app(DiagnosticExperience::class)->phase($d, $i->user);
+        $c->context_json = [...$c->context_json, 'diagnostic_phase' => ['id' => $d->id, 'key' => $phase['key'], 'count' => 1]];
+        $this->message($c, 'system', 'text', $prefix.'Solicitação aceita para '.$target.'. '.$phase['text'].' Vou apresentar o resultado aqui quando terminar.', null,
+            ['diagnostic_id' => $d->id, 'diagnostic_experience' => DiagnosticExperience::VERSION, 'tracking' => true, 'phase' => $phase['key']], eventKey: 'progress:'.$d->id.':accepted');
     }
 
     private function cancel(Conversation $c, Identity $i): void
@@ -320,7 +344,7 @@ class Engine
             Gate::forUser($i->user)->authorize('view', $conversation);
             abort_unless($conversation->channel === $i->channel && ($i->channel !== 'telegram' || ($conversation->contact_id === $i->contactId && $conversation->telegram_context_id === $i->scopeId)), 403);
             $c = Conversation::whereKey($conversation->id)->lockForUpdate()->firstOrFail();
-            $this->synchronize($c);
+            $this->synchronize($c, $i);
             $c->save();
 
             return $c;
@@ -350,7 +374,7 @@ class Engine
             if (! config('conversation.idle_enabled') || ! in_array($i->tenantId, config('conversation.idle_tenants', []), true) || $c->status !== 'OPEN') {
                 return $c;
             }
-            $this->synchronize($c);
+            $this->synchronize($c, $i);
             $c->save();
             // An idle chat must never cancel a task or skip the official result.
             if ($c->state === State::Running->value || ($c->current_diagnostic_id && Diagnostic::whereKey($c->current_diagnostic_id)->whereIn('status', ['PENDING', 'RUNNING'])->exists())) {
@@ -377,12 +401,25 @@ class Engine
         });
     }
 
-    private function synchronize(Conversation $c): void
+    private function synchronize(Conversation $c, Identity $identity): void
     {
         if (! $c->current_diagnostic_id) {
             return;
         }
         $d = Diagnostic::findOrFail($c->current_diagnostic_id);
+        if (in_array($d->status, ['PENDING', 'RUNNING'], true)) {
+            $phase = app(DiagnosticExperience::class)->phase($d, $identity->user);
+            $previous = $c->context_json['diagnostic_phase'] ?? [];
+            if (($previous['id'] ?? null) !== $d->id || ($previous['key'] ?? null) !== $phase['key']) {
+                $count = ($previous['id'] ?? null) === $d->id ? ($previous['count'] ?? 0) : 0;
+                if ($count < 12) {
+                    $this->message($c, 'system', 'text', 'Acompanhamento de '.Text::clean($d->target)."\n".$phase['text'], null,
+                        ['diagnostic_id' => $d->id, 'diagnostic_experience' => DiagnosticExperience::VERSION, 'tracking' => true, 'phase' => $phase['key']], eventKey: 'progress:'.$d->id.':'.$c->sequence);
+                    $count++;
+                }
+                $c->context_json = [...$c->context_json, 'diagnostic_phase' => ['id' => $d->id, 'key' => $phase['key'], 'count' => $count]];
+            }
+        }
         if (in_array($d->status, ['COMPLETED', 'FAILED', 'CANCELLED'], true)) {
             $official = DiagnosticConclusion::where('diagnostic_id', $d->id)->first();
             if ($official) {
@@ -391,7 +428,9 @@ class Engine
                     if ($c->state === 'DIAGNOSTIC_RUNNING') {
                         $this->transition($c, $d->status === 'CANCELLED' ? State::Cancelled : State::Completed, 'diagnostic_finished');
                     }
-                    $this->message($c, 'system', 'result', $official->classification."\n".$official->summary, null, ['diagnostic_id' => $d->id, 'classification' => $official->classification], eventKey: $key);
+                    $result = app(DiagnosticExperience::class)->result($c, $d, $identity);
+                    $this->message($c, 'system', 'result', $result['text'], null, $result['metadata'], eventKey: $key);
+                    app(Audit::class)->record('conversation.diagnostic_presented', $identity->user, $c->tenant_id, 'conversation', metadata: ['conversation_id' => $c->id, ...$result['metadata']]);
                 }
             }
             $interp = DiagnosticInterpretation::where('diagnostic_id', $d->id)->where('status', 'ASSISTED')->latest('created_at')->first();
@@ -401,7 +440,7 @@ class Engine
         }
     }
 
-    private function details(Conversation $c, array $tone): void
+    private function details(Conversation $c, array $tone, Identity $identity): void
     {
         $official = $c->current_diagnostic_id ? DiagnosticConclusion::where('diagnostic_id', $c->current_diagnostic_id)->first() : null;
         if (! $official) {
@@ -409,7 +448,9 @@ class Engine
 
             return;
         }
-        $text = $official->classification."\n".$official->summary."\n".implode("\n", $official->next_steps ?? []);
+        $d = Diagnostic::findOrFail($c->current_diagnostic_id);
+        $snapshot = app(DiagnosticExperience::class)->snapshot($d, $identity->user);
+        $text = 'Diagnóstico de '.$snapshot['target']."\n".$official->classification."\n".$snapshot['summary']."\n".implode("\n", array_column($snapshot['facts'], 'text'))."\nLimites: ".implode(' ', $snapshot['limitations'])."\n".implode("\n", $snapshot['next_steps']);
         if ($tone['verbosity'] === 'DETAILED' || $tone['technical_level'] === 'TECHNICAL') {
             $text .= "\nAs evidências e os tempos de cada etapa estão no diagnóstico vinculado.";
         }
@@ -448,5 +489,6 @@ class Engine
         $c->sequence++;
         $m = new ConversationMessage;
         $m->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $c->tenant_id, 'conversation_id' => $c->id, 'sender_type' => $sender, 'message_type' => $type, 'body' => Text::clean(mb_strcut($body, 0, 23000, 'UTF-8')), 'detected_intent' => $intent, 'metadata' => $meta, 'request_key' => $requestKey, 'request_user_id' => $user, 'event_key' => $eventKey, 'sequence' => $c->sequence, 'created_at' => now()])->save();
+
     }
 }

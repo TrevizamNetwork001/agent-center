@@ -5,6 +5,7 @@ namespace App\Telegram;
 use App\Conversation\Engine;
 use App\Conversation\Identity;
 use App\Models\Conversation;
+use App\Models\ConversationMessage;
 use App\Tenancy\TenantContext;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +16,10 @@ class Sweep
         abort_unless($tenant > 0 && config('telegram.enabled'), 403);
         app(TenantContext::class)->apply($tenant);
         try {
+            // A known-target edit is idempotent, unlike an ambiguous initial send.
+            Outbound::where('status', 'SENDING')->where('updated_at', '<', now()->subMinutes(2))->whereNotNull('telegram_message_id')->where('attempts', '<', 5)
+                ->whereIn('message_id', ConversationMessage::where('metadata->diagnostic_experience', 'v2')->where('metadata->tracking', true)->select('id'))
+                ->update(['status' => 'PENDING', 'next_attempt_at' => now(), 'last_error' => 'EDIT_INTERRUPTED']);
             Outbound::where('status', 'SENDING')->where('updated_at', '<', now()->subMinutes(2))->update(['status' => 'UNKNOWN', 'last_error' => 'WORKER_INTERRUPTED']);
             foreach (Link::whereIn('status', ['CODE', 'AWAITING_APPROVAL'])->where('expires_at', '<', now())->get() as $link) {
                 $link->forceFill(['status' => 'REVOKED', 'code_hash' => null, 'revoked_at' => now()])->save();

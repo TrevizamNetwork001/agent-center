@@ -248,7 +248,7 @@ class ConversationTest extends IdentityTestCase
     {
         $c = $this->finish($this->say($this->conversation(), 'Testa YouTube'));
         $old = $c->current_diagnostic_id;
-        $c = $this->say($c, 'Mas ainda está travando');
+        $c = $this->say($c, 'Quero aprofundar');
         $this->assertSame('WAITING_FOR_CONFIRMATION', $c->state);
         $this->assertSame($old, $c->current_diagnostic_id);
         $this->assertSame(1, Diagnostic::count());
@@ -455,7 +455,7 @@ class ConversationTest extends IdentityTestCase
     {
         $c = $this->finish($this->say($this->conversation(), 'Testa YouTube'));
         $this->agent->forceFill(['capabilities' => ['agent_info', 'dns_lookup:v1', 'tcp_connect:v1', 'http_probe:v1']])->save();
-        $c = $this->say($c, 'Mas continua travando');
+        $c = $this->say($c, 'Quero aprofundar');
         $this->assertSame('FOLLOW_UP', $c->state);
         $this->assertSame(1, Diagnostic::count());
         $this->assertArrayNotHasKey('pending', $c->context_json);
@@ -521,7 +521,7 @@ class ConversationTest extends IdentityTestCase
         $this->assertSame(1, DB::table('conversation_events')->where('event_type', 'confirmation_consumed')->count());
         app(Tasks::class)->tick();
         $this->assertGreaterThan(0, AgentTask::count());
-        $this->actingAs($this->operator)->get('/conversations/'.$c->id)->assertOk()->assertSee('Confirmação processada')->assertSee('Sim, confirmo o diagnóstico de google.com.')->assertSee('Vou verificar a conectividade');
+        $this->actingAs($this->operator)->get('/conversations/'.$c->id)->assertOk()->assertSee('Solicitação aceita')->assertSee('Sim, confirmo o diagnóstico de google.com.')->assertSee('Os testes estão sendo preparados');
         $this->context()->forUser($this->operator);
         $c = $this->finish($c);
         $this->actingAs($this->operator)->get('/conversations/'.$c->id)->assertOk()->assertSee(Classifier::NORMAL);

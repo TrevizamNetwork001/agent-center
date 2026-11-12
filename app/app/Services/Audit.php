@@ -11,7 +11,7 @@ class Audit
 {
     public function record(string $event, ?User $actor = null, ?int $tenantId = null, ?string $entity = null, ?int $entityId = null, array $metadata = []): void
     {
-        if ($event !== 'llm.identity_registered' && ! in_array($event, ['telegram.link_admin_assigned', 'telegram.group_code_created', 'telegram.group_claimed', 'telegram.group_verified', 'telegram.group_revoked', 'telegram.member_authorized', 'telegram.member_revoked', 'telegram.configured', 'telegram.webhook_changed', 'telegram.link_code_created', 'telegram.link_claimed', 'telegram.link_verified', 'telegram.link_revoked', 'telegram.tested', 'telegram.processing_failed', 'telegram.delivery_failed', 'telegram.delivery_retry', 'conversation.language_rendered', 'rag.reindexed', 'rag.searched', 'rag.answered', 'agent.lifecycle_bootstrap_authorized', 'agent.lifecycle_bootstrap_completed', 'agent.permission_requested', 'agent.release_quarantined', 'agent.recovery_requested', 'agent.recovery_verified', 'agent.maintenance_saved', 'agent.maintenance_checked', 'agent.maintenance_removed', 'agent.release_published', 'agent.settings_updated', 'backup.settings_updated', 'backup.requested', 'agent.created', 'agent.deleted', 'agent.enrollment_requested', 'agent.enrollment_approved', 'agent.update_requested', 'agent.update_authorized', 'agent.update_approved', 'agent.update_started', 'agent.update_completed', 'agent.update_failed', 'agent.rollback_requested', 'agent.rollback_completed', 'agent.rollback_failed', 'conversation.transitioned', 'conversation.rollout_updated', 'auth.login_success', 'auth.login_failed', 'auth.logout', 'auth.password_changed', 'user.created', 'user.updated', 'user.disabled', 'tenant.created', 'tenant.updated', 'agent.enrollment_created', 'agent.enrolled', 'agent.capabilities_updated', 'agent.revoked', 'diagnostic.created', 'diagnostic.started', 'diagnostic.cancel_requested', 'diagnostic.cancelled', 'diagnostic.completed', 'diagnostic.failed', 'profile.created', 'profile.updated', 'skill.enabled', 'skill.schema_updated', 'skill.disabled', 'knowledge.created', 'knowledge.version_created', 'knowledge.published', 'knowledge.superseded', 'knowledge.rollback_created', 'knowledge.archived', 'prompt.created', 'prompt.version_created', 'prompt.published', 'prompt.superseded', 'prompt.rollback_created', 'prompt.archived', 'llm.provider_created', 'llm.provider_updated', 'llm.secret_updated', 'llm.model_created', 'llm.binding_updated'], true)) {
+        if ($event !== 'llm.identity_registered' && ! in_array($event, ['conversation.diagnostic_presented', 'telegram.link_admin_assigned', 'telegram.group_code_created', 'telegram.group_claimed', 'telegram.group_verified', 'telegram.group_revoked', 'telegram.member_authorized', 'telegram.member_revoked', 'telegram.configured', 'telegram.webhook_changed', 'telegram.link_code_created', 'telegram.link_claimed', 'telegram.link_verified', 'telegram.link_revoked', 'telegram.tested', 'telegram.processing_failed', 'telegram.delivery_failed', 'telegram.delivery_retry', 'conversation.language_rendered', 'rag.reindexed', 'rag.searched', 'rag.answered', 'agent.lifecycle_bootstrap_authorized', 'agent.lifecycle_bootstrap_completed', 'agent.permission_requested', 'agent.release_quarantined', 'agent.recovery_requested', 'agent.recovery_verified', 'agent.maintenance_saved', 'agent.maintenance_checked', 'agent.maintenance_removed', 'agent.release_published', 'agent.settings_updated', 'backup.settings_updated', 'backup.requested', 'agent.created', 'agent.deleted', 'agent.enrollment_requested', 'agent.enrollment_approved', 'agent.update_requested', 'agent.update_authorized', 'agent.update_approved', 'agent.update_started', 'agent.update_completed', 'agent.update_failed', 'agent.rollback_requested', 'agent.rollback_completed', 'agent.rollback_failed', 'conversation.transitioned', 'conversation.rollout_updated', 'auth.login_success', 'auth.login_failed', 'auth.logout', 'auth.password_changed', 'user.created', 'user.updated', 'user.disabled', 'tenant.created', 'tenant.updated', 'agent.enrollment_created', 'agent.enrolled', 'agent.capabilities_updated', 'agent.revoked', 'diagnostic.created', 'diagnostic.started', 'diagnostic.cancel_requested', 'diagnostic.cancelled', 'diagnostic.completed', 'diagnostic.failed', 'profile.created', 'profile.updated', 'skill.enabled', 'skill.schema_updated', 'skill.disabled', 'knowledge.created', 'knowledge.version_created', 'knowledge.published', 'knowledge.superseded', 'knowledge.rollback_created', 'knowledge.archived', 'prompt.created', 'prompt.version_created', 'prompt.published', 'prompt.superseded', 'prompt.rollback_created', 'prompt.archived', 'llm.provider_created', 'llm.provider_updated', 'llm.secret_updated', 'llm.model_created', 'llm.binding_updated'], true)) {
             throw new InvalidArgumentException('Evento não permitido.');
         }
         $safe = [];
@@ -25,7 +25,7 @@ class Audit
                 $safe['secret_event_id'] = $metadata['secret_event_id'];
             }
         }
-        if ($event === 'conversation.language_rendered') {
+        if (in_array($event, ['conversation.language_rendered', 'conversation.diagnostic_presented'], true)) {
             if (in_array($metadata['language_status'] ?? null, ['ASSISTED', 'FALLBACK'], true)) {
                 $safe['language_status'] = $metadata['language_status'];
             }
@@ -36,6 +36,13 @@ class Audit
             }
             if (is_string($metadata['request_id'] ?? null) && preg_match('/^[A-Za-z0-9_-]{1,128}$/D', $metadata['request_id'])) {
                 $safe['request_id'] = $metadata['request_id'];
+            }
+        }
+        if ($event === 'conversation.diagnostic_presented') {
+            foreach (['classification' => ['NORMAL', 'INDICIO_DE_FALHA', 'INCONCLUSIVO', 'ERRO_DE_EXECUCAO'], 'result_status' => ['LOCAL', 'ASSISTED', 'FALLBACK'], 'tone' => ['CASUAL', 'FORMAL', 'RELAXED', 'TECHNICAL']] as $field => $allowed) {
+                if (in_array($metadata[$field] ?? null, $allowed, true)) {
+                    $safe[$field] = $metadata[$field];
+                }
             }
         }
         if (str_starts_with($event, 'rag.')) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Conversation\DiagnosticExperience;
 use App\Diagnostics\Catalog;
 use App\Diagnostics\Engine;
 use App\Diagnostics\Timing;
@@ -71,6 +72,9 @@ class DiagnosticController extends Controller
 
         $interpretation = DiagnosticInterpretation::with('sources')->where('diagnostic_id', $diagnostic->id)->latest('created_at')->first();
         $data = ['performanceAttempts' => Timing::attempts($diagnostic->id), 'interpretation' => $interpretation, 'diagnostic' => $diagnostic, 'steps' => DiagnosticStep::where('diagnostic_id', $diagnostic->id)->orderBy('wave')->orderBy('key')->get(), 'plan' => DiagnosticPlan::where('diagnostic_id', $diagnostic->id)->first(), 'conclusion' => DiagnosticConclusion::where('diagnostic_id', $diagnostic->id)->first()];
+        $data['experience'] = app(DiagnosticExperience::class)->snapshot($diagnostic, $r->user(), $data['conclusion'], $data['steps']);
+        $data['phase'] = app(DiagnosticExperience::class)->phase($diagnostic, $r->user());
+        $data['phaseLabel'] = app(DiagnosticExperience::class)->phaseLabel($data['phase']['key']);
         if ($r->boolean('fragment')) {
             return response()->view('diagnostics.result', $data)->header('X-AC-Fragment', 'diagnostic-panel');
         }

@@ -48,6 +48,239 @@ use Tests\IntelligenceTestCase;
 
 class TelegramTest extends IntelligenceTestCase
 {
+    private function acceptedExperience(): array
+    {
+        $agent = $this->agent();
+        $link = $this->link();
+        $this->say('meu rei, teste youtube.com');
+        $this->say('Sim, confirmo');
+        $c = $this->conversation($link);
+        $this->assertNotNull($c->current_diagnostic_id);
+        $this->deliverAll();
+        $this->api();
+
+        return [$agent, $link, $c];
+    }
+
+    private function experienceSweep(): void
+    {
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $this->deliverAll();
+    }
+
+    private function experienceResult(array $task): array
+    {
+        return match ($task['capability']) {
+            'dns_lookup:v1' => ['ok' => true, 'data' => ['answers' => $task['input']['record_type'] === 'A' ? ['192.0.2.20'] : [], 'record_type' => $task['input']['record_type'], 'duration_ms' => 3]],
+            'tcp_connect:v1' => ['ok' => true, 'data' => ['connected' => true, 'duration_ms' => 7]],
+            'http_probe:v1' => ['ok' => true, 'data' => ['status' => 200, 'tls' => true, 'duration_ms' => 42, 'resolved_ip' => $task['input']['target']]],
+            default => ['ok' => false, 'error' => 'timeout'],
+        };
+    }
+
+    private function completeExperience(Agent $agent, ?array $started = null): void
+    {
+        $tasks = app(\App\Diagnostics\Engine::class);
+        for ($i = 0; $i < 16; $i++) {
+            $tasks->tick();
+            $task = $started ?? $tasks->claim($agent);
+            if (! $task) {
+                break;
+            }
+            if (! $started) {
+                $tasks->operation($agent, 'start', $task);
+            }
+            $tasks->operation($agent, 'result', [...$task, 'result' => $this->experienceResult($task)]);
+            $started = null;
+        }
+    }
+
+    public function test_v2_native_task_states_edit_one_tracking_message_and_finish_with_authenticated_details(): void
+    {
+        [$agent, $link, $c] = $this->acceptedExperience();
+        $tasks = app(\App\Diagnostics\Engine::class);
+        $tasks->tick();
+        $this->experienceSweep();
+        Http::assertSent(fn ($r) => str_ends_with($r->url(), '/editMessageText') && $r['message_id'] === 77 && str_contains($r['text'], 'na fila'));
+        $this->api();
+        $task = $tasks->claim($agent);
+        $this->assertNotNull($task);
+        $this->experienceSweep();
+        Http::assertSent(fn ($r) => str_ends_with($r->url(), '/editMessageText') && str_contains($r['text'], 'recebeu a solicitação'));
+        $this->api();
+        $tasks->operation($agent, 'start', $task);
+        $this->experienceSweep();
+        Http::assertSent(fn ($r) => str_ends_with($r->url(), '/editMessageText') && str_contains($r['text'], 'em execução'));
+        $this->api();
+        $this->completeExperience($agent, $task);
+        $d = Diagnostic::findOrFail($c->current_diagnostic_id);
+        $this->assertSame('COMPLETED', $d->status);
+        $this->assertSame('NORMAL', DiagnosticConclusion::where('diagnostic_id', $d->id)->sole()->classification);
+        $this->experienceSweep();
+        $result = ConversationMessage::where('conversation_id', $c->id)->where('message_type', 'result')->sole();
+        Http::assertSent(function ($r) use ($d, $result) {
+            $button = $r['reply_markup']['inline_keyboard'][0][0] ?? [];
+
+            return str_ends_with($r->url(), '/editMessageText') && str_contains($r['text'], Classifier::NORMAL)
+                && str_contains($r['text'], '42 ms') && $r['text'] === $result->body
+                && $button['text'] === 'Ver diagnóstico completo' && $button['url'] === 'https://central.example.test'.route('diagnostics.show', $d->id, false)
+                && ! parse_url($button['url'], PHP_URL_QUERY);
+        });
+        Http::assertNotSent(fn ($r) => str_ends_with($r->url(), '/sendMessage') || str_contains($r['text'] ?? '', 'Histórico:'));
+        $this->api();
+        $this->experienceSweep();
+        Http::assertNothingSent();
+        $count = Diagnostic::count();
+        $this->say('Mas continua lento para os clientes.');
+        $this->assertSame($count, Diagnostic::count());
+        $this->assertArrayNotHasKey('pending', $this->conversation($link)->context_json);
+        $this->assertSame(1, ConversationMessage::where('event_key', 'result:'.$d->id)->count());
+    }
+
+    public function test_v2_delayed_progress_is_coalesced_and_cannot_overwrite_a_newer_result(): void
+    {
+        [$agent, $link, $c] = $this->acceptedExperience();
+        app(\App\Diagnostics\Engine::class)->tick();
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $this->completeExperience($agent);
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $this->deliverAll();
+        Http::assertSentCount(1);
+        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', Classifier::NORMAL));
+        $this->assertSame(1, Outbound::where('status', 'SUPPRESSED')->where('last_error', 'SUPERSEDED_PROGRESS')->count());
+    }
+
+    public function test_v2_definite_edit_unavailable_falls_back_once_to_a_protected_new_message(): void
+    {
+        [$agent, , $c] = $this->acceptedExperience();
+        Http::swap(new Factory);
+        Http::preventStrayRequests();
+        Http::fake(fn ($r) => str_ends_with($r->url(), '/editMessageText')
+            ? Http::response(['ok' => false, 'description' => 'Bad Request: message to edit not found'], 400)
+            : Http::response(['ok' => true, 'result' => ['message_id' => 88]]));
+        app(\App\Diagnostics\Engine::class)->tick();
+        $this->experienceSweep();
+        Http::assertSentCount(2);
+        Http::assertSent(fn ($r) => str_ends_with($r->url(), '/sendMessage') && $r['protect_content'] === true);
+        $this->completeExperience($agent);
+        $this->api();
+        $this->experienceSweep();
+        Http::assertSent(fn ($r) => str_ends_with($r->url(), '/editMessageText') && $r['message_id'] === 88);
+    }
+
+    public function test_v2_known_target_edit_timeout_is_retryable_without_resending_initial_message(): void
+    {
+        [$agent, , $c] = $this->acceptedExperience();
+        $client = new class extends Client
+        {
+            public array $methods = [];
+
+            public function call(Bot $bot, string $method, array $data = []): array
+            {
+                $this->methods[] = $method;
+
+                return ['status' => count($this->methods) === 1 ? 'DELIVERY_UNKNOWN' : 'OK', 'result' => ['message_id' => 77]];
+            }
+        };
+        app(\App\Diagnostics\Engine::class)->tick();
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $out = Outbound::where('conversation_id', $c->id)->where('status', 'PENDING')->sole();
+        (new Deliver($this->a->id, $out->id))->handle($client);
+        $this->scope();
+        $this->assertSame('PENDING', $out->fresh()->status);
+        $out->fresh()->forceFill(['next_attempt_at' => now()])->save();
+        (new Deliver($this->a->id, $out->id))->handle($client);
+        $this->scope();
+        $this->assertSame('SENT', $out->fresh()->status);
+        $this->assertSame(['editMessageText', 'editMessageText'], $client->methods);
+    }
+
+    public function test_v2_agent_without_recent_signal_is_reported_as_waiting_not_as_a_network_failure(): void
+    {
+        $agent = $this->agent();
+        $agent->forceFill(['last_heartbeat_at' => now()->subMinutes(5), 'last_poll_at' => now()->subMinutes(5)])->save();
+        $link = $this->link();
+        $this->say('Teste youtube.com');
+        $this->say('Sim');
+        $c = $this->conversation($link);
+        $m = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->firstOrFail();
+        $this->assertStringContainsString('sem sinal recente', $m->body);
+        $this->assertStringContainsString('não indica falha na rede', $m->body);
+        $this->assertSame('PENDING', Diagnostic::findOrFail($c->current_diagnostic_id)->status);
+        $this->assertSame(0, AgentTask::count());
+    }
+
+    public function test_v2_interrupted_known_edit_recovers_and_not_modified_is_a_success(): void
+    {
+        [$agent, , $c] = $this->acceptedExperience();
+        app(\App\Diagnostics\Engine::class)->tick();
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $out = Outbound::where('conversation_id', $c->id)->where('status', 'PENDING')->sole();
+        $out->forceFill(['status' => 'SENDING', 'telegram_message_id' => 77, 'attempts' => 1, 'updated_at' => now()->subMinutes(3)])->save();
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $this->assertSame('PENDING', $out->fresh()->status);
+        $this->api(['ok' => false, 'description' => 'Bad Request: message is not modified'], 400);
+        (new Deliver($this->a->id, $out->id))->handle(app(Client::class));
+        $this->scope();
+        $this->assertSame('SENT', $out->fresh()->status);
+        Http::assertSentCount(1);
+        Http::assertSent(fn ($r) => str_ends_with($r->url(), '/editMessageText'));
+    }
+
+    public function test_v2_revocation_before_edit_suppresses_delivery_and_cross_tenant_cannot_claim_it(): void
+    {
+        [$agent, $link, $c] = $this->acceptedExperience();
+        app(\App\Diagnostics\Engine::class)->tick();
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $out = Outbound::where('conversation_id', $c->id)->where('status', 'PENDING')->sole();
+        (new Deliver($this->b->id, $out->id))->handle(app(Client::class));
+        $this->scope();
+        $this->assertSame('PENDING', $out->fresh()->status);
+        app(Accounts::class)->revoke($link->fresh(), $this->admin);
+        (new Deliver($this->a->id, $out->id))->handle(app(Client::class));
+        $this->scope();
+        $this->assertSame('SUPPRESSED', $out->fresh()->status);
+        Http::assertNothingSent();
+    }
+
+    public function test_v2_timeout_is_inconclusive_not_a_network_failure_and_is_delivered_once(): void
+    {
+        [$agent, , $c] = $this->acceptedExperience();
+        Diagnostic::findOrFail($c->current_diagnostic_id)->forceFill(['created_at' => now()->subMinutes(6)])->save();
+        app(\App\Diagnostics\Engine::class)->tick();
+        $this->experienceSweep();
+        $d = Diagnostic::findOrFail($c->current_diagnostic_id);
+        $this->assertSame('FAILED', $d->status);
+        $this->assertSame('diagnostic_timeout', $d->error_code);
+        $result = ConversationMessage::where('conversation_id', $c->id)->where('message_type', 'result')->sole();
+        $this->assertSame('INCONCLUSIVO', $result->metadata['classification']);
+        $this->assertStringContainsString('prazo total do diagnóstico foi excedido', $result->body);
+        $this->assertStringNotContainsString('INDICIO_DE_FALHA', $result->body);
+        Http::assertSentCount(1);
+    }
+
+    public function test_v2_cancelled_diagnostic_keeps_evidence_and_updates_its_tracking_message(): void
+    {
+        [, $link, $c] = $this->acceptedExperience();
+        $this->say('Cancela');
+        $this->experienceSweep();
+        $this->assertSame('CANCELLED', $this->conversation($link)->state);
+        $result = ConversationMessage::where('conversation_id', $c->id)->where('message_type', 'result')->sole();
+        $this->assertSame('INCONCLUSIVO', $result->metadata['classification']);
+        $this->assertStringContainsString('interrompido', $result->body);
+        Http::assertSent(fn ($r) => str_ends_with($r->url(), '/editMessageText') && str_contains($r['text'], 'encerrado'));
+        $count = Diagnostic::count();
+        $this->say('Sim');
+        $this->assertSame($count, Diagnostic::count());
+    }
+
     public function test_telegram_return_has_one_adaptive_reply_and_replayed_update_cannot_duplicate_it(): void
     {
         config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
@@ -317,7 +550,7 @@ class TelegramTest extends IntelligenceTestCase
         Http::assertNotSent(fn ($r) => str_contains($r['text'] ?? '', $other->id));
     }
 
-    public function test_diagnostic_delivery_retains_history_but_following_social_message_does_not(): void
+    public function test_diagnostic_tracking_has_authenticated_details_button_without_repeated_history_footer(): void
     {
         $link = $this->link();
         $this->agent();
@@ -326,7 +559,8 @@ class TelegramTest extends IntelligenceTestCase
         $c = $this->conversation($link);
         $this->assertNotNull($c->current_diagnostic_id);
         $this->deliverAll();
-        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', 'Histórico: '.route('conversations.show', $c->id)));
+        Http::assertSent(fn ($r) => ($r['reply_markup']['inline_keyboard'][0][0]['text'] ?? '') === 'Ver diagnóstico completo');
+        Http::assertNotSent(fn ($r) => str_contains($r['text'] ?? '', 'Histórico:'));
         $this->api();
         $this->say('ce ta bao ?');
         $m = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->firstOrFail();

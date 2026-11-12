@@ -4,6 +4,7 @@ namespace App\Telegram;
 
 use App\Models\Conversation;
 use App\Models\ConversationMessage;
+use App\Models\Diagnostic;
 use App\Models\Tenant;
 use App\Rag\Retrieval;
 use App\Tenancy\TenantContext;
@@ -11,6 +12,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class Deliver implements ShouldQueue
 {
@@ -48,6 +50,8 @@ class Deliver implements ShouldQueue
                     $allowed = $allowed && $group && $group->generation === $o->group_generation && $group->bot_generation === $bot->generation && ($group->status === 'ACTIVE' || ($group->status === 'AWAITING_APPROVAL' && ! $o->link_id && ! $o->message_id));
                 }
                 $body = $o->body_cipher ? Crypt::decryptString($o->body_cipher) : '';
+                $tracking = false;
+                $diagnostic = null;
                 if ($o->link_id) {
                     $link = Link::whereKey($o->link_id)->lockForUpdate()->firstOrFail();
                     try {
@@ -69,6 +73,22 @@ class Deliver implements ShouldQueue
                         $conversation = Conversation::findOrFail($o->conversation_id);
                         $allowed = $allowed && $conversation->user_id === $link->user_id && $conversation->contact_id === $link->id && $conversation->telegram_context_id === ($o->context_id ?: null);
                         $body = mb_substr($m->body, 0, 2300);
+                        $tracking = ($m->metadata['diagnostic_experience'] ?? '') === 'v2' && ($m->metadata['tracking'] ?? false) === true;
+                        if ($tracking) {
+                            $diagnostic = Diagnostic::find($m->metadata['diagnostic_id'] ?? null);
+                            $allowed = $allowed && $diagnostic && $diagnostic->created_by === $conversation->user_id
+                                && ($conversation->current_diagnostic_id === $diagnostic->id || in_array($diagnostic->id, $conversation->context_json['diagnostic_ids'] ?? [], true));
+                            if ($allowed) {
+                                Gate::forUser($identity->user)->authorize('view', $diagnostic);
+                                $superseded = ConversationMessage::where('conversation_id', $conversation->id)->where('sequence', '>', $m->sequence)
+                                    ->where('metadata->diagnostic_experience', 'v2')->where('metadata->tracking', true)->where('metadata->diagnostic_id', $diagnostic->id)->exists();
+                                if ($superseded) {
+                                    $o->forceFill(['status' => 'SUPPRESSED', 'body_cipher' => null, 'last_error' => 'SUPERSEDED_PROGRESS'])->save();
+
+                                    return;
+                                }
+                            }
+                        }
                         $sources = [];
                         foreach ($m->metadata['rag_sources'] ?? [] as $sourceId) {
                             $source = app(Retrieval::class)->source($identity->user, $sourceId);
@@ -88,7 +108,9 @@ class Deliver implements ShouldQueue
                             }
                             $body = $heading."\n\n".$body;
                         }
-                        if (mb_strlen($m->body) > 2300 || in_array($m->message_type, ['result', 'interpretation'], true) || isset($m->metadata['diagnostic_id'])) {
+                        if ($tracking && mb_strlen($m->body) > 2300) {
+                            $body .= "\n\nResumo reduzido. Abra os detalhes pelo botão.";
+                        } elseif (! $tracking && (mb_strlen($m->body) > 2300 || in_array($m->message_type, ['result', 'interpretation'], true) || isset($m->metadata['diagnostic_id']))) {
                             $body .= "\n\nHistórico: ".route('conversations.show', $o->conversation_id);
                         }
                     }
@@ -98,11 +120,39 @@ class Deliver implements ShouldQueue
 
                     return;
                 }
-                $r = $client->call($bot, 'sendMessage', ['chat_id' => $o->chat_id, 'text' => mb_substr(preg_replace('/\b[0-9]{5,20}:[A-Za-z0-9_-]{30,100}\b/', '[CREDENCIAL_REMOVIDA]', $body), 0, 4000), 'protect_content' => true, 'link_preview_options' => ['is_disabled' => true], ...($group && $group->reply_mode === 'group' && $o->thread_id > 0 ? ['message_thread_id' => $o->thread_id] : [])]);
+                $data = ['chat_id' => $o->chat_id, 'text' => mb_substr(preg_replace('/\b[0-9]{5,20}:[A-Za-z0-9_-]{30,100}\b/', '[CREDENCIAL_REMOVIDA]', $body), 0, 4000), 'link_preview_options' => ['is_disabled' => true]];
+                $editId = null;
+                if ($tracking && $diagnostic) {
+                    // Link/context locks above serialize this family. Only already-sent,
+                    // earlier messages for this same tenant/user/chat/topic/diagnostic may be edited.
+                    $previous = Outbound::where('conversation_id', $o->conversation_id)->where('link_id', $o->link_id)
+                        ->where('bot_id', $o->bot_id)->where('generation', $o->generation)->where('chat_id', $o->chat_id)
+                        ->where('context_id', $o->context_id)->where('thread_id', $o->thread_id)->where('status', 'SENT')->whereNotNull('telegram_message_id')
+                        ->whereIn('message_id', ConversationMessage::where('conversation_id', $o->conversation_id)->where('sequence', '<', $m->sequence)
+                            ->where('metadata->diagnostic_experience', 'v2')->where('metadata->tracking', true)->where('metadata->diagnostic_id', $diagnostic->id)->select('id'))
+                        ->orderByDesc(ConversationMessage::select('sequence')->whereColumn('conversation_messages.id', 'telegram_outbox.message_id')->limit(1))->first();
+                    $editId = $previous?->telegram_message_id;
+                    $url = rtrim(config('app.url'), '/').route('diagnostics.show', $diagnostic->id, false);
+                    abort_unless(parse_url($url, PHP_URL_SCHEME) === 'https' && ! parse_url($url, PHP_URL_QUERY) && ! parse_url($url, PHP_URL_USER), 422);
+                    $data['reply_markup'] = ['inline_keyboard' => [[['text' => 'Ver diagnóstico completo', 'url' => $url]]]];
+                }
+                if ($editId) {
+                    $o->forceFill(['telegram_message_id' => $editId])->save();
+                    $data['message_id'] = $editId;
+                    $r = $client->call($bot, 'editMessageText', $data);
+                    if ($r['status'] === 'EDIT_UNAVAILABLE') {
+                        unset($data['message_id']);
+                        $editId = null;
+                        $o->forceFill(['telegram_message_id' => null])->save();
+                        $r = $client->call($bot, 'sendMessage', [...$data, 'protect_content' => true, ...($group && $group->reply_mode === 'group' && $o->thread_id > 0 ? ['message_thread_id' => $o->thread_id] : [])]);
+                    }
+                } else {
+                    $r = $client->call($bot, 'sendMessage', [...$data, 'protect_content' => true, ...($group && $group->reply_mode === 'group' && $o->thread_id > 0 ? ['message_thread_id' => $o->thread_id] : [])]);
+                }
                 $status = match ($r['status']) {
-                    'OK' => 'SENT', 'RATE_LIMITED' => $o->attempts < 5 ? 'PENDING' : 'FAILED', 'DELIVERY_UNKNOWN' => 'UNKNOWN', default => 'FAILED'
+                    'OK' => 'SENT', 'RATE_LIMITED' => $o->attempts < 5 ? 'PENDING' : 'FAILED', 'DELIVERY_UNKNOWN' => $editId && $o->attempts < 5 ? 'PENDING' : 'UNKNOWN', default => 'FAILED'
                 };
-                $o->forceFill(['status' => $status, 'telegram_message_id' => $r['result']['message_id'] ?? null, 'last_error' => $r['status'] === 'OK' ? null : $r['status'], 'next_attempt_at' => now()->addSeconds($r['retry_after'] ?? 60), 'body_cipher' => $status === 'SENT' ? null : $o->body_cipher])->save();
+                $o->forceFill(['status' => $status, 'telegram_message_id' => $editId ?? $r['result']['message_id'] ?? null, 'last_error' => $r['status'] === 'OK' ? null : $r['status'], 'next_attempt_at' => now()->addSeconds($r['retry_after'] ?? 60), 'body_cipher' => $status === 'SENT' ? null : $o->body_cipher])->save();
                 if ($status !== 'SENT') {
                     app(Accounts::class)->audit('telegram.delivery_failed');
                 }

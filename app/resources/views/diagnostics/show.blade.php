@@ -1,3 +1,4 @@
 @extends('layout')
 @section('title','Diagnóstico · '.$diagnostic->target)
+@push('head')<link rel="stylesheet" href="{{asset('diagnostic-experience.css')}}?v=2">@endpush
 @section('content')<div class="page-header"><div><div class="eyebrow">INVESTIGAR / DIAGNÓSTICOS</div><h1>{{$diagnostic->target}}</h1><p>{{$diagnostic->profile?->display_name}} · {{$diagnostic->agent?->name}} · {{\App\Web\Presentation::time($diagnostic->created_at,'d/m/Y H:i T')}}</p></div><a href="{{route('diagnostics.history')}}">← Histórico</a></div><div id="diagnostic-panel" @if(in_array($diagnostic->status,['PENDING','RUNNING']))data-live-panel data-tenant="{{app(\App\Tenancy\TenantContext::class)->tenantId}}" data-interval="4000"@endif>@include('diagnostics.result')</div>@if(in_array($diagnostic->status,['PENDING','RUNNING']))@include('shared.refresh',['panel'=>'diagnostic-panel'])@endif @endsection

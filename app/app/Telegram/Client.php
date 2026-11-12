@@ -10,7 +10,7 @@ class Client
 {
     public function call(Bot $bot, string $method, array $data = []): array
     {
-        if (! in_array($method, ['getMe', 'setWebhook', 'getWebhookInfo', 'deleteWebhook', 'sendMessage'], true)) {
+        if (! in_array($method, ['getMe', 'setWebhook', 'getWebhookInfo', 'deleteWebhook', 'sendMessage', 'editMessageText'], true)) {
             throw new \InvalidArgumentException('Unsupported Telegram method.');
         }
         try {
@@ -28,6 +28,14 @@ class Client
             }
             if ($r->status() === 429) {
                 return ['status' => 'RATE_LIMITED', 'retry_after' => min(3600, max(1, (int) ($j['parameters']['retry_after'] ?? 60)))];
+            }
+            if ($method === 'editMessageText' && $r->status() === 400 && is_string($j['description'] ?? null)) {
+                if (str_starts_with($j['description'], 'Bad Request: message is not modified')) {
+                    return ['status' => 'OK', 'result' => ['message_id' => $data['message_id'] ?? null]];
+                }
+                if (in_array($j['description'], ['Bad Request: message to edit not found', "Bad Request: message can't be edited", 'Bad Request: MESSAGE_ID_INVALID'], true)) {
+                    return ['status' => 'EDIT_UNAVAILABLE'];
+                }
             }
 
             return ['status' => match ($r->status()) {
