@@ -104,6 +104,12 @@ class ConversationContextTest extends IntelligenceTestCase
 
     public function test_short_duration_onset_and_affected_scope_variants_use_the_previous_question(): void
     {
+        [$c, $identity] = $this->question('web', 'Há quanto tempo você está esperando resposta?');
+        $topic = $c->context_json['topic'];
+        $c = app(Engine::class)->send($identity, $c, (string) Str::uuid(), 'kkkk');
+        $this->assertSame($topic, $c->context_json['topic']);
+        $c = app(Engine::class)->send($identity, $c, (string) Str::uuid(), '15 dias');
+        $this->assertStringContainsString('15 dias', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->value('body'));
         foreach ([['Desde quando isso acontece?', 'desde ontem', 'desde'], ['A dificuldade ocorre em todos os clientes ou apenas em alguns?', 'só alguns', 'alguns clientes'], ['A dificuldade ocorre em todos os clientes ou apenas em alguns?', 'todos os clientes', 'todos os clientes'], ['Quando começou?', 'começou hoje', 'hoje']] as [$question, $answer, $expected]) {
             [$c, $identity] = $this->question('web', $question);
             $c = app(Engine::class)->send($identity, $c, (string) Str::uuid(), $answer);
