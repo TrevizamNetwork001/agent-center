@@ -1,0 +1,24 @@
+{
+    "status": "PASS",
+    "tenant": 1,
+    "real_closed_chats": [
+        {
+            "channel": "telegram",
+            "status": "CLOSED",
+            "count": 1
+        },
+        {
+            "channel": "web",
+            "status": "CLOSED",
+            "count": 3
+        }
+    ],
+    "real_idle_notice_count": 4,
+    "real_outbound_idle_notices": [
+        {
+            "status": "SENT",
+            "count": 1
+        }
+    ],
+    "read_only": true
+}

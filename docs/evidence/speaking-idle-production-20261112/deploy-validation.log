@@ -1,0 +1,6 @@
+   INFO  Compiled views cleared successfully.
+TLS positive, wrong hostname, wrong CA, plaintext rejection and local socket: PASS
+Production configuration and PDO TLS: PASS
+Queue database → worker → cache: PASS
+Public CSS/JS readable and served by Nginx: PASS
+{"status":"ready"}

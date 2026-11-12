@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "scheduled_commands": [
+    "2026-11-12 01:56:00 Running ['artisan' telegram:drain 1] ..... 608.67ms DONE",
+    "⇂ '/usr/local/bin/php' 'artisan' telegram:drain 1 > '/dev/null' 2>&1",
+    "2026-11-12 01:56:00 Running ['artisan' conversations:close-idle 1]  621.81ms DONE",
+    "⇂ '/usr/local/bin/php' 'artisan' conversations:close-idle 1 > '/dev/null' 2>&1",
+    "2026-11-12 01:57:00 Running ['artisan' telegram:drain 1] ..... 497.50ms DONE",
+    "⇂ '/usr/local/bin/php' 'artisan' telegram:drain 1 > '/dev/null' 2>&1",
+    "2026-11-12 01:57:00 Running ['artisan' conversations:close-idle 1]  325.13ms DONE",
+    "⇂ '/usr/local/bin/php' 'artisan' conversations:close-idle 1 > '/dev/null' 2>&1",
+    "2026-11-12 01:58:00 Running ['artisan' telegram:drain 1] ..... 572.84ms DONE",
+    "⇂ '/usr/local/bin/php' 'artisan' telegram:drain 1 > '/dev/null' 2>&1",
+    "2026-11-12 01:58:01 Running ['artisan' conversations:close-idle 1]  333.92ms DONE",
+    "⇂ '/usr/local/bin/php' 'artisan' conversations:close-idle 1 > '/dev/null' 2>&1"
+  ]
+}

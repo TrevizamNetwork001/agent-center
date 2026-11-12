@@ -1,0 +1,50 @@
+--- compose-before.yaml
++++ compose-published.yaml
+@@ -81,7 +81,7 @@
+       options: {max-size: '10m', max-file: '3'}
+   migrator:
+     <<: *app
+-    image: agent-center-central:context-colleague-v1-20261112
++    image: agent-center-central:speaking-idle-v1-20261112
+     profiles: [operations]
+     restart: 'no'
+     environment:
+@@ -100,9 +100,11 @@
+     command: [php, artisan, migrate, '--force']
+   web:
+     <<: *app
+-    image: agent-center-central:context-colleague-v1-20261112
++    image: agent-center-central:speaking-idle-v1-20261112
+     environment:
+       <<: *app-env
++      CONVERSATION_IDLE_ENABLED: 'true'
++      CONVERSATION_IDLE_TENANTS: '1'
+       TELEGRAM_ADMIN_ASSOCIATION_ENABLED: 'true'
+       AGENT_MAINTENANCE_TARGETS: ${AGENT_MAINTENANCE_TARGETS:-}
+       AGENT_MAINTENANCE_HOST_FINGERPRINTS: ${AGENT_MAINTENANCE_HOST_FINGERPRINTS:-}
+@@ -119,7 +121,11 @@
+       retries: 5
+   worker:
+     <<: *app
+-    image: agent-center-central:context-colleague-v1-20261112
++    image: agent-center-central:speaking-idle-v1-20261112
++    environment:
++      <<: *app-env
++      CONVERSATION_IDLE_ENABLED: 'true'
++      CONVERSATION_IDLE_TENANTS: '1'
+     networks: [backend, maintenance_egress]
+     volumes:
+       - app_storage:/var/www/html/storage
+@@ -135,7 +141,11 @@
+       retries: 5
+   telegram-scheduler:
+     <<: *app
+-    image: agent-center-central:context-colleague-v1-20261112
++    image: agent-center-central:speaking-idle-v1-20261112
++    environment:
++      <<: *app-env
++      CONVERSATION_IDLE_ENABLED: 'true'
++      CONVERSATION_IDLE_TENANTS: '1'
+     command: [php, artisan, 'schedule:work']
+     stop_grace_period: 30s
+   diagnostic-worker:

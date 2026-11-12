@@ -1,0 +1,130 @@
+{
+    "status": "PASS",
+    "openai_requests": 3,
+    "output_limit_each": 1024,
+    "store": false,
+    "transcript": [
+        {
+            "channel": "web",
+            "input": "boa noite ce ta bao?",
+            "response": "Boa noite! Tudo certo por aqui. E cê, tá bão?",
+            "tone": "RELAXED",
+            "status": "ASSISTED",
+            "reason": null,
+            "usage": {
+                "input_tokens": 901,
+                "total_tokens": 943,
+                "output_tokens": 42
+            }
+        },
+        {
+            "channel": "web",
+            "input": "e ai jovem da internet",
+            "response": "Opa, jovem da internet! Pode chegar, estou por aqui.",
+            "tone": "RELAXED",
+            "status": "LOCAL",
+            "reason": null,
+            "usage": []
+        },
+        {
+            "channel": "web",
+            "input": "Boa noite. Como você está?",
+            "response": "Boa noite! Tudo certo por aqui. E você, como está?",
+            "tone": "CASUAL",
+            "status": "ASSISTED",
+            "reason": null,
+            "usage": {
+                "input_tokens": 1032,
+                "total_tokens": 1072,
+                "output_tokens": 40
+            }
+        },
+        {
+            "channel": "web",
+            "input": "Internet hoje ta barril kk",
+            "response": "Poxa, internet assim atrapalha mesmo. Tá lenta o tempo todo ou fica indo e voltando?",
+            "tone": "RELAXED",
+            "status": "ASSISTED",
+            "reason": null,
+            "usage": {
+                "input_tokens": 1054,
+                "total_tokens": 1102,
+                "output_tokens": 48
+            }
+        },
+        {
+            "channel": "web",
+            "input": "marcha",
+            "response": "Marcha! 😄",
+            "tone": "RELAXED",
+            "status": "LOCAL",
+            "reason": null,
+            "usage": []
+        },
+        {
+            "channel": "telegram",
+            "input": "boa noite ce ta bao?",
+            "response": "Boa noite! Tudo bão por aqui! E por aí, tudo bão?",
+            "tone": "RELAXED",
+            "status": "FALLBACK",
+            "reason": "rate_limited",
+            "usage": []
+        },
+        {
+            "channel": "telegram",
+            "input": "e ai jovem da internet",
+            "response": "Opa, jovem da internet! Pode chegar, estou por aqui.",
+            "tone": "RELAXED",
+            "status": "LOCAL",
+            "reason": null,
+            "usage": []
+        },
+        {
+            "channel": "telegram",
+            "input": "Boa noite. Como você está?",
+            "response": "Boa noite! Por aqui, tudo certo. Como você está?",
+            "tone": "CASUAL",
+            "status": "FALLBACK",
+            "reason": "rate_limited",
+            "usage": []
+        },
+        {
+            "channel": "telegram",
+            "input": "Internet hoje ta barril kk",
+            "response": "Pelo que você contou, a internet tá barril. É lentidão, quedas ou outro tipo de dificuldade?",
+            "tone": "RELAXED",
+            "status": "FALLBACK",
+            "reason": "rate_limited",
+            "usage": []
+        },
+        {
+            "channel": "telegram",
+            "input": "marcha",
+            "response": "Marcha! 😄",
+            "tone": "RELAXED",
+            "status": "LOCAL",
+            "reason": null,
+            "usage": []
+        }
+    ],
+    "idle": [
+        {
+            "channel": "web",
+            "notice": "Como ficamos 15 minutos sem conversar, vou encerrar este chat por aqui. Valeu pela conversa! O histórico está salvo. Quando precisar, é só mandar outra mensagem.",
+            "notice_once": true,
+            "late_confirmation_safe": true,
+            "new_chat_on_return": true
+        },
+        {
+            "channel": "telegram",
+            "notice": "Como ficamos 15 minutos sem conversar, vou encerrar este chat por aqui. Valeu pela conversa! O histórico está salvo. Quando precisar, é só mandar outra mensagem.",
+            "notice_once": true,
+            "late_confirmation_safe": true,
+            "new_chat_on_return": true
+        }
+    ],
+    "idle_test_clock": "Only temporary transactional smoke chats aged 16 minutes",
+    "test_records_rolled_back": true,
+    "telegram": "Native Deliver captured; zero external test sends",
+    "no_tasks_or_diagnostics_created": true
+}
