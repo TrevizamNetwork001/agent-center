@@ -114,6 +114,8 @@ pedido e confirmação, sem afirmar que ela cobre a análise de rota.
 `DiagnosticConclusion.classification` continua sendo a conclusão determinística dos
 testes. `ObjectiveCoverage` deriva uma avaliação separada das evidências persistidas
 e do plano; não modifica conclusões históricas.
+Os critérios de suficiência MTR usam os thresholds registrados no próprio plano,
+inclusive quando um Profile existente tem limites personalizados.
 
 Exemplo de sondagens de conectividade normais com objetivo de rota não atendido:
 
@@ -154,6 +156,18 @@ no claim, RLS e isolamento entre tenants, fixtures MTR e Profiles legados.
 Evidências visuais e resultados finais ficam em
 `docs/evidence/diagnostic-intent-planning-v1/`. O laboratório navegável está
 restrito a loopback em `http://127.0.0.1:18820`; credenciais permanecem fora do Git.
+
+Regressão completa: 488 testes, 3.668 asserções, sem falhas, erros ou testes
+ignorados. Passaram também os testes em processos separados de claims concorrentes,
+worker/result, fencing, idempotência e encerramento por inatividade. A rodada
+específica posterior validou a apresentação de cobertura em “mais detalhes” e
+exportou o transcript sintético do Telegram. Os resultados finais e o JUnit estão
+no diretório de evidências.
+
+Interface: 30 combinações de página, viewport (390/768/1440) e tema (claro/escuro),
+sem overflow horizontal ou erros de JavaScript; acesso de outro tenant retornou
+404. Build de produção PHP/Composer e Vite concluído em imagem de laboratório,
+Pint e secret scan do índice Git aprovados. Nenhuma dependência foi alterada.
 
 ## Rollback e publicação
 

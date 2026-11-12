@@ -558,7 +558,10 @@ class Engine
         }
         $d = Diagnostic::findOrFail($c->current_diagnostic_id);
         $snapshot = app(DiagnosticExperience::class)->snapshot($d, $identity->user);
-        $text = 'Diagnóstico de '.$snapshot['target']."\n".$official->classification."\n".$snapshot['summary']."\n".implode("\n", array_column($snapshot['facts'], 'text'))."\nLimites: ".implode(' ', $snapshot['limitations'])."\n".implode("\n", $snapshot['next_steps']);
+        $coverage = $snapshot['coverage'];
+        $text = 'Diagnóstico de '.$snapshot['target']."\nClassificação técnica: ".$official->classification."\n".$snapshot['summary']
+            ."\n".$coverage['label'].': '.$coverage['status_label']."\nConclusão da solicitação: ".$coverage['request_classification']
+            ."\n".implode("\n", array_column($snapshot['facts'], 'text'))."\nLimites: ".implode(' ', $snapshot['limitations'])."\n".implode("\n", $snapshot['next_steps']);
         if ($tone['verbosity'] === 'DETAILED' || $tone['technical_level'] === 'TECHNICAL') {
             $text .= "\nAs evidências e os tempos de cada etapa estão no diagnóstico vinculado.";
         }

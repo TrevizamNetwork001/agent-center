@@ -37,12 +37,12 @@ class ObjectiveCoverage
                     $complete = false;
                 }
             }
-            $complete = $complete && collect($keys)->every(function ($key) use ($evidence) {
+            $complete = $complete && collect($keys)->every(function ($key) use ($evidence, $plan) {
                 if ($key === 'trace') {
                     return ($evidence[$key]['ok'] ?? false) && ($evidence[$key]['data']['reached_destination'] ?? false);
                 }
 
-                return ($evidence[$key]['ok'] ?? false) && app(MtrPath::class)->analyze($evidence[$key]['data'])['classification'] !== 'INCONCLUSIVO';
+                return ($evidence[$key]['ok'] ?? false) && app(MtrPath::class)->analyze($evidence[$key]['data'], $plan['thresholds'] ?? [])['classification'] !== 'INCONCLUSIVO';
             });
         }
         if ($goal === OperationalIntent::Slowness) {

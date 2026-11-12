@@ -224,6 +224,9 @@ class DiagnosticIntentPlanningTest extends IdentityTestCase
         $this->assertSame('NAO_EXECUTADA', $s['coverage']['status']);
         $this->assertSame('INCONCLUSIVO', $s['coverage']['request_classification']);
         $this->assertSame('ERRO_DE_EXECUCAO', $s['classification']);
+        $c = $this->say($c, 'Mais detalhes');
+        $this->assertStringContainsString('Análise de rota: NÃO EXECUTADA', $this->last($c));
+        $this->assertStringContainsString('Conclusão da solicitação: INCONCLUSIVO', $this->last($c));
         $this->actingAs($this->operator)->get('/diagnostics/'.$d->id)->assertOk()->assertSee('Classificação técnica dos testes')->assertSee('NÃO EXECUTADA')->assertSee('Conclusão da solicitação');
     }
 
@@ -249,6 +252,12 @@ class DiagnosticIntentPlanningTest extends IdentityTestCase
             $this->assertSame('EXECUTADA', $coverage['status']);
             $this->assertSame($expected, $coverage['request_classification']);
         }
+        $evidence = ['mtr_icmp' => ['ok' => true, 'data' => MtrFixture::data('insufficient')]];
+        $thresholds = ['required_steps' => ['mtr_icmp'], 'mtr_min_cycles' => 1];
+        $official = app(Classifier::class)->classify('MTR_ICMP', $evidence, $thresholds);
+        $coverage = app(ObjectiveCoverage::class)->assess(OperationalIntent::Route, $evidence, ['thresholds' => $thresholds], $official['classification']);
+        $this->assertSame('NORMAL', $official['classification']);
+        $this->assertSame('NORMAL', $coverage['request_classification']);
     }
 
     public function test_policy_changes_after_planning_prevent_claim_without_substitution(): void
