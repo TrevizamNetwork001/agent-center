@@ -1,0 +1,10 @@
+Time: 04:55.572, Memory: 89.00 MB
+OK (488 tests, 3668 assertions)
+PASS: separate-process concurrent claims; worker/result race; exclusive execution lane; expired-claim fencing; duplicate idempotence; DNS prerequisites preserved
+Conversation idle concurrency: PASS (two closers; message versus closer; no tasks)
+Final delta: 33 tests, 280 assertions: PASS
+Pint: 28 files: PASS
+Production image build and source hashes: PASS
+Browser: 30 page/viewport/theme checks: PASS; cross-tenant 404
+Secret scan: see final index check recorded in README.
+No production publication or production probes.

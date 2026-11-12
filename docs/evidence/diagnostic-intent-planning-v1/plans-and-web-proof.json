@@ -1,0 +1,216 @@
+{
+    "status": "PASS",
+    "fixtures_only": true,
+    "production_probes": 0,
+    "before": {
+        "profile": "SITE_LENTO",
+        "steps": [
+            "tcp",
+            "https",
+            "ping",
+            "trace"
+        ]
+    },
+    "after": {
+        "profile": "MTR_ICMP",
+        "objective": {
+            "label": "Análise de rota",
+            "intent": "ROUTE_PATH_ANALYSIS",
+            "version": 1,
+            "path_method": "mtr_icmp",
+            "required_steps": [
+                "mtr_icmp"
+            ],
+            "dns_justification": null
+        },
+        "steps": [
+            {
+                "key": "mtr_icmp",
+                "input": {
+                    "cycles": 5,
+                    "target": "8.8.8.8",
+                    "interval": 1,
+                    "max_hops": 16,
+                    "protocol": "icmp",
+                    "destination": "8.8.8.8"
+                },
+                "skill": "mtr_path",
+                "optional": false,
+                "condition": "always",
+                "capability": "mtr_path_analysis:v1"
+            }
+        ]
+    },
+    "confirmation": "Posso analisar o caminho de rede até 8.8.8.8? Escopo: Caminho MTR (MTR ICMP). Confirma a execução? A autorização local permanece obrigatória.",
+    "result": {
+        "target": "8.8.8.8",
+        "classification": "NORMAL",
+        "summary": "Não foram encontradas anormalidades no escopo testado.",
+        "coverage": {
+            "intent": "ROUTE_PATH_ANALYSIS",
+            "label": "Análise de rota",
+            "status": "EXECUTADA",
+            "status_label": "EXECUTADA",
+            "request_classification": "NORMAL",
+            "limitations": [
+                "Ping simples e conectividade HTTPS não comprovam a saúde da rota."
+            ]
+        },
+        "facts": [
+            {
+                "key": "mtr_icmp",
+                "label": "MTR ICMP",
+                "text": "MTR ICMP: 3 salto(s) registrado(s) · destino alcançado pela sonda · perda de respostas no destino: 0% · RTT médio no destino: 14 ms · tempo da sondagem: 6000 ms",
+                "plain": "Na verificação MTR ICMP, 3 salto(s) registrado(s) · destino alcançado pela sonda · perda de respostas no destino: 0% · RTT médio no destino: 14 ms · tempo da sondagem: 6000 ms.",
+                "metrics": [
+                    "3 salto(s) registrado(s)",
+                    "destino alcançado pela sonda",
+                    "perda de respostas no destino: 0%",
+                    "RTT médio no destino: 14 ms",
+                    "tempo da sondagem: 6000 ms"
+                ],
+                "error": null
+            }
+        ],
+        "not_executed": [],
+        "limitations": [
+            "A investigação representa o ponto de observação do Agent, no período deste diagnóstico.",
+            "Isso não comprova a saúde de toda a rede nem descarta a lentidão percebida pelo cliente.",
+            "Perda isolada ou hop sem resposta, quando os seguintes respondem, não comprova falha de encaminhamento; pode refletir limitação ou despriorização de respostas.",
+            "RTT é tempo de ida e volta, não latência unidirecional. StDev é dispersão de RTT, não jitter universal de aplicações.",
+            "Assimetria, distância, ECMP, MPLS, túneis e mudanças de rota podem afetar a amostra. Protocolos diferentes podem seguir caminhos diferentes.",
+            "MTR isolado não atribui a causa a um roteador, operadora ou AS. A associação ASN de um IP não comprova o caminho BGP.",
+            "ASN: Não identificado. Nenhuma consulta externa de enriquecimento foi executada.",
+            "Amostra curta: 5 sondas no último salto. Ausência de perda não elimina intermitência.",
+            "Ping simples e conectividade HTTPS não comprovam a saúde da rota."
+        ],
+        "next_steps": [
+            "Se o sintoma persistir, amplie o escopo com um novo diagnóstico.",
+            "Não foram encontradas anormalidades no escopo testado."
+        ],
+        "status": "COMPLETED",
+        "error_code": null,
+        "has_evidence": true
+    },
+    "historical_mismatch": {
+        "target": "8.8.8.8",
+        "classification": "NORMAL",
+        "summary": "Não foram encontradas anormalidades no escopo testado.",
+        "coverage": {
+            "intent": "ROUTE_PATH_ANALYSIS",
+            "label": "Análise de rota",
+            "status": "NAO_EXECUTADA",
+            "status_label": "NÃO EXECUTADA",
+            "request_classification": "INCONCLUSIVO",
+            "limitations": [
+                "Ping simples e conectividade HTTPS não comprovam a saúde da rota."
+            ]
+        },
+        "facts": [
+            {
+                "key": "tcp",
+                "label": "Conexão TCP",
+                "text": "Conexão TCP: conexão estabelecida · tempo da sondagem: 1 ms",
+                "plain": "Na verificação Conexão TCP, conexão estabelecida · tempo da sondagem: 1 ms.",
+                "metrics": [
+                    "conexão estabelecida",
+                    "tempo da sondagem: 1 ms"
+                ],
+                "error": null
+            },
+            {
+                "key": "https",
+                "label": "Resposta HTTPS",
+                "text": "Resposta HTTPS: HTTP 200 · TLS validado · tempo da sondagem: 2 ms",
+                "plain": "Na verificação Resposta HTTPS, hTTP 200 · TLS validado · tempo da sondagem: 2 ms.",
+                "metrics": [
+                    "HTTP 200",
+                    "TLS validado",
+                    "tempo da sondagem: 2 ms"
+                ],
+                "error": null
+            }
+        ],
+        "not_executed": [],
+        "limitations": [
+            "A investigação representa o ponto de observação do Agent, no período deste diagnóstico.",
+            "Isso não comprova a saúde de toda a rede nem descarta a lentidão percebida pelo cliente.",
+            "A resposta HTTPS não mede o carregamento completo da página ou a reprodução de vídeo.",
+            "Ping simples e conectividade HTTPS não comprovam a saúde da rota."
+        ],
+        "next_steps": [
+            "Solicite análise de rota com Profile de caminho."
+        ],
+        "status": "COMPLETED",
+        "error_code": null,
+        "has_evidence": true
+    },
+    "web": {
+        "route": [
+            {
+                "sender": "system",
+                "type": "text",
+                "body": "Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?"
+            },
+            {
+                "sender": "user",
+                "type": "text",
+                "body": "Queria avaliar essa rota aqui 8.8.8.8, ver se está boa."
+            },
+            {
+                "sender": "system",
+                "type": "text",
+                "body": "Posso analisar o caminho de rede até 8.8.8.8? Escopo: Caminho MTR. Confirma a execução? A autorização local permanece obrigatória."
+            },
+            {
+                "sender": "user",
+                "type": "text",
+                "body": "Sim, confirmo"
+            },
+            {
+                "sender": "system",
+                "type": "text",
+                "body": "Solicitação aceita para 8.8.8.8. Os testes estão sendo preparados e aguardam execução no Agent. Vou apresentar o resultado aqui quando terminar."
+            },
+            {
+                "sender": "system",
+                "type": "result",
+                "body": "Diagnóstico de 8.8.8.8 finalizado.\n\n✅ Classificação técnica: NORMAL\nNão foram encontradas anormalidades no escopo testado.\nAnálise de rota: EXECUTADA.\nConclusão da solicitação: NORMAL.\n\nO que ficou registrado:\n• MTR ICMP: 3 salto(s) registrado(s) · destino alcançado pela sonda · perda de respostas no destino: 0% · RTT médio no destino: 14 ms · tempo da sondagem: 6000 ms\n\nLimites: A investigação representa o ponto de observação do Agent, no período deste diagnóstico. Isso não comprova a saúde de toda a rede nem descarta a lentidão percebida pelo cliente. Perda isolada ou hop sem resposta, quando os seguintes respondem, não comprova falha de encaminhamento; pode refletir limitação ou despriorização de respostas. RTT é tempo de ida e volta, não latência unidirecional. StDev é dispersão de RTT, não jitter universal de aplicações. Assimetria, distância, ECMP, MPLS, túneis e mudanças de rota podem afetar a amostra. Protocolos diferentes podem seguir caminhos diferentes. MTR isolado não atribui a causa a um roteador, operadora ou AS. A associação ASN de um IP não comprova o caminho BGP. ASN: Não identificado. Nenhuma consulta externa de enriquecimento foi executada. Amostra curta: 5 sondas no último salto. Ausência de perda não elimina intermitência. Ping simples e conectividade HTTPS não comprovam a saúde da rota.\n\nPróximo passo: Se o sintoma persistir, amplie o escopo com um novo diagnóstico.\nSe o sintoma persistir, conte em quais clientes ou situações ele acontece. Outro teste exige nova autorização."
+            }
+        ],
+        "ambiguous": [
+            {
+                "sender": "system",
+                "type": "text",
+                "body": "Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?"
+            },
+            {
+                "sender": "user",
+                "type": "text",
+                "body": "8.8.8.8"
+            },
+            {
+                "sender": "system",
+                "type": "text",
+                "body": "Você quer analisar o caminho de rede, medir ping\/perda no destino ou verificar um serviço? Um IP sozinho não define um site HTTPS. Nenhum teste foi iniciado."
+            }
+        ],
+        "blocked": [
+            {
+                "sender": "system",
+                "type": "text",
+                "body": "Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?"
+            },
+            {
+                "sender": "user",
+                "type": "text",
+                "body": "Analise a rota até 8.8.8.8"
+            },
+            {
+                "sender": "system",
+                "type": "text",
+                "body": "O helper MTR não está saudável e autenticado. Objetivo Análise de rota: NÃO EXECUTADO; solicitação INCONCLUSIVA. Alternativa: peça explicitamente conectividade básica, que não analisa a rota. Nenhuma tarefa foi criada."
+            }
+        ]
+    }
+}

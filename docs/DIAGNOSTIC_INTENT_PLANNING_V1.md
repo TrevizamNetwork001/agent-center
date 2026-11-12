@@ -178,8 +178,9 @@ ou equipamentos. Os motores existentes continuam responsáveis pela execução.
 Para rollback de uma futura publicação autorizada: interromper novas solicitações,
 deixar tarefas em andamento concluírem ou cancelá-las pelo mecanismo existente,
 e republicar a imagem anterior da Central. Preservar tabelas, planos, evidências,
-históricos e novos Profiles. Não apagar dados nem reescrever conclusões. Profiles
-V1 novos podem ser desabilitados pelo fluxo administrativo existente. Na retomada,
+históricos e novos Profiles. Não apagar dados nem reescrever conclusões. Os três
+Profiles V1 novos devem ser desabilitados pelo fluxo administrativo existente
+antes de retornar a uma imagem que não suporte suas chaves. Na retomada,
 usar uma imagem compatível com os Profiles V1 para qualquer diagnóstico pendente;
 não entregar esses Profiles a um worker anterior que desconheça suas chaves.
 

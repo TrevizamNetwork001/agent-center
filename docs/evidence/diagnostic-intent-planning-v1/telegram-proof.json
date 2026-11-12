@@ -1,0 +1,26 @@
+{
+    "status": "PASS",
+    "transport": "HTTP fake; no Telegram API calls",
+    "messages": [
+        {
+            "sender": "user",
+            "body": "Queria avaliar essa rota aqui 8.8.8.8, ver se está boa."
+        },
+        {
+            "sender": "system",
+            "body": "Posso analisar o caminho de rede até 8.8.8.8? Escopo: Caminho MTR (MTR ICMP). Confirma a execução? A autorização local permanece obrigatória."
+        },
+        {
+            "sender": "user",
+            "body": "Sim, confirmo"
+        },
+        {
+            "sender": "system",
+            "body": "Solicitação aceita para 8.8.8.8. Os testes estão sendo preparados e aguardam execução no Agent. Vou apresentar o resultado aqui quando terminar."
+        },
+        {
+            "sender": "system",
+            "body": "Diagnóstico de 8.8.8.8 finalizado.\n\n✅ Classificação técnica: NORMAL\nNão foram encontradas anormalidades no escopo testado.\nAnálise de rota: EXECUTADA.\nConclusão da solicitação: NORMAL.\n\nO que ficou registrado:\n• MTR ICMP: 3 salto(s) registrado(s) · destino alcançado pela sonda · perda de respostas no destino: 0% · RTT médio no destino: 14 ms · tempo da sondagem: 6000 ms\n\nLimites: A investigação representa o ponto de observação do Agent, no período deste diagnóstico. Isso não comprova a saúde de toda a rede nem descarta a lentidão percebida pelo cliente. Perda isolada ou hop sem resposta, quando os seguintes respondem, não comprova falha de encaminhamento; pode refletir limitação ou despriorização de respostas. RTT é tempo de ida e volta, não latência unidirecional. StDev é dispersão de RTT, não jitter universal de aplicações. Assimetria, distância, ECMP, MPLS, túneis e mudanças de rota podem afetar a amostra. Protocolos diferentes podem seguir caminhos diferentes. MTR isolado não atribui a causa a um roteador, operadora ou AS. A associação ASN de um IP não comprova o caminho BGP. ASN: Não identificado. Nenhuma consulta externa de enriquecimento foi executada. Amostra curta: 5 sondas no último salto. Ausência de perda não elimina intermitência. Ping simples e conectividade HTTPS não comprovam a saúde da rota.\n\nPróximo passo: Se o sintoma persistir, amplie o escopo com um novo diagnóstico.\nSe o sintoma persistir, conte em quais clientes ou situações ele acontece. Outro teste exige nova autorização."
+        }
+    ]
+}
