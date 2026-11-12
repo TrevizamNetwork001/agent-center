@@ -471,6 +471,28 @@ class TelegramTest extends IntelligenceTestCase
         $this->assertSame(0, AgentTask::count());
     }
 
+    public function test_social_greeting_after_explicit_close_replaces_the_linked_conversation(): void
+    {
+        $link = $this->link();
+        $this->say('Boa noite!');
+        $this->say('Encerrar');
+        $closed = $this->conversation($link);
+        $this->assertSame('CLOSED', $closed->state);
+        $history = ConversationMessage::where('conversation_id', $closed->id)->count();
+
+        $this->say('bom dia meu consagrado bao de mais ?');
+        $new = $this->conversation($link);
+        $this->assertNotSame($closed->id, $new->id);
+        $this->assertSame('ACTIVE', $new->state);
+        $this->assertSame('CLOSED', $closed->fresh()->state);
+        $this->assertSame($history, ConversationMessage::where('conversation_id', $closed->id)->count());
+        $this->assertFalse(ConversationMessage::where('conversation_id', $new->id)->where('body', 'like', 'Conversa encerrada.%')->exists());
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+        $this->deliverAll();
+        Http::assertNotSent(fn ($r) => str_starts_with($r['text'] ?? '', 'Conversa encerrada. Uma nova'));
+    }
+
     public function test_idle_respects_fresh_inbox_and_real_history_command_but_not_background_sweep(): void
     {
         config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);

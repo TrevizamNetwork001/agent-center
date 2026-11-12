@@ -109,7 +109,7 @@ class Engine
             }
             $idleRestart = $c->state === 'CLOSED' && ($c->context_json['closed_due_to_inactivity'] ?? false)
                 && ! in_array($intent, [Intent::Confirm, Intent::Deny, Intent::Cancel, Intent::Close, Intent::Acknowledge], true);
-            if ($idleRestart || (in_array($c->state, ['CLOSED', 'CANCELLED'], true) && in_array($intent, [Intent::Start, Intent::Another, Intent::Target, Intent::Path], true))) {
+            if ($idleRestart || (in_array($c->state, ['CLOSED', 'CANCELLED'], true) && in_array($intent, [Intent::Start, Intent::Another, Intent::Target, Intent::Path, Intent::Greeting, Intent::Social], true))) {
                 $c = $this->create($i, (string) Str::uuid(), $c->context_json['agent_id'] ?? null);
             }
             abort_if($c->sequence >= config('conversation.max_messages'), 422, 'Limite desta conversa alcançado. Abra uma nova conversa.');

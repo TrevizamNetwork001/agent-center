@@ -93,7 +93,7 @@ class ConversationTest extends IdentityTestCase
         $this->assertSame(0, AgentTask::count());
     }
 
-    public function test_idle_waiting_target_closes_without_a_task_and_explicit_closure_keeps_existing_semantics(): void
+    public function test_idle_waiting_target_closes_without_a_task_and_greeting_restarts_explicit_closure(): void
     {
         config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
         $c = $this->say($this->conversation(), 'Testa um site');
@@ -102,8 +102,27 @@ class ConversationTest extends IdentityTestCase
         $this->assertSame('CLOSED', app(Engine::class)->closeIdle($this->identity(), $c)->state);
         $manual = $this->say($this->conversation(), 'Encerrar');
         $this->assertSame('CLOSED', $manual->state);
-        $this->assertSame($manual->id, $this->say($manual, 'Boa noite')->id);
+        $this->assertNotSame($manual->id, $this->say($manual, 'Boa noite')->id);
         $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_social_greeting_after_explicit_closure_opens_a_new_conversation_once(): void
+    {
+        $closed = $this->say($this->conversation(), 'Encerrar');
+        $history = ConversationMessage::where('conversation_id', $closed->id)->count();
+        $key = (string) Str::uuid();
+        $body = 'bom dia meu consagrado bao de mais ?';
+        $new = $this->say($closed, $body, $key);
+
+        $this->assertNotSame($closed->id, $new->id);
+        $this->assertSame('ACTIVE', $new->state);
+        $this->assertSame('CLOSED', $closed->fresh()->state);
+        $this->assertSame($history, ConversationMessage::where('conversation_id', $closed->id)->count());
+        $this->assertSame($new->id, $this->say($closed, $body, $key)->id);
+        $this->assertSame(2, Conversation::count());
+        $this->assertFalse(ConversationMessage::where('conversation_id', $new->id)->where('body', 'like', 'Conversa encerrada.%')->exists());
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
     }
 
     public function test_idle_never_cancels_running_diagnostic_and_waits_fifteen_minutes_after_result(): void
