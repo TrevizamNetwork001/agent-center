@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "tests": 511,
+  "assertions": 3943,
+  "pint_files": 312,
+  "images": {
+    "agent-center-central:preflight-real-flow-web-lab-20261112": "sha256:35405acc8b0c9bb8ef5063ed71a62485fcbe704ea7993fbe42f8bc75dd1da24f",
+    "agent-center-central:preflight-real-flow-worker-lab-20261112": "sha256:204e7e4f5661e95a30ddf555a7f0b2e396d81fae6fe2e0a45a2b33856b04a45e"
+  },
+  "production_deploy": false,
+  "agent_updated": false,
+  "lifecycle_changed": false,
+  "policies_changed": false,
+  "probes": 0,
+  "logs_sha256": {
+    "laravel-final.log": "2daf0dbf328fedae94d48840febcad15ff0493595e97ceb278d59ab6ba58a5fe",
+    "pint-final-pass.log": "a5102b14de5a1089149fa351a55540ae7605e283b98be852dca6639e9c2788db",
+    "panel-qa.log": "b2763048367e02d43aa03135c665b48a27946e9af5882ff999bfdde416c18789",
+    "build-web.log": "fba4809761e1c4763c68ef3fd962033f9b4ebd5325691ea4689e9826cd9ae820",
+    "build-worker.log": "ba547100eda30b0b7704e771e294a55df40bb7dfae0bcdf23076376ce72e5d9e"
+  }
+}

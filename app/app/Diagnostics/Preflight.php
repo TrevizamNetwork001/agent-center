@@ -22,14 +22,14 @@ class Preflight
         $unknown = ['state' => 'UNKNOWN', 'reason' => 'effective_policy_unverified', 'helper_healthy' => null];
         // 0.6.2 cannot answer this contract. Never trust unrelated metadata.
         if ($agent->version !== '0.6.5' || $capability !== 'mtr_path_analysis:v1' || ! filter_var($destination, FILTER_VALIDATE_IP) || ! in_array($protocol, ['icmp', 'tcp'], true)) {
-            return $unknown;
+            return [...$unknown, 'reason' => 'preflight_incompatible'];
         }
         $destination = inet_ntop(inet_pton($destination));
         try {
             return DB::transaction(function () use ($agent, $destination, $protocol, $unknown) {
                 $a = Agent::whereKey($agent->id)->lock('FOR UPDATE NOWAIT')->firstOrFail();
                 if ($a->version !== '0.6.5' || $a->status !== 'active' || $a->revoked_at || ! $a->last_heartbeat_at?->gt(now()->subSeconds(60))) {
-                    return $unknown;
+                    return [...$unknown, 'reason' => 'agent_unavailable'];
                 }
                 $meta = $a->metadata ?? [];
                 $record = $meta['diagnostic_preflight_v1'] ?? [];
@@ -42,17 +42,23 @@ class Preflight
                 }
                 // One bounded slot per Agent. Do not overwrite another user's pending query.
                 if ($fresh && ! isset($record['result'])) {
-                    return $unknown;
+                    return [...$unknown, 'reason' => $matching ? 'preflight_pending' : 'preflight_busy'];
+                }
+                $reason = $matching && isset($record['result']) ? 'preflight_stale'
+                    : (! $fresh && isset($request['id']) && ! isset($record['result']) ? 'preflight_timeout' : 'preflight_pending');
+                // A policy change invalidates proof; do not reinterpret it as a denial.
+                if (isset($request['policy_digest']) && $request['policy_digest'] !== $digest) {
+                    $reason = 'effective_policy_unverified';
                 }
                 $request = ['schema_version' => 1, 'id' => (string) Str::uuid(), 'destination' => $destination, 'protocol' => $protocol, 'policy_digest' => $digest,
                     'policy_revision' => ManagedSettings::current($a)['revision'], 'expires_at' => now()->addSeconds(45)->timestamp];
                 $a->forceFill(['metadata' => [...$meta, 'diagnostic_preflight_v1' => ['request' => $request]]])->save();
 
-                return $unknown;
+                return [...$unknown, 'reason' => $reason];
             });
         } catch (QueryException $e) {
             if (($e->errorInfo[0] ?? null) === '55P03') {
-                return $unknown;
+                return [...$unknown, 'reason' => 'preflight_busy'];
             }
             throw $e;
         }

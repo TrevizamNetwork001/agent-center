@@ -42,7 +42,8 @@ class OperationalCapabilitiesTest extends IdentityTestCase
         $this->assertContains('mtr_path_analysis:v1', $r->snapshot($a)['capabilities']);
         $this->assertSame('UNKNOWN', $r->snapshot($a)['helper_health']);
         $this->assertSame('UNKNOWN', $r->permission($a, 'mtr_path_analysis:v1', '8.8.8.8', 'icmp')['state']);
-        $this->assertSame('effective_policy_unverified', app(PathReadiness::class)->check($a, 'mtr_path_analysis:v1', '8.8.8.8', 'icmp'));
+        $this->assertSame('preflight_incompatible', app(PathReadiness::class)->check($a, 'mtr_path_analysis:v1', '8.8.8.8', 'icmp'));
+        $this->assertSame('UNKNOWN', app(OperationalCapabilities::class)->permission($a, 'mtr_path_analysis:v1', '8.8.8.8', 'icmp')['state']);
         $this->assertSame(0, AgentTask::count());
         $this->assertSame(0, Diagnostic::count());
     }

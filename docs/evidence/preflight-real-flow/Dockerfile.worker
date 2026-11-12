@@ -1,0 +1,2 @@
+FROM agent-center-central:preflight-v1-diagnostic-20261112
+COPY app/app/Diagnostics/Preflight.php app/app/Diagnostics/OperationalCapabilities.php app/app/Diagnostics/PathReadiness.php /var/www/html/app/Diagnostics/

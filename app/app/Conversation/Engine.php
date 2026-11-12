@@ -366,19 +366,43 @@ class Engine
             return true;
         }
         $blocked = collect($plan['steps'])->first(fn ($s) => ! $s['optional'] && ! $s['available']);
+        $planningMeta = [];
+        if ($goal === OperationalIntent::Route) {
+            $slot = $agent->fresh()->metadata['diagnostic_preflight_v1'] ?? [];
+            $query = $slot['request'] ?? [];
+            $protocol = $plan['steps'][0]['input']['protocol'] ?? 'icmp';
+            $matching = ($query['destination'] ?? null) === $target && ($query['protocol'] ?? null) === $protocol;
+            $reason = $blocked['blocked_reason'] ?? null;
+            $authorization = $blocked ? ($reason === 'policy_denied' ? 'DENIED' : 'UNKNOWN') : 'ALLOWED';
+            $planningMeta = ['diagnostic_planning' => ['version' => 1, 'objective' => $goal->value, 'profile' => $key,
+                'agent_id' => $agent->id, 'target' => $target, 'protocol' => $protocol, 'authorization' => $authorization,
+                'status' => match ($reason) {
+                    'preflight_stale' => 'STALE', 'helper_unavailable' => 'HELPER_UNAVAILABLE', 'preflight_timeout' => 'COMMUNICATION_TIMEOUT', default => $authorization
+                },
+                'reason' => $reason, 'checked_at' => now()->toIso8601String(), 'executed' => false,
+                'steps' => array_column($plan['steps'], 'key'), 'request_id' => $matching ? ($query['id'] ?? null) : null,
+                'policy_revision' => $matching ? ($query['policy_revision'] ?? null) : null,
+                'expires_at' => $matching ? ($query['expires_at'] ?? null) : null,
+                'dispatched_at' => $matching ? ($slot['dispatched_at'] ?? null) : null,
+                'received_at' => $matching ? ($slot['received_at'] ?? null) : null]];
+        }
         if ($blocked) {
             $reason = $blocked['blocked_reason'] ?? 'capability_unavailable';
             $explanation = $goal === OperationalIntent::Route ? app(PathReadiness::class)->explanation($reason) : 'As Skills necessárias para este objetivo não estão disponíveis neste Agent/Profile.';
             $alternative = $goal === OperationalIntent::Route ? ' Alternativa: peça explicitamente conectividade básica, que não analisa a rota.' : '';
             $scope = $goal === OperationalIntent::Route ? $planning->scope($plan).' ' : '';
-            $this->reply($c, $scope.$explanation.' Objetivo '.$goal->label().': NÃO EXECUTADO; solicitação INCONCLUSIVA.'.$alternative.' Nenhuma tarefa foi criada.');
+            $body = $c->channel === 'telegram' && $goal === OperationalIntent::Route
+                ? app(PlanningReply::class)->blocked($target, $reason)
+                : $scope.$explanation.' Objetivo '.$goal->label().': NÃO EXECUTADO; solicitação INCONCLUSIVA.'.$alternative.' Nenhuma tarefa foi criada.';
+            $this->reply($c, $body, $planningMeta);
 
             return true;
         }
         $c->context_json = [...array_diff_key($c->context_json, array_flip(['objective_question', 'requested_objective'])), 'agent_id' => $agent->id,
             'pending' => ['issued_at' => now()->timestamp, 'profile' => $key, 'target' => $target, 'objective' => [...$objective, 'plan_digest' => Digest::hash($plan)]]];
         $this->transition($c, State::Confirmation, 'execution_confirmation');
-        $this->reply($c, $prefix.$planning->confirmation($plan));
+        $confirmation = $c->channel === 'telegram' && $goal === OperationalIntent::Route ? app(PlanningReply::class)->confirmation($target) : $prefix.$planning->confirmation($plan);
+        $this->reply($c, $confirmation, $planningMeta);
 
         return true;
     }

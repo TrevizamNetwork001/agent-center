@@ -15,6 +15,11 @@ class PathReadiness
     public function explanation(string $reason): string
     {
         return match ($reason) {
+            'preflight_pending' => 'Consulta de autorização pendente; aguardando resposta autenticada do Agent.',
+            'preflight_stale' => 'A decisão anterior venceu; uma nova consulta de autorização foi solicitada.',
+            'preflight_timeout' => 'A consulta anterior terminou sem resposta no prazo. Isso não identifica, por si só, uma falha de rede específica.',
+            'preflight_busy' => 'Outra consulta está em andamento neste Agent. Nenhuma autorização foi presumida.',
+            'preflight_incompatible' => 'Autorização efetiva não comprovada: a versão deste Agent não suporta o contrato de preflight solicitado.',
             'policy_denied' => 'A política efetiva não autoriza esta capability, destino ou protocolo.',
             'helper_unavailable' => 'O helper MTR não está saudável e autenticado.',
             'helper_unverified' => 'A saúde atual do helper MTR não pôde ser comprovada pelo contrato operacional disponível.',

@@ -1,0 +1,4 @@
+FROM agent-center-central:preflight-v1-avatar-web-20261112
+COPY app/app/Conversation/Engine.php app/app/Conversation/PlanningReply.php /var/www/html/app/Conversation/
+COPY app/app/Diagnostics/Preflight.php app/app/Diagnostics/OperationalCapabilities.php app/app/Diagnostics/PathReadiness.php /var/www/html/app/Diagnostics/
+COPY app/resources/views/conversations/panel.blade.php app/resources/views/conversations/planning-details.blade.php /var/www/html/resources/views/conversations/

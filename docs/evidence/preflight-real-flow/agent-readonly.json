@@ -1,0 +1,15 @@
+{
+  "version": "0.6.5",
+  "state": "ONLINE",
+  "runtime_sha256": "a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315",
+  "capability_present": true,
+  "helper_readiness": {
+    "mtr_helper_ready": true
+  },
+  "journal": {
+    "integrity": "ok",
+    "executions": 103,
+    "events": 412
+  },
+  "new_errors": []
+}

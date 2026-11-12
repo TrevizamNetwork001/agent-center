@@ -7,6 +7,7 @@ use App\Conversation\Engine;
 use App\Conversation\Identity;
 use App\Diagnostics\Catalog;
 use App\Diagnostics\Classifier;
+use App\Diagnostics\Preflight;
 use App\Knowledge\Versioning;
 use App\Llm\Configuration;
 use App\Models\Agent;
@@ -51,6 +52,49 @@ use Tests\Support\PathReadinessFixture;
 class TelegramTest extends IntelligenceTestCase
 {
     use PathReadinessFixture;
+
+    public function test_real_preflight_pending_then_late_denial_is_short_and_idempotent(): void
+    {
+        $agent = $this->agent();
+        $agent->forceFill(['version' => '0.6.5', 'last_heartbeat_at' => now(), 'metadata' => [...$agent->metadata, 'mtr_capability_confirmed_at' => now()->toIso8601String()]])->save();
+        $link = $this->link();
+        $serial = ++$this->serial;
+        $text = 'Meu rei, quero analisar a rota para 8.8.8.8.';
+        $this->receive($text, update: $serial);
+        $this->process();
+        $c = $this->conversation($link);
+        $first = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first();
+        $this->assertStringContainsString('pendente', $first->body);
+        $this->assertStringNotContainsString('MTR_ICMP', $first->body);
+        $this->assertStringNotContainsString('Profile', $first->body);
+        $this->assertSame('UNKNOWN', $first->metadata['diagnostic_planning']['authorization']);
+        $this->assertSame('MTR_ICMP', $first->metadata['diagnostic_planning']['profile']);
+        $request = $agent->fresh()->metadata['diagnostic_preflight_v1']['request'];
+        $count = ConversationMessage::where('conversation_id', $c->id)->count();
+        $this->receive($text, update: $serial);
+        $this->process();
+        $this->assertSame($count, ConversationMessage::where('conversation_id', $c->id)->count());
+        $this->travel(18)->seconds();
+        app(Preflight::class)->exchange($agent, null);
+        $this->travel(1)->seconds();
+        app(Preflight::class)->exchange($agent, ['schema_version' => 1, 'id' => $request['id'], 'state' => 'DENIED', 'reason' => 'policy_denied', 'helper_healthy' => null, 'agent_version' => '0.6.5', 'policy_digest' => $request['policy_digest']]);
+        $this->say($text);
+        $last = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first();
+        $this->assertStringContainsString('política atual não permite', $last->body);
+        $this->assertStringContainsString('Nenhum teste foi executado', $last->body);
+        $this->assertStringNotContainsString('MTR_ICMP', $last->body);
+        $this->assertStringNotContainsString('HTTPS', $last->body);
+        $this->assertSame('DENIED', $last->metadata['diagnostic_planning']['authorization']);
+        $this->assertArrayNotHasKey('pending', $this->conversation($link)->context_json);
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, Diagnostic::count());
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', 'consulta de autorização') && ! str_contains($r['text'] ?? '', 'Profile'));
+        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', 'política atual não permite') && ! str_contains($r['text'] ?? '', 'MTR_ICMP'));
+        if ($directory = getenv('PREFLIGHT_FLOW_PROOF_DIR')) {
+            file_put_contents($directory.'/telegram.json', json_encode(['pending' => $first->body, 'denied' => $last->body, 'metadata' => $last->metadata], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        }
+    }
 
     public function test_exact_ip_route_request_uses_existing_mtr_profile_after_explicit_confirmation(): void
     {

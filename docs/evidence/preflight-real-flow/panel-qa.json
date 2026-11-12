@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "kind": "Laravel Blade snapshot; sanitized fixture; no production data",
+  "checks": [
+    {
+      "width": 390,
+      "theme": "light",
+      "status": "PASS",
+      "keyboard_details": true,
+      "no_overflow": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "status": "PASS",
+      "keyboard_details": true,
+      "no_overflow": true
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "status": "PASS",
+      "keyboard_details": true,
+      "no_overflow": true
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "status": "PASS",
+      "keyboard_details": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "status": "PASS",
+      "keyboard_details": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "status": "PASS",
+      "keyboard_details": true,
+      "no_overflow": true
+    }
+  ]
+}
