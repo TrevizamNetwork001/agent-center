@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "laravel": {
+    "tests": 552,
+    "assertions": 4963,
+    "warnings": 0
+  },
+  "app_env": "production",
+  "scenarios": 34,
+  "pint_files": 345,
+  "network_none_images": 3,
+  "new_migrations": 0,
+  "production_deployed": false,
+  "log_sha256": {
+    "full-final.log": "a0dc16964d23cce35e7bb45b80c135757251cc1f9ad417fa31d46b848ad30170",
+    "pint-final.log": "55bc90eb42c26068fd974c7889a37bbdf9d80159240b6fdacba430b29a45e989",
+    "build-current.log": "92228afc31ee2e14d34606ced4e90ff74de99944132af61b4fcc4544a7ebdde1",
+    "concurrency.log": "10e5f92bf067b8abb29f37ed607d9f22d9076729792225594f877eca2a76db3d",
+    "ui-final.log": "f43a4e52471044522266701e65c545778d05fb7388b9c1cd19330e51240ee5a0",
+    "packages-final.log": "2f252f5de68aa72d46ed6d0941dba1dc7bb9cf7fb7c74db8ffa96e48fc2a8854",
+    "session-cleanup.log": "49c70a306dd5f827ff0b1928c24ac250f8bb645c27a3e3e36b4c9ea5e26fd787"
+  }
+}

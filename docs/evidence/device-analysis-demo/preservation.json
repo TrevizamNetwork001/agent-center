@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "preexisting_files_unchanged": 220,
+  "production_head": "cd2aa49",
+  "roles": [
+    {
+      "role": "web",
+      "production_image_unchanged": true,
+      "runtime_user_preserved": true,
+      "candidate_image": "sha256:173867a711bc8ed834093730cb8b75cb681c87d364437734faba630c7921f6f3"
+    },
+    {
+      "role": "queue",
+      "production_image_unchanged": true,
+      "runtime_user_preserved": true,
+      "candidate_image": "sha256:8f676200b1dbf8a72a15e3f0f0bb56c7a6e28ca6fa7e81061143a5c747c4ac32"
+    },
+    {
+      "role": "diagnostic",
+      "production_image_unchanged": true,
+      "runtime_user_preserved": true,
+      "candidate_image": "sha256:99b3befb5d23b927aae422b46cf7fc170d012ca4cf5332526e16b18c8f9f42b3"
+    }
+  ]
+}

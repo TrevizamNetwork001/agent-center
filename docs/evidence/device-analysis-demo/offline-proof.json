@@ -1,0 +1,13 @@
+{
+    "status": "PASS",
+    "app_env": "production",
+    "network": "none",
+    "database_access": false,
+    "scenarios": 34,
+    "original_production_lab_guard": false,
+    "administrative_scope": "ADMINISTRATIVE_DEMO",
+    "default_enabled": false,
+    "task_eligible": false,
+    "health_eligible": false,
+    "real_evidence": false
+}

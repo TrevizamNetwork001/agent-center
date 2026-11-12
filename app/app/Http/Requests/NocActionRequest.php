@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Noc\Analysis\Contracts;
 use App\Noc\Analysis\Simulation;
+use App\Noc\Analysis\SimulationScope;
 use App\Noc\Catalog;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -13,12 +15,16 @@ class NocActionRequest extends FormRequest
 {
     public function authorize(): bool
     {
+        if ($this->routeIs('noc.analysis-demo')) {
+            return app(Contracts::class)->adminDemoEnabled() && $this->user()->can('demonstrate', $this->route('nocDevice'));
+        }
+
         return $this->user()->can($this->routeIs('noc.simulate') ? 'simulate' : 'update', $this->route('nocDevice'));
     }
 
     protected function prepareForValidation(): void
     {
-        $allowed = $this->routeIs('noc.simulate') ? ['fixture', 'request_key', 'result', 'is_simulated', 'parameters', 'device_revision'] : ['revision'];
+        $allowed = $this->routeIs('noc.simulate', 'noc.analysis-demo') ? ['fixture', 'request_key', 'result', 'is_simulated', 'parameters', 'device_revision'] : ['revision'];
         if (array_diff(array_keys($this->all()), [...$allowed, '_token', '_method'])) {
             app('request')->replace([]);
             app('request')->query->replace([]);
@@ -38,7 +44,7 @@ class NocActionRequest extends FormRequest
     public function after(): array
     {
         return [function ($validator) {
-            if ($validator->errors()->isNotEmpty() || ! $this->routeIs('noc.simulate')) {
+            if ($validator->errors()->isNotEmpty() || ! $this->routeIs('noc.simulate', 'noc.analysis-demo')) {
                 return;
             }
             try {
@@ -52,7 +58,7 @@ class NocActionRequest extends FormRequest
                 }
                 $this->merge(['parameters' => $parameters]);
                 $validator->setValue('parameters', $parameters);
-                app(Catalog::class)->fixtureFor($this->route('nocDevice'), $this->string('fixture')->toString(), $parameters);
+                app(Catalog::class)->fixtureFor($this->route('nocDevice'), $this->string('fixture')->toString(), $parameters, $this->routeIs('noc.analysis-demo') ? SimulationScope::AdministrativeDemo : SimulationScope::LaboratoryConversation);
             } catch (ValidationException $e) {
                 foreach ($e->errors() as $key => $messages) {
                     foreach ($messages as $message) {
@@ -65,6 +71,6 @@ class NocActionRequest extends FormRequest
 
     public function rules(): array
     {
-        return $this->routeIs('noc.simulate') ? ['fixture' => ['required', Rule::in(array_keys([...app(Catalog::class)->fixtures(), ...app(Simulation::class)->fixtures()]))], 'request_key' => 'required|uuid', 'parameters' => 'sometimes|array|max:4', 'device_revision' => 'required_if:fixture,'.implode(',', array_keys(app(Simulation::class)->fixtures())).'|integer|min:1', 'result' => 'prohibited', 'is_simulated' => 'prohibited'] : ['revision' => 'required|integer|min:1'];
+        return $this->routeIs('noc.simulate', 'noc.analysis-demo') ? ['fixture' => ['required', Rule::in(array_keys([...app(Catalog::class)->fixtures(), ...app(Simulation::class)->fixtures()]))], 'request_key' => 'required|uuid', 'parameters' => 'sometimes|array|max:4', 'device_revision' => 'required_if:fixture,'.implode(',', array_keys(app(Simulation::class)->fixtures())).'|integer|min:1', 'result' => 'prohibited', 'is_simulated' => 'prohibited'] : ['revision' => 'required|integer|min:1'];
     }
 }

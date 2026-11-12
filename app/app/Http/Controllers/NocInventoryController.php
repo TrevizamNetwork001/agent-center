@@ -7,7 +7,9 @@ use App\Http\Requests\NocDeviceRequest;
 use App\Models\NocDevice;
 use App\Models\NocDeviceRevision;
 use App\Models\NocSimulation;
+use App\Noc\Analysis\Contracts;
 use App\Noc\Analysis\Simulation;
+use App\Noc\Analysis\SimulationScope;
 use App\Noc\Catalog;
 use App\Noc\Inventory;
 use Illuminate\Http\Request;
@@ -78,7 +80,12 @@ class NocInventoryController extends Controller
     {
         Gate::authorize('view', $nocDevice);
 
-        return view('noc.show', ['nocDevice' => $nocDevice, 'catalog' => $catalog->all(), 'capabilities' => $catalog->forDevice($nocDevice), 'history' => NocDeviceRevision::where('device_id', $nocDevice->id)->orderByDesc('revision')->paginate(10, ['*'], 'history_page'), 'simulations' => NocSimulation::where('device_id', $nocDevice->id)->latest('created_at')->paginate(5, ['*'], 'simulation_page'), 'fixtures' => $catalog->fixtures(), 'analysisContracts' => $catalog->analysisForDevice($nocDevice), 'analysisFixtures' => app(Simulation::class)->fixtures($nocDevice)]);
+        $simulations = NocSimulation::where('device_id', $nocDevice->id);
+        if (! app(Contracts::class)->adminDemoEnabled() || Gate::denies('demonstrate', $nocDevice)) {
+            $simulations->where(fn ($q) => $q->whereNull('result->simulation_scope')->orWhere('result->simulation_scope', '<>', SimulationScope::AdministrativeDemo->value));
+        }
+
+        return view('noc.show', ['nocDevice' => $nocDevice, 'catalog' => $catalog->all(), 'capabilities' => $catalog->forDevice($nocDevice), 'history' => NocDeviceRevision::where('device_id', $nocDevice->id)->orderByDesc('revision')->paginate(10, ['*'], 'history_page'), 'simulations' => $simulations->latest('created_at')->paginate(5, ['*'], 'simulation_page'), 'fixtures' => $catalog->fixtures(), 'analysisContracts' => $catalog->analysisForDevice($nocDevice), 'analysisFixtures' => app(Simulation::class)->fixtures($nocDevice)]);
     }
 
     public function capabilities(Catalog $catalog)
@@ -86,6 +93,15 @@ class NocInventoryController extends Controller
         Gate::authorize('viewAny', NocDevice::class);
 
         return view('noc.capabilities', ['catalog' => $catalog->all()]);
+    }
+
+    public function demonstrate(NocActionRequest $r, NocDevice $nocDevice, Inventory $service)
+    {
+        Gate::authorize('demonstrate', $nocDevice);
+        $v = $r->validated();
+        $service->simulate($r->user(), $nocDevice, $v['fixture'], $v['request_key'], $v['parameters'] ?? [], (int) $v['device_revision'], SimulationScope::AdministrativeDemo);
+
+        return redirect()->route('noc.show', $nocDevice)->with('success', 'LABORATÓRIO / SIMULADO — demonstração administrativa salva apenas no histórico de simulações. Nenhuma operação real executada.');
     }
 
     public function simulate(NocActionRequest $r, NocDevice $nocDevice, Inventory $service)

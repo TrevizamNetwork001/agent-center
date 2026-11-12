@@ -57,6 +57,22 @@ class TelegramTest extends IntelligenceTestCase
 {
     use PathReadinessFixture;
 
+    public function test_production_admin_demo_flag_never_enables_telegram_simulation_or_real_device_tasks(): void
+    {
+        $link = $this->link();
+        config(['app.env' => 'production', 'device_analysis.lab_enabled' => true, 'device_analysis.lab_tenants' => [$this->a->id], 'device_analysis.admin_demo_enabled' => true, 'device_analysis.admin_demo_tenants' => [$this->a->id]]);
+        foreach (['Verifique os peers BGP do NE8000.', 'Mostre a rota do CCR para 8.8.8.8.', 'Simule bgp-idle no NE8000'] as $text) {
+            $this->say($text);
+        }
+        $this->assertSame(0, NocSimulation::count());
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, Diagnostic::count());
+        $c = $this->conversation($link);
+        $this->assertArrayNotHasKey('pending', $c->context_json);
+        $this->deliverAll();
+        Http::assertNotSent(fn ($r) => str_contains($r['text'] ?? '', 'SIMULATED / LAB') || str_contains($r['text'] ?? '', 'Confirma a execução'));
+    }
+
     public function test_device_analysis_lab_uses_native_ingress_outbox_and_dedup_without_real_tasks(): void
     {
         $link = $this->link();

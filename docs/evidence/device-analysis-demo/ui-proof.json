@@ -1,0 +1,85 @@
+{
+  "status": "PASS",
+  "app_env": "production",
+  "image": "device-analysis-demo-web-lab-20261113",
+  "source_mounted": false,
+  "views": [
+    {
+      "name": "ne8000",
+      "width": 390,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "name": "routeros7",
+      "width": 390,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "name": "ne8000",
+      "width": 390,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "name": "routeros7",
+      "width": 390,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "name": "ne8000",
+      "width": 768,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "name": "routeros7",
+      "width": 768,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "name": "ne8000",
+      "width": 768,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "name": "routeros7",
+      "width": 768,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "name": "ne8000",
+      "width": 1440,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "name": "routeros7",
+      "width": 1440,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "name": "ne8000",
+      "width": 1440,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "name": "routeros7",
+      "width": 1440,
+      "theme": "dark",
+      "status": "PASS"
+    }
+  ],
+  "keyboard": true,
+  "csrf": true,
+  "native_admin_post": true,
+  "conversation_simulation_blocked": true,
+  "page_errors": []
+}

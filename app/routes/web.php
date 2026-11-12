@@ -148,3 +148,5 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->prefix('noc-inv
     Route::post('/{nocDevice}/deactivate', [NocInventoryController::class, 'deactivate'])->whereUuid('nocDevice')->middleware('throttle:30,1')->name('noc.deactivate');
     Route::post('/{nocDevice}/simulations', [NocInventoryController::class, 'simulate'])->whereUuid('nocDevice')->middleware('throttle:30,1')->name('noc.simulate');
 });
+
+require __DIR__.'/noc-analysis-demo.php';

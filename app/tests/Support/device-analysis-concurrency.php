@@ -8,6 +8,7 @@ use App\Models\NocDevice;
 use App\Models\NocSimulation;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Noc\Analysis\SimulationScope;
 use App\Noc\Inventory;
 use App\Tenancy\TenantContext;
 use Illuminate\Contracts\Console\Kernel;
@@ -17,7 +18,8 @@ use Illuminate\Support\Str;
 require dirname(__DIR__, 2).'/vendor/autoload.php';
 $app = require dirname(__DIR__, 2).'/bootstrap/app.php';
 $app->make(Kernel::class)->bootstrap();
-if (! app()->environment('testing') || DB::connection()->getDatabaseName() !== 'agent_center_device_analysis_lab') {
+$demo = getenv('DEVICE_ANALYSIS_TEST_ADMIN_DEMO') === '1';
+if ((! app()->environment('testing') && ! ($demo && app()->environment('production'))) || DB::connection()->getDatabaseName() !== 'agent_center_device_analysis_lab') {
     throw new RuntimeException('Isolated device analysis lab database required.');
 }
 $context = app(TenantContext::class);
@@ -25,12 +27,12 @@ if (isset($argv[1])) {
     $context->apply(userId: (int) $argv[2]);
     $u = User::findOrFail((int) $argv[2]);
     $context->forUser($u);
-    config(['device_analysis.lab_enabled' => true, 'device_analysis.lab_tenants' => [$u->tenant_id]]);
+    config(['device_analysis.lab_enabled' => true, 'device_analysis.lab_tenants' => [$u->tenant_id], 'device_analysis.admin_demo_enabled' => $demo, 'device_analysis.admin_demo_tenants' => [$u->tenant_id]]);
     $d = NocDevice::findOrFail($argv[3]);
     while (microtime(true) < (float) $argv[5]) {
         usleep(1000);
     }
-    $r = app(Inventory::class)->simulate($u, $d, 'da-ne8000-bgp-idle', $argv[4], [], 1);
+    $r = app(Inventory::class)->simulate($u, $d, 'da-ne8000-bgp-idle', $argv[4], [], 1, $demo ? SimulationScope::AdministrativeDemo : SimulationScope::LaboratoryConversation);
     echo json_encode(['id' => $r->id]);
     $context->apply();
     exit;

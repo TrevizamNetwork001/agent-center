@@ -12,6 +12,7 @@ use App\Models\NocDevice;
 use App\Models\NocSimulation;
 use App\Models\Tenant;
 use App\Noc\Analysis\Contracts;
+use App\Noc\Analysis\SimulationScope;
 use App\Rag\Retrieval;
 use App\Tenancy\TenantContext;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -106,7 +107,7 @@ class Deliver implements ShouldQueue
                         if (isset($m->metadata['device_simulation_id'])) {
                             $sim = NocSimulation::whereKey($m->metadata['device_simulation_id'])->where('actor_id', $identity->user->id)->first();
                             $device = $sim ? NocDevice::find($sim->device_id) : null;
-                            $allowed = $allowed && app(Contracts::class)->labEnabled() && $device && ($sim->result['mode'] ?? null) === 'SIMULATED';
+                            $allowed = $allowed && app(Contracts::class)->labEnabled() && $device && ($sim->result['mode'] ?? null) === 'SIMULATED' && ($sim->result['simulation_scope'] ?? null) !== SimulationScope::AdministrativeDemo->value;
                             if ($allowed) {
                                 Gate::forUser($identity->user)->authorize('simulate', $device);
                             }

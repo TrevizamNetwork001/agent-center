@@ -1,6 +1,6 @@
 # LAB packaging only. Keep the operational role-specific bootstrap, routes and vendor tree.
 ARG BASE_IMAGE=agent-center-central:noc-inventory-web-final-20261112
-FROM ${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS shared
 COPY --chown=www-data:www-data app/app/Noc/ /var/www/html/app/Noc/
 COPY --chown=www-data:www-data app/app/Diagnostics/OperationalIntent.php /var/www/html/app/Diagnostics/OperationalIntent.php
 COPY --chown=www-data:www-data app/app/Conversation/DiagnosticExperience.php app/app/Conversation/Engine.php app/app/Conversation/Intent.php /var/www/html/app/Conversation/
@@ -10,3 +10,13 @@ COPY --chown=www-data:www-data app/app/Telegram/Deliver.php /var/www/html/app/Te
 COPY --chown=www-data:www-data app/config/device_analysis.php /var/www/html/config/device_analysis.php
 COPY --chown=www-data:www-data app/resources/noc-catalog.json app/resources/device-analysis-fixtures.json /var/www/html/resources/
 COPY --chown=www-data:www-data app/resources/views/noc/ /var/www/html/resources/views/noc/
+COPY --chown=www-data:www-data app/app/Policies/NocDevicePolicy.php /var/www/html/app/Policies/NocDevicePolicy.php
+COPY --chown=www-data:www-data app/app/Services/Audit.php /var/www/html/app/Services/Audit.php
+
+FROM shared AS diagnostic
+
+FROM shared AS web
+COPY --chown=www-data:www-data app/routes/noc-analysis-demo.php /var/www/html/routes/noc-analysis-demo.php
+USER root
+RUN ["php", "-r", "$file='/var/www/html/routes/web.php'; $line=\"\\nrequire __DIR__.'/noc-analysis-demo.php';\\n\"; if (!str_contains(file_get_contents($file), '/noc-analysis-demo.php')) file_put_contents($file,$line,FILE_APPEND);"]
+USER www-data

@@ -1,0 +1,20 @@
+[
+  {
+    "role": "web",
+    "image": "agent-center-central:device-analysis-demo-web-lab-20261113",
+    "id": "sha256:173867a711bc8ed834093730cb8b75cb681c87d364437734faba630c7921f6f3",
+    "published": false
+  },
+  {
+    "role": "queue",
+    "image": "agent-center-central:device-analysis-demo-queue-lab-20261113",
+    "id": "sha256:8f676200b1dbf8a72a15e3f0f0bb56c7a6e28ca6fa7e81061143a5c747c4ac32",
+    "published": false
+  },
+  {
+    "role": "diagnostic",
+    "image": "agent-center-central:device-analysis-demo-diagnostic-lab-20261113",
+    "id": "sha256:99b3befb5d23b927aae422b46cf7fc170d012ca4cf5332526e16b18c8f9f42b3",
+    "published": false
+  }
+]

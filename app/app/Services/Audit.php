@@ -15,6 +15,9 @@ class Audit
             throw new InvalidArgumentException('Evento não permitido.');
         }
         $safe = [];
+        if ($event === 'noc.simulation_created' && in_array($metadata['simulation_scope'] ?? null, ['ADMINISTRATIVE_DEMO', 'LAB_CONVERSATION'], true)) {
+            $safe['simulation_scope'] = $metadata['simulation_scope'];
+        }
         if ($event === 'llm.identity_registered') {
             foreach (['organization_id' => '/^org-[A-Za-z0-9_-]{1,100}$/D', 'project_id' => '/^proj_[A-Za-z0-9_-]{1,100}$/D', 'tracking_id' => '/^(?!sk-)[A-Za-z0-9_-]{3,160}$/D'] as $field => $pattern) {
                 if (is_string($metadata[$field] ?? null) && preg_match($pattern, $metadata[$field])) {

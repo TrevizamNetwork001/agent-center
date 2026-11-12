@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "roles": [
+    {
+      "role": "web",
+      "routes": 137,
+      "existing_routes_unchanged": true,
+      "administrative_demo_routes": 1,
+      "new_remote_execution_routes": 0
+    },
+    {
+      "role": "queue",
+      "routes": 137,
+      "existing_routes_unchanged": true,
+      "administrative_demo_routes": 1,
+      "new_remote_execution_routes": 0
+    },
+    {
+      "role": "diagnostic",
+      "routes": 96,
+      "existing_routes_unchanged": true,
+      "administrative_demo_routes": 0,
+      "new_remote_execution_routes": 0
+    }
+  ]
+}

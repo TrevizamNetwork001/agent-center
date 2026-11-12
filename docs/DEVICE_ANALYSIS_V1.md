@@ -1,5 +1,7 @@
 # Device Analysis V1 — laboratório
 
+> Atualização: a demonstração administrativa isolada em produção tem um contrato separado, desabilitado por padrão. Ver [compatibilidade da demonstração](DEVICE_ANALYSIS_DEMO_COMPATIBILITY.md). O bloqueio conversacional original em produção permanece.
+
 ## Escopo e revisão
 
 Base de integração: `cd2aa49`, branch `lab/device-analysis-v1`, checkout isolado `/root/agent-center-device-analysis-lab`. Revisão operacional conferida por leitura: imagens `noc-inventory-{web,queue,diagnostic}-final-20261112`, Agent operacional 0.6.5, nenhuma operação Lifecycle pendente, sequências 3/4 em quarentena. O checkout operacional possuía 220 alterações preexistentes, inventariadas por hash antes do desenvolvimento; não são parte desta entrega.
@@ -89,7 +91,7 @@ O simulador é local e não faz HTTP. `Explique a simulação` é ação separad
 
 ## Segurança e isolamento
 
-Exige `APP_ENV=local/testing`, `DEVICE_ANALYSIS_LAB_ENABLED=true` e tenant na lista `DEVICE_ANALYSIS_LAB_TENANTS`. Em `production` o simulador especializado permanece bloqueado mesmo se as flags forem definidas acidentalmente. A interface mostra os contratos documentados, mas não oferece acesso operacional.
+Exige `APP_ENV=local/testing`, `DEVICE_ANALYSIS_LAB_ENABLED=true` e tenant na lista `DEVICE_ANALYSIS_LAB_TENANTS`. Em `production` o simulador conversacional permanece bloqueado mesmo se as flags LAB forem definidas acidentalmente. A demonstração administrativa usa o contrato separado e as flags descritas na atualização de compatibilidade. A interface mostra os contratos documentados, mas não oferece acesso operacional.
 
 Reutiliza autenticação, policies, CSRF, auditoria e FORCE RLS do inventário. Revisão do cadastro é verificada sob lock antes de gerar um cenário novo. Repetição da mesma chave/parâmetros retorna o registro original; reutilização com conteúdo diferente é conflito. Validação não reflete parâmetros inválidos na sessão. A evidência permanece no histórico demonstrativo imutável, separado das medições operacionais.
 

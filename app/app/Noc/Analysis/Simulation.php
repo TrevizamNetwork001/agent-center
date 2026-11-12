@@ -19,9 +19,9 @@ class Simulation
         return array_filter($all, fn ($f) => $f['specialist'] === $platform);
     }
 
-    public function result(NocDevice $d, string $key, array $parameters): array
+    public function result(NocDevice $d, string $key, array $parameters, SimulationScope $scope = SimulationScope::LaboratoryConversation): array
     {
-        abort_unless(app(Contracts::class)->labEnabled(), 403, 'Device Analysis SIMULATED / LAB não habilitado neste ambiente/tenant.');
+        abort_unless($scope->enabled(), 403, 'Device Analysis SIMULATED / LAB não habilitado neste ambiente/tenant.');
         $fixture = $this->fixtures()[$key] ?? null;
         if (! $fixture) {
             throw ValidationException::withMessages(['fixture' => 'Cenário especializado inválido.']);
@@ -73,6 +73,6 @@ class Simulation
         $e['data'] = $data;
         $interpreted = app(Interpretation::class)->assess($contract, $e);
 
-        return ['id' => $key, 'label' => $fixture['label'], 'capability_id' => $contract['capability_id'], 'contract_id' => $contract['id'], 'schema_version' => 1, 'mode' => 'SIMULATED', 'environment' => 'LAB', 'simulation' => true, 'source' => 'FIXTURE', 'operational_enabled' => false, 'specialist' => $contract['specialist'], 'device_id' => $d->id, 'device_revision' => $d->revision, 'parameters' => $params, 'generated_at' => now()->toIso8601String(), 'observed_at' => null, 'evidence' => $e, 'reuses_fixture' => $fixture['reuses_fixture'], ...$interpreted];
+        return ['id' => $key, 'label' => $fixture['label'], 'capability_id' => $contract['capability_id'], 'contract_id' => $contract['id'], 'schema_version' => 1, 'simulation_scope' => $scope->value, 'display_mode' => 'SIMULADO', 'real_evidence' => false, 'task_eligible' => false, 'health_eligible' => false, 'mode' => 'SIMULATED', 'environment' => 'LAB', 'simulation' => true, 'source' => 'FIXTURE', 'operational_enabled' => false, 'specialist' => $contract['specialist'], 'device_id' => $d->id, 'device_revision' => $d->revision, 'parameters' => $params, 'generated_at' => now()->toIso8601String(), 'observed_at' => null, 'evidence' => $e, 'reuses_fixture' => $fixture['reuses_fixture'], ...$interpreted];
     }
 }

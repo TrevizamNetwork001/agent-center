@@ -29,6 +29,11 @@ class NocDevicePolicy
         return $this->view($u, $d) && $this->create($u);
     }
 
+    public function demonstrate(User $u, NocDevice $d): bool
+    {
+        return $this->update($u, $d);
+    }
+
     public function simulate(User $u, NocDevice $d): bool
     {
         return $this->view($u, $d) && in_array($u->role, [Role::PlatformAdmin, Role::TenantAdmin, Role::Operator], true);

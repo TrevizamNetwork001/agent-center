@@ -26,6 +26,13 @@ class Contracts
         return in_array(config('app.env'), ['testing', 'local'], true) && config('device_analysis.lab_enabled') === true && in_array($tenant, config('device_analysis.lab_tenants', []), true);
     }
 
+    public function adminDemoEnabled(): bool
+    {
+        $tenant = app(TenantContext::class)->tenantId;
+
+        return $tenant !== null && config('device_analysis.admin_demo_enabled') === true && in_array($tenant, config('device_analysis.admin_demo_tenants', []), true);
+    }
+
     public function platform(NocDevice $d): ?string
     {
         foreach ($this->platforms() as $id => $p) {
@@ -43,7 +50,7 @@ class Contracts
         $all = [];
         foreach ($this->all() as $c) {
             $compatible = $platform !== null && in_array($platform, $c['specialists'], true);
-            $all[] = [...$c, 'compatibility' => $compatible ? 'LAB_DECLARED_COMPATIBLE' : 'UNAVAILABLE', 'specialist' => $platform, 'lab_enabled' => $compatible && $this->labEnabled(), 'operational_enabled' => false, 'limitation' => 'Identidade, hardware e capacidades reais não verificados. Não autoriza acesso.'];
+            $all[] = [...$c, 'compatibility' => $compatible ? 'LAB_DECLARED_COMPATIBLE' : 'UNAVAILABLE', 'specialist' => $platform, 'lab_enabled' => $compatible && $this->labEnabled(), 'admin_demo_enabled' => $compatible && $this->adminDemoEnabled(), 'operational_enabled' => false, 'limitation' => 'Identidade, hardware e capacidades reais não verificados. Não autoriza acesso.'];
         }
 
         return $all;

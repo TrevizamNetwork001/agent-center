@@ -23,6 +23,7 @@ use App\Models\Prompt;
 use App\Models\PromptVersion;
 use App\Models\User;
 use App\Noc\Analysis\Contracts;
+use App\Noc\Analysis\SimulationScope;
 use App\Tenancy\TenantContext;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
@@ -295,6 +296,7 @@ class DiagnosticExperience
         $device = NocDevice::findOrFail($simulation->device_id);
         Gate::forUser($identity->user)->authorize('simulate', $device);
         $s = $simulation->result;
+        abort_if(($s['simulation_scope'] ?? null) === SimulationScope::AdministrativeDemo->value, 403);
         abort_unless(($s['mode'] ?? null) === 'SIMULATED' && ($s['environment'] ?? null) === 'LAB' && $simulation->is_simulated, 403);
         $tone = $this->tone($c);
         $intro = ['lab' => $tone['style'] === 'RELAXED' ? 'Pronto! A simulação de laboratório está disponível.' : 'Resultado da simulação de laboratório.'];
