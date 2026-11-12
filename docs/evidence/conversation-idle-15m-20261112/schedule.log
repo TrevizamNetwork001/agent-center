@@ -1,0 +1,3 @@
+
+  * * * * *  php artisan telegram:drain 1 ...... Next Due: 54 seconds from now
+  * * * * *  php artisan conversations:close-idle 1  Next Due: 54 seconds from now

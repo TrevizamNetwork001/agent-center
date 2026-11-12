@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "invalid_tenant_exit": 1,
+  "invalid_tenant_message": "Tenant inválido.",
+  "disabled_flag_unschedules_web_idle": true
+}

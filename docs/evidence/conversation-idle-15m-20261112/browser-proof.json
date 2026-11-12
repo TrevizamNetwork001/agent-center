@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "old": "http://127.0.0.1:18812/conversations/30c1b820-1879-41c1-af0a-fd1e0e4f666d",
+  "next": "http://127.0.0.1:18812/conversations/0742dcf1-fe3b-4b24-bb04-899a8e4fda42",
+  "new_chat_on_return": true,
+  "archived_notice_visible_both_channels": true,
+  "screenshots": 8,
+  "javascript_errors": []
+}

@@ -1,0 +1,20 @@
+{
+    "status": "PASS",
+    "clock": "Synthetic LAB rows aged 16 minutes; real scheduler handlers executed",
+    "web": {
+        "closed": "30c1b820-1879-41c1-af0a-fd1e0e4f666d",
+        "notice": "Como ficamos 15 minutos sem conversar, vou encerrar este chat por aqui. Valeu pela conversa! O histórico está salvo. Quando precisar, é só mandar outra mensagem."
+    },
+    "telegram": {
+        "closed": "65d3bb42-924c-4b4c-b2ab-f27027e55d06",
+        "notice": "Como ficamos 15 minutos sem conversar, vou encerrar este chat por aqui. Valeu pela conversa! O histórico está salvo. Quando precisar, é só mandar outra mensagem.",
+        "delivered_exact_history": true,
+        "next": "f5edb37f-add8-4b7f-98f2-ef129b68af9b",
+        "link_preserved": true,
+        "history_preserved": true
+    },
+    "outbox_single_notice": true,
+    "operational_counts_unchanged": true,
+    "real_telegram_sends": 0,
+    "real_llm_calls": 0
+}

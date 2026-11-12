@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "groups": [
+    {
+      "group": 0,
+      "tests": 150,
+      "assertions": 982
+    },
+    {
+      "group": 1,
+      "tests": 143,
+      "assertions": 1039
+    },
+    {
+      "group": 2,
+      "tests": 149,
+      "assertions": 1094
+    }
+  ],
+  "total_tests": 442,
+  "total_assertions": 3115,
+  "all_41_test_files_covered": true,
+  "task_engine_concurrency": "PASS",
+  "idle_concurrency": "PASS",
+  "pint": "PASS",
+  "build": "PASS",
+  "browser": "PASS",
+  "secret_patterns": "PASS",
+  "published": false
+}

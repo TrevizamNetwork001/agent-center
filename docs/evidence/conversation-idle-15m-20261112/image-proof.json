@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "image": "sha256:61dd61c7ee090cae68da68c624b92a819a314ed78bda3806230f3aacd850a90a",
+  "source_commit": "f1bfa30409a185d2b8eaa8baf590ffc47e38ff71",
+  "files": [
+    {
+      "file": "app/Conversation/Language.php",
+      "sha256": "5a87d7b63aad7c2cfa56cd5d34f499ffe86bef0b9c3349d16e8c9814d9131a75"
+    },
+    {
+      "file": "app/Conversation/ConversationToneDetector.php",
+      "sha256": "ce38f670e5ebca05ad725b7c8d14f4408f491c675284b4e809123dead39af736"
+    },
+    {
+      "file": "app/Conversation/Engine.php",
+      "sha256": "e1d730d5130869aef45e14fdce91edd0211b4dc35e0315e4ada13d12533bec31"
+    },
+    {
+      "file": "app/Conversation/IdleSweep.php",
+      "sha256": "63bf4839598126f81230d5a44306d9c379479b5a3fa35179069c56e0e5089ef3"
+    },
+    {
+      "file": "app/Telegram/Runner.php",
+      "sha256": "201c59e8d25a45dbe3b39c4f2b1884d71a3c3953ba383e3d5bcff5ee000f69d5"
+    },
+    {
+      "file": "app/Telegram/Sweep.php",
+      "sha256": "a254d409b6d3d0df4115f1fda769c3c47741e6facb106ee9f81fad8aed1ca5b3"
+    },
+    {
+      "file": "config/conversation.php",
+      "sha256": "0130d0afb859d87e60654fadb847780c238cea77dc5b0a2f8a6f8a67e44dbc9c"
+    },
+    {
+      "file": "routes/console.php",
+      "sha256": "8594ec4029113be63a81d569b9e3ee8667f87306b3c3a30df76d860d3f56c2a9"
+    }
+  ],
+  "runtime_matches_source": true,
+  "source_mount": false,
+  "production_activated": false
+}

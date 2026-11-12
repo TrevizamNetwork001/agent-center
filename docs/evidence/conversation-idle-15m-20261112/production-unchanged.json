@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "production_commit": "3341c3f030d470052aea7aab3097437558346dc3",
+  "services": [
+    {
+      "service": "agent-center-web-1",
+      "image": "sha256:d1ec6e84558828604a114086ce0e97c30e00e90af94f0a1ef75fe14288d9941c",
+      "running": true,
+      "health": "healthy"
+    },
+    {
+      "service": "agent-center-worker-1",
+      "image": "sha256:d1ec6e84558828604a114086ce0e97c30e00e90af94f0a1ef75fe14288d9941c",
+      "running": true,
+      "health": "healthy"
+    },
+    {
+      "service": "agent-center-telegram-scheduler-1",
+      "image": "sha256:d1ec6e84558828604a114086ce0e97c30e00e90af94f0a1ef75fe14288d9941c",
+      "running": true,
+      "health": "not_configured"
+    }
+  ],
+  "lab_only": true
+}
