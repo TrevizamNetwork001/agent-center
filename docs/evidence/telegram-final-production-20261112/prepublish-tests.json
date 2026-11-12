@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "previous_full_regression": {
+    "tests": 449,
+    "assertions": 3209,
+    "source": "533eff8"
+  },
+  "fresh_groups": [
+    {
+      "log": "prepublish-telegram.log",
+      "tests": 75,
+      "assertions": 477
+    },
+    {
+      "log": "prepublish-engine.log",
+      "tests": 98,
+      "assertions": 657
+    }
+  ],
+  "task_engine_concurrency": "PASS",
+  "idle_concurrency": "PASS"
+}

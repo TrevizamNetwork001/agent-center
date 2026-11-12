@@ -1,0 +1,65 @@
+{
+    "status": "PASS",
+    "path": "Published native Ingress\/Runner\/Engine\/outbox\/Deliver",
+    "transcript": [
+        {
+            "input": "\/nova",
+            "responses": [
+                "Olá! Tudo certo por aqui. Como vai?"
+            ],
+            "state": "ACTIVE"
+        },
+        {
+            "input": "boa noite ce ta bao?",
+            "responses": [
+                "Boa noite! Tudo bão por aqui, e cê?"
+            ],
+            "tone": "RELAXED",
+            "language_status": "ASSISTED",
+            "usage": {
+                "input_tokens": 957,
+                "total_tokens": 996,
+                "output_tokens": 39
+            }
+        },
+        {
+            "input": "Tô bão também, meu rei! Kkkkk",
+            "responses": [
+                "Que bom, meu rei!"
+            ],
+            "tone": "RELAXED",
+            "language_status": "ASSISTED",
+            "usage": {
+                "input_tokens": 1049,
+                "total_tokens": 1081,
+                "output_tokens": 32
+            }
+        },
+        {
+            "input": "boa noite meu chapa (after idle closure)",
+            "responses": [
+                "Boa noite, meu chapa! Tudo certo por aqui. Como vai?"
+            ],
+            "new_conversation": true
+        }
+    ],
+    "initial_greeting_once": true,
+    "return_greeting_once": true,
+    "adaptive_continuity": true,
+    "history_preserved": true,
+    "history_command": true,
+    "explicit_confirmation_preserved": true,
+    "social_ack_does_not_confirm": true,
+    "late_confirmation_safe": true,
+    "replay_idempotent": true,
+    "idle_policy_minutes": 15,
+    "idle_clock": "Only temporary transactional chat aged 16 minutes",
+    "records_rolled_back": true,
+    "real_link_restored": true,
+    "no_tasks_or_diagnostics_created": true,
+    "external_telegram_test_sends": 0,
+    "delivery": "Captured native Client, no synthetic message sent to real user",
+    "openai_requests": 2,
+    "openai_output_limit_each": 1024,
+    "store": false
+}

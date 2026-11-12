@@ -1,0 +1,102 @@
+{
+  "status": "PASS",
+  "read_only": true,
+  "results": [
+    {
+      "key": "conversations",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "profile",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "history",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "conversations",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "profile",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "history",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "conversations",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "profile",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "history",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "conversations",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "profile",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "history",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    }
+  ]
+}

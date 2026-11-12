@@ -1,0 +1,38 @@
+--- compose-before.yaml
++++ compose-published.yaml
+@@ -81,7 +81,7 @@
+       options: {max-size: '10m', max-file: '3'}
+   migrator:
+     <<: *app
+-    image: agent-center-central:speaking-idle-v1-20261112
++    image: agent-center-central:telegram-final-v1-20261112
+     profiles: [operations]
+     restart: 'no'
+     environment:
+@@ -100,7 +100,7 @@
+     command: [php, artisan, migrate, '--force']
+   web:
+     <<: *app
+-    image: agent-center-central:speaking-idle-v1-20261112
++    image: agent-center-central:telegram-final-v1-20261112
+     environment:
+       <<: *app-env
+       CONVERSATION_IDLE_ENABLED: 'true'
+@@ -121,7 +121,7 @@
+       retries: 5
+   worker:
+     <<: *app
+-    image: agent-center-central:speaking-idle-v1-20261112
++    image: agent-center-central:telegram-final-v1-20261112
+     environment:
+       <<: *app-env
+       CONVERSATION_IDLE_ENABLED: 'true'
+@@ -141,7 +141,7 @@
+       retries: 5
+   telegram-scheduler:
+     <<: *app
+-    image: agent-center-central:speaking-idle-v1-20261112
++    image: agent-center-central:telegram-final-v1-20261112
+     environment:
+       <<: *app-env
+       CONVERSATION_IDLE_ENABLED: 'true'

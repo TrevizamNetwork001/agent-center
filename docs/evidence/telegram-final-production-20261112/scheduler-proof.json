@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "commands": [
+    "2026-11-12 02:29:00 Running ['artisan' telegram:drain 1] ..... 450.66ms DONE",
+    "2026-11-12 02:29:00 Running ['artisan' conversations:close-idle 1]  344.60ms DONE",
+    "2026-11-12 02:30:00 Running ['artisan' telegram:drain 1] ..... 483.21ms DONE",
+    "2026-11-12 02:30:00 Running ['artisan' conversations:close-idle 1]  455.13ms DONE",
+    "2026-11-12 02:31:00 Running ['artisan' telegram:drain 1] ..... 765.24ms DONE",
+    "2026-11-12 02:31:01 Running ['artisan' conversations:close-idle 1]  403.87ms DONE",
+    "2026-11-12 02:32:00 Running ['artisan' telegram:drain 1] ..... 599.41ms DONE",
+    "2026-11-12 02:32:01 Running ['artisan' conversations:close-idle 1]  453.64ms DONE",
+    "2026-11-12 02:33:00 Running ['artisan' telegram:drain 1] ..... 665.05ms DONE",
+    "2026-11-12 02:33:01 Running ['artisan' conversations:close-idle 1]  524.03ms DONE",
+    "2026-11-12 02:34:00 Running ['artisan' telegram:drain 1] ..... 512.92ms DONE",
+    "2026-11-12 02:34:00 Running ['artisan' conversations:close-idle 1]  372.11ms DONE"
+  ],
+  "policy_minutes": 15,
+  "schedule": "everyMinute"
+}

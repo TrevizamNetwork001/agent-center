@@ -1,0 +1,58 @@
+{
+  "status": "PASS",
+  "integrated_commit": "533eff8b52b48ddcbfd623fb5f10352adcdd8307",
+  "engine_sha256": "de59adfde7d722b458276195c3d7803fba0b9a89f20d3b21a2f41305cc43b5e0",
+  "runtime_is_exact_approved_engine": true,
+  "only_compose_images_changed": true,
+  "idle_policy_preserved": true,
+  "protected_tables_preserved": 16,
+  "quarantine_and_releases_preserved": true,
+  "agent_configuration_preserved": true,
+  "unrelated_work_preserved": true,
+  "tasks": 97,
+  "diagnostics": 28,
+  "containers": [
+    {
+      "name": "agent-center-web-1",
+      "image": "sha256:56f4fc875eae0ee02693b7a105c430dc577dd54ceeab139ef989aef8411d185b",
+      "health": "healthy",
+      "running": true,
+      "recreated": true
+    },
+    {
+      "name": "agent-center-worker-1",
+      "image": "sha256:56f4fc875eae0ee02693b7a105c430dc577dd54ceeab139ef989aef8411d185b",
+      "health": "healthy",
+      "running": true,
+      "recreated": true
+    },
+    {
+      "name": "agent-center-telegram-scheduler-1",
+      "image": "sha256:56f4fc875eae0ee02693b7a105c430dc577dd54ceeab139ef989aef8411d185b",
+      "health": "not_configured",
+      "running": true,
+      "recreated": true
+    },
+    {
+      "name": "agent-center-diagnostic-worker-1",
+      "image": "sha256:f2d4c1e60312c4a68c3ef5dd9412ab52da2fc0b66d7ae22f6c399b8a88d07b1b",
+      "health": "healthy",
+      "running": true,
+      "recreated": false
+    },
+    {
+      "name": "agent-center-postgres-1",
+      "image": "sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5",
+      "health": "healthy",
+      "running": true,
+      "recreated": false
+    },
+    {
+      "name": "agent-center-nginx-1",
+      "image": "sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03",
+      "health": "healthy",
+      "running": true,
+      "recreated": false
+    }
+  ]
+}
