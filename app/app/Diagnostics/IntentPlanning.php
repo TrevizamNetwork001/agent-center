@@ -13,8 +13,7 @@ class IntentPlanning
     public function profile(OperationalIntent $intent, ?Agent $agent, array $request = []): string
     {
         return match ($intent) {
-            OperationalIntent::Route => ($request['method'] ?? null) === 'traceroute' ? 'CAMINHO_TRACEROUTE' : (($request['protocol'] ?? null) === 'tcp' ? 'MTR_TCP'
-                : ($agent && ! Protocol::mtrAvailable($agent) && in_array('traceroute:v1', Protocol::executionCapabilities($agent), true) ? 'CAMINHO_TRACEROUTE' : 'MTR_ICMP')),
+            OperationalIntent::Route => ($request['method'] ?? null) === 'traceroute' ? 'CAMINHO_TRACEROUTE' : (($request['protocol'] ?? null) === 'tcp' ? 'MTR_TCP' : 'MTR_ICMP'),
             OperationalIntent::Connectivity => 'CONECTIVIDADE_BASICA', OperationalIntent::Web => 'SITE_NAO_ABRE',
             OperationalIntent::Dns => 'PROBLEMA_DNS', OperationalIntent::Latency => 'PERDA_LATENCIA',
             OperationalIntent::Port => 'PORTA_SERVICO', OperationalIntent::Slowness => ($request['service'] ?? null) === 'google_youtube' ? 'GOOGLE_YOUTUBE' : (($request['content_slow'] ?? false) ? 'CONTEUDO_LENTO' : 'SITE_LENTO'),
@@ -57,8 +56,17 @@ class IntentPlanning
             };
         }
         $intro = $goal === OperationalIntent::Route ? 'Posso analisar o caminho de rede até ' : 'Posso verificar '.$goal->label().' em ';
-        $limit = $plan['profile'] === 'CAMINHO_TRACEROUTE' ? ' MTR indisponível; alternativa: traceroute ICMP, sem estatística MTR de perda por salto.' : '';
+        $limit = $plan['profile'] === 'CAMINHO_TRACEROUTE' ? ' Método traceroute ICMP solicitado, sem estatística MTR de perda por salto.' : '';
 
         return $intro.$plan['target']['host'].'? Escopo: '.$scope.'.'.$limit.' Confirma a execução? A autorização local permanece obrigatória.';
+    }
+
+    public function scope(array $plan): string
+    {
+        $method = match ($plan['objective']['path_method']) {
+            'mtr_tcp' => 'MTR TCP/443', 'mtr_icmp' => 'MTR ICMP', default => 'traceroute ICMP',
+        };
+
+        return 'Objetivo: '.$plan['objective']['label'].' até '.$plan['target']['host'].'. Profile planejado: '.$plan['profile'].'. Verificação planejada: '.$method.'.';
     }
 }

@@ -15,6 +15,7 @@ use App\Diagnostics\Engine;
 use App\Diagnostics\IntentParser;
 use App\Diagnostics\IntentPlanning;
 use App\Diagnostics\ObjectiveCoverage;
+use App\Diagnostics\OperationalCapabilities;
 use App\Diagnostics\OperationalIntent;
 use App\Diagnostics\Planner;
 use App\Models\Agent;
@@ -31,6 +32,7 @@ use App\Models\Skill;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Tests\IdentityTestCase;
+use Tests\Support\FakeOperationalCapabilities;
 use Tests\Support\MtrFixture;
 use Tests\Support\PathReadinessFixture;
 
@@ -148,24 +150,24 @@ class DiagnosticIntentPlanningTest extends IdentityTestCase
     public function test_unavailable_policy_helper_and_version_block_without_substitution(): void
     {
         foreach (['denied', 'helper', 'stale', 'protocol', 'destination', 'version', 'skill'] as $case) {
+            app()->instance(OperationalCapabilities::class, new FakeOperationalCapabilities);
             $this->pathReady($this->agent);
-            $meta = $this->agent->metadata;
+            $reader = app(OperationalCapabilities::class);
+            $decision = ['state' => 'ALLOWED', 'helper_healthy' => true];
             if ($case === 'denied') {
-                $meta['permission_result']['state'] = 'DENIED';
+                $decision['state'] = 'DENIED';
             }
             if ($case === 'helper') {
-                $meta['observability']['helper']['healthy'] = false;
+                $decision['helper_healthy'] = false;
             }
             if ($case === 'stale') {
-                $meta['observability']['received_at'] = now()->subMinutes(2)->toIso8601String();
+                $this->agent->forceFill(['last_heartbeat_at' => now()->subMinutes(2)])->save();
             }
-            if ($case === 'protocol') {
-                $meta['permission_result']['protocol'] = 'tcp';
+            if (in_array($case, ['protocol', 'destination'], true)) {
+                $reader->decisions = [];
             }
-            if ($case === 'destination') {
-                $meta['permission_result']['destination'] = '1.1.1.1';
-            }
-            $this->agent->forceFill(['metadata' => $meta, 'version' => $case === 'version' ? '0.6.1' : '0.6.2'])->save();
+            $reader->set($this->agent, 'mtr_path_analysis:v1', $case === 'destination' ? '1.1.1.1' : '8.8.8.8', $case === 'protocol' ? 'tcp' : 'icmp', $decision);
+            $this->agent->forceFill(['version' => $case === 'version' ? '0.6.1' : '0.6.2'])->save();
             Skill::where('key', 'mtr_path')->update(['enabled' => $case !== 'skill']);
             $c = $this->say($this->chat(), 'MTR ICMP até 8.8.8.8');
             $this->assertArrayNotHasKey('pending', $c->context_json, $case);
@@ -184,7 +186,11 @@ class DiagnosticIntentPlanningTest extends IdentityTestCase
         $this->agent->forceFill(['capabilities' => ['traceroute:v1']])->save();
         $this->pathReady($this->agent, capability: 'traceroute:v1');
         $c = $this->say($this->chat(), 'Analise a rota até 8.8.8.8');
-        $this->assertStringContainsString('alternativa: traceroute ICMP', $this->last($c));
+        $this->assertArrayNotHasKey('pending', $c->context_json);
+        $this->assertStringContainsString('MTR_ICMP', $this->last($c));
+        $this->assertSame(0, Diagnostic::count());
+        $c = $this->say($this->chat(), 'Faça traceroute até 8.8.8.8');
+        $this->assertStringContainsString('traceroute ICMP solicitado', $this->last($c));
         $this->assertSame('CAMINHO_TRACEROUTE', $c->context_json['pending']['profile']);
         $this->assertSame(0, Diagnostic::count());
         $this->say($c, 'sim');

@@ -6,6 +6,7 @@ use App\Conversation\Identity;
 use App\Diagnostics\Catalog;
 use App\Diagnostics\Classifier;
 use App\Diagnostics\Engine;
+use App\Diagnostics\OperationalCapabilities;
 use App\Models\Agent;
 use App\Models\ConversationSetting;
 use App\Models\Diagnostic;
@@ -27,7 +28,7 @@ if (getenv('INTENT_LAB_FIXTURE') !== '1') {
 require '/var/www/html/vendor/autoload.php';
 $app = require '/var/www/html/bootstrap/app.php';
 $app->make(Kernel::class)->bootstrap();
-if (DB::connection()->getDatabaseName() !== 'intent_planning_v1_lab') {
+if (! in_array(DB::connection()->getDatabaseName(), ['intent_planning_v1_lab', 'intent_planning_compat_lab'], true)) {
     throw new RuntimeException('Wrong database');
 }
 $ctx = app(TenantContext::class);
@@ -73,9 +74,7 @@ $engine->operation($agent, 'result', $envelope + ['result' => ['ok' => true, 'da
 $chat = $conversations->sync($identity, $chat);
 $ambiguous = $conversations->create($identity, (string) Str::uuid(), $agent->id);
 $ambiguous = $conversations->send($identity, $ambiguous, (string) Str::uuid(), '8.8.8.8');
-$meta = $agent->metadata;
-$meta['observability']['helper']['healthy'] = false;
-$agent->forceFill(['metadata' => $meta])->save();
+app(OperationalCapabilities::class)->set($agent, 'mtr_path_analysis:v1', '8.8.8.8', 'icmp', ['state' => 'ALLOWED', 'helper_healthy' => false]);
 $blocked = $conversations->create($identity, (string) Str::uuid(), $agent->id);
 $blocked = $conversations->send($identity, $blocked, (string) Str::uuid(), 'Analise a rota até 8.8.8.8');
 // Historical mismatch fixture proves that NORMAL connectivity never covers a route objective.

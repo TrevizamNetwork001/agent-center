@@ -370,7 +370,8 @@ class Engine
             $reason = $blocked['blocked_reason'] ?? 'capability_unavailable';
             $explanation = $goal === OperationalIntent::Route ? app(PathReadiness::class)->explanation($reason) : 'As Skills necessárias para este objetivo não estão disponíveis neste Agent/Profile.';
             $alternative = $goal === OperationalIntent::Route ? ' Alternativa: peça explicitamente conectividade básica, que não analisa a rota.' : '';
-            $this->reply($c, $explanation.' Objetivo '.$goal->label().': NÃO EXECUTADO; solicitação INCONCLUSIVA.'.$alternative.' Nenhuma tarefa foi criada.');
+            $scope = $goal === OperationalIntent::Route ? $planning->scope($plan).' ' : '';
+            $this->reply($c, $scope.$explanation.' Objetivo '.$goal->label().': NÃO EXECUTADO; solicitação INCONCLUSIVA.'.$alternative.' Nenhuma tarefa foi criada.');
 
             return true;
         }

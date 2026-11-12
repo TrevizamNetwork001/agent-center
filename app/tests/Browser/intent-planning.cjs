@@ -1,7 +1,7 @@
 const {chromium} = require('/opt/browser/node_modules/playwright');
 const fs = require('fs');
 const assert = require('assert');
-const origin = 'http://127.0.0.1:18820';
+const origin = process.env.INTENT_BROWSER_ORIGIN || 'http://127.0.0.1:18820';
 const demo = JSON.parse(fs.readFileSync('/lab/demo.json'));
 const password = fs.readFileSync('/lab/password', 'utf8').trim();
 (async () => {
