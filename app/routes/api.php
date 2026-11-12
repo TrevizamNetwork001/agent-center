@@ -14,6 +14,7 @@ Route::prefix('v1/agent')->middleware(AgentOriginLimit::class)->group(function (
     Route::post('enroll', [ProtocolController::class, 'enroll'])->middleware('throttle:agent-enrollment')->name('agent.enroll');
     Route::post('enrollment-status', [ProtocolController::class, 'enrollmentStatus'])->middleware('throttle:agent-enrollment')->name('agent.enrollment-status');
     Route::middleware(['agent.auth', 'throttle:agent-api'])->group(function () {
+        Route::post('diagnostics/preflight', \App\Http\Controllers\Agent\PreflightController::class);
         Route::post('operations/claim', [UpdateController::class, 'claim']);
         Route::post('operations/report', [UpdateController::class, 'report']);
         Route::get('operations/{operation}/artifact', [ReleaseController::class, 'artifact'])->whereUuid('operation');

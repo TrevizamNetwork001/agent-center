@@ -24,10 +24,7 @@ class OperationalCapabilities
 
     public function permission(Agent $agent, string $capability, string $destination, string $protocol): array
     {
-        // The published heartbeat/claim contract sends policy TO the Agent. It does
-        // not return its effective base/ceiling/managed ACL decision for a target.
-        // Neither an advertised capability nor auto_public_targets proves that decision.
-        return ['state' => 'UNKNOWN', 'reason' => 'effective_policy_unverified', 'helper_healthy' => null];
+        return app(Preflight::class)->permission($agent, $capability, $destination, $protocol);
     }
 
     public function path(Agent $agent, string $capability, string $destination, string $protocol): ?string
@@ -45,6 +42,9 @@ class OperationalCapabilities
         $decision = $this->permission($agent, $capability, $destination, $protocol);
         if (($decision['state'] ?? '') === 'DENIED') {
             return 'policy_denied';
+        }
+        if (($decision['state'] ?? '') === 'UNKNOWN' && ($decision['helper_healthy'] ?? null) === false) {
+            return 'helper_unavailable';
         }
         if (($decision['state'] ?? '') !== 'ALLOWED') {
             return 'effective_policy_unverified';

@@ -20,7 +20,7 @@ class PathReadiness
             'helper_unverified' => 'A saúde atual do helper MTR não pôde ser comprovada pelo contrato operacional disponível.',
             'agent_unavailable' => 'O Agent está offline, revogado ou sem heartbeat recente.',
             'capability_unavailable' => 'A capability de caminho não está instalada, saudável ou compatível neste Agent.',
-            default => 'Autorização efetiva não comprovada: a Agent API publicada não fornece à Central uma decisão por destino/protocolo nem a saúde atual do helper. A capability anunciada não autoriza a execução. Nenhuma ACL foi alterada.',
+            default => 'Autorização efetiva não comprovada: não há uma decisão atual e verificável por destino/protocolo e saúde do helper. A consulta pode estar pendente, indisponível ou incompatível; solicite novamente o planejamento. A capability anunciada não autoriza a execução. Nenhuma ACL foi alterada.',
         };
     }
 }

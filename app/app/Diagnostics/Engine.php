@@ -247,7 +247,7 @@ class Engine
 
                     continue;
                 }
-                if (($d->context['operational_intent'] ?? null) === OperationalIntent::Route->value && in_array($task->capability, ['mtr_path_analysis:v1', 'traceroute:v1'], true)) {
+                if ($task->capability === 'mtr_path_analysis:v1' || ($d->context['operational_intent'] ?? null) === OperationalIntent::Route->value && $task->capability === 'traceroute:v1') {
                     $host = app(Planner::class)->target($d->target)['host'];
                     $reason = app(PathReadiness::class)->check($agent, $task->capability, $host, $task->input['protocol'] ?? 'icmp');
                     if ($reason) {
@@ -334,6 +334,16 @@ class Engine
                 return ['status' => 'cancel_requested', 'cancel' => true];
             }
             if ($action === 'start') {
+                if ($task->capability === 'mtr_path_analysis:v1') {
+                    $reason = app(PathReadiness::class)->check($agent, $task->capability, $task->input['destination'], $task->input['protocol']);
+                    if ($reason) {
+                        $a->forceFill(['status' => 'FAILED', 'finished_at' => $now])->save();
+                        $task->forceFill(['status' => 'FAILED', 'finished_at' => $now])->save();
+                        DiagnosticStep::whereKey($task->step_id)->update(['status' => 'BLOCKED', 'error_code' => $reason, 'finished_at' => $now]);
+
+                        return ['status' => 'blocked', 'reason' => $reason];
+                    }
+                }
                 if ($a->status === 'CLAIMED') {
                     $this->mark($a, ['start_received_at' => $received, 'start_accepted_at' => $this->stamp()]);
                     $this->mark(DiagnosticStep::findOrFail($task->step_id), ['started_at' => $this->stamp()]);
