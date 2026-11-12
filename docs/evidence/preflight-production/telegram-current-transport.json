@@ -1,0 +1,101 @@
+{
+    "runtime_image": "published-preflight",
+    "requests": [
+        {
+            "http": 200,
+            "ok": true,
+            "stats": {
+                "handler_error_code": 0,
+                "namelookup_time": 0.014933,
+                "connect_time": 0.035305,
+                "appconnect_time": 0.153965,
+                "total_time": 0.17988,
+                "primary_ip": "149.154.166.110"
+            }
+        },
+        {
+            "http": 200,
+            "ok": true,
+            "stats": {
+                "handler_error_code": 0,
+                "namelookup_time": 0.008261,
+                "connect_time": 0.02148,
+                "appconnect_time": 0.09664,
+                "total_time": 0.109614,
+                "primary_ip": "149.154.166.110"
+            }
+        },
+        {
+            "http": 200,
+            "ok": true,
+            "stats": {
+                "handler_error_code": 0,
+                "namelookup_time": 0.004214,
+                "connect_time": 0.027578,
+                "appconnect_time": 0.090675,
+                "total_time": 0.107284,
+                "primary_ip": "149.154.166.110"
+            }
+        },
+        {
+            "http": 200,
+            "ok": true,
+            "stats": {
+                "handler_error_code": 0,
+                "namelookup_time": 0.010207,
+                "connect_time": 0.026012,
+                "appconnect_time": 0.086794,
+                "total_time": 0.114721,
+                "primary_ip": "149.154.166.110"
+            }
+        },
+        {
+            "http": 200,
+            "ok": true,
+            "stats": {
+                "handler_error_code": 0,
+                "namelookup_time": 0.012733,
+                "connect_time": 0.038612,
+                "appconnect_time": 0.108601,
+                "total_time": 0.138209,
+                "primary_ip": "149.154.166.110"
+            }
+        },
+        {
+            "error_class": "Illuminate\\Http\\Client\\ConnectionException",
+            "curl_errno": null,
+            "stats": {
+                "handler_error_code": 28,
+                "namelookup_time": 0,
+                "connect_time": 0,
+                "appconnect_time": 0,
+                "total_time": 4.026495,
+                "primary_ip": ""
+            }
+        },
+        {
+            "http": 200,
+            "ok": true,
+            "stats": {
+                "handler_error_code": 0,
+                "namelookup_time": 0.009181,
+                "connect_time": 0.021626,
+                "appconnect_time": 0.072301,
+                "total_time": 0.144989,
+                "primary_ip": "149.154.166.110"
+            }
+        },
+        {
+            "error_class": "Illuminate\\Http\\Client\\ConnectionException",
+            "curl_errno": null,
+            "stats": {
+                "handler_error_code": 28,
+                "namelookup_time": 0,
+                "connect_time": 0,
+                "appconnect_time": 0,
+                "total_time": 4.008971,
+                "primary_ip": ""
+            }
+        }
+    ]
+}

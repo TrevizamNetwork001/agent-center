@@ -1,0 +1,33 @@
+{
+    "agent": {
+        "id": "c88457e9-748f-4906-982a-166d0ee0f6d3",
+        "version": "0.6.5",
+        "status": "active",
+        "last_heartbeat_at": "2026-11-12T18:31:38.000000Z"
+    },
+    "operation": {
+        "id": "17e55b0b-365a-41c2-8457-b502080c9b1b",
+        "kind": "update",
+        "status": "COMPLETED",
+        "from_version": "0.6.4",
+        "error": null,
+        "evidence": {
+            "backup": "17e55b0b-365a-41c2-8457-b502080c9b1b",
+            "sha256": "a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315",
+            "version": "0.6.5",
+            "postcheck": true,
+            "components": [
+                {
+                    "id": "mtr",
+                    "status": "installed",
+                    "profile": "network-raw-helper",
+                    "version": "0.6.5",
+                    "operational_verified": true
+                }
+            ],
+            "freeze_preserved": true
+        },
+        "created_at": "2026-11-12T18:30:52.000000Z",
+        "finished_at": "2026-11-12T18:31:41.000000Z"
+    }
+}

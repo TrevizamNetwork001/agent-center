@@ -1,0 +1,26 @@
+{
+    "status": "PASS",
+    "conversations": {
+        "web": "fac2b0b2-88bc-4b2f-91dd-cf3f07573717",
+        "telegram": "9a2faca2-4473-45e0-b84a-3a29e293ea80"
+    },
+    "responses": {
+        "web": "Objetivo: Análise de rota até 8.8.8.8. Profile planejado: MTR_ICMP. Verificação planejada: MTR ICMP. A política efetiva não autoriza esta capability, destino ou protocolo. Objetivo Análise de rota: NÃO EXECUTADO; solicitação INCONCLUSIVA. Alternativa: peça explicitamente conectividade básica, que não analisa a rota. Nenhuma tarefa foi criada.",
+        "telegram": "Objetivo: Análise de rota até 8.8.8.8. Profile planejado: MTR_ICMP. Verificação planejada: MTR ICMP. A política efetiva não autoriza esta capability, destino ou protocolo. Objetivo Análise de rota: NÃO EXECUTADO; solicitação INCONCLUSIVA. Alternativa: peça explicitamente conectividade básica, que não analisa a rota. Nenhuma tarefa foi criada."
+    },
+    "expired_decision": "UNKNOWN",
+    "web_and_telegram_same_plan": true,
+    "profile": "MTR_ICMP",
+    "skills": [
+        "mtr_icmp"
+    ],
+    "authorization": "DENIED",
+    "confirmation_offered": false,
+    "message_replay_idempotent": true,
+    "native_telegram_ingress_outbox_delivery": "PASS; captured transport, rolled back",
+    "original_link_preserved": true,
+    "tasks_created": 0,
+    "diagnostics_created": 0,
+    "external_telegram_sends": 0,
+    "probes": 0
+}

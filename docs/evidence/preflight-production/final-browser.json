@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "checks": {
+    "agent": "PASS",
+    "web": "PASS",
+    "telegram": "PASS",
+    "operations": "PASS",
+    "anonymous_conditional_avatar": "LOGIN_REQUIRED"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "runtime": {
+    "sha256": "a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315",
+    "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+  },
+  "updater": {
+    "sha256": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb",
+    "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+  },
+  "installed_lifecycle": {
+    "prechecks_updaters_for_064_plus": true,
+    "finalize_calls_updaters_install": true,
+    "writes_companions": true
+  },
+  "/etc/agent-center-agent/config.json": {
+    "sha256": "0a3da81148e8b26a255c5c540b15d9f4bc73b9ce00bb5dac5eea9d62923086a2"
+  },
+  "/etc/agent-center-agent/lifecycle-policy.json": {
+    "sha256": "54da18d13ec931f984b3ed4a4cca4aba5c7cb1a50b56c49b500602781669be7b"
+  },
+  "/var/lib/agent-center-agent/identity.json": {
+    "sha256": "c13d8096197834167066aba87a691b1fc57bd67efe120679f659e459af58b83b"
+  },
+  "/var/lib/agent-center-agent/managed-settings.json": {
+    "sha256": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+  },
+  "presence": {
+    "state": "ONLINE",
+    "version": "0.6.5",
+    "heartbeat_successes": 105,
+    "poll_successes": 325,
+    "heartbeat_max_gap": 23.232285862904973,
+    "poll_max_gap": 8.85050901293289
+  },
+  "services": [
+    "MainPID=491739",
+    "Result=success",
+    "ExecMainStartTimestamp=Thu 2026-11-12 15:31:36 -03",
+    "ExecMainStatus=0",
+    "Id=agent-center-agent.service",
+    "ActiveState=active",
+    "",
+    "MainPID=0",
+    "Result=success",
+    "ExecMainStartTimestamp=Thu 2026-11-12 16:06:16 -03",
+    "ExecMainStatus=0",
+    "Id=agent-center-updater.service",
+    "ActiveState=inactive",
+    "",
+    "Result=success",
+    "Id=agent-center-updater.timer",
+    "ActiveState=active",
+    "",
+    "Result=success",
+    "Id=agent-center-mtr.socket",
+    "ActiveState=active"
+  ],
+  "journal": {
+    "integrity": "ok",
+    "executions": 103,
+    "events": 412
+  },
+  "helper_readiness": "{\"mtr_helper_ready\": true}",
+  "helper_sha256": "7d3dce0658e5d32e8a13c34924ea7912f2cd692f9fbd642d438b072561dbd6f9",
+  "status_age_seconds": 3.243138551712036,
+  "hardening": [
+    "CapabilityBoundingSet=",
+    "AmbientCapabilities=",
+    "User=agent-center-agent",
+    "NoNewPrivileges=yes"
+  ],
+  "malformed_policy_rejected": true,
+  "companion_sha256": {
+    "updater.pyz": "c1bbbe6ba0dacde04387cf60ca30539b6a8b444f1e30bff2005c42e38d880ab1",
+    "remote-updater.pyz": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb"
+  },
+  "boot_id": "751ca98c-0234-4be6-9a14-422b7b7f6937",
+  "new_operational_errors": []
+}

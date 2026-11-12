@@ -1,0 +1,20 @@
+{
+  "public_key_raw_sha256": "5f16350383c280c1b39d4f7257f09ecbe1002b1d59a1721ceb8bf4d5091195e1",
+  "installed": {
+    "sequence": 5,
+    "version": "0.6.4",
+    "sha256": "a4d87d91c7592ddb59218e670e2c839d57fea7ca67dee5ae571004eacf607bff",
+    "components": [
+      {
+        "dependencies": [
+          "python3.13",
+          "mtr0.95"
+        ],
+        "helper_sha256": "5c453ee408ea6b5b2e73982bff9ec962d4b0794f1e29d3dcab63cf41df307cba",
+        "id": "mtr",
+        "profile": "network-raw-helper",
+        "version": "0.6.4"
+      }
+    ]
+  }
+}

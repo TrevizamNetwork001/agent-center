@@ -1,0 +1,31 @@
+{
+  "result": {
+    "status": "PASS",
+    "started_utc": "2026-11-12T18:43:43.392085+00:00",
+    "finished_utc": "2026-11-12T18:58:49.838293+00:00",
+    "elapsed_seconds": 906.4456339209573,
+    "samples": 31,
+    "violations": [],
+    "probes": 0
+  },
+  "read_only_telegram_transport_retries": 4,
+  "health_samples": 16,
+  "all_final_health_pass": true,
+  "runtime_sha256": "a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315",
+  "companion_sha256": {
+    "updater.pyz": "c1bbbe6ba0dacde04387cf60ca30539b6a8b444f1e30bff2005c42e38d880ab1",
+    "remote-updater.pyz": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb"
+  },
+  "journal_first": {
+    "integrity": "ok",
+    "executions": 103,
+    "events": 412
+  },
+  "journal_last": {
+    "integrity": "ok",
+    "executions": 103,
+    "events": 412
+  },
+  "boot_id_unchanged": true,
+  "no_agent_updater_events": true
+}

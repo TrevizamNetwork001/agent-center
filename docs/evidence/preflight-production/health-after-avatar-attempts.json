@@ -1,0 +1,327 @@
+[
+  {
+    "status": "PASS",
+    "webhook": {
+      "method": "getWebhookInfo",
+      "registered": true,
+      "api_status": "OK",
+      "https_url_matches": true,
+      "pending_updates": 0,
+      "last_error_date": null
+    },
+    "rag": {
+      "status": "no_match",
+      "authorized_sources": 0,
+      "index_empty": true,
+      "health": "READY_EMPTY"
+    },
+    "rls": [
+      {
+        "relname": "agent_tasks",
+        "relrowsecurity": true,
+        "relforcerowsecurity": true
+      },
+      {
+        "relname": "conversation_events",
+        "relrowsecurity": true,
+        "relforcerowsecurity": true
+      },
+      {
+        "relname": "conversation_messages",
+        "relrowsecurity": true,
+        "relforcerowsecurity": true
+      },
+      {
+        "relname": "conversations",
+        "relrowsecurity": true,
+        "relforcerowsecurity": true
+      },
+      {
+        "relname": "diagnostic_conclusions",
+        "relrowsecurity": true,
+        "relforcerowsecurity": true
+      },
+      {
+        "relname": "diagnostics",
+        "relrowsecurity": true,
+        "relforcerowsecurity": true
+      },
+      {
+        "relname": "llm_bindings",
+        "relrowsecurity": true,
+        "relforcerowsecurity": true
+      },
+      {
+        "relname": "llm_providers",
+        "relrowsecurity": true,
+        "relforcerowsecurity": true
+      },
+      {
+        "relname": "rag_chunks",
+        "relrowsecurity": true,
+        "relforcerowsecurity": true
+      },
+      {
+        "relname": "rag_documents",
+        "relrowsecurity": true,
+        "relforcerowsecurity": true
+      }
+    ],
+    "runtime_superuser": false,
+    "runtime_bypassrls": false,
+    "enabled_credentials_decryptable": true,
+    "queue": {
+      "pending": 0,
+      "failed": 0
+    },
+    "idle": {
+      "minutes": 15,
+      "enabled": true,
+      "tenants": [
+        1
+      ]
+    },
+    "operations": {
+      "database": true,
+      "worker": true,
+      "agents_total": 1,
+      "agents_online": 1,
+      "heartbeat_age": 11,
+      "poll_age": 0,
+      "missing_heartbeat": 0,
+      "missing_poll": 0,
+      "today": 2,
+      "indications": 0,
+      "active": 0,
+      "stale": 0,
+      "failed": 0,
+      "state": "VERDE",
+      "checks": [
+        {
+          "component": "laravel_web",
+          "state": "VERDE",
+          "reason": "authenticated_request_completed",
+          "timestamp": "2026-11-12T20:12:28+01:00",
+          "values": {
+            "request": true
+          },
+          "limit": null
+        },
+        {
+          "component": "postgresql",
+          "state": "VERDE",
+          "reason": "select_1_succeeded",
+          "timestamp": "2026-11-12T20:12:28+01:00",
+          "values": {
+            "select_1": true
+          },
+          "limit": 1
+        },
+        {
+          "component": "postgresql_tls",
+          "state": "VERDE",
+          "reason": "connection_tls_and_client_verification",
+          "timestamp": "2026-11-12T20:12:28+01:00",
+          "values": {
+            "tls": true,
+            "verify_full": true
+          },
+          "limit": true
+        },
+        {
+          "component": "diagnostic_worker",
+          "state": "VERDE",
+          "reason": "functional_loop_recent",
+          "timestamp": "2026-11-12T20:12:28+01:00",
+          "values": {
+            "work_ms": 22.560188,
+            "started_at": "2026-11-12T19:12:26.760196Z",
+            "finished_at": "2026-11-12T19:12:26.782719Z",
+            "scheduled_wait_ms": 2000,
+            "loop_age_seconds": 1.601000022,
+            "iterations": 1249,
+            "progress": 0,
+            "same_boot": true
+          },
+          "limit": 15
+        },
+        {
+          "component": "laravel_queue_worker",
+          "state": "VERDE",
+          "reason": "health_job_completed",
+          "timestamp": "2026-11-12T20:12:28+01:00",
+          "values": {
+            "completed_job_age_seconds": 6.30930384
+          },
+          "limit": 90
+        },
+        {
+          "component": "task_engine",
+          "state": "VERDE",
+          "reason": "active_expired_leases",
+          "timestamp": "2026-11-12T20:12:28+01:00",
+          "values": {
+            "active": 0,
+            "expired": 0,
+            "failures_today": 0
+          },
+          "limit": 0
+        },
+        {
+          "component": "agents",
+          "state": "VERDE",
+          "reason": "heartbeat_and_poll_coverage",
+          "timestamp": "2026-11-12T20:12:28+01:00",
+          "values": {
+            "total": 1,
+            "online": 1,
+            "oldest_heartbeat_seconds": 11,
+            "oldest_poll_seconds": 0,
+            "missing_heartbeat": 0,
+            "missing_poll": 0
+          },
+          "limit": {
+            "heartbeat_seconds": 60,
+            "poll_seconds": 30
+          }
+        },
+        {
+          "component": "nginx_external",
+          "state": "VERDE",
+          "reason": "container_functional_health",
+          "timestamp": "2026-11-12T19:12:10.150050+00:00",
+          "values": {
+            "healthy": true
+          },
+          "limit": true
+        },
+        {
+          "component": "fpm_process",
+          "state": "VERDE",
+          "reason": "container_functional_health",
+          "timestamp": "2026-11-12T19:12:10.150050+00:00",
+          "values": {
+            "healthy": true
+          },
+          "limit": true
+        },
+        {
+          "component": "postgresql_container",
+          "state": "VERDE",
+          "reason": "container_functional_health",
+          "timestamp": "2026-11-12T19:12:10.150050+00:00",
+          "values": {
+            "healthy": true
+          },
+          "limit": true
+        },
+        {
+          "component": "queue_container",
+          "state": "VERDE",
+          "reason": "container_functional_health",
+          "timestamp": "2026-11-12T19:12:10.150050+00:00",
+          "values": {
+            "healthy": true
+          },
+          "limit": true
+        },
+        {
+          "component": "diagnostic_container",
+          "state": "VERDE",
+          "reason": "container_functional_health",
+          "timestamp": "2026-11-12T19:12:10.150050+00:00",
+          "values": {
+            "healthy": true
+          },
+          "limit": true
+        },
+        {
+          "component": "web_https",
+          "state": "VERDE",
+          "reason": "https_status_probe",
+          "timestamp": "2026-11-12T19:12:10.150050+00:00",
+          "values": {
+            "http_status": 200
+          },
+          "limit": {
+            "expected_status": 200
+          }
+        },
+        {
+          "component": "agent_api_external",
+          "state": "VERDE",
+          "reason": "https_status_probe",
+          "timestamp": "2026-11-12T19:12:10.150050+00:00",
+          "values": {
+            "http_status": 422
+          },
+          "limit": {
+            "expected_status": 422
+          }
+        },
+        {
+          "component": "http_error_rate",
+          "state": "VERDE",
+          "reason": "sanitized_status_log_5m",
+          "timestamp": "2026-11-12T19:12:10.150050+00:00",
+          "values": {
+            "requests": 133,
+            "http_5xx": 0,
+            "rate": 0
+          },
+          "limit": {
+            "max_rate": 0.05,
+            "window_seconds": 300,
+            "max_samples": 10000
+          }
+        },
+        {
+          "component": "backup_local",
+          "state": "VERDE",
+          "reason": "generation_integrity_verified",
+          "timestamp": "2026-11-12T19:12:10.150050+00:00",
+          "values": {
+            "age_seconds": 2715.8825998306274
+          },
+          "limit": {
+            "max_age_seconds": 93600
+          }
+        },
+        {
+          "component": "backup_external",
+          "state": "VERDE",
+          "reason": "r2_encrypted_upload_download_verified",
+          "timestamp": "2026-11-12T19:12:10.150050+00:00",
+          "values": {
+            "age_seconds": 60780.88300251961
+          },
+          "limit": {
+            "max_age_seconds": 93600
+          }
+        },
+        {
+          "component": "fencing_runtime",
+          "state": "VERDE",
+          "reason": "active_attempt_generation_mismatch",
+          "timestamp": "2026-11-12T20:12:28+01:00",
+          "values": {
+            "mismatches": 0
+          },
+          "limit": 0
+        },
+        {
+          "component": "agent_maintenance",
+          "state": "VERDE",
+          "reason": "interrupted_or_stalled_operations",
+          "timestamp": "2026-11-12T20:12:28+01:00",
+          "values": {
+            "uncertain": 0,
+            "stalled": 0
+          },
+          "limit": 300
+        }
+      ]
+    },
+    "no_context_rows_visible": true
+  }
+]

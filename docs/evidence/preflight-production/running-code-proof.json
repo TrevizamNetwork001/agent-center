@@ -1,0 +1,18 @@
+{
+  "agent-center-web-1": {
+    "source_files_match": true,
+    "verified_files": 7
+  },
+  "agent-center-worker-1": {
+    "source_files_match": true,
+    "verified_files": 7
+  },
+  "agent-center-telegram-scheduler-1": {
+    "source_files_match": true,
+    "verified_files": 7
+  },
+  "agent-center-diagnostic-worker-1": {
+    "source_files_match": true,
+    "verified_files": 5
+  }
+}

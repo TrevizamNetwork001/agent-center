@@ -1,0 +1,1 @@
+{"status": "PASS", "executor_shared_authorizer": "mtr.authorize", "destination": "8.8.8.8", "protocol": "icmp", "decision": "DENIED", "effective_mtr_network_count": 0, "config_reloaded_at_check": true, "probe_or_task_executed": false}

@@ -1,0 +1,93 @@
+{
+    "runtime_image": "old-intent-planning",
+    "requests": [
+        {
+            "http": 200,
+            "ok": true,
+            "stats": {
+                "namelookup_time": 0.009099,
+                "connect_time": 0.02097,
+                "appconnect_time": 0.077256,
+                "total_time": 0.101835,
+                "primary_ip": "149.154.166.110"
+            }
+        },
+        {
+            "http": 200,
+            "ok": true,
+            "stats": {
+                "namelookup_time": 0.003819,
+                "connect_time": 0.015539,
+                "appconnect_time": 0.160539,
+                "total_time": 0.18182,
+                "primary_ip": "149.154.166.110"
+            }
+        },
+        {
+            "http": 200,
+            "ok": true,
+            "stats": {
+                "namelookup_time": 0.021273,
+                "connect_time": 0.054525,
+                "appconnect_time": 0.163861,
+                "total_time": 0.181123,
+                "primary_ip": "149.154.166.110"
+            }
+        },
+        {
+            "http": 200,
+            "ok": true,
+            "stats": {
+                "namelookup_time": 0.011251,
+                "connect_time": 0.031271,
+                "appconnect_time": 0.0921,
+                "total_time": 0.111419,
+                "primary_ip": "149.154.166.110"
+            }
+        },
+        {
+            "http": 200,
+            "ok": true,
+            "stats": {
+                "namelookup_time": 0.010109,
+                "connect_time": 0.027386,
+                "appconnect_time": 0.100061,
+                "total_time": 0.118649,
+                "primary_ip": "149.154.166.110"
+            }
+        },
+        {
+            "http": 200,
+            "ok": true,
+            "stats": {
+                "namelookup_time": 0.014627,
+                "connect_time": 0.034896,
+                "appconnect_time": 0.113235,
+                "total_time": 0.136736,
+                "primary_ip": "149.154.166.110"
+            }
+        },
+        {
+            "error_class": "Illuminate\\Http\\Client\\ConnectionException",
+            "curl_errno": null,
+            "stats": {
+                "namelookup_time": 0,
+                "connect_time": 0,
+                "appconnect_time": 0,
+                "total_time": 4.016885,
+                "primary_ip": ""
+            }
+        },
+        {
+            "http": 200,
+            "ok": true,
+            "stats": {
+                "namelookup_time": 0.007486,
+                "connect_time": 0.030306,
+                "appconnect_time": 0.094068,
+                "total_time": 0.128481,
+                "primary_ip": "149.154.166.110"
+            }
+        }
+    ]
+}

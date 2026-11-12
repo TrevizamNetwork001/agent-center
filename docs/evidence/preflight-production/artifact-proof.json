@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "operational_authority_sha256": "5f16350383c280c1b39d4f7257f09ecbe1002b1d59a1721ceb8bf4d5091195e1",
+  "central_and_vm_trust_match": true,
+  "sequence": 6,
+  "minimum_installed_sequence": 5,
+  "quarantine_4_untouched": true,
+  "signature_ed25519_verified": true,
+  "same_homologated_runtime": true,
+  "runtime_sha256": "a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315",
+  "companion_sha256": {
+    "updater.pyz": "c1bbbe6ba0dacde04387cf60ca30539b6a8b444f1e30bff2005c42e38d880ab1",
+    "remote-updater.pyz": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb"
+  },
+  "archive_member_changes_from_064": [
+    "agent_center/__init__.py",
+    "agent_center/api.py",
+    "agent_center/capabilities.py",
+    "agent_center/config.py",
+    "agent_center/heartbeat.py",
+    "agent_center/logging.py",
+    "agent_center/main.py",
+    "agent_center/managed_settings.py",
+    "agent_center/mtr_client.py",
+    "agent_center/mtr_helper.py",
+    "agent_center/observability.py",
+    "agent_center/observation_worker.py",
+    "agent_center/preflight.py"
+  ]
+}

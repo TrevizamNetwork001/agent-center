@@ -1,0 +1,1904 @@
+[
+  {
+    "elapsed_seconds": 8.56595579534769e-06,
+    "utc": "2026-11-12T18:38:12.846066+00:00",
+    "agent": {
+      "runtime": {
+        "sha256": "a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315",
+        "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+      },
+      "updater": {
+        "sha256": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb",
+        "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+      },
+      "installed_lifecycle": {
+        "prechecks_updaters_for_064_plus": true,
+        "finalize_calls_updaters_install": true,
+        "writes_companions": true
+      },
+      "/etc/agent-center-agent/config.json": {
+        "sha256": "0a3da81148e8b26a255c5c540b15d9f4bc73b9ce00bb5dac5eea9d62923086a2"
+      },
+      "/etc/agent-center-agent/lifecycle-policy.json": {
+        "sha256": "54da18d13ec931f984b3ed4a4cca4aba5c7cb1a50b56c49b500602781669be7b"
+      },
+      "/var/lib/agent-center-agent/identity.json": {
+        "sha256": "c13d8096197834167066aba87a691b1fc57bd67efe120679f659e459af58b83b"
+      },
+      "/var/lib/agent-center-agent/managed-settings.json": {
+        "sha256": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+      },
+      "presence": {
+        "state": "ONLINE",
+        "version": "0.6.5",
+        "heartbeat_successes": 20,
+        "poll_successes": 63,
+        "heartbeat_max_gap": 21.356515056919307,
+        "poll_max_gap": 7.474278945010155
+      },
+      "services": [
+        "MainPID=491739",
+        "Result=success",
+        "ExecMainStartTimestamp=Thu 2026-11-12 15:31:36 -03",
+        "ExecMainStatus=0",
+        "Id=agent-center-agent.service",
+        "ActiveState=active",
+        "",
+        "MainPID=0",
+        "Result=success",
+        "ExecMainStartTimestamp=Thu 2026-11-12 15:38:16 -03",
+        "ExecMainStatus=0",
+        "Id=agent-center-updater.service",
+        "ActiveState=inactive",
+        "",
+        "Result=success",
+        "Id=agent-center-updater.timer",
+        "ActiveState=active",
+        "",
+        "Result=success",
+        "Id=agent-center-mtr.socket",
+        "ActiveState=active"
+      ],
+      "journal": {
+        "integrity": "ok",
+        "executions": 103,
+        "events": 412
+      },
+      "helper_readiness": "{\"mtr_helper_ready\": true}",
+      "helper_sha256": "7d3dce0658e5d32e8a13c34924ea7912f2cd692f9fbd642d438b072561dbd6f9",
+      "status_age_seconds": 0.3903932571411133,
+      "hardening": [
+        "CapabilityBoundingSet=",
+        "AmbientCapabilities=",
+        "User=agent-center-agent",
+        "NoNewPrivileges=yes"
+      ],
+      "malformed_policy_rejected": true,
+      "companion_sha256": {
+        "updater.pyz": "c1bbbe6ba0dacde04387cf60ca30539b6a8b444f1e30bff2005c42e38d880ab1",
+        "remote-updater.pyz": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb"
+      },
+      "boot_id": "751ca98c-0234-4be6-9a14-422b7b7f6937",
+      "new_operational_errors": []
+    },
+    "health": {
+      "status": "PASS",
+      "webhook": {
+        "method": "getWebhookInfo",
+        "registered": true,
+        "api_status": "OK",
+        "https_url_matches": true,
+        "pending_updates": 0,
+        "last_error_date": null
+      },
+      "rag": {
+        "status": "no_match",
+        "authorized_sources": 0,
+        "index_empty": true,
+        "health": "READY_EMPTY"
+      },
+      "rls": [
+        {
+          "relname": "agent_tasks",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "conversation_events",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "conversation_messages",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "conversations",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "diagnostic_conclusions",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "diagnostics",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "llm_bindings",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "llm_providers",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "rag_chunks",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "rag_documents",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        }
+      ],
+      "runtime_superuser": false,
+      "runtime_bypassrls": false,
+      "enabled_credentials_decryptable": true,
+      "queue": {
+        "pending": 0,
+        "failed": 0
+      },
+      "idle": {
+        "minutes": 15,
+        "enabled": true,
+        "tenants": [
+          1
+        ]
+      },
+      "operations": {
+        "database": true,
+        "worker": true,
+        "agents_total": 1,
+        "agents_online": 1,
+        "heartbeat_age": 3,
+        "poll_age": 2,
+        "missing_heartbeat": 0,
+        "missing_poll": 0,
+        "today": 2,
+        "indications": 0,
+        "active": 0,
+        "stale": 0,
+        "failed": 0,
+        "state": "VERDE",
+        "checks": [
+          {
+            "component": "laravel_web",
+            "state": "VERDE",
+            "reason": "authenticated_request_completed",
+            "timestamp": "2026-11-12T19:38:20+01:00",
+            "values": {
+              "request": true
+            },
+            "limit": null
+          },
+          {
+            "component": "postgresql",
+            "state": "VERDE",
+            "reason": "select_1_succeeded",
+            "timestamp": "2026-11-12T19:38:20+01:00",
+            "values": {
+              "select_1": true
+            },
+            "limit": 1
+          },
+          {
+            "component": "postgresql_tls",
+            "state": "VERDE",
+            "reason": "connection_tls_and_client_verification",
+            "timestamp": "2026-11-12T19:38:20+01:00",
+            "values": {
+              "tls": true,
+              "verify_full": true
+            },
+            "limit": true
+          },
+          {
+            "component": "diagnostic_worker",
+            "state": "VERDE",
+            "reason": "functional_loop_recent",
+            "timestamp": "2026-11-12T19:38:20+01:00",
+            "values": {
+              "work_ms": 15.24819,
+              "started_at": "2026-11-12T18:38:18.174062Z",
+              "finished_at": "2026-11-12T18:38:18.189230Z",
+              "scheduled_wait_ms": 2000,
+              "loop_age_seconds": 1.925251412,
+              "iterations": 252,
+              "progress": 0,
+              "same_boot": true
+            },
+            "limit": 15
+          },
+          {
+            "component": "laravel_queue_worker",
+            "state": "VERDE",
+            "reason": "health_job_completed",
+            "timestamp": "2026-11-12T19:38:20+01:00",
+            "values": {
+              "completed_job_age_seconds": 22.217524461
+            },
+            "limit": 90
+          },
+          {
+            "component": "task_engine",
+            "state": "VERDE",
+            "reason": "active_expired_leases",
+            "timestamp": "2026-11-12T19:38:20+01:00",
+            "values": {
+              "active": 0,
+              "expired": 0,
+              "failures_today": 0
+            },
+            "limit": 0
+          },
+          {
+            "component": "agents",
+            "state": "VERDE",
+            "reason": "heartbeat_and_poll_coverage",
+            "timestamp": "2026-11-12T19:38:20+01:00",
+            "values": {
+              "total": 1,
+              "online": 1,
+              "oldest_heartbeat_seconds": 3,
+              "oldest_poll_seconds": 2,
+              "missing_heartbeat": 0,
+              "missing_poll": 0
+            },
+            "limit": {
+              "heartbeat_seconds": 60,
+              "poll_seconds": 30
+            }
+          },
+          {
+            "component": "nginx_external",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:38:10.123500+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "fpm_process",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:38:10.123500+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "postgresql_container",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:38:10.123500+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "queue_container",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:38:10.123500+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "diagnostic_container",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:38:10.123500+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "web_https",
+            "state": "VERDE",
+            "reason": "https_status_probe",
+            "timestamp": "2026-11-12T18:38:10.123500+00:00",
+            "values": {
+              "http_status": 200
+            },
+            "limit": {
+              "expected_status": 200
+            }
+          },
+          {
+            "component": "agent_api_external",
+            "state": "VERDE",
+            "reason": "https_status_probe",
+            "timestamp": "2026-11-12T18:38:10.123500+00:00",
+            "values": {
+              "http_status": 422
+            },
+            "limit": {
+              "expected_status": 422
+            }
+          },
+          {
+            "component": "http_error_rate",
+            "state": "VERDE",
+            "reason": "sanitized_status_log_5m",
+            "timestamp": "2026-11-12T18:38:10.123500+00:00",
+            "values": {
+              "requests": 119,
+              "http_5xx": 0,
+              "rate": 0
+            },
+            "limit": {
+              "max_rate": 0.05,
+              "window_seconds": 300,
+              "max_samples": 10000
+            }
+          },
+          {
+            "component": "backup_local",
+            "state": "VERDE",
+            "reason": "generation_integrity_verified",
+            "timestamp": "2026-11-12T18:38:10.123500+00:00",
+            "values": {
+              "age_seconds": 675.8440959453583
+            },
+            "limit": {
+              "max_age_seconds": 93600
+            }
+          },
+          {
+            "component": "backup_external",
+            "state": "VERDE",
+            "reason": "r2_encrypted_upload_download_verified",
+            "timestamp": "2026-11-12T18:38:10.123500+00:00",
+            "values": {
+              "age_seconds": 58740.84456729889
+            },
+            "limit": {
+              "max_age_seconds": 93600
+            }
+          },
+          {
+            "component": "fencing_runtime",
+            "state": "VERDE",
+            "reason": "active_attempt_generation_mismatch",
+            "timestamp": "2026-11-12T19:38:20+01:00",
+            "values": {
+              "mismatches": 0
+            },
+            "limit": 0
+          },
+          {
+            "component": "agent_maintenance",
+            "state": "VERDE",
+            "reason": "interrupted_or_stalled_operations",
+            "timestamp": "2026-11-12T19:38:20+01:00",
+            "values": {
+              "uncertain": 0,
+              "stalled": 0
+            },
+            "limit": 300
+          }
+        ]
+      },
+      "no_context_rows_visible": true
+    },
+    "readiness": {
+      "status": "ready"
+    }
+  },
+  {
+    "elapsed_seconds": 30.001195832970552,
+    "utc": "2026-11-12T18:38:42.847265+00:00",
+    "agent": {
+      "runtime": {
+        "sha256": "a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315",
+        "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+      },
+      "updater": {
+        "sha256": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb",
+        "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+      },
+      "installed_lifecycle": {
+        "prechecks_updaters_for_064_plus": true,
+        "finalize_calls_updaters_install": true,
+        "writes_companions": true
+      },
+      "/etc/agent-center-agent/config.json": {
+        "sha256": "0a3da81148e8b26a255c5c540b15d9f4bc73b9ce00bb5dac5eea9d62923086a2"
+      },
+      "/etc/agent-center-agent/lifecycle-policy.json": {
+        "sha256": "54da18d13ec931f984b3ed4a4cca4aba5c7cb1a50b56c49b500602781669be7b"
+      },
+      "/var/lib/agent-center-agent/identity.json": {
+        "sha256": "c13d8096197834167066aba87a691b1fc57bd67efe120679f659e459af58b83b"
+      },
+      "/var/lib/agent-center-agent/managed-settings.json": {
+        "sha256": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+      },
+      "presence": {
+        "state": "ONLINE",
+        "version": "0.6.5",
+        "heartbeat_successes": 22,
+        "poll_successes": 68,
+        "heartbeat_max_gap": 21.356515056919307,
+        "poll_max_gap": 7.474278945010155
+      },
+      "services": [
+        "MainPID=491739",
+        "Result=success",
+        "ExecMainStartTimestamp=Thu 2026-11-12 15:31:36 -03",
+        "ExecMainStatus=0",
+        "Id=agent-center-agent.service",
+        "ActiveState=active",
+        "",
+        "MainPID=0",
+        "Result=success",
+        "ExecMainStartTimestamp=Thu 2026-11-12 15:38:33 -03",
+        "ExecMainStatus=0",
+        "Id=agent-center-updater.service",
+        "ActiveState=inactive",
+        "",
+        "Result=success",
+        "Id=agent-center-updater.timer",
+        "ActiveState=active",
+        "",
+        "Result=success",
+        "Id=agent-center-mtr.socket",
+        "ActiveState=active"
+      ],
+      "journal": {
+        "integrity": "ok",
+        "executions": 103,
+        "events": 412
+      },
+      "helper_readiness": "{\"mtr_helper_ready\": true}",
+      "helper_sha256": "7d3dce0658e5d32e8a13c34924ea7912f2cd692f9fbd642d438b072561dbd6f9",
+      "status_age_seconds": 2.429654836654663,
+      "hardening": [
+        "CapabilityBoundingSet=",
+        "AmbientCapabilities=",
+        "User=agent-center-agent",
+        "NoNewPrivileges=yes"
+      ],
+      "malformed_policy_rejected": true,
+      "companion_sha256": {
+        "updater.pyz": "c1bbbe6ba0dacde04387cf60ca30539b6a8b444f1e30bff2005c42e38d880ab1",
+        "remote-updater.pyz": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb"
+      },
+      "boot_id": "751ca98c-0234-4be6-9a14-422b7b7f6937",
+      "new_operational_errors": []
+    },
+    "readiness": {
+      "status": "ready"
+    }
+  },
+  {
+    "elapsed_seconds": 60.00043930800166,
+    "utc": "2026-11-12T18:39:12.846512+00:00",
+    "agent": {
+      "runtime": {
+        "sha256": "a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315",
+        "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+      },
+      "updater": {
+        "sha256": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb",
+        "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+      },
+      "installed_lifecycle": {
+        "prechecks_updaters_for_064_plus": true,
+        "finalize_calls_updaters_install": true,
+        "writes_companions": true
+      },
+      "/etc/agent-center-agent/config.json": {
+        "sha256": "0a3da81148e8b26a255c5c540b15d9f4bc73b9ce00bb5dac5eea9d62923086a2"
+      },
+      "/etc/agent-center-agent/lifecycle-policy.json": {
+        "sha256": "54da18d13ec931f984b3ed4a4cca4aba5c7cb1a50b56c49b500602781669be7b"
+      },
+      "/var/lib/agent-center-agent/identity.json": {
+        "sha256": "c13d8096197834167066aba87a691b1fc57bd67efe120679f659e459af58b83b"
+      },
+      "/var/lib/agent-center-agent/managed-settings.json": {
+        "sha256": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+      },
+      "presence": {
+        "state": "ONLINE",
+        "version": "0.6.5",
+        "heartbeat_successes": 23,
+        "poll_successes": 72,
+        "heartbeat_max_gap": 21.356515056919307,
+        "poll_max_gap": 7.474278945010155
+      },
+      "services": [
+        "MainPID=491739",
+        "Result=success",
+        "ExecMainStartTimestamp=Thu 2026-11-12 15:31:36 -03",
+        "ExecMainStatus=0",
+        "Id=agent-center-agent.service",
+        "ActiveState=active",
+        "",
+        "MainPID=0",
+        "Result=success",
+        "ExecMainStartTimestamp=Thu 2026-11-12 15:39:08 -03",
+        "ExecMainStatus=0",
+        "Id=agent-center-updater.service",
+        "ActiveState=inactive",
+        "",
+        "Result=success",
+        "Id=agent-center-updater.timer",
+        "ActiveState=active",
+        "",
+        "Result=success",
+        "Id=agent-center-mtr.socket",
+        "ActiveState=active"
+      ],
+      "journal": {
+        "integrity": "ok",
+        "executions": 103,
+        "events": 412
+      },
+      "helper_readiness": "{\"mtr_helper_ready\": true}",
+      "helper_sha256": "7d3dce0658e5d32e8a13c34924ea7912f2cd692f9fbd642d438b072561dbd6f9",
+      "status_age_seconds": 4.641245126724243,
+      "hardening": [
+        "CapabilityBoundingSet=",
+        "AmbientCapabilities=",
+        "User=agent-center-agent",
+        "NoNewPrivileges=yes"
+      ],
+      "malformed_policy_rejected": true,
+      "companion_sha256": {
+        "updater.pyz": "c1bbbe6ba0dacde04387cf60ca30539b6a8b444f1e30bff2005c42e38d880ab1",
+        "remote-updater.pyz": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb"
+      },
+      "boot_id": "751ca98c-0234-4be6-9a14-422b7b7f6937",
+      "new_operational_errors": []
+    },
+    "health": {
+      "status": "PASS",
+      "webhook": {
+        "method": "getWebhookInfo",
+        "registered": true,
+        "api_status": "OK",
+        "https_url_matches": true,
+        "pending_updates": 0,
+        "last_error_date": null
+      },
+      "rag": {
+        "status": "no_match",
+        "authorized_sources": 0,
+        "index_empty": true,
+        "health": "READY_EMPTY"
+      },
+      "rls": [
+        {
+          "relname": "agent_tasks",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "conversation_events",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "conversation_messages",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "conversations",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "diagnostic_conclusions",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "diagnostics",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "llm_bindings",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "llm_providers",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "rag_chunks",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "rag_documents",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        }
+      ],
+      "runtime_superuser": false,
+      "runtime_bypassrls": false,
+      "enabled_credentials_decryptable": true,
+      "queue": {
+        "pending": 0,
+        "failed": 0
+      },
+      "idle": {
+        "minutes": 15,
+        "enabled": true,
+        "tenants": [
+          1
+        ]
+      },
+      "operations": {
+        "database": true,
+        "worker": true,
+        "agents_total": 1,
+        "agents_online": 1,
+        "heartbeat_age": 1,
+        "poll_age": 6,
+        "missing_heartbeat": 0,
+        "missing_poll": 0,
+        "today": 2,
+        "indications": 0,
+        "active": 0,
+        "stale": 0,
+        "failed": 0,
+        "state": "VERDE",
+        "checks": [
+          {
+            "component": "laravel_web",
+            "state": "VERDE",
+            "reason": "authenticated_request_completed",
+            "timestamp": "2026-11-12T19:39:18+01:00",
+            "values": {
+              "request": true
+            },
+            "limit": null
+          },
+          {
+            "component": "postgresql",
+            "state": "VERDE",
+            "reason": "select_1_succeeded",
+            "timestamp": "2026-11-12T19:39:18+01:00",
+            "values": {
+              "select_1": true
+            },
+            "limit": 1
+          },
+          {
+            "component": "postgresql_tls",
+            "state": "VERDE",
+            "reason": "connection_tls_and_client_verification",
+            "timestamp": "2026-11-12T19:39:18+01:00",
+            "values": {
+              "tls": true,
+              "verify_full": true
+            },
+            "limit": true
+          },
+          {
+            "component": "diagnostic_worker",
+            "state": "VERDE",
+            "reason": "functional_loop_recent",
+            "timestamp": "2026-11-12T19:39:18+01:00",
+            "values": {
+              "work_ms": 10.558256,
+              "started_at": "2026-11-12T18:39:18.142875Z",
+              "finished_at": "2026-11-12T18:39:18.153402Z",
+              "scheduled_wait_ms": 2000,
+              "loop_age_seconds": 0.033851532,
+              "iterations": 281,
+              "progress": 0,
+              "same_boot": true
+            },
+            "limit": 15
+          },
+          {
+            "component": "laravel_queue_worker",
+            "state": "VERDE",
+            "reason": "health_job_completed",
+            "timestamp": "2026-11-12T19:39:18+01:00",
+            "values": {
+              "completed_job_age_seconds": 19.545741092
+            },
+            "limit": 90
+          },
+          {
+            "component": "task_engine",
+            "state": "VERDE",
+            "reason": "active_expired_leases",
+            "timestamp": "2026-11-12T19:39:18+01:00",
+            "values": {
+              "active": 0,
+              "expired": 0,
+              "failures_today": 0
+            },
+            "limit": 0
+          },
+          {
+            "component": "agents",
+            "state": "VERDE",
+            "reason": "heartbeat_and_poll_coverage",
+            "timestamp": "2026-11-12T19:39:18+01:00",
+            "values": {
+              "total": 1,
+              "online": 1,
+              "oldest_heartbeat_seconds": 1,
+              "oldest_poll_seconds": 6,
+              "missing_heartbeat": 0,
+              "missing_poll": 0
+            },
+            "limit": {
+              "heartbeat_seconds": 60,
+              "poll_seconds": 30
+            }
+          },
+          {
+            "component": "nginx_external",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:39:17.148644+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "fpm_process",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:39:17.148644+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "postgresql_container",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:39:17.148644+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "queue_container",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:39:17.148644+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "diagnostic_container",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:39:17.148644+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "web_https",
+            "state": "VERDE",
+            "reason": "https_status_probe",
+            "timestamp": "2026-11-12T18:39:17.148644+00:00",
+            "values": {
+              "http_status": 200
+            },
+            "limit": {
+              "expected_status": 200
+            }
+          },
+          {
+            "component": "agent_api_external",
+            "state": "VERDE",
+            "reason": "https_status_probe",
+            "timestamp": "2026-11-12T18:39:17.148644+00:00",
+            "values": {
+              "http_status": 422
+            },
+            "limit": {
+              "expected_status": 422
+            }
+          },
+          {
+            "component": "http_error_rate",
+            "state": "VERDE",
+            "reason": "sanitized_status_log_5m",
+            "timestamp": "2026-11-12T18:39:17.148644+00:00",
+            "values": {
+              "requests": 119,
+              "http_5xx": 0,
+              "rate": 0
+            },
+            "limit": {
+              "max_rate": 0.05,
+              "window_seconds": 300,
+              "max_samples": 10000
+            }
+          },
+          {
+            "component": "backup_local",
+            "state": "VERDE",
+            "reason": "generation_integrity_verified",
+            "timestamp": "2026-11-12T18:39:17.148644+00:00",
+            "values": {
+              "age_seconds": 742.8419845104218
+            },
+            "limit": {
+              "max_age_seconds": 93600
+            }
+          },
+          {
+            "component": "backup_external",
+            "state": "VERDE",
+            "reason": "r2_encrypted_upload_download_verified",
+            "timestamp": "2026-11-12T18:39:17.148644+00:00",
+            "values": {
+              "age_seconds": 58807.84222269058
+            },
+            "limit": {
+              "max_age_seconds": 93600
+            }
+          },
+          {
+            "component": "fencing_runtime",
+            "state": "VERDE",
+            "reason": "active_attempt_generation_mismatch",
+            "timestamp": "2026-11-12T19:39:18+01:00",
+            "values": {
+              "mismatches": 0
+            },
+            "limit": 0
+          },
+          {
+            "component": "agent_maintenance",
+            "state": "VERDE",
+            "reason": "interrupted_or_stalled_operations",
+            "timestamp": "2026-11-12T19:39:18+01:00",
+            "values": {
+              "uncertain": 0,
+              "stalled": 0
+            },
+            "limit": 300
+          }
+        ]
+      },
+      "no_context_rows_visible": true
+    },
+    "readiness": {
+      "status": "ready"
+    }
+  },
+  {
+    "elapsed_seconds": 90.00014531193301,
+    "utc": "2026-11-12T18:39:42.846217+00:00",
+    "agent": {
+      "runtime": {
+        "sha256": "a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315",
+        "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+      },
+      "updater": {
+        "sha256": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb",
+        "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+      },
+      "installed_lifecycle": {
+        "prechecks_updaters_for_064_plus": true,
+        "finalize_calls_updaters_install": true,
+        "writes_companions": true
+      },
+      "/etc/agent-center-agent/config.json": {
+        "sha256": "0a3da81148e8b26a255c5c540b15d9f4bc73b9ce00bb5dac5eea9d62923086a2"
+      },
+      "/etc/agent-center-agent/lifecycle-policy.json": {
+        "sha256": "54da18d13ec931f984b3ed4a4cca4aba5c7cb1a50b56c49b500602781669be7b"
+      },
+      "/var/lib/agent-center-agent/identity.json": {
+        "sha256": "c13d8096197834167066aba87a691b1fc57bd67efe120679f659e459af58b83b"
+      },
+      "/var/lib/agent-center-agent/managed-settings.json": {
+        "sha256": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+      },
+      "presence": {
+        "state": "ONLINE",
+        "version": "0.6.5",
+        "heartbeat_successes": 25,
+        "poll_successes": 77,
+        "heartbeat_max_gap": 21.356515056919307,
+        "poll_max_gap": 7.474278945010155
+      },
+      "services": [
+        "MainPID=491739",
+        "Result=success",
+        "ExecMainStartTimestamp=Thu 2026-11-12 15:31:36 -03",
+        "ExecMainStatus=0",
+        "Id=agent-center-agent.service",
+        "ActiveState=active",
+        "",
+        "MainPID=0",
+        "Result=success",
+        "ExecMainStartTimestamp=Thu 2026-11-12 15:39:42 -03",
+        "ExecMainStatus=0",
+        "Id=agent-center-updater.service",
+        "ActiveState=inactive",
+        "",
+        "Result=success",
+        "Id=agent-center-updater.timer",
+        "ActiveState=active",
+        "",
+        "Result=success",
+        "Id=agent-center-mtr.socket",
+        "ActiveState=active"
+      ],
+      "journal": {
+        "integrity": "ok",
+        "executions": 103,
+        "events": 412
+      },
+      "helper_readiness": "{\"mtr_helper_ready\": true}",
+      "helper_sha256": "7d3dce0658e5d32e8a13c34924ea7912f2cd692f9fbd642d438b072561dbd6f9",
+      "status_age_seconds": 4.949868679046631,
+      "hardening": [
+        "CapabilityBoundingSet=",
+        "AmbientCapabilities=",
+        "User=agent-center-agent",
+        "NoNewPrivileges=yes"
+      ],
+      "malformed_policy_rejected": true,
+      "companion_sha256": {
+        "updater.pyz": "c1bbbe6ba0dacde04387cf60ca30539b6a8b444f1e30bff2005c42e38d880ab1",
+        "remote-updater.pyz": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb"
+      },
+      "boot_id": "751ca98c-0234-4be6-9a14-422b7b7f6937",
+      "new_operational_errors": []
+    },
+    "readiness": {
+      "status": "ready"
+    }
+  },
+  {
+    "elapsed_seconds": 120.00041126494762,
+    "utc": "2026-11-12T18:40:12.846578+00:00",
+    "agent": {
+      "runtime": {
+        "sha256": "a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315",
+        "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+      },
+      "updater": {
+        "sha256": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb",
+        "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+      },
+      "installed_lifecycle": {
+        "prechecks_updaters_for_064_plus": true,
+        "finalize_calls_updaters_install": true,
+        "writes_companions": true
+      },
+      "/etc/agent-center-agent/config.json": {
+        "sha256": "0a3da81148e8b26a255c5c540b15d9f4bc73b9ce00bb5dac5eea9d62923086a2"
+      },
+      "/etc/agent-center-agent/lifecycle-policy.json": {
+        "sha256": "54da18d13ec931f984b3ed4a4cca4aba5c7cb1a50b56c49b500602781669be7b"
+      },
+      "/var/lib/agent-center-agent/identity.json": {
+        "sha256": "c13d8096197834167066aba87a691b1fc57bd67efe120679f659e459af58b83b"
+      },
+      "/var/lib/agent-center-agent/managed-settings.json": {
+        "sha256": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+      },
+      "presence": {
+        "state": "CLAIM",
+        "version": "0.6.5",
+        "heartbeat_successes": 27,
+        "poll_successes": 82,
+        "heartbeat_max_gap": 21.356515056919307,
+        "poll_max_gap": 7.474278945010155
+      },
+      "services": [
+        "MainPID=491739",
+        "Result=success",
+        "ExecMainStartTimestamp=Thu 2026-11-12 15:31:36 -03",
+        "ExecMainStatus=0",
+        "Id=agent-center-agent.service",
+        "ActiveState=active",
+        "",
+        "MainPID=0",
+        "Result=success",
+        "ExecMainStartTimestamp=Thu 2026-11-12 15:40:16 -03",
+        "ExecMainStatus=0",
+        "Id=agent-center-updater.service",
+        "ActiveState=inactive",
+        "",
+        "Result=success",
+        "Id=agent-center-updater.timer",
+        "ActiveState=active",
+        "",
+        "Result=success",
+        "Id=agent-center-mtr.socket",
+        "ActiveState=active"
+      ],
+      "journal": {
+        "integrity": "ok",
+        "executions": 103,
+        "events": 412
+      },
+      "helper_readiness": "{\"mtr_helper_ready\": true}",
+      "helper_sha256": "7d3dce0658e5d32e8a13c34924ea7912f2cd692f9fbd642d438b072561dbd6f9",
+      "status_age_seconds": 0.910254716873169,
+      "hardening": [
+        "CapabilityBoundingSet=",
+        "AmbientCapabilities=",
+        "User=agent-center-agent",
+        "NoNewPrivileges=yes"
+      ],
+      "malformed_policy_rejected": true,
+      "companion_sha256": {
+        "updater.pyz": "c1bbbe6ba0dacde04387cf60ca30539b6a8b444f1e30bff2005c42e38d880ab1",
+        "remote-updater.pyz": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb"
+      },
+      "boot_id": "751ca98c-0234-4be6-9a14-422b7b7f6937",
+      "new_operational_errors": []
+    },
+    "health": {
+      "status": "PASS",
+      "webhook": {
+        "method": "getWebhookInfo",
+        "registered": true,
+        "api_status": "OK",
+        "https_url_matches": true,
+        "pending_updates": 0,
+        "last_error_date": null
+      },
+      "rag": {
+        "status": "no_match",
+        "authorized_sources": 0,
+        "index_empty": true,
+        "health": "READY_EMPTY"
+      },
+      "rls": [
+        {
+          "relname": "agent_tasks",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "conversation_events",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "conversation_messages",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "conversations",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "diagnostic_conclusions",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "diagnostics",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "llm_bindings",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "llm_providers",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "rag_chunks",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "rag_documents",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        }
+      ],
+      "runtime_superuser": false,
+      "runtime_bypassrls": false,
+      "enabled_credentials_decryptable": true,
+      "queue": {
+        "pending": 0,
+        "failed": 0
+      },
+      "idle": {
+        "minutes": 15,
+        "enabled": true,
+        "tenants": [
+          1
+        ]
+      },
+      "operations": {
+        "database": true,
+        "worker": true,
+        "agents_total": 1,
+        "agents_online": 1,
+        "heartbeat_age": 4,
+        "poll_age": 2,
+        "missing_heartbeat": 0,
+        "missing_poll": 0,
+        "today": 2,
+        "indications": 0,
+        "active": 0,
+        "stale": 0,
+        "failed": 0,
+        "state": "VERDE",
+        "checks": [
+          {
+            "component": "laravel_web",
+            "state": "VERDE",
+            "reason": "authenticated_request_completed",
+            "timestamp": "2026-11-12T19:40:21+01:00",
+            "values": {
+              "request": true
+            },
+            "limit": null
+          },
+          {
+            "component": "postgresql",
+            "state": "VERDE",
+            "reason": "select_1_succeeded",
+            "timestamp": "2026-11-12T19:40:21+01:00",
+            "values": {
+              "select_1": true
+            },
+            "limit": 1
+          },
+          {
+            "component": "postgresql_tls",
+            "state": "VERDE",
+            "reason": "connection_tls_and_client_verification",
+            "timestamp": "2026-11-12T19:40:21+01:00",
+            "values": {
+              "tls": true,
+              "verify_full": true
+            },
+            "limit": true
+          },
+          {
+            "component": "diagnostic_worker",
+            "state": "VERDE",
+            "reason": "functional_loop_recent",
+            "timestamp": "2026-11-12T19:40:21+01:00",
+            "values": {
+              "work_ms": 65.461422,
+              "started_at": "2026-11-12T18:40:20.088727Z",
+              "finished_at": "2026-11-12T18:40:20.154157Z",
+              "scheduled_wait_ms": 2000,
+              "loop_age_seconds": 1.657783586,
+              "iterations": 311,
+              "progress": 0,
+              "same_boot": true
+            },
+            "limit": 15
+          },
+          {
+            "component": "laravel_queue_worker",
+            "state": "VERDE",
+            "reason": "health_job_completed",
+            "timestamp": "2026-11-12T19:40:21+01:00",
+            "values": {
+              "completed_job_age_seconds": 19.666495396
+            },
+            "limit": 90
+          },
+          {
+            "component": "task_engine",
+            "state": "VERDE",
+            "reason": "active_expired_leases",
+            "timestamp": "2026-11-12T19:40:21+01:00",
+            "values": {
+              "active": 0,
+              "expired": 0,
+              "failures_today": 0
+            },
+            "limit": 0
+          },
+          {
+            "component": "agents",
+            "state": "VERDE",
+            "reason": "heartbeat_and_poll_coverage",
+            "timestamp": "2026-11-12T19:40:21+01:00",
+            "values": {
+              "total": 1,
+              "online": 1,
+              "oldest_heartbeat_seconds": 4,
+              "oldest_poll_seconds": 2,
+              "missing_heartbeat": 0,
+              "missing_poll": 0
+            },
+            "limit": {
+              "heartbeat_seconds": 60,
+              "poll_seconds": 30
+            }
+          },
+          {
+            "component": "nginx_external",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:40:20.738244+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "fpm_process",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:40:20.738244+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "postgresql_container",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:40:20.738244+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "queue_container",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:40:20.738244+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "diagnostic_container",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:40:20.738244+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "web_https",
+            "state": "VERDE",
+            "reason": "https_status_probe",
+            "timestamp": "2026-11-12T18:40:20.738244+00:00",
+            "values": {
+              "http_status": 200
+            },
+            "limit": {
+              "expected_status": 200
+            }
+          },
+          {
+            "component": "agent_api_external",
+            "state": "VERDE",
+            "reason": "https_status_probe",
+            "timestamp": "2026-11-12T18:40:20.738244+00:00",
+            "values": {
+              "http_status": 422
+            },
+            "limit": {
+              "expected_status": 422
+            }
+          },
+          {
+            "component": "http_error_rate",
+            "state": "VERDE",
+            "reason": "sanitized_status_log_5m",
+            "timestamp": "2026-11-12T18:40:20.738244+00:00",
+            "values": {
+              "requests": 134,
+              "http_5xx": 0,
+              "rate": 0
+            },
+            "limit": {
+              "max_rate": 0.05,
+              "window_seconds": 300,
+              "max_samples": 10000
+            }
+          },
+          {
+            "component": "backup_local",
+            "state": "VERDE",
+            "reason": "generation_integrity_verified",
+            "timestamp": "2026-11-12T18:40:20.738244+00:00",
+            "values": {
+              "age_seconds": 806.2700686454773
+            },
+            "limit": {
+              "max_age_seconds": 93600
+            }
+          },
+          {
+            "component": "backup_external",
+            "state": "VERDE",
+            "reason": "r2_encrypted_upload_download_verified",
+            "timestamp": "2026-11-12T18:40:20.738244+00:00",
+            "values": {
+              "age_seconds": 58871.27034783363
+            },
+            "limit": {
+              "max_age_seconds": 93600
+            }
+          },
+          {
+            "component": "fencing_runtime",
+            "state": "VERDE",
+            "reason": "active_attempt_generation_mismatch",
+            "timestamp": "2026-11-12T19:40:21+01:00",
+            "values": {
+              "mismatches": 0
+            },
+            "limit": 0
+          },
+          {
+            "component": "agent_maintenance",
+            "state": "VERDE",
+            "reason": "interrupted_or_stalled_operations",
+            "timestamp": "2026-11-12T19:40:21+01:00",
+            "values": {
+              "uncertain": 0,
+              "stalled": 0
+            },
+            "limit": 300
+          }
+        ]
+      },
+      "no_context_rows_visible": true
+    },
+    "readiness": {
+      "status": "ready"
+    }
+  },
+  {
+    "elapsed_seconds": 150.00021985196508,
+    "utc": "2026-11-12T18:40:42.846292+00:00",
+    "agent": {
+      "runtime": {
+        "sha256": "a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315",
+        "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+      },
+      "updater": {
+        "sha256": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb",
+        "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+      },
+      "installed_lifecycle": {
+        "prechecks_updaters_for_064_plus": true,
+        "finalize_calls_updaters_install": true,
+        "writes_companions": true
+      },
+      "/etc/agent-center-agent/config.json": {
+        "sha256": "0a3da81148e8b26a255c5c540b15d9f4bc73b9ce00bb5dac5eea9d62923086a2"
+      },
+      "/etc/agent-center-agent/lifecycle-policy.json": {
+        "sha256": "54da18d13ec931f984b3ed4a4cca4aba5c7cb1a50b56c49b500602781669be7b"
+      },
+      "/var/lib/agent-center-agent/identity.json": {
+        "sha256": "c13d8096197834167066aba87a691b1fc57bd67efe120679f659e459af58b83b"
+      },
+      "/var/lib/agent-center-agent/managed-settings.json": {
+        "sha256": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+      },
+      "presence": {
+        "state": "ONLINE",
+        "version": "0.6.5",
+        "heartbeat_successes": 28,
+        "poll_successes": 86,
+        "heartbeat_max_gap": 21.356515056919307,
+        "poll_max_gap": 8.61464631697163
+      },
+      "services": [
+        "MainPID=491739",
+        "Result=success",
+        "ExecMainStartTimestamp=Thu 2026-11-12 15:31:36 -03",
+        "ExecMainStatus=0",
+        "Id=agent-center-agent.service",
+        "ActiveState=active",
+        "",
+        "MainPID=0",
+        "Result=success",
+        "ExecMainStartTimestamp=Thu 2026-11-12 15:40:33 -03",
+        "ExecMainStatus=0",
+        "Id=agent-center-updater.service",
+        "ActiveState=inactive",
+        "",
+        "Result=success",
+        "Id=agent-center-updater.timer",
+        "ActiveState=active",
+        "",
+        "Result=success",
+        "Id=agent-center-mtr.socket",
+        "ActiveState=active"
+      ],
+      "journal": {
+        "integrity": "ok",
+        "executions": 103,
+        "events": 412
+      },
+      "helper_readiness": "{\"mtr_helper_ready\": true}",
+      "helper_sha256": "7d3dce0658e5d32e8a13c34924ea7912f2cd692f9fbd642d438b072561dbd6f9",
+      "status_age_seconds": 4.724714279174805,
+      "hardening": [
+        "CapabilityBoundingSet=",
+        "AmbientCapabilities=",
+        "User=agent-center-agent",
+        "NoNewPrivileges=yes"
+      ],
+      "malformed_policy_rejected": true,
+      "companion_sha256": {
+        "updater.pyz": "c1bbbe6ba0dacde04387cf60ca30539b6a8b444f1e30bff2005c42e38d880ab1",
+        "remote-updater.pyz": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb"
+      },
+      "boot_id": "751ca98c-0234-4be6-9a14-422b7b7f6937",
+      "new_operational_errors": []
+    },
+    "readiness": {
+      "status": "ready"
+    }
+  },
+  {
+    "elapsed_seconds": 180.00130659295246,
+    "utc": "2026-11-12T18:41:12.847479+00:00",
+    "agent": {
+      "runtime": {
+        "sha256": "a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315",
+        "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+      },
+      "updater": {
+        "sha256": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb",
+        "version_source": "\"\"\"Agent Center read-only runtime; no HTTP server.\"\"\"\n\n__version__ = \"0.6.5\""
+      },
+      "installed_lifecycle": {
+        "prechecks_updaters_for_064_plus": true,
+        "finalize_calls_updaters_install": true,
+        "writes_companions": true
+      },
+      "/etc/agent-center-agent/config.json": {
+        "sha256": "0a3da81148e8b26a255c5c540b15d9f4bc73b9ce00bb5dac5eea9d62923086a2"
+      },
+      "/etc/agent-center-agent/lifecycle-policy.json": {
+        "sha256": "54da18d13ec931f984b3ed4a4cca4aba5c7cb1a50b56c49b500602781669be7b"
+      },
+      "/var/lib/agent-center-agent/identity.json": {
+        "sha256": "c13d8096197834167066aba87a691b1fc57bd67efe120679f659e459af58b83b"
+      },
+      "/var/lib/agent-center-agent/managed-settings.json": {
+        "sha256": "16d31f79def0777b60d15c9903703e2f0afda7bcdd40aa59faa8e91afe95d324"
+      },
+      "presence": {
+        "state": "ONLINE",
+        "version": "0.6.5",
+        "heartbeat_successes": 29,
+        "poll_successes": 91,
+        "heartbeat_max_gap": 21.356515056919307,
+        "poll_max_gap": 8.61464631697163
+      },
+      "services": [
+        "MainPID=491739",
+        "Result=success",
+        "ExecMainStartTimestamp=Thu 2026-11-12 15:31:36 -03",
+        "ExecMainStatus=0",
+        "Id=agent-center-agent.service",
+        "ActiveState=active",
+        "",
+        "MainPID=0",
+        "Result=success",
+        "ExecMainStartTimestamp=Thu 2026-11-12 15:41:07 -03",
+        "ExecMainStatus=0",
+        "Id=agent-center-updater.service",
+        "ActiveState=inactive",
+        "",
+        "Result=success",
+        "Id=agent-center-updater.timer",
+        "ActiveState=active",
+        "",
+        "Result=success",
+        "Id=agent-center-mtr.socket",
+        "ActiveState=active"
+      ],
+      "journal": {
+        "integrity": "ok",
+        "executions": 103,
+        "events": 412
+      },
+      "helper_readiness": "{\"mtr_helper_ready\": true}",
+      "helper_sha256": "7d3dce0658e5d32e8a13c34924ea7912f2cd692f9fbd642d438b072561dbd6f9",
+      "status_age_seconds": 3.413684844970703,
+      "hardening": [
+        "CapabilityBoundingSet=",
+        "AmbientCapabilities=",
+        "User=agent-center-agent",
+        "NoNewPrivileges=yes"
+      ],
+      "malformed_policy_rejected": true,
+      "companion_sha256": {
+        "updater.pyz": "c1bbbe6ba0dacde04387cf60ca30539b6a8b444f1e30bff2005c42e38d880ab1",
+        "remote-updater.pyz": "be9027b4bf9f9bb30b541787cc8644ca5aa4d558eed0678302b7772005d4d8eb"
+      },
+      "boot_id": "751ca98c-0234-4be6-9a14-422b7b7f6937",
+      "new_operational_errors": []
+    },
+    "health": {
+      "status": "REVIEW",
+      "webhook": {
+        "method": "getWebhookInfo",
+        "registered": true,
+        "api_status": "DELIVERY_UNKNOWN",
+        "https_url_matches": false,
+        "pending_updates": null,
+        "last_error_date": null
+      },
+      "rag": {
+        "status": "no_match",
+        "authorized_sources": 0,
+        "index_empty": true,
+        "health": "READY_EMPTY"
+      },
+      "rls": [
+        {
+          "relname": "agent_tasks",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "conversation_events",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "conversation_messages",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "conversations",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "diagnostic_conclusions",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "diagnostics",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "llm_bindings",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "llm_providers",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "rag_chunks",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        },
+        {
+          "relname": "rag_documents",
+          "relrowsecurity": true,
+          "relforcerowsecurity": true
+        }
+      ],
+      "runtime_superuser": false,
+      "runtime_bypassrls": false,
+      "enabled_credentials_decryptable": true,
+      "queue": {
+        "pending": 0,
+        "failed": 0
+      },
+      "idle": {
+        "minutes": 15,
+        "enabled": true,
+        "tenants": [
+          1
+        ]
+      },
+      "operations": {
+        "database": true,
+        "worker": true,
+        "agents_total": 1,
+        "agents_online": 1,
+        "heartbeat_age": 6,
+        "poll_age": 4,
+        "missing_heartbeat": 0,
+        "missing_poll": 0,
+        "today": 2,
+        "indications": 0,
+        "active": 0,
+        "stale": 0,
+        "failed": 0,
+        "state": "VERDE",
+        "checks": [
+          {
+            "component": "laravel_web",
+            "state": "VERDE",
+            "reason": "authenticated_request_completed",
+            "timestamp": "2026-11-12T19:41:23+01:00",
+            "values": {
+              "request": true
+            },
+            "limit": null
+          },
+          {
+            "component": "postgresql",
+            "state": "VERDE",
+            "reason": "select_1_succeeded",
+            "timestamp": "2026-11-12T19:41:23+01:00",
+            "values": {
+              "select_1": true
+            },
+            "limit": 1
+          },
+          {
+            "component": "postgresql_tls",
+            "state": "VERDE",
+            "reason": "connection_tls_and_client_verification",
+            "timestamp": "2026-11-12T19:41:23+01:00",
+            "values": {
+              "tls": true,
+              "verify_full": true
+            },
+            "limit": true
+          },
+          {
+            "component": "diagnostic_worker",
+            "state": "VERDE",
+            "reason": "functional_loop_recent",
+            "timestamp": "2026-11-12T19:41:23+01:00",
+            "values": {
+              "work_ms": 13.148397,
+              "started_at": "2026-11-12T18:41:21.581089Z",
+              "finished_at": "2026-11-12T18:41:21.594172Z",
+              "scheduled_wait_ms": 2000,
+              "loop_age_seconds": 1.608738221,
+              "iterations": 341,
+              "progress": 0,
+              "same_boot": true
+            },
+            "limit": 15
+          },
+          {
+            "component": "laravel_queue_worker",
+            "state": "VERDE",
+            "reason": "health_job_completed",
+            "timestamp": "2026-11-12T19:41:23+01:00",
+            "values": {
+              "completed_job_age_seconds": 20.385543487
+            },
+            "limit": 90
+          },
+          {
+            "component": "task_engine",
+            "state": "VERDE",
+            "reason": "active_expired_leases",
+            "timestamp": "2026-11-12T19:41:23+01:00",
+            "values": {
+              "active": 0,
+              "expired": 0,
+              "failures_today": 0
+            },
+            "limit": 0
+          },
+          {
+            "component": "agents",
+            "state": "VERDE",
+            "reason": "heartbeat_and_poll_coverage",
+            "timestamp": "2026-11-12T19:41:23+01:00",
+            "values": {
+              "total": 1,
+              "online": 1,
+              "oldest_heartbeat_seconds": 6,
+              "oldest_poll_seconds": 4,
+              "missing_heartbeat": 0,
+              "missing_poll": 0
+            },
+            "limit": {
+              "heartbeat_seconds": 60,
+              "poll_seconds": 30
+            }
+          },
+          {
+            "component": "nginx_external",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:41:10.013974+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "fpm_process",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:41:10.013974+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "postgresql_container",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:41:10.013974+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "queue_container",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:41:10.013974+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "diagnostic_container",
+            "state": "VERDE",
+            "reason": "container_functional_health",
+            "timestamp": "2026-11-12T18:41:10.013974+00:00",
+            "values": {
+              "healthy": true
+            },
+            "limit": true
+          },
+          {
+            "component": "web_https",
+            "state": "VERDE",
+            "reason": "https_status_probe",
+            "timestamp": "2026-11-12T18:41:10.013974+00:00",
+            "values": {
+              "http_status": 200
+            },
+            "limit": {
+              "expected_status": 200
+            }
+          },
+          {
+            "component": "agent_api_external",
+            "state": "VERDE",
+            "reason": "https_status_probe",
+            "timestamp": "2026-11-12T18:41:10.013974+00:00",
+            "values": {
+              "http_status": 422
+            },
+            "limit": {
+              "expected_status": 422
+            }
+          },
+          {
+            "component": "http_error_rate",
+            "state": "VERDE",
+            "reason": "sanitized_status_log_5m",
+            "timestamp": "2026-11-12T18:41:10.013974+00:00",
+            "values": {
+              "requests": 132,
+              "http_5xx": 0,
+              "rate": 0
+            },
+            "limit": {
+              "max_rate": 0.05,
+              "window_seconds": 300,
+              "max_samples": 10000
+            }
+          },
+          {
+            "component": "backup_local",
+            "state": "VERDE",
+            "reason": "generation_integrity_verified",
+            "timestamp": "2026-11-12T18:41:10.013974+00:00",
+            "values": {
+              "age_seconds": 855.6650950908661
+            },
+            "limit": {
+              "max_age_seconds": 93600
+            }
+          },
+          {
+            "component": "backup_external",
+            "state": "VERDE",
+            "reason": "r2_encrypted_upload_download_verified",
+            "timestamp": "2026-11-12T18:41:10.013974+00:00",
+            "values": {
+              "age_seconds": 58920.665407419205
+            },
+            "limit": {
+              "max_age_seconds": 93600
+            }
+          },
+          {
+            "component": "fencing_runtime",
+            "state": "VERDE",
+            "reason": "active_attempt_generation_mismatch",
+            "timestamp": "2026-11-12T19:41:23+01:00",
+            "values": {
+              "mismatches": 0
+            },
+            "limit": 0
+          },
+          {
+            "component": "agent_maintenance",
+            "state": "VERDE",
+            "reason": "interrupted_or_stalled_operations",
+            "timestamp": "2026-11-12T19:41:23+01:00",
+            "values": {
+              "uncertain": 0,
+              "stalled": 0
+            },
+            "limit": 300
+          }
+        ]
+      },
+      "no_context_rows_visible": true
+    },
+    "readiness": {
+      "status": "ready"
+    }
+  }
+]

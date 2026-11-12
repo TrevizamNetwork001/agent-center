@@ -1,0 +1,17 @@
+{
+    "agent": {
+        "id": "c88457e9-748f-4906-982a-166d0ee0f6d3",
+        "version": "0.6.4",
+        "status": "active",
+        "last_heartbeat_at": "2026-11-12T18:26:31.000000Z",
+        "revoked": false
+    },
+    "unfinished_operations": [],
+    "database_select_one": 1,
+    "release_max_sequence": 5,
+    "quarantined_sequences": [
+        3,
+        4
+    ],
+    "preflight_class_present": false
+}

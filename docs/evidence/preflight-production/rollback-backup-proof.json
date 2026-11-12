@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "operation_id": "17e55b0b-365a-41c2-8457-b502080c9b1b",
+  "native_backup": "/var/lib/agent-center-updater/backups/17e55b0b-365a-41c2-8457-b502080c9b1b",
+  "native_manifest_verified": true,
+  "old_runtime": "0.6.4",
+  "old_remote_updater_sha256": "ced2b87dba5c6a8b7cd674f724d548522e585def46d700e6bd8af967714d66d1",
+  "old_cli_updater_sha256": "589d5f844af552523698d8fb3ce346a07549d649ae1f2e60d370c7560a121c5f",
+  "identity_preserved": true,
+  "rollback_executed_in_production": false
+}

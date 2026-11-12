@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "cases": [
+    {
+      "path": "/api/v1/agent/diagnostics/preflight",
+      "method": "POST",
+      "status": 401,
+      "expected": 401
+    },
+    {
+      "path": "/api/v1/agent/diagnostics/preflight",
+      "method": "GET",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "path": "/login",
+      "method": "GET",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "path": "/api/v1/agent/not-approved",
+      "method": "POST",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "path": "/api/v1/agent/heartbeat",
+      "method": "POST",
+      "status": 401,
+      "expected": 401
+    }
+  ],
+  "test_listener": "loopback-only",
+  "destination_policies_changed": false
+}

@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "simulation": {
+    "download_mbps": 1,
+    "latency_ms": 80
+  },
+  "image_bytes": 493276,
+  "second_profile_load_before_ms": 4220,
+  "second_profile_load_after_ms": 297,
+  "second_avatar_transfer_before_bytes": 493576,
+  "second_avatar_transfer_after_bytes": 300,
+  "conditional_response": 304,
+  "anonymous_conditional_request": "LOGIN_REQUIRED",
+  "tests": 505,
+  "assertions": 3839,
+  "source_commit": "b7e5108",
+  "image": "agent-center-central:preflight-v1-avatar-web-20261112",
+  "image_id": "sha256:f2cfe2e21820890887f430229dbf88e6346bf4dc2b15952410c7c3bf813c5f7f"
+}

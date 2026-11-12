@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "directory": "/var/backups/agent-center/preflight-v1-20261112T182752Z",
+  "files_verified": 58,
+  "journal_counts": {
+    "executions": 103,
+    "events": 412
+  },
+  "identity_sha256": "c13d8096197834167066aba87a691b1fc57bd67efe120679f659e459af58b83b",
+  "runtime_sha256": "a4d87d91c7592ddb59218e670e2c839d57fea7ca67dee5ae571004eacf607bff",
+  "remote_updater_sha256": "ced2b87dba5c6a8b7cd674f724d548522e585def46d700e6bd8af967714d66d1",
+  "journal_consistent_backup": true,
+  "installed_files_modified": false
+}

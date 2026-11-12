@@ -1,0 +1,4 @@
+"/agent-center-web-1" "agent-center-central:preflight-v1-avatar-web-20261112" "sha256:f2cfe2e21820890887f430229dbf88e6346bf4dc2b15952410c7c3bf813c5f7f"
+"/agent-center-worker-1" "agent-center-central:preflight-v1-web-20261112" "sha256:84b15f232fea01aabe1987d97893be1b24401b6affb966c997707c94edc26e71"
+"/agent-center-telegram-scheduler-1" "agent-center-central:preflight-v1-web-20261112" "sha256:84b15f232fea01aabe1987d97893be1b24401b6affb966c997707c94edc26e71"
+"/agent-center-diagnostic-worker-1" "agent-center-central:preflight-v1-diagnostic-20261112" "sha256:76db032a64e36647c27f7bae84b58bdb971337006520a5aee765c2e665f6addf"
