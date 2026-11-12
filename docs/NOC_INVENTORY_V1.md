@@ -100,3 +100,5 @@ A confirmação final incluiu requests Web/Telegram, RAG/Knowledge preservados, 
 Revalidação focada final: **16 testes / 324 asserções PASS**, incluindo seleção de identidade com pontuação no pedido, planejamento sem Profile de VM e contrato futuro sem `execute`/`connect`. Secret scan e diff check PASS.
 
 A checagem de empacotamento confirmou que o worker de diagnóstico possui bootstrap/rotas distintos da Web (sem arquivo de rotas Telegram). Sua imagem preserva essas rotas e layout originais, recebendo somente o núcleo/bibliotecas necessários; não se injeta o roteamento Web nesse papel. O teste de bootstrap da imagem é obrigatório antes da publicação.
+
+Revisão final de segurança: o nome livre do equipamento é escapado também no título HTML, além do corpo da página. Teste com delimitador de título e marcação de script garante saída literal, sem execução. Revalidação do módulo: **16 testes / 312 asserções PASS**, após o ciclo completo, cobrindo o novo caso de segurança. A verificação mobile consulta a navegação no DOM porque o menu lateral fica oculto por padrão nessa largura.

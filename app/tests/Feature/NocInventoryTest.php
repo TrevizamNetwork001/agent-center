@@ -87,6 +87,15 @@ class NocInventoryTest extends IdentityTestCase
         Http::assertNothingSent();
     }
 
+    public function test_device_name_is_escaped_in_document_title_and_body(): void
+    {
+        $name = '</title><script>window.nocFixture=1</script>';
+        $d = $this->createDevice(['name' => $name]);
+        $this->get('/noc-inventory/'.$d->id)->assertOk()
+            ->assertSee(e($name), false)
+            ->assertDontSee('<script>window.nocFixture=1</script>', false);
+    }
+
     public function test_edit_deactivate_history_and_stale_edit_conflict(): void
     {
         $d = $this->createDevice();

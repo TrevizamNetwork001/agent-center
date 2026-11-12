@@ -1,5 +1,5 @@
 @extends('layout')
-@section('title',$nocDevice->name.' · Inventário NOC')
+@section('title',e($nocDevice->name).' · Inventário NOC')
 @section('content')
 <div class="page-header"><div><div class="eyebrow">INVENTÁRIO NOC · REVISÃO {{$nocDevice->revision}}</div><h1 style="overflow-wrap:anywhere">{{$nocDevice->name}}</h1><p>{{$nocDevice->hostname}} · {{$nocDevice->management_ip}}</p></div><div class="actions"><a href="{{route('noc.index')}}">Inventário</a>@can('update',$nocDevice)<a class="button button-secondary" href="{{route('noc.edit',$nocDevice)}}">Editar cadastro</a>@endcan</div></div>
 <div class="feedback" role="note"><strong>Integração operacional não habilitada.</strong> Este cadastro não autoriza SSH, SNMP, NETCONF ou APIs. Não existem métricas reais de saúde neste módulo.</div>
