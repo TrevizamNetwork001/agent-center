@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "index",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "name": "catalog",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "name": "create",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "name": "index",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "name": "catalog",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "name": "create",
+      "width": 1440,
+      "status": "PASS"
+    }
+  ],
+  "anonymous": "LOGIN_REQUIRED",
+  "page_errors": [],
+  "equipment_fixtures_in_production": 0
+}

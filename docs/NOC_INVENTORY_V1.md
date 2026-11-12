@@ -102,3 +102,23 @@ Revalidação focada final: **16 testes / 324 asserções PASS**, incluindo sele
 A checagem de empacotamento confirmou que o worker de diagnóstico possui bootstrap/rotas distintos da Web (sem arquivo de rotas Telegram). Sua imagem preserva essas rotas e layout originais, recebendo somente o núcleo/bibliotecas necessários; não se injeta o roteamento Web nesse papel. O teste de bootstrap da imagem é obrigatório antes da publicação.
 
 Revisão final de segurança: o nome livre do equipamento é escapado também no título HTML, além do corpo da página. Teste com delimitador de título e marcação de script garante saída literal, sem execução. Revalidação do módulo: **16 testes / 312 asserções PASS**, após o ciclo completo, cobrindo o novo caso de segurança. A verificação mobile consulta a navegação no DOM porque o menu lateral fica oculto por padrão nessa largura.
+
+## Publicação autorizada concluída
+
+Commits funcionais: `08a2eda`, `b847214` e `023d7c1`. A migration NOC e somente os grants das três novas tabelas foram aplicados. Nenhuma migration antiga pendente foi executada. Pré-checks e deploy-precheck passaram, incluindo PostgreSQL/TLS, fila funcional e worker de diagnóstico.
+
+| Papel | Imagem final | SHA-256 |
+|---|---|---|
+| Web | `agent-center-central:noc-inventory-web-final-20261112` | `bc7332f97c67e513a851668711c0505d7cef08c97f442357e477be1cb1550a31` |
+| Fila/scheduler | `agent-center-central:noc-inventory-queue-final-20261112` | `55d39d774c5ef673abba78a0af1e90bfc036c52f337c1785a15ee780b43fcb28` |
+| Worker diagnóstico | `agent-center-central:noc-inventory-diagnostic-final-20261112` | `b74651125a6a3d4bc98f53c1d3228474fdd5233138d57dd22743ff87e9037e19` |
+
+Validação produtiva: criação/edição/desativação, três revisões, simulação idempotente, separação do histórico real, intenção, RLS e contexto sem visibilidade entre tenants passaram dentro de transação revertida. **Zero registros temporários persistidos, zero conexões a equipamentos, zero AgentTasks/diagnósticos criados.** Não foram semeados dados demonstrativos em produção. A Web autenticada passou em seis combinações de listagem/catálogo/cadastro e mobile/desktop; acesso anônimo exige login; nenhum erro JavaScript. Screenshots produtivos permanecem no diretório privado de evidências.
+
+Health final: **PASS / VERDE**, webhook OK, filas sem falhas, readiness/HTTPS 200. A amostra final continha um job pendente e zero failed jobs, sem backlog anormal. A única alteração dentre as 16 tabelas protegidas comparadas foi a entrada da nova migration. RAG, Knowledge, Profiles/Skills, releases, quarentena, operações Lifecycle e configuração do Agent permaneceram iguais. Agent **0.6.5**, identidade e política revisão **4** preservados; Preflight sem alteração de fonte. Dos 220 arquivos preexistentes monitorados, somente o compose recebeu a troca autorizada das quatro referências de imagem; os demais foram preservados por hash.
+
+Sessão temporária de validação revogada. Rollback preparado e não acionado: `/root/noc-inventory-private/rollback.sh`, restaurando as três imagens Preflight Real Flow e preservando tabelas/RLS/histórico. Backup restaurado/verificado: `20261112T203517Z`. Não houve alteração de R2, acesso SSH/SNMP/NETCONF, instalação de executores, mudança de ACLs, de device freeze ou de release em quarentena.
+
+Evidências: [serviços e RLS em produção](evidence/noc-inventory/production-proof.json), [Web](evidence/noc-inventory/production-browser-proof.json), [Health](evidence/noc-inventory/production-health.json) e [preservação](evidence/noc-inventory/preservation-proof.json).
+
+**AGENT CENTER NOC INVENTORY V1 LAB PASS — publicado após autorização operacional expressa.** A limitação permanece explícita: inventário e simulação não habilitam diagnósticos reais em equipamentos; nenhuma capacidade de equipamento está AVAILABLE.

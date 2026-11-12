@@ -1,0 +1,42 @@
+{
+    "status": "PASS",
+    "database": "production; native services inside rolled-back transaction",
+    "rls": [
+        {
+            "relname": "noc_device_revisions",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        },
+        {
+            "relname": "noc_devices",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        },
+        {
+            "relname": "noc_simulations",
+            "relrowsecurity": true,
+            "relforcerowsecurity": true
+        }
+    ],
+    "runtime_superuser": false,
+    "runtime_bypassrls": false,
+    "crud_history_deactivation": "PASS",
+    "simulation": "SIMULATED; idempotent; rolled back",
+    "intents": {
+        "Verifique o BGP do NE8000": "BGP_SESSION_ANALYSIS",
+        "Confira a rota até 8.8.8.8 no roteador": "ROUTING_TABLE_LOOKUP",
+        "Verifique a potência das ONUs": "OPTICAL_SIGNAL_ANALYSIS"
+    },
+    "vm_path_preserved": true,
+    "counts_before_after": [
+        0,
+        0,
+        0,
+        105,
+        30
+    ],
+    "temporary_records_persisted": 0,
+    "equipment_connections": 0,
+    "agent_tasks_created": 0,
+    "operations_health_fixture_writes": 0
+}

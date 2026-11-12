@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "preexisting_files": 220,
+  "unchanged": 219,
+  "authorized_difference": "four compose role image references",
+  "agent_version": "0.6.5",
+  "policy_revision": 4,
+  "policy_identity_unchanged": true,
+  "preflight_source_unchanged": true,
+  "lifecycle_untouched": true,
+  "quarantine_preserved": true,
+  "temporary_session_revoked": true
+}
