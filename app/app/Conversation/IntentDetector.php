@@ -15,6 +15,9 @@ class IntentDetector
         if (preg_match('/^(?:tchau|ate mais|ate logo|falou)[.! ]*$/', $s)) {
             return Intent::Close;
         }
+        if (preg_match('/^(?:(?:valeu|obrigad[oa]|certo|beleza)[,.! ]+)?(?:pode (?:fechar|finalizar)(?: (?:o|a) (?:chat|conversa|atendimento))?|vamos encerrar)[.! ]*$/', $s)) {
+            return Intent::Close;
+        }
         if (preg_match('/\b(cancela|cancelar|pare|parar|interrompa)\b/', $s)) {
             return Intent::Cancel;
         }

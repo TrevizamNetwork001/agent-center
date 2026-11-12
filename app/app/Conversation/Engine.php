@@ -126,6 +126,11 @@ class Engine
             $c->context_json = [...$c->context_json, 'tone' => $tone];
             $prefix = app(ConversationToneDetector::class)->prefix($safe, $tone);
             $state = State::from($c->state);
+            if (in_array($intent, [Intent::Topic, Intent::Knowledge, Intent::Start, Intent::Another, Intent::Target, Intent::Path, Intent::Confirm, Intent::Deny, Intent::Cancel, Intent::Close], true)) {
+                $c->context_json = [...array_diff_key($c->context_json, ['pending_question' => true]), 'context_memory_version' => 1];
+            } elseif (in_array($intent, [Intent::Greeting, Intent::Social, Intent::Unknown], true)) {
+                app(ContextualTurn::class)->answer($c, $safe);
+            }
             if ($state === State::Closed) {
                 $this->reply($c, 'Conversa encerrada. Uma nova solicitação de teste abre outra conversa.');
             } elseif ($intent === Intent::Knowledge) {
@@ -164,7 +169,9 @@ class Engine
                     }
                 }
                 if ($intent !== Intent::Greeting) {
-                    $c->context_json = [...$c->context_json, 'topic' => ['kind' => $intent->value, 'text' => mb_substr($safe, 0, 300)]];
+                    if (! isset($c->context_json['pending_question']) || (! app(ContextualTurn::class)->answer($c, $safe) && ! preg_match('/^(?:kk+|haha|rsrs|marcha|bora)[.! ]*$/i', $safe))) {
+                        $c->context_json = [...$c->context_json, 'topic' => ['kind' => $intent->value, 'text' => mb_substr($safe, 0, 300)]];
+                    }
                     if ($intent !== Intent::Topic && ($provided = $det->target($safe)) !== null) {
                         try {
                             app(Planner::class)->target($provided);
@@ -175,6 +182,11 @@ class Engine
                     }
                 }
                 $response = app(Language::class)->reply($c, $i, $intent, $safe, $tone);
+                if (isset($response['metadata']['context_answer'])) {
+                    $answers = $c->context_json['conversation_answers'] ?? [];
+                    $answers[] = $response['metadata']['context_answer'];
+                    $c->context_json = [...array_diff_key($c->context_json, ['pending_question' => true]), 'conversation_answers' => array_slice($answers, -4)];
+                }
                 $this->message($c, 'system', 'text', $response['text'], null, $response['metadata']);
                 if ($response['metadata']['language_status'] !== 'LOCAL') {
                     app(Audit::class)->record('conversation.language_rendered', $i->user, $c->tenant_id, 'conversation', metadata: ['conversation_id' => $c->id, ...$response['metadata']]);
@@ -465,7 +477,7 @@ class Engine
             return;
         }
         if (in_array($next, [State::Closed, State::Cancelled], true)) {
-            $c->context_json = array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel']));
+            $c->context_json = array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'pending_question']));
         }
         $c->state = $next->value;
         $c->status = match ($next) {
@@ -489,6 +501,8 @@ class Engine
         $c->sequence++;
         $m = new ConversationMessage;
         $m->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $c->tenant_id, 'conversation_id' => $c->id, 'sender_type' => $sender, 'message_type' => $type, 'body' => Text::clean(mb_strcut($body, 0, 23000, 'UTF-8')), 'detected_intent' => $intent, 'metadata' => $meta, 'request_key' => $requestKey, 'request_user_id' => $user, 'event_key' => $eventKey, 'sequence' => $c->sequence, 'created_at' => now()])->save();
-
+        if ($sender === 'system' && $type === 'text' && ! isset($meta['diagnostic_experience'])) {
+            app(ContextualTurn::class)->question($c, $m->body, $c->sequence);
+        }
     }
 }
