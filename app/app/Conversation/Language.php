@@ -217,10 +217,15 @@ class Language
         } elseif ($act === 'ROUTINE_SLOWNESS') {
             $known = $c->context_json['pending']['target'] ?? $c->context_json['provided_target'] ?? $c->current_target;
             $relaxed = $tone['style'] === 'RELAXED';
-            $openings = $relaxed ? ['Essa lentidão atrapalha, hein.', 'Pelo que você contou, tá difícil usar'.($known ? ' '.$known : '').'.'] : ['Entendo como essa lentidão atrapalha.', 'Essa demora está prejudicando o uso'.($known ? ' de '.$known : '').'.'];
+            $reported = $known ?: 'a internet';
+            $description = in_array('barril', $voice, true) ? 'tá barril' : 'tá difícil de usar';
+            $openings = $relaxed ? ['Pelo que você contou, '.$reported.' '.$description.'.', 'Pelo seu relato, '.$reported.' '.$description.' hoje.'] : ['Entendo como essa lentidão atrapalha.', 'Essa demora está prejudicando o uso'.($known ? ' de '.$known : '').'.'];
             $question = preg_match('/\b(youtube|video|videos)\b/', $s)
                 ? ($relaxed ? 'Os vídeos demoram pra começar ou ficam parando no meio?' : 'Os vídeos demoram para iniciar ou interrompem durante a reprodução?')
                 : ($known ? 'Acontece em outros serviços também ou só nesse?' : 'Acontece em um serviço só ou em vários?');
+            if (in_array('barril', $voice, true)) {
+                $question = 'É lentidão, quedas ou outro tipo de dificuldade?';
+            }
             $choices = array_map(fn ($opening) => $opening.' '.$question, $openings);
         } elseif (preg_match('/\b(kkkk*|haha|rsrs|piada|brincadeira)\b/', $s)) {
             $choices = ['Um pouco de bom humor ajuda no plantão! Só não vale culpar a rede antes de olhar as evidências.', 'Essa veio para animar o plantão! Estou por aqui.'];

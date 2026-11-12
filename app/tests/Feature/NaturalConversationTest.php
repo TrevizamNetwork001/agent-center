@@ -251,6 +251,7 @@ class NaturalConversationTest extends IntelligenceTestCase
         $this->assertSame('RELAXED', $reply->metadata['tone']);
         $this->assertSame('ROUTINE_SLOWNESS', $reply->metadata['social_act']);
         $this->assertContains('barril', $reply->metadata['style_vocabulary']);
+        $this->assertStringContainsString('barril', $reply->body);
         $this->assertSame(1, substr_count($reply->body, '?'));
         $this->assertSame(0, Diagnostic::count());
         $this->assertSame(0, AgentTask::count());
