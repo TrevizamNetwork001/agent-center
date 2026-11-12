@@ -1,0 +1,30 @@
+{
+    "status": "PASS",
+    "network": "container loopback; network namespace disabled",
+    "trusted_tls": 200,
+    "untrusted_tls": {
+        "error": "transport_failure",
+        "transport_detail": {
+            "stage": "tls_handshake",
+            "category": "tls_certificate_verification_failed",
+            "curl_errno": 60,
+            "os_errno": 0,
+            "ssl_verify_result": 18,
+            "tcp_connected": false,
+            "tls_established": false
+        }
+    },
+    "closed_tcp_listener": {
+        "error": "connection_refused",
+        "transport_detail": {
+            "stage": "tcp_connect",
+            "category": "tcp_connection_refused",
+            "curl_errno": 7,
+            "os_errno": 111,
+            "ssl_verify_result": 0,
+            "tcp_connected": false,
+            "tls_established": false
+        }
+    },
+    "atomic_publication_delay_us": 250000
+}

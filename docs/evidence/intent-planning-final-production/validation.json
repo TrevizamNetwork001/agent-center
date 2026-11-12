@@ -1,0 +1,32 @@
+{
+  "status": "DIAGNOSTIC INTENT PLANNING PRODUCTION PASS",
+  "implementation_commits": [
+    "8c6e4c8",
+    "a66a8b6",
+    "3aeb82e"
+  ],
+  "full_regression": {
+    "tests": 495,
+    "assertions": 3775,
+    "status": "PASS"
+  },
+  "concurrency": [
+    "Task Engine PASS",
+    "Conversation idle PASS"
+  ],
+  "pint": "PASS, 22 files",
+  "vite_build": "PASS",
+  "secret_scan": "PASS, Git index basic scan",
+  "diff_check": "PASS",
+  "browser_checks": 30,
+  "https_readiness": "200 ready",
+  "operations_health": "VERDE",
+  "telegram_webhook": "registered, URL matched, zero pending updates",
+  "rag": "READY_EMPTY; native retrieval no_match, no external LLM request",
+  "effective_mtr_permission": "UNKNOWN; blocked; no confirmation",
+  "production_probes": 0,
+  "new_tasks": 0,
+  "new_diagnostics": 0,
+  "rollback": "isolated restore and Profile rollback dry-run PASS; exact previous images retained",
+  "forbidden_modules_modified": false
+}

@@ -1,0 +1,23 @@
+{
+    "status": "PASS",
+    "actor_role": "platform_admin",
+    "goal": "ROUTE_PATH_ANALYSIS",
+    "profile": "MTR_ICMP",
+    "planned_steps": [
+        "mtr_icmp"
+    ],
+    "scope": "Objetivo: Análise de rota até 8.8.8.8. Profile planejado: MTR_ICMP. Verificação planejada: MTR ICMP.",
+    "permission": {
+        "state": "UNKNOWN",
+        "reason": "effective_policy_unverified",
+        "helper_healthy": null
+    },
+    "blocked_reason": "effective_policy_unverified",
+    "confirmation_offered": false,
+    "tasks_created": 0,
+    "probes": 0,
+    "explicit_denial": {
+        "classification": "INCONCLUSIVO",
+        "summary": "Verificações bloqueadas pela política do Agent; evidências insuficientes para concluir no escopo testado."
+    }
+}

@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "images": {
+    "web": [
+      {
+        "service": "web",
+        "image": "agent-center-central:intent-planning-final-web-20261112",
+        "id": "sha256:c4a0f088aefe67c992bcb9d920610edb2b1bdc0a83a2ec47938e58315b374f6d",
+        "status": "running",
+        "health": "healthy",
+        "source_hashes_match": true,
+        "observability": "ABSENT"
+      },
+      {
+        "service": "worker",
+        "image": "agent-center-central:intent-planning-final-web-20261112",
+        "id": "sha256:c4a0f088aefe67c992bcb9d920610edb2b1bdc0a83a2ec47938e58315b374f6d",
+        "status": "running",
+        "health": "healthy",
+        "source_hashes_match": true,
+        "observability": "ABSENT"
+      },
+      {
+        "service": "telegram-scheduler",
+        "image": "agent-center-central:intent-planning-final-web-20261112",
+        "id": "sha256:c4a0f088aefe67c992bcb9d920610edb2b1bdc0a83a2ec47938e58315b374f6d",
+        "status": "running",
+        "health": "scheduler running",
+        "source_hashes_match": true,
+        "observability": "ABSENT"
+      }
+    ],
+    "diagnostic": [
+      {
+        "service": "diagnostic-worker",
+        "image": "agent-center-central:intent-planning-final-diagnostic-20261112",
+        "id": "sha256:fb4fb3e4615fad3511894bd6e093090ae9fa76e698db0df3abf9357c567c13e3",
+        "status": "running",
+        "health": "healthy",
+        "source_hashes_match": true,
+        "observability": "ABSENT"
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "existing_profiles_unchanged": true,
+  "other_protected_tables_unchanged": 15,
+  "agents_configuration_preserved": true,
+  "tasks_created": 0,
+  "diagnostics_created": 0,
+  "new_profiles": [
+    "CAMINHO_TRACEROUTE",
+    "CONECTIVIDADE_BASICA",
+    "PORTA_SERVICO"
+  ]
+}

@@ -1,0 +1,3 @@
+OK (495 tests, 3775 assertions)
+PASS: separate-process concurrent claims; worker/result race; exclusive execution lane; expired-claim fencing; duplicate idempotence; DNS prerequisites preserved
+Conversation idle concurrency: PASS (two closers; message versus closer; no tasks)

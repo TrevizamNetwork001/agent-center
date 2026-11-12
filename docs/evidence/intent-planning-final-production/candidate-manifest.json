@@ -1,0 +1,49 @@
+{
+  "web": {
+    "image": "agent-center-central:intent-compat-web-lab-20261112",
+    "id": "sha256:c4a0f088aefe67c992bcb9d920610edb2b1bdc0a83a2ec47938e58315b374f6d",
+    "base_image": "agent-center-central:greeting-restart-20261112",
+    "base_id": "sha256:1933a840c01487309a10cffc88d03f20cfbbf711bc73ee0d3737af9448fcfa22",
+    "observability": "ABSENT",
+    "source_hashes": {
+      "app/Conversation/DiagnosticExperience.php": "a8061a4db28389ec64181ec9aa29753ca0e106c8571844ee0c30b13c65f3e8d9",
+      "app/Conversation/Engine.php": "320e6965cf05c14e309bf932eb29d519da8e515120a5465782c3cb593e7d54a9",
+      "app/Conversation/IntentDetector.php": "5a9ecb4592d1a5e432bf5c193c625f0c9b305e9b7a1077977f76a43a529ae7bf",
+      "app/Diagnostics/Catalog.php": "0c0e37fb250eafde1baa63995907f3e63a6cf4353e6784546e0519e83ed22177",
+      "app/Diagnostics/Classifier.php": "fef36a12c39dc5b5a7de8de0b46d03e66eb89c4348d50ebec1bdfb5ed19b47ab",
+      "app/Diagnostics/Engine.php": "afb964d7ddf2ab59d4dd668f3764d96babda93cded0d0be711cd2143909aa1c3",
+      "app/Diagnostics/IntentParser.php": "c69b82719e8cc77948ef47a4add368b250698097b5be4744e6a51e7dd5b9ecb2",
+      "app/Diagnostics/IntentPlanning.php": "467337d09cf28fda18a49996b61590b5ed7c170f07f8dccd6b82877c0f66cb57",
+      "app/Diagnostics/ObjectiveCoverage.php": "ccf7a06992a9a65d8487ce04a196a7778b101bc98238df6b30a0a3558650b993",
+      "app/Diagnostics/OperationalIntent.php": "2aeffda1f988ca72d7c82a884c02ffdb9a89040ad75bd8c1d61f490b9ff54fc8",
+      "app/Diagnostics/PathReadiness.php": "7a4d18f22a4245228e0dd9dd203f226fd09a8d3a252d8e0de82ff45913418aec",
+      "app/Diagnostics/Planner.php": "e3416c66196082cc7fd45bb7a96655ecc8159081af4a4e50295fd0ea6b664927",
+      "resources/views/diagnostics/executive.blade.php": "a2f0a45783b4dd7d6d9f1f9278e4a2292085e36d689f59d6a1f6dbe7e8bac9ac",
+      "app/Diagnostics/OperationalCapabilities.php": "b055a8b657e1904264fce52c56080ce462371c6f1670d8829c1c00681b673112",
+      "app/Llm/Client.php": "b514082863a159a48b628e415bdddcee52a526740fd915492f0074aeb5ef531c",
+      "app/Llm/CurlTransport.php": "cb7c76baae57dcda15bc937a0b84f39831d220dea1d8ab8f4a07b5e10baf1489",
+      "app/Llm/TransportFailure.php": "3518ce08656d0ef9b78a110af70ba8ca69d516b080d77f9cb2fbec8e7ed26af4"
+    },
+    "runtime_code_writable": false
+  },
+  "diagnostic": {
+    "image": "agent-center-central:intent-compat-diagnostic-lab-20261112",
+    "id": "sha256:fb4fb3e4615fad3511894bd6e093090ae9fa76e698db0df3abf9357c567c13e3",
+    "base_image": "agent-center-central:agent064-workers-20261110",
+    "base_id": "sha256:f2d4c1e60312c4a68c3ef5dd9412ab52da2fc0b66d7ae22f6c399b8a88d07b1b",
+    "observability": "ABSENT",
+    "source_hashes": {
+      "app/Diagnostics/Catalog.php": "0c0e37fb250eafde1baa63995907f3e63a6cf4353e6784546e0519e83ed22177",
+      "app/Diagnostics/Classifier.php": "fef36a12c39dc5b5a7de8de0b46d03e66eb89c4348d50ebec1bdfb5ed19b47ab",
+      "app/Diagnostics/Engine.php": "afb964d7ddf2ab59d4dd668f3764d96babda93cded0d0be711cd2143909aa1c3",
+      "app/Diagnostics/IntentParser.php": "c69b82719e8cc77948ef47a4add368b250698097b5be4744e6a51e7dd5b9ecb2",
+      "app/Diagnostics/IntentPlanning.php": "467337d09cf28fda18a49996b61590b5ed7c170f07f8dccd6b82877c0f66cb57",
+      "app/Diagnostics/ObjectiveCoverage.php": "ccf7a06992a9a65d8487ce04a196a7778b101bc98238df6b30a0a3558650b993",
+      "app/Diagnostics/OperationalIntent.php": "2aeffda1f988ca72d7c82a884c02ffdb9a89040ad75bd8c1d61f490b9ff54fc8",
+      "app/Diagnostics/PathReadiness.php": "7a4d18f22a4245228e0dd9dd203f226fd09a8d3a252d8e0de82ff45913418aec",
+      "app/Diagnostics/Planner.php": "e3416c66196082cc7fd45bb7a96655ecc8159081af4a4e50295fd0ea6b664927",
+      "app/Diagnostics/OperationalCapabilities.php": "b055a8b657e1904264fce52c56080ce462371c6f1670d8829c1c00681b673112"
+    },
+    "runtime_code_writable": false
+  }
+}

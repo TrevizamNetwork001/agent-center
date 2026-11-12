@@ -1,0 +1,189 @@
+{
+  "status": "PASS",
+  "https": true,
+  "anonymous_requires_login": true,
+  "checks": 30,
+  "telegram_transport": "captured; no external sends",
+  "results": [
+    {
+      "key": "web",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "diagnostic",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "operations",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "telegram-settings",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "web",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "diagnostic",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "operations",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "telegram-settings",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "web",
+      "width": 768,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 768,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "diagnostic",
+      "width": 768,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "operations",
+      "width": 768,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "telegram-settings",
+      "width": 768,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "web",
+      "width": 768,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 768,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "diagnostic",
+      "width": 768,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "operations",
+      "width": 768,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "telegram-settings",
+      "width": 768,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "web",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "diagnostic",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "operations",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "telegram-settings",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "web",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "diagnostic",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "operations",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "telegram-settings",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    }
+  ]
+}

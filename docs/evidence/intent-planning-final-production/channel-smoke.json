@@ -1,0 +1,25 @@
+{
+    "status": "PASS",
+    "conversations": {
+        "web": "ec27c70e-3997-4ce2-b760-dd6462dc8c52",
+        "telegram": "1388cde7-8c4e-475f-b63b-273de44ecfa5"
+    },
+    "responses": {
+        "web": "Objetivo: Análise de rota até 8.8.8.8. Profile planejado: MTR_ICMP. Verificação planejada: MTR ICMP. Autorização efetiva não comprovada: a Agent API publicada não fornece à Central uma decisão por destino\/protocolo nem a saúde atual do helper. A capability anunciada não autoriza a execução. Nenhuma ACL foi alterada. Objetivo Análise de rota: NÃO EXECUTADO; solicitação INCONCLUSIVA. Alternativa: peça explicitamente conectividade básica, que não analisa a rota. Nenhuma tarefa foi criada.",
+        "telegram": "Objetivo: Análise de rota até 8.8.8.8. Profile planejado: MTR_ICMP. Verificação planejada: MTR ICMP. Autorização efetiva não comprovada: a Agent API publicada não fornece à Central uma decisão por destino\/protocolo nem a saúde atual do helper. A capability anunciada não autoriza a execução. Nenhuma ACL foi alterada. Objetivo Análise de rota: NÃO EXECUTADO; solicitação INCONCLUSIVA. Alternativa: peça explicitamente conectividade básica, que não analisa a rota. Nenhuma tarefa foi criada."
+    },
+    "web_and_telegram_same_plan": true,
+    "profile": "MTR_ICMP",
+    "skills": [
+        "mtr_icmp"
+    ],
+    "authorization": "UNKNOWN",
+    "confirmation_offered": false,
+    "message_replay_idempotent": true,
+    "native_telegram_ingress_outbox_delivery": "PASS; captured transport, rolled back",
+    "original_link_preserved": true,
+    "tasks_created": 0,
+    "diagnostics_created": 0,
+    "external_telegram_sends": 0,
+    "probes": 0
+}
