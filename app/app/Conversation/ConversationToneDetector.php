@@ -29,9 +29,10 @@ class ConversationToneDetector
         // Standard greetings reset inherited slang too. Brief operational
         // confirmations keep continuity; explicit preferences and incidents win.
         $emoji = (bool) preg_match('/[😂😄🤣😅]/u', (string) end($recent));
+        $confirmation = (bool) preg_match('/^(?:(?:sim[, ]+)?(?:confirmo|confirmar|pode executar|pode verificar)|sim|pode|ok)[.! ]*$/', trim($latest));
         if ($emoji && ! preg_match(self::TECHNICAL, $latest) && ! preg_match(self::FORMAL, $latest)) {
             $style = 'RELAXED';
-        } elseif ((mb_strlen(trim($latest)) >= 12 || preg_match('/^(?:boa noite|boa tarde|bom dia|ola|tudo bem)[.!? ]*$/', trim($latest))) && ! preg_match(self::TECHNICAL, $latest) && ! preg_match(self::FORMAL, $latest) && ! preg_match(self::INFORMAL, $latest)) {
+        } elseif (! $confirmation && (mb_strlen(trim($latest)) >= 12 || preg_match('/^(?:boa noite|boa tarde|bom dia|ola|tudo bem)[.!? ]*$/', trim($latest))) && ! preg_match(self::TECHNICAL, $latest) && ! preg_match(self::FORMAL, $latest) && ! preg_match(self::INFORMAL, $latest)) {
             $style = 'CASUAL';
         }
         if (in_array($preference, ['FORMAL', 'TECHNICAL', 'CASUAL', 'RELAXED'], true)) {

@@ -119,6 +119,8 @@ class TelegramTest extends IntelligenceTestCase
         $this->assertSame('NORMAL', DiagnosticConclusion::where('diagnostic_id', $d->id)->sole()->classification);
         $this->experienceSweep();
         $result = ConversationMessage::where('conversation_id', $c->id)->where('message_type', 'result')->sole();
+        $this->assertSame('RELAXED', $result->metadata['tone']);
+        $this->assertStringContainsString('Prontinho, meu rei!', $result->body);
         Http::assertSent(function ($r) use ($d, $result) {
             $button = $r['reply_markup']['inline_keyboard'][0][0] ?? [];
 
