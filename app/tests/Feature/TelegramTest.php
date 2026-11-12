@@ -37,6 +37,7 @@ use App\Telegram\Update;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Client\Factory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -47,6 +48,150 @@ use Tests\IntelligenceTestCase;
 
 class TelegramTest extends IntelligenceTestCase
 {
+    public function test_telegram_return_has_one_adaptive_reply_and_replayed_update_cannot_duplicate_it(): void
+    {
+        config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+        $link = $this->link();
+        $this->say('boa noite ce ta bao?');
+        $first = $this->conversation($link);
+        $this->assertSame(1, ConversationMessage::where('conversation_id', $first->id)->where('sender_type', 'system')->count());
+        $this->travel(15)->minutes();
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $this->deliverAll();
+        $this->assertSame('CLOSED', $first->fresh()->state);
+        $this->api();
+        $this->receive('boa noite meu chapa', update: 900001);
+        $this->process();
+        $new = $this->conversation($link);
+        $this->assertNotSame($first->id, $new->id);
+        $reply = ConversationMessage::where('conversation_id', $new->id)->where('sender_type', 'system')->sole();
+        $this->assertSame('RELAXED', $reply->metadata['tone']);
+        $this->assertStringNotContainsString('assistente virtual', $reply->body);
+        $this->assertSame(1, Outbound::where('conversation_id', $new->id)->count());
+        $this->assertTrue($this->receive('boa noite meu chapa', update: 900001)['duplicate']);
+        $this->process();
+        $this->assertSame(1, Outbound::where('conversation_id', $new->id)->count());
+        $this->deliverAll();
+        Http::assertSentCount(1);
+        Http::assertSent(fn ($r) => ($r['text'] ?? '') === $reply->body);
+        $this->assertSame('CLOSED', $first->fresh()->state);
+        $this->assertSame('ACTIVE', $link->fresh()->status);
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_manual_new_telegram_chat_also_has_one_reply_while_web_keeps_its_initial_welcome(): void
+    {
+        $link = $this->link();
+        $this->say('/nova');
+        $c = $this->conversation($link);
+        $reply = ConversationMessage::where('conversation_id', $c->id)->where('sender_type', 'system')->sole();
+        $this->assertStringNotContainsString('assistente virtual', $reply->body);
+        $this->assertSame(1, Outbound::where('conversation_id', $c->id)->count());
+        $web = app(Engine::class)->create(Identity::web($this->admin), (string) Str::uuid());
+        $this->assertStringContainsString('Sou o assistente virtual', ConversationMessage::where('conversation_id', $web->id)->sole()->body);
+    }
+
+    public function test_group_return_has_one_reply_in_the_same_authorized_topic(): void
+    {
+        config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+        [$group, $link] = $this->companyGroup('group');
+        $this->groupMessage('/perguntar@lab_fixture_bot boa noite meu chapa', thread: 7);
+        $context = GroupContext::where('group_id', $group->id)->where('link_id', $link->id)->where('thread_id', 7)->sole();
+        $old = $context->conversation_id;
+        $this->travel(15)->minutes();
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $this->groupMessage('/perguntar@lab_fixture_bot boa noite meu chapa', thread: 7);
+        $this->assertNotSame($old, $context->fresh()->conversation_id);
+        $c = Conversation::findOrFail($context->fresh()->conversation_id);
+        $reply = ConversationMessage::where('conversation_id', $c->id)->where('sender_type', 'system')->sole();
+        $this->assertSame('RELAXED', $reply->metadata['tone']);
+        $this->assertStringNotContainsString('assistente virtual', $reply->body);
+        $out = Outbound::where('conversation_id', $c->id)->sole();
+        $this->assertSame($context->id, $out->context_id);
+        $this->assertSame(7, $out->thread_id);
+        $this->assertSame($group->chat_id, $out->chat_id);
+        $this->assertSame('CLOSED', Conversation::findOrFail($old)->state);
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_first_sweep_after_late_feature_activation_closes_old_chat_immediately(): void
+    {
+        config(['conversation.idle_enabled' => false, 'conversation.idle_tenants' => [$this->a->id]]);
+        $this->travelTo(Carbon::parse('2026-11-11T23:59:14Z'));
+        $link = $this->link();
+        $this->say('Boa noite!');
+        $c = $this->conversation($link);
+        $this->travelTo(Carbon::parse('2026-11-12T00:14:14Z'));
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $this->assertSame('OPEN', $c->fresh()->status);
+        $this->travelTo(Carbon::parse('2026-11-12T00:55:37Z'));
+        config(['conversation.idle_enabled' => true]);
+        $this->travelTo(Carbon::parse('2026-11-12T00:56:00Z'));
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $this->assertSame('CLOSED', $c->fresh()->state);
+        $this->assertSame(3406, (int) $c->last_activity_at->diffInSeconds($c->fresh()->closed_at));
+        $this->assertSame(1, ConversationMessage::where('event_key', 'idle_closed')->count());
+    }
+
+    public function test_periodic_sweeps_close_within_one_minute_of_deadline_in_all_display_timezones(): void
+    {
+        $original = date_default_timezone_get();
+        $databaseTimezone = DB::selectOne("SELECT current_setting('TimeZone') AS timezone")->timezone;
+        try {
+            foreach (['Europe/Berlin', 'UTC', 'America/Sao_Paulo'] as $timezone) {
+                date_default_timezone_set($timezone);
+                DB::select("SELECT set_config('TimeZone', ?, true)", [$timezone]);
+                config(['app.timezone' => $timezone, 'conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+                $this->travelTo(Carbon::parse('2026-11-11T23:59:14Z'));
+                // Reuse the verified account, but create a new isolated native conversation.
+                $link = isset($link) ? $link->fresh() : $this->link();
+                $this->say('/nova');
+                $c = $this->conversation($link);
+                foreach (range(0, 14) as $minute) {
+                    $this->travelTo(Carbon::parse('2026-11-12T00:00:00Z')->addMinutes($minute));
+                    app(Sweep::class)->run($this->a->id);
+                    $this->scope();
+                    $this->assertSame('OPEN', $c->fresh()->status, $timezone.' minute '.$minute);
+                }
+                $this->travelTo(Carbon::parse('2026-11-12T00:15:00Z'));
+                app(Sweep::class)->run($this->a->id);
+                $this->scope();
+                $this->assertSame('CLOSED', $c->fresh()->state);
+                $this->assertSame(946, (int) $c->last_activity_at->diffInSeconds($c->fresh()->closed_at));
+                $this->assertSame('21:15:00', $c->fresh()->closed_at->setTimezone('America/Sao_Paulo')->format('H:i:s'));
+                $notice = ConversationMessage::where('conversation_id', $c->id)->where('event_key', 'idle_closed')->sole();
+                $this->assertSame(1, Outbound::where('message_id', $notice->id)->count());
+            }
+        } finally {
+            date_default_timezone_set($original);
+            DB::select("SELECT set_config('TimeZone', ?, true)", [$databaseTimezone]);
+        }
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_periodic_sweep_cannot_close_or_cancel_active_diagnostic(): void
+    {
+        config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
+        $link = $this->link();
+        $this->agent();
+        $this->say('Teste google.com');
+        $this->say('Sim, confirmo');
+        $c = $this->conversation($link);
+        $this->assertSame('DIAGNOSTIC_RUNNING', $c->state);
+        $this->travel(57)->minutes();
+        app(Sweep::class)->run($this->a->id);
+        $this->scope();
+        $this->assertSame('DIAGNOSTIC_RUNNING', $c->fresh()->state);
+        $this->assertSame('PENDING', Diagnostic::findOrFail($c->current_diagnostic_id)->status);
+        $this->assertSame(0, ConversationMessage::where('event_key', 'idle_closed')->count());
+    }
+
     public function test_idle_timer_does_not_block_help_when_conversations_are_disabled(): void
     {
         $this->link();

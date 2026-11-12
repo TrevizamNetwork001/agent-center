@@ -72,7 +72,11 @@ class Engine
             $c = new Conversation;
             $c->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $i->tenantId, 'user_id' => $i->user->id, 'channel' => $i->channel, 'contact_id' => $i->contactId, 'telegram_context_id' => $i->scopeId, 'status' => 'OPEN', 'state' => 'NEW', 'creation_key' => $key, 'context_json' => $ctx, 'started_at' => now(), 'last_activity_at' => now()])->save();
             $this->transition($c, State::Active, 'created');
-            $this->reply($c, 'Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?');
+            // Telegram is opened by an incoming message: its normal reply is
+            // the greeting. Do not enqueue an additional institutional welcome.
+            if ($i->channel === 'web') {
+                $this->reply($c, 'Olá! Sou o assistente virtual do Agent Center. Como posso ajudar hoje?');
+            }
             $c->save();
 
             return $c;
