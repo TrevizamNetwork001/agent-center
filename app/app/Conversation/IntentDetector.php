@@ -2,6 +2,9 @@
 
 namespace App\Conversation;
 
+use App\Diagnostics\IntentParser;
+use App\Diagnostics\IntentPlanning;
+use App\Diagnostics\OperationalIntent;
 use Illuminate\Support\Str;
 
 class IntentDetector
@@ -44,7 +47,7 @@ class IntentDetector
         if (preg_match('~^(?:(?:sim[, ]+)?(?:confirmo|confirmar|pode executar|pode verificar)|sim|pode|fechou|ok)(?: (?:o |a )?(?:diagnostico|verificacao|teste|coleta mtr))?(?: (?:de|para|em|no alvo) (?:https://)?[a-z0-9][a-z0-9.:/\[\]-]*)?[.! ]*$~', $s)) {
             return Intent::Confirm;
         }
-        if (preg_match('/\b(mtr|teste de rota|analisa a perda|perda de pacotes ate|parte do caminho|aumentando a latencia)\b/', $s)) {
+        if (preg_match('/\b(teste de rota|analisa a perda|perda de pacotes ate|parte do caminho|aumentando a latencia)\b/', $s)) {
             return Intent::Path;
         }
         if (preg_match('/\b(outro teste|outro diagnostico|teste de novo|testa de novo|outro site)\b/', $s)) {
@@ -55,6 +58,13 @@ class IntentDetector
         }
         if (preg_match('/\b(mais detalhes|detalhe|explique|explica|evidencias)\b/', $s)) {
             return Intent::Detail;
+        }
+        $operational = app(IntentParser::class)->parse($body);
+        if ($operational['intent'] === OperationalIntent::Route->value) {
+            return Intent::Path;
+        }
+        if ($operational['intent'] !== null || $operational['ambiguous']) {
+            return Intent::Start;
         }
         if (preg_match('/\b(testa|teste|testar|verificar|verifique|diagnostico|conectividade)\b/', $s)) {
             return Intent::Start;
@@ -118,6 +128,10 @@ class IntentDetector
 
     public function profile(string $s): string
     {
+        $request = app(IntentParser::class)->parse($s);
+        if ($request['intent'] && $request['intent'] !== OperationalIntent::Slowness->value) {
+            return app(IntentPlanning::class)->profile(OperationalIntent::from($request['intent']), null, $request);
+        }
         $s = Str::lower(Str::ascii($s));
 
         return match (true) {

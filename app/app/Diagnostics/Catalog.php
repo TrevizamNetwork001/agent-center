@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 
 class Catalog
 {
-    public const PROFILES = ['SITE_LENTO' => 'Site lento', 'PROBLEMA_DNS' => 'Problema DNS', 'SITE_NAO_ABRE' => 'Site não abre', 'PERDA_LATENCIA' => 'Perda / Latência', 'GOOGLE_YOUTUBE' => 'Google / YouTube', 'CONTEUDO_LENTO' => 'Conteúdo lento', 'MTR_ICMP' => 'Caminho MTR · ICMP', 'MTR_TCP' => 'Caminho MTR · TCP/443'];
+    public const PROFILES = ['SITE_LENTO' => 'Site lento', 'PROBLEMA_DNS' => 'Problema DNS', 'SITE_NAO_ABRE' => 'Site não abre', 'PERDA_LATENCIA' => 'Perda / Latência', 'GOOGLE_YOUTUBE' => 'Google / YouTube', 'CONTEUDO_LENTO' => 'Conteúdo lento', 'MTR_ICMP' => 'Caminho MTR · ICMP', 'MTR_TCP' => 'Caminho MTR · TCP/443', 'CAMINHO_TRACEROUTE' => 'Caminho · traceroute ICMP', 'CONECTIVIDADE_BASICA' => 'Conectividade básica · ICMP', 'PORTA_SERVICO' => 'Porta de serviço · TCP/443'];
 
     public const SKILLS = ['agent_info' => ['agent_info', 'Informações do Agent', 5], 'dns_lookup' => ['dns_lookup:v1', 'DNS', 8], 'tcp_connect' => ['tcp_connect:v1', 'TCP 443', 5], 'http_probe' => ['http_probe:v1', 'HTTPS', 8], 'icmp_ping' => ['icmp_ping:v1', 'Latência', 15], 'traceroute' => ['traceroute:v1', 'Rota', 15], 'mtr_path' => ['mtr_path_analysis:v1', 'Caminho MTR', 20]];
 

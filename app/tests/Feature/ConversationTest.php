@@ -31,11 +31,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\IdentityTestCase;
+use Tests\Support\PathReadinessFixture;
 
 class ConversationTest extends IdentityTestCase
 {
+    use PathReadinessFixture;
+
     public function test_idle_closes_at_fifteen_minutes_once_and_preserves_history(): void
     {
+        $this->freezeTime();
         config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);
         $c = $this->say($this->conversation(), 'Boa noite!');
         $this->travel(14)->minutes();
@@ -314,6 +318,8 @@ class ConversationTest extends IdentityTestCase
         $this->assertSame('NOT_INFERRED', $tone['regionality']);
         $c = $this->say($this->conversation(), 'Boa noite. Poderia verificar a conectividade com o YouTube?');
         $this->assertStringStartsWith('Boa noite.', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first()->body);
+        $this->assertSame('WAITING_FOR_CONFIRMATION', $c->state);
+        $c = $this->say($c, 'Sim, confirmo');
         $this->assertSame('DIAGNOSTIC_RUNNING', $c->state);
     }
 
@@ -434,7 +440,9 @@ class ConversationTest extends IdentityTestCase
     public function test_tone_does_not_change_plan_or_thresholds_and_forbidden_skill_is_not_reinterpreted(): void
     {
         $formal = $this->say($this->conversation(), 'Boa noite. Poderia verificar a conectividade com o YouTube?');
-        $informal = $this->say($this->conversation(), 'Mano, testa YouTube');
+        $informal = $this->say($this->conversation(), 'Mano, verifica a conectividade do YouTube');
+        $formal = $this->say($formal, 'Sim, confirmo');
+        $informal = $this->say($informal, 'Sim, confirmo');
         app(Tasks::class)->tick();
         $a = DiagnosticPlan::where('diagnostic_id', $formal->current_diagnostic_id)->sole();
         $b = DiagnosticPlan::where('diagnostic_id', $informal->current_diagnostic_id)->sole();
@@ -491,20 +499,20 @@ class ConversationTest extends IdentityTestCase
         $this->assertSame('CONTEUDO_LENTO', app(IntentDetector::class)->profile('Testa conteúdo lento'));
     }
 
-    public function test_mtr_request_preserves_profile_target_and_prior_diagnostic(): void
+    public function test_mtr_request_selects_path_profile_and_preserves_target_and_prior_diagnostic(): void
     {
         $c = $this->say($this->conversation(), 'Testa google.com');
         $c = $this->finish($c);
         $prior = $c->current_diagnostic_id;
-        $profile = $c->current_profile_id;
+        $this->pathReady($this->agent, 'google.com');
         $c = $this->say($c, 'Faz um teste de rota também.');
         $this->assertSame('WAITING_FOR_CONFIRMATION', $c->state);
         $this->assertSame($prior, $c->current_diagnostic_id);
         $c = $this->say($c, 'sim');
         $d = Diagnostic::findOrFail($c->current_diagnostic_id);
-        $this->assertSame($profile, $d->profile_id);
+        $this->assertSame('MTR_ICMP', $d->profile->key);
         $this->assertSame('google.com', $d->target);
-        $this->assertTrue($d->context['mtr_requested']);
+        $this->assertSame('ROUTE_PATH_ANALYSIS', $d->context['operational_intent']);
         $this->assertSame($prior, $d->context['related_diagnostic_id']);
         $this->assertContains($prior, $c->context_json['diagnostic_ids']);
     }
@@ -517,7 +525,7 @@ class ConversationTest extends IdentityTestCase
         $count = Diagnostic::count();
         $c = $this->say($c, 'Faz um MTR mais completo.');
         $this->assertSame($count, Diagnostic::count());
-        $this->assertStringContainsString('MTR indisponível', ConversationMessage::latest('sequence')->first()->body);
+        $this->assertStringContainsString('Nenhuma tarefa', ConversationMessage::latest('sequence')->first()->body);
     }
 
     private function pendingConfirmation(): Conversation

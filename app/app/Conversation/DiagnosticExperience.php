@@ -3,12 +3,16 @@
 namespace App\Conversation;
 
 use App\Diagnostics\Classifier;
+use App\Diagnostics\MtrPath;
+use App\Diagnostics\ObjectiveCoverage;
+use App\Diagnostics\OperationalIntent;
 use App\Llm\Client;
 use App\Models\AgentTask;
 use App\Models\Conversation;
 use App\Models\ConversationMessage;
 use App\Models\Diagnostic;
 use App\Models\DiagnosticConclusion;
+use App\Models\DiagnosticPlan;
 use App\Models\DiagnosticStep;
 use App\Models\LlmBinding;
 use App\Models\LlmModel;
@@ -75,10 +79,19 @@ class DiagnosticExperience
         if (collect($facts)->contains('key', 'https')) {
             $limits[] = 'A resposta HTTPS não mede o carregamento completo da página ou a reprodução de vídeo.';
         }
+        foreach (['mtr_icmp', 'mtr_tcp'] as $key) {
+            if (($official?->evidence[$key]['ok'] ?? false) === true) {
+                $limits = [...$limits, ...app(MtrPath::class)->analyze($official->evidence[$key]['data'])['notes']];
+            }
+        }
+        $limits = array_values(array_unique($limits));
         $summary = $official ? ($official->classification === 'NORMAL' ? Classifier::NORMAL : $official->summary) : null;
+        $plan = DiagnosticPlan::where('diagnostic_id', $d->id)->first()?->document ?? [];
+        $goal = OperationalIntent::tryFrom($d->context['operational_intent'] ?? $plan['objective']['intent'] ?? '') ?? OperationalIntent::forProfile($d->profile?->key ?? '');
+        $coverage = app(ObjectiveCoverage::class)->assess($goal, $official?->evidence ?? [], $plan, $official?->classification, $d->status === 'CANCELLED');
 
         return ['target' => Text::clean(mb_substr($d->target, 0, 253)), 'classification' => $official?->classification, 'summary' => $summary,
-            'facts' => $facts, 'not_executed' => array_values($notExecuted), 'limitations' => $limits,
+            'coverage' => $coverage, 'facts' => $facts, 'not_executed' => array_values($notExecuted), 'limitations' => [...$limits, ...($coverage['limitations'] ?? [])],
             'next_steps' => array_slice(array_map(fn ($s) => Text::clean(mb_substr($s, 0, 500)), $official?->next_steps ?? []), 0, 3),
             'status' => $d->status, 'error_code' => $d->error_code, 'has_evidence' => count($facts) > 0];
     }
@@ -133,9 +146,20 @@ class DiagnosticExperience
             if (is_bool($data['reached_destination'] ?? null)) {
                 $metrics[] = $data['reached_destination'] ? 'destino alcançado pela sonda' : 'sonda não confirmou o destino';
             }
+            if (is_bool($data['destination_reached'] ?? null)) {
+                $metrics[] = $data['destination_reached'] ? 'destino alcançado pela sonda' : 'sonda não confirmou o destino';
+                $last = end($data['hops']);
+                if ($data['destination_reached'] && $n($last['loss_percent'] ?? null)) {
+                    $metrics[] = 'perda de respostas no destino: '.$last['loss_percent'].'%';
+                }
+                if ($data['destination_reached'] && $n($last['avg_ms'] ?? null)) {
+                    $metrics[] = 'RTT médio no destino: '.$last['avg_ms'].' ms';
+                }
+            }
         }
-        if ($n($data['duration_ms'] ?? null)) {
-            $metrics[] = 'tempo da sondagem: '.$data['duration_ms'].' ms';
+        $duration = $data['duration_ms'] ?? $data['total_duration_ms'] ?? null;
+        if ($n($duration)) {
+            $metrics[] = 'tempo da sondagem: '.$duration.' ms';
         } else {
             $metrics[] = 'tempo da sondagem: indisponível';
         }
@@ -233,7 +257,10 @@ class DiagnosticExperience
         $badge = match ($s['classification']) {
             'NORMAL' => '✅', 'INDICIO_DE_FALHA' => '⚠️', 'ERRO_DE_EXECUCAO' => '🛠', default => 'ℹ️'
         };
-        $lines = [$intro[$choice['summary']], '', $badge.' '.$s['classification'], $s['summary'] ?? 'Conclusão oficial ainda indisponível.', '', $bridge[$choice['explanation']]];
+        $coverage = $s['coverage'];
+        $lines = [$intro[$choice['summary']], '', $badge.' Classificação técnica: '.$s['classification'], $s['summary'] ?? 'Conclusão oficial ainda indisponível.',
+            $coverage['label'].': '.$coverage['status_label'].'.', 'Conclusão da solicitação: '.($coverage['request_classification'] ?? 'PENDENTE').'.', '', $bridge[$choice['explanation']]];
+        $meta['objective_coverage'] = $coverage;
         if (! $facts) {
             $lines[] = '• Sem evidências de verificações executadas disponíveis.';
         }

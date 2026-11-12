@@ -45,9 +45,58 @@ use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\IntelligenceTestCase;
+use Tests\Support\MtrFixture;
+use Tests\Support\PathReadinessFixture;
 
 class TelegramTest extends IntelligenceTestCase
 {
+    use PathReadinessFixture;
+
+    public function test_exact_ip_route_request_uses_existing_mtr_profile_after_explicit_confirmation(): void
+    {
+        $agent = $this->agent();
+        $agent->forceFill(['metadata' => [...$agent->metadata, 'mtr_capability_confirmed_at' => now()->toIso8601String()]])->save();
+        $this->pathReady($agent);
+        $link = $this->link();
+        $this->say('Queria avaliar essa rota aqui 8.8.8.8, ver se está boa.');
+        $c = $this->conversation($link);
+        $this->assertSame('WAITING_FOR_CONFIRMATION', $c->state);
+        $this->assertSame('MTR_ICMP', $c->context_json['pending']['profile']);
+        $this->assertSame(0, Diagnostic::count());
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', 'caminho de rede até 8.8.8.8'));
+        $this->say('Sim, confirmo');
+        $this->assertSame(1, Diagnostic::count());
+        app(\App\Diagnostics\Engine::class)->tick();
+        $this->assertSame(['mtr_path_analysis:v1'], AgentTask::pluck('capability')->all());
+        $this->assertSame('ROUTE_PATH_ANALYSIS', Diagnostic::sole()->context['operational_intent']);
+        $engine = app(\App\Diagnostics\Engine::class);
+        $task = $engine->claim($agent);
+        $envelope = array_intersect_key($task, array_flip(['task_id', 'execution_id', 'generation', 'lease_token']));
+        $engine->operation($agent, 'start', $envelope);
+        $engine->operation($agent, 'result', $envelope + ['result' => ['ok' => true, 'data' => MtrFixture::data('isolated-loss')]]);
+        $this->experienceSweep();
+        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', 'Análise de rota: EXECUTADA'));
+        $this->assertSame('NORMAL', DiagnosticConclusion::sole()->classification);
+        if ($directory = getenv('INTENT_PROOF_DIR')) {
+            file_put_contents($directory.'/telegram-proof.json', json_encode(['status' => 'PASS', 'transport' => 'HTTP fake; no Telegram API calls',
+                'messages' => ConversationMessage::where('conversation_id', $c->id)->orderBy('sequence')->get()->map(fn ($message) => ['sender' => $message->sender_type, 'body' => $message->body])->all()], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        }
+    }
+
+    public function test_bare_ip_in_telegram_asks_objective_and_does_not_run_https(): void
+    {
+        $this->agent();
+        $link = $this->link();
+        $this->say('8.8.8.8');
+        $c = $this->conversation($link);
+        $this->assertArrayNotHasKey('pending', $c->context_json);
+        $this->assertStringContainsString('Um IP sozinho não define um site HTTPS', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first()->body);
+        $this->say('Sim, confirmo');
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+    }
+
     private function acceptedExperience(): array
     {
         $agent = $this->agent();

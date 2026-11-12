@@ -46,12 +46,20 @@ class Engine
 
     public function create(Profile $p, Agent $a, string $target, User $u, array $context = []): Diagnostic
     {
+        $tenant = app(TenantContext::class)->tenantId;
+        abort_unless($tenant && $p->tenant_id === $tenant && $a->tenant_id === $tenant, 403);
         app(Planner::class)->validateTarget($p, $target);
+        $objective = app(IntentPlanning::class)->context($p, $context);
+        // Legacy Profiles keep their step contracts; explicit objectives use V1.
+        if (! isset($context['operational_intent']) && ! in_array($p->key, ['MTR_ICMP', 'MTR_TCP', 'CAMINHO_TRACEROUTE', 'CONECTIVIDADE_BASICA', 'PORTA_SERVICO'], true)) {
+            unset($objective['intent_planning_version']);
+        }
+        $context = [...$context, ...$objective];
         abort_unless($p->enabled && $a->status === 'active' && ! $a->revoked_at && ($a->metadata['task_protocol'] ?? 0) === 1, 422, 'Agent ou Profile indisponível para tarefas.');
 
         return DB::transaction(function () use ($p, $a, $target, $u, $context) {
             $d = new Diagnostic;
-            $d->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => app(TenantContext::class)->tenantId, 'profile_id' => $p->id, 'agent_id' => $a->id, 'created_by' => $u->id, 'target' => $target, 'performance' => ['requested_at' => $this->stamp()], 'context' => ['trace_requested' => ($context['trace_requested'] ?? false) === true, 'mtr_requested' => ($context['mtr_requested'] ?? false) === true, 'related_diagnostic_id' => $context['related_diagnostic_id'] ?? null], 'status' => 'PENDING'])->save();
+            $d->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => app(TenantContext::class)->tenantId, 'profile_id' => $p->id, 'agent_id' => $a->id, 'created_by' => $u->id, 'target' => $target, 'performance' => ['requested_at' => $this->stamp()], 'context' => [...array_intersect_key($context, array_flip(['operational_intent', 'intent_planning_version', 'protocol', 'port', 'path_metrics'])), 'trace_requested' => ($context['trace_requested'] ?? false) === true, 'mtr_requested' => ($context['mtr_requested'] ?? false) === true, 'related_diagnostic_id' => $context['related_diagnostic_id'] ?? null], 'status' => 'PENDING'])->save();
             $this->audit('diagnostic.created', $d, $u);
 
             return $d;
@@ -99,12 +107,12 @@ class Engine
             if (! $p || ! $p->enabled || ! $a || $a->deleted_at || $a->revoked_at || $a->status !== 'active') {
                 $d->forceFill(['error_code' => ! $p || ! $p->enabled ? 'profile_unavailable' : 'agent_unavailable'])->save();
             } else {
-                $doc = app(Planner::class)->plan($p, $d->target, Protocol::executionCapabilities($a), [...($d->context ?? []), 'agent_version' => $a->version, 'dns_resolvers' => $a->metadata['telemetry']['dns_resolvers'] ?? []]);
+                $doc = app(Planner::class)->plan($p, $d->target, Protocol::executionCapabilities($a), [...($d->context ?? []), 'agent' => $a, 'agent_version' => $a->version, 'dns_resolvers' => $a->metadata['telemetry']['dns_resolvers'] ?? []]);
                 $plan = new DiagnosticPlan;
                 $plan->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $d->tenant_id, 'diagnostic_id' => $d->id, 'version' => 1, 'digest' => Digest::hash($doc), 'document' => $doc, 'created_at' => $now])->save();
                 foreach ($doc['steps'] as $s) {
                     $step = new DiagnosticStep;
-                    $step->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $d->tenant_id, 'diagnostic_id' => $d->id, 'key' => $s['key'], 'logical_group' => $s['logical_group'], 'capability' => $s['capability'], 'wave' => $s['wave'], 'optional' => $s['optional'], 'status' => $s['available'] ? 'PENDING' : ($s['optional'] ? 'SKIPPED' : 'BLOCKED'), 'definition' => $s, 'error_code' => $s['available'] ? null : 'capability_unavailable'])->save();
+                    $step->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $d->tenant_id, 'diagnostic_id' => $d->id, 'key' => $s['key'], 'logical_group' => $s['logical_group'], 'capability' => $s['capability'], 'wave' => $s['wave'], 'optional' => $s['optional'], 'status' => $s['available'] ? 'PENDING' : ($s['optional'] ? 'SKIPPED' : 'BLOCKED'), 'definition' => $s, 'error_code' => $s['available'] ? null : ($s['blocked_reason'] ?? 'capability_unavailable')])->save();
                 }
                 $d->forceFill(['status' => 'RUNNING', 'started_at' => $now])->save();
                 $this->mark($d, ['planned_at' => $this->stamp()]);
@@ -238,6 +246,16 @@ class Engine
                     DiagnosticStep::whereKey($task->step_id)->update(['status' => 'BLOCKED', 'error_code' => 'capability_unavailable', 'finished_at' => $this->clock()]);
 
                     continue;
+                }
+                if (($d->context['operational_intent'] ?? null) === OperationalIntent::Route->value && in_array($task->capability, ['mtr_path_analysis:v1', 'traceroute:v1'], true)) {
+                    $host = app(Planner::class)->target($d->target)['host'];
+                    $reason = app(PathReadiness::class)->check($agent, $task->capability, $host, $task->input['protocol'] ?? 'icmp');
+                    if ($reason) {
+                        $task->forceFill(['status' => 'FAILED', 'finished_at' => $this->clock()])->save();
+                        DiagnosticStep::whereKey($task->step_id)->update(['status' => 'BLOCKED', 'error_code' => $reason, 'finished_at' => $this->clock()]);
+
+                        continue;
+                    }
                 }
                 if ($task->capability === 'mtr_path_analysis:v1' && AgentTask::where('agent_id', $agent->id)->where('capability', 'mtr_path_analysis:v1')->where('started_at', '>', $this->clock()->subSeconds(10))->exists()) {
                     continue;

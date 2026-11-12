@@ -36,12 +36,17 @@ class Classifier
         $headUnsupported = in_array($http['status'] ?? null, [405, 501], true);
         $tcp = ($evidence['tcp']['ok'] ?? false) === true && ($evidence['tcp']['data']['connected'] ?? false) === true;
         $success = false;
-        if ($profile === 'PERDA_LATENCIA') {
+        if (in_array($profile, ['PERDA_LATENCIA', 'CONECTIVIDADE_BASICA'], true)) {
             $ping = ($evidence['ping']['ok'] ?? false) === true ? ($evidence['ping']['data'] ?? []) : [];
             if ($ping) {
                 $failure = $failure || ($ping['loss_percent'] ?? 0) > ($thresholds['loss_percent'] ?? 10) || ($ping['avg_ms'] ?? 0) > ($thresholds['latency_ms'] ?? 150);
             }
             $success = $complete && $dns && ($ping['received'] ?? 0) > 0 && isset($ping['avg_ms']);
+        } elseif ($profile === 'PORTA_SERVICO') {
+            $failure = $failure || ($evidence['tcp']['ok'] ?? false) === true && ! $tcp;
+            $success = $complete && $dns && $tcp;
+        } elseif ($profile === 'CAMINHO_TRACEROUTE') {
+            $success = $complete && $dns && ($evidence['trace']['data']['reached_destination'] ?? false) === true;
         } elseif ($profile === 'PROBLEMA_DNS') {
             $success = $complete && $dns;
         } elseif ($web) {

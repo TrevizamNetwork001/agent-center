@@ -38,6 +38,12 @@ class Planner
     public function plan(Profile $profile, string $target, array $capabilities, array $context = []): array
     {
         $t = $this->validateTarget($profile, $target);
+        $goal = isset($context['operational_intent']) ? OperationalIntent::tryFrom($context['operational_intent']) : OperationalIntent::forProfile($profile->key);
+        $intentAware = ($context['intent_planning_version'] ?? null) === 1;
+        if ($intentAware && $goal !== OperationalIntent::forProfile($profile->key)) {
+            throw ValidationException::withMessages(['profile_id' => 'O plano não corresponde ao objetivo solicitado.']);
+        }
+        $path = $goal === OperationalIntent::Route;
         $steps = [];
         $skills = Skill::all()->keyBy('key');
         $add = function ($key, $skill, $wave, $optional = false, $condition = 'always', $record = null) use (&$steps, $skills, $capabilities, $t) {
@@ -53,7 +59,7 @@ class Planner
             }if ($skill === 'http_probe') {
                 $input['url'] = $t['url'];
             }
-            $steps[] = ['key' => $key, 'skill' => $skill, 'logical_group' => $s->display_name, 'capability' => $s->capability, 'skill_version' => $s->version, 'timeout' => $s->timeout, 'wave' => $wave, 'optional' => $optional, 'condition' => $condition, 'input' => $input, 'available' => $s->enabled && in_array($s->capability, $capabilities, true), 'input_schema' => $s->input_schema, 'output_schema' => $s->output_schema];
+            $steps[] = ['key' => $key, 'skill' => $skill, 'logical_group' => $s->display_name, 'capability' => $s->capability, 'skill_version' => $s->version, 'timeout' => $s->timeout, 'wave' => $wave, 'optional' => $optional, 'condition' => $condition, 'input' => $input, 'available' => $s->enabled && $s->safe && $s->capability === Catalog::SKILLS[$skill][0] && in_array($s->capability, $capabilities, true), 'input_schema' => $s->input_schema, 'output_schema' => $s->output_schema];
         };
         if (! $t['literal']) {
             $add('dns_a', 'dns_lookup', 1, record: 'A');
@@ -70,22 +76,44 @@ class Planner
         $network = $t['literal'] ? 'always' : 'dns_ok';
         if (in_array($profile->key, ['MTR_ICMP', 'MTR_TCP'], true)) {
             $add($profile->key === 'MTR_TCP' ? 'mtr_tcp' : 'mtr_icmp', 'mtr_path', 2, false, $network);
-        } elseif ($profile->key === 'PERDA_LATENCIA') {
+        } elseif ($profile->key === 'CAMINHO_TRACEROUTE') {
+            $add('trace', 'traceroute', 2, false, $network);
+        } elseif ($profile->key === 'PORTA_SERVICO') {
+            $add('tcp', 'tcp_connect', 2, false, $network);
+        } elseif (in_array($profile->key, ['PERDA_LATENCIA', 'CONECTIVIDADE_BASICA'], true)) {
             $add('ping', 'icmp_ping', 2, false, $network);
-            $add('trace', 'traceroute', 3, true, 'trace_needed');
+            if (! $intentAware && $profile->key === 'PERDA_LATENCIA') {
+                $add('trace', 'traceroute', 3, true, 'trace_needed');
+            }
         } elseif ($profile->key !== 'PROBLEMA_DNS') {
             $add('tcp', 'tcp_connect', 2, false, $network);
             $add('https', 'http_probe', 3, false, 'tcp_ok');
-            $add('ping', 'icmp_ping', 4, true, $network);
-            $add('trace', 'traceroute', 5, true, 'trace_needed');
+            if (! $intentAware || $goal === OperationalIntent::Slowness) {
+                $add('ping', 'icmp_ping', 4, true, $network);
+                $add('trace', 'traceroute', 5, true, 'trace_needed');
+            }
         }
 
-        if (! str_starts_with($profile->key, 'MTR_') && $profile->key !== 'PROBLEMA_DNS' && ($context['mtr_requested'] ?? false) === true) {
+        if (! $path && ! str_starts_with($profile->key, 'MTR_') && $profile->key !== 'PROBLEMA_DNS' && ($context['mtr_requested'] ?? false) === true) {
             $add('mtr_icmp', 'mtr_path', 6, false, $network);
             $add('mtr_tcp', 'mtr_path', 7, false, $network);
         }
 
-        return ['schema_version' => 1, 'profile' => $profile->key, 'profile_version' => $profile->version, 'target' => $t, 'thresholds' => [...['mtr_threshold_version' => 1, 'mtr_min_cycles' => 5, 'mtr_loss_percent' => 0, 'mtr_rtt_increase_ms' => 50, 'mtr_rtt_ratio' => 2], ...$profile->definition, 'trace_requested' => ($context['trace_requested'] ?? false) === true, 'target_literal' => $t['literal'], 'mtr_requested' => ($context['mtr_requested'] ?? false) === true, 'required_steps' => array_values(array_column(array_filter($steps, fn ($step) => ! $step['optional']), 'key'))], 'steps' => $steps];
+        if ($path && $intentAware || isset($context['agent']) && ($context['mtr_requested'] ?? false) === true) {
+            foreach ($steps as &$step) {
+                if (in_array($step['capability'], ['mtr_path_analysis:v1', 'traceroute:v1'], true)) {
+                    $reason = isset($context['agent']) ? app(PathReadiness::class)->check($context['agent'], $step['capability'], $t['host'], $step['input']['protocol'] ?? 'icmp') : 'policy_not_verified';
+                    $step['blocked_reason'] = $reason;
+                    $step['available'] = $step['available'] && $reason === null;
+                }
+            }
+            unset($step);
+        }
+        $required = array_values(array_column(array_filter($steps, fn ($step) => ! $step['optional']), 'key'));
+
+        return ['schema_version' => 1, 'profile' => $profile->key, 'profile_version' => $profile->version, 'target' => $t,
+            'objective' => ['version' => 1, 'intent' => $goal?->value, 'label' => $goal?->label(), 'required_steps' => $required, 'path_metrics' => ($context['path_metrics'] ?? false) === true, 'path_method' => $path ? ($profile->key === 'CAMINHO_TRACEROUTE' ? 'traceroute_icmp' : ($profile->key === 'MTR_TCP' ? 'mtr_tcp' : 'mtr_icmp')) : null, 'dns_justification' => ! $t['literal'] ? ($goal === OperationalIntent::Dns ? 'Objetivo de resolução DNS.' : 'Resolver o hostname informado antes da sondagem do destino.') : null],
+            'thresholds' => [...['mtr_threshold_version' => 1, 'mtr_min_cycles' => 5, 'mtr_loss_percent' => 0, 'mtr_rtt_increase_ms' => 50, 'mtr_rtt_ratio' => 2], ...$profile->definition, 'trace_requested' => ($context['trace_requested'] ?? false) === true, 'target_literal' => $t['literal'], 'mtr_requested' => ($context['mtr_requested'] ?? false) === true, 'required_steps' => $required], 'steps' => $steps];
     }
 
     public function condition(string $condition, array $evidence, array $thresholds): bool

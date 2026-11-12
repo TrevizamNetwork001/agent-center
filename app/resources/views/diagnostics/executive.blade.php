@@ -1,8 +1,12 @@
-<section class="card diagnostic-experience" data-diagnostic-experience="v2" data-tone="{{\App\Web\Presentation::tone($experience['classification']??$diagnostic->status)}}" aria-labelledby="diagnostic-executive-title">
-    <div class="dx-heading"><div><p class="dx-eyebrow">RESUMO EXECUTIVO</p><h2 id="diagnostic-executive-title">{{$conclusion?'Uma leitura clara do resultado':'Sua investigação está sendo acompanhada'}}</h2></div><x-badge :value="$experience['classification']??$phaseLabel"/></div>
-    <p class="dx-conclusion" role="status">{{$experience['summary']??$phase['text']}}</p>
+@php($requestClass=$conclusion?($experience['coverage']['request_classification']??$experience['classification']):null)
+@php($coverageDiffers=$conclusion&&$requestClass!==$experience['classification'])
+<section class="card diagnostic-experience" data-diagnostic-experience="v2" data-tone="{{\App\Web\Presentation::tone($requestClass??$diagnostic->status)}}" aria-labelledby="diagnostic-executive-title">
+    <div class="dx-heading"><div><p class="dx-eyebrow">RESUMO EXECUTIVO</p><h2 id="diagnostic-executive-title">{{$conclusion?'Uma leitura clara do resultado':'Sua investigação está sendo acompanhada'}}</h2></div><x-badge :value="$requestClass??$phaseLabel"/></div>
+    <p class="dx-conclusion" role="status">{{$coverageDiffers?'Solicitação inconclusiva: o objetivo pedido não foi integralmente coberto pelos testes realizados.':($experience['summary']??$phase['text'])}}</p>
+    @if($coverageDiffers)<p class="muted">Conclusão técnica dos testes: {{$experience['summary']}}</p>@endif
     <dl class="dx-context"><div><dt>Destino investigado</dt><dd>{{$experience['target']}}</dd></div><div><dt>Agent executor</dt><dd>{{$diagnostic->agent?->name??'Indisponível'}}</dd></div><div><dt>Situação registrada</dt><dd>{{$phaseLabel}}</dd></div><div><dt>Perfil autorizado</dt><dd>{{$diagnostic->profile?->display_name??'Indisponível'}}</dd></div></dl>
     @if($conclusion)
+        <dl class="key-values" data-objective-coverage><div><dt>Classificação técnica dos testes</dt><dd>{{$experience['classification']}}</dd></div><div><dt>{{$experience['coverage']['label']}}</dt><dd>{{$experience['coverage']['status_label']}}</dd></div><div><dt>Conclusão da solicitação</dt><dd>{{$experience['coverage']['request_classification']??'PENDENTE'}}</dd></div></dl>
         <div class="dx-columns"><div><h3>O que as evidências mostram</h3><ul class="dx-facts">@forelse($experience['facts'] as $fact)<li><strong>{{$fact['label']}}</strong><span>{{\Illuminate\Support\Str::after($fact['text'],$fact['label'].': ')}}</span>@if(!$fact['metrics'])<small>Métricas indisponíveis</small>@endif</li>@empty<li><strong>Sem medições disponíveis</strong><span>Não há evidências de verificações executadas para resumir.</span></li>@endforelse</ul></div>
         <aside class="dx-scope"><h3>Como interpretar</h3>@foreach($experience['limitations'] as $limit)<p>{{$limit}}</p>@endforeach
         @if($experience['not_executed'])<h3>Etapas não executadas ou não concluídas</h3><ul>@foreach($experience['not_executed'] as $item)<li>{{$item}}</li>@endforeach</ul>@endif

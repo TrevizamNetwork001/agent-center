@@ -22,9 +22,12 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\IdentityTestCase;
+use Tests\Support\PathReadinessFixture;
 
 class MtrPathTest extends IdentityTestCase
 {
+    use PathReadinessFixture;
+
     private function data(string $name, string $protocol = 'icmp'): array
     {
         $raw = json_decode(file_get_contents(base_path('tests/Fixtures/mtr/'.$name.'.json')), true);
@@ -108,6 +111,7 @@ class MtrPathTest extends IdentityTestCase
         $agent = new Agent;
         $agent->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $this->a->id, 'name' => 'MTR lab', 'hostname' => 'mtr-lab', 'status' => 'active', 'version' => '0.6.2', 'token_hash' => hash('sha256', random_bytes(32)), 'capabilities' => ['mtr_path_analysis:v1'], 'metadata' => ['task_protocol' => 1, 'mtr_capability_confirmed_at' => now()->toIso8601String()], 'enrolled_at' => now()])->save();
         $engine = app(Engine::class);
+        $this->pathReady($agent, protocol: 'tcp');
         $diagnostic = $engine->create(Profile::where('key', 'MTR_TCP')->sole(), $agent, '8.8.8.8', $this->admin);
         $engine->tick();
         $task = $engine->claim($agent);

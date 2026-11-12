@@ -4,7 +4,12 @@ namespace App\Conversation;
 
 use App\Agent\Protocol;
 use App\Diagnostics\Catalog;
+use App\Diagnostics\Digest;
 use App\Diagnostics\Engine as Tasks;
+use App\Diagnostics\IntentParser;
+use App\Diagnostics\IntentPlanning;
+use App\Diagnostics\OperationalIntent;
+use App\Diagnostics\PathReadiness;
 use App\Diagnostics\Planner;
 use App\Models\Agent;
 use App\Models\Conversation;
@@ -101,6 +106,9 @@ class Engine
             $this->synchronize($c, $i);
             $det = app(IntentDetector::class);
             $intent = $det->detect($body, State::from($c->state));
+            if (isset($c->context_json['objective_question']) && preg_match('/^(?:rota|caminho|conectividade|ping|dns|site|porta|\d{1,5})[.!? ]*$/i', trim(Str::ascii($body)))) {
+                $intent = Intent::Start;
+            }
             // Questions about an existing result are not requests for a new test.
             if ($c->current_diagnostic_id && in_array($c->state, ['DIAGNOSTIC_COMPLETED', 'FOLLOW_UP'], true)
                 && preg_match('/^(?:quais (?:testes|verificacoes)|o que (?:voce )?(?:testou|verificou)|(?:por que|porque).*(?:normal|falha|inconclusivo|erro|resultado)|o que significa (?:esse |o )?(?:resultado|normal|falha|inconclusivo|erro))\b/', Str::lower(Str::ascii(trim($body))))
@@ -192,28 +200,15 @@ class Engine
                     app(Audit::class)->record('conversation.language_rendered', $i->user, $c->tenant_id, 'conversation', metadata: ['conversation_id' => $c->id, ...$response['metadata']]);
                 }
             } elseif ($intent === Intent::Path) {
-                $target = $det->target($safe) ?? $c->current_target;
-                $agent = Agent::where('status', 'active')->whereNull('revoked_at')->find($c->context_json['agent_id'] ?? null);
-                if (! $target || ! $agent || ! Protocol::mtrAvailable($agent)) {
-                    $this->reply($c, 'MTR indisponível neste Agent ou alvo ainda não informado. Nenhuma coleta de caminho foi iniciada.');
-                } elseif ($state === State::Running) {
+                if ($state === State::Running) {
                     $this->reply($c, 'O diagnóstico atual continua. Ao concluir, solicite o MTR; as evidências serão preservadas.');
                 } else {
-                    $profile = $c->context_json['last_profile'] ?? 'SITE_LENTO';
-                    if ($profile === 'PROBLEMA_DNS') {
-                        $this->reply($c, 'O Profile DNS não inclui MTR. Selecione Caminho MTR para outro diagnóstico; as evidências DNS permanecem preservadas.');
-                        $c->save();
-
-                        return $c;
-                    }
-                    $c->context_json = [...$c->context_json, 'pending' => ['issued_at' => now()->timestamp, 'profile' => $profile, 'target' => $target, 'mtr_requested' => true]];
-                    $this->transition($c, State::Confirmation, 'execution_confirmation');
-                    $this->reply($c, 'Confirma coleta MTR ICMP e TCP/443 no alvo '.$target.'? Profile e evidências anteriores serão preservados. A política local deve autorizar o destino.');
+                    $this->objectiveRequest($c, $i, $safe, $prefix, OperationalIntent::Route);
                 }
             } elseif ($intent === Intent::Confirm && ($c->context_json['confirm_cancel'] ?? false)) {
                 $this->cancel($c, $i);
             } elseif ($intent === Intent::Deny) {
-                $c->context_json = array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel']));
+                $c->context_json = array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'objective_question', 'requested_objective']));
                 if ($state === State::Confirmation) {
                     $this->transition($c, State::FollowUp, 'denied');
                 }$this->reply($c, 'Certo. Nenhum novo teste foi iniciado.');
@@ -253,7 +248,7 @@ class Engine
                     } elseif (($mentioned = $det->confirmationTarget($safe)) !== null && $planner->target($mentioned) !== $planner->target($p['target'])) {
                         $this->reply($c, 'Confirmação invalidada: o destino informado difere do destino pendente. Nenhuma tarefa foi criada; solicite um novo diagnóstico para o destino desejado.');
                     } else {
-                        $this->start($c, $i, $p['profile'], $p['target'], $prefix, ($p['mtr_requested'] ?? false) === true);
+                        $this->start($c, $i, $p['profile'], $p['target'], $prefix, ($p['mtr_requested'] ?? false) === true, $p['objective'] ?? []);
                     }
                 } catch (ValidationException $e) {
                     $this->reply($c, 'Diagnóstico bloqueado: '.implode(' ', $e->validator->errors()->all()).' Nenhuma tarefa foi criada; solicite um novo diagnóstico.');
@@ -264,6 +259,11 @@ class Engine
                 }
                 $this->reply($c, 'Não há confirmação pendente válida. Nenhuma nova tarefa foi criada.');
             } elseif ($intent === Intent::Start || $intent === Intent::Another || $intent === Intent::Target) {
+                if ($this->objectiveRequest($c, $i, $safe, $prefix)) {
+                    $c->save();
+
+                    return $c;
+                }
                 $target = $det->target($safe) ?? ($c->context_json['provided_target'] ?? null);
                 $profile = $intent === Intent::Target && $state === State::Target ? ($c->context_json['requested_profile'] ?? 'SITE_LENTO') : $det->profile($safe);
                 if ($state === State::Completed || $state === State::FollowUp || $intent === Intent::Another) {
@@ -291,6 +291,97 @@ class Engine
         });
     }
 
+    private function objectiveRequest(Conversation $c, Identity $i, string $body, string $prefix, ?OperationalIntent $force = null): bool
+    {
+        $request = app(IntentParser::class)->parse($body);
+        $question = $c->context_json['objective_question'] ?? [];
+        $short = trim(Str::lower(Str::ascii($body)), ' .!?');
+        if ($question && isset(['rota' => 1, 'caminho' => 1, 'conectividade' => 1, 'ping' => 1, 'dns' => 1, 'site' => 1, 'porta' => 1][$short])) {
+            $request['intent'] = match ($short) {
+                'rota', 'caminho' => OperationalIntent::Route->value, 'conectividade' => OperationalIntent::Connectivity->value,
+                'ping' => OperationalIntent::Latency->value, 'dns' => OperationalIntent::Dns->value,
+                'porta' => OperationalIntent::Port->value, default => OperationalIntent::Web->value,
+            };
+            $request['ambiguous'] = false;
+        } elseif (($question['kind'] ?? null) === 'port' && preg_match('/^\d{1,5}$/', $short)) {
+            $request = [...$request, 'intent' => OperationalIntent::Port->value, 'port' => (int) $short, 'ambiguous' => false];
+        }
+        $target = app(IntentDetector::class)->target($body) ?? $question['target'] ?? $c->context_json['provided_target'] ?? null;
+        if (! $request['intent'] && isset($c->context_json['requested_objective']) && $target) {
+            $request = $c->context_json['requested_objective'];
+        }
+        $goal = $request['intent'] ? OperationalIntent::from($request['intent']) : $force;
+        $bareIp = $target && filter_var($target, FILTER_VALIDATE_IP) && ! $goal;
+        if (! $goal && ! $request['ambiguous'] && ! $bareIp) {
+            return false;
+        }
+        // A changed objective invalidates any previous permission to execute.
+        $c->context_json = array_diff_key($c->context_json, ['pending' => true]);
+        if ($c->state === State::Confirmation->value) {
+            $this->transition($c, State::FollowUp, 'objective_changed');
+        }
+        $target ??= $c->current_target;
+        if ($request['ambiguous'] || ! $goal || $goal === OperationalIntent::Slowness && $target && filter_var($target, FILTER_VALIDATE_IP)) {
+            $c->context_json = [...$c->context_json, 'objective_question' => ['kind' => 'intent', 'target' => $target]];
+            $this->reply($c, 'Você quer analisar o caminho de rede, medir ping/perda no destino ou verificar um serviço? Um IP sozinho não define um site HTTPS. Nenhum teste foi iniciado.');
+
+            return true;
+        }
+        $request['intent'] = $goal->value;
+        if (! $target) {
+            $c->context_json = [...$c->context_json, 'requested_objective' => $request];
+            $this->transition($c, State::Target, 'target_requested');
+            $this->reply($c, 'Qual IP ou hostname deseja verificar para '.$goal->label().'?');
+
+            return true;
+        }
+        if ($goal === OperationalIntent::Port && $request['port'] === null) {
+            $c->context_json = [...$c->context_json, 'objective_question' => ['kind' => 'port', 'target' => $target]];
+            $this->reply($c, 'Qual porta TCP deseja verificar? O contrato atual suporta a porta 443; outras portas não serão substituídas silenciosamente.');
+
+            return true;
+        }
+        $agents = Agent::where('status', 'active')->whereNull('revoked_at')->get()->filter(fn ($a) => ($a->metadata['task_protocol'] ?? 0) === 1);
+        $agent = isset($c->context_json['agent_id']) ? $agents->firstWhere('id', $c->context_json['agent_id']) : ($agents->count() === 1 ? $agents->first() : null);
+        if (! $agent) {
+            $this->reply($c, 'Selecione um Agent autorizado para planejar este objetivo. Nenhum teste foi iniciado.');
+
+            return true;
+        }
+        app(Catalog::class)->ensure();
+        $planning = app(IntentPlanning::class);
+        $key = $planning->profile($goal, $agent, $request);
+        $profile = Profile::where('key', $key)->where('enabled', true)->first();
+        if (! $profile) {
+            $this->reply($c, 'O Profile deste objetivo está desabilitado. Nenhum teste substituto foi selecionado.');
+
+            return true;
+        }
+        try {
+            $objective = $planning->context($profile, [...$request, 'operational_intent' => $goal->value]);
+            $plan = $planning->preview($profile, $agent, $target, $objective);
+        } catch (ValidationException $e) {
+            $this->reply($c, implode(' ', $e->validator->errors()->all()).' Nenhum teste foi iniciado.');
+
+            return true;
+        }
+        $blocked = collect($plan['steps'])->first(fn ($s) => ! $s['optional'] && ! $s['available']);
+        if ($blocked) {
+            $reason = $blocked['blocked_reason'] ?? 'capability_unavailable';
+            $explanation = $goal === OperationalIntent::Route ? app(PathReadiness::class)->explanation($reason) : 'As Skills necessárias para este objetivo não estão disponíveis neste Agent/Profile.';
+            $alternative = $goal === OperationalIntent::Route ? ' Alternativa: peça explicitamente conectividade básica, que não analisa a rota.' : '';
+            $this->reply($c, $explanation.' Objetivo '.$goal->label().': NÃO EXECUTADO; solicitação INCONCLUSIVA.'.$alternative.' Nenhuma tarefa foi criada.');
+
+            return true;
+        }
+        $c->context_json = [...array_diff_key($c->context_json, array_flip(['objective_question', 'requested_objective'])), 'agent_id' => $agent->id,
+            'pending' => ['issued_at' => now()->timestamp, 'profile' => $key, 'target' => $target, 'objective' => [...$objective, 'plan_digest' => Digest::hash($plan)]]];
+        $this->transition($c, State::Confirmation, 'execution_confirmation');
+        $this->reply($c, $prefix.$planning->confirmation($plan));
+
+        return true;
+    }
+
     private function canDeepen(Conversation $c): bool
     {
         $p = Profile::where('key', 'PERDA_LATENCIA')->where('enabled', true)->first();
@@ -303,7 +394,7 @@ class Engine
         return ! collect($plan['steps'])->contains(fn ($s) => ! $s['optional'] && ! $s['available']);
     }
 
-    private function start(Conversation $c, Identity $i, string $profile, string $target, string $prefix, bool $mtr = false): void
+    private function start(Conversation $c, Identity $i, string $profile, string $target, string $prefix, bool $mtr = false, array $objective = []): void
     {
         Gate::forUser($i->user)->authorize('create', Diagnostic::class);
         app(Catalog::class)->ensure();
@@ -316,16 +407,21 @@ class Engine
 
             return;
         }
-        $plan = app(Planner::class)->plan($p, $target, Protocol::executionCapabilities($a), ['mtr_requested' => $mtr]);
+        $plan = $objective ? app(IntentPlanning::class)->preview($p, $a, $target, $objective) : app(Planner::class)->plan($p, $target, Protocol::executionCapabilities($a), ['mtr_requested' => $mtr]);
+        if ($objective && ($objective['plan_digest'] ?? '') !== Digest::hash($plan)) {
+            $this->reply($c, 'O escopo ou a disponibilidade mudou desde a confirmação. Nenhum teste foi iniciado. Solicite novamente para revisar o plano.');
+
+            return;
+        }
         if (collect($plan['steps'])->contains(fn ($s) => (! $s['optional'] || $mtr && $s['capability'] === 'mtr_path_analysis:v1') && ! $s['available'])) {
             $this->reply($c, 'As Skills necessárias não estão disponíveis neste Agent/Profile. Nenhuma execução foi criada.');
 
             return;
         }
-        $d = app(Tasks::class)->create($p, $a, $target, $i->user, ['mtr_requested' => $mtr, 'related_diagnostic_id' => $c->current_diagnostic_id]);
+        $d = app(Tasks::class)->create($p, $a, $target, $i->user, [...$objective, 'mtr_requested' => $mtr, 'related_diagnostic_id' => $c->current_diagnostic_id]);
         $history = $c->context_json['diagnostic_ids'] ?? [];
         $history[] = $d->id;
-        $c->forceFill(['current_profile_id' => $p->id, 'current_diagnostic_id' => $d->id, 'current_target' => $target, 'context_json' => [...array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'requested_profile', 'provided_target'])), 'agent_id' => $a->id, 'last_profile' => $p->key, 'diagnostic_ids' => array_slice($history, -100)]]);
+        $c->forceFill(['current_profile_id' => $p->id, 'current_diagnostic_id' => $d->id, 'current_target' => $target, 'context_json' => [...array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'requested_profile', 'provided_target', 'objective_question', 'requested_objective'])), 'agent_id' => $a->id, 'last_profile' => $p->key, 'diagnostic_ids' => array_slice($history, -100)]]);
         $this->transition($c, State::Running, 'diagnostic_started');
         $phase = app(DiagnosticExperience::class)->phase($d, $i->user);
         $c->context_json = [...$c->context_json, 'diagnostic_phase' => ['id' => $d->id, 'key' => $phase['key'], 'count' => 1]];
@@ -477,7 +573,7 @@ class Engine
             return;
         }
         if (in_array($next, [State::Closed, State::Cancelled], true)) {
-            $c->context_json = array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'pending_question']));
+            $c->context_json = array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'pending_question', 'objective_question', 'requested_objective']));
         }
         $c->state = $next->value;
         $c->status = match ($next) {
