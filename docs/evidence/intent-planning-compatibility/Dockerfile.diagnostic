@@ -1,0 +1,12 @@
+# Build context: repository root. Explicit files only; never copy the full app tree.
+FROM agent-center-central:agent064-workers-20261110
+COPY app/app/Diagnostics/Catalog.php /var/www/html/app/Diagnostics/Catalog.php
+COPY app/app/Diagnostics/Classifier.php /var/www/html/app/Diagnostics/Classifier.php
+COPY app/app/Diagnostics/Engine.php /var/www/html/app/Diagnostics/Engine.php
+COPY app/app/Diagnostics/IntentParser.php /var/www/html/app/Diagnostics/IntentParser.php
+COPY app/app/Diagnostics/IntentPlanning.php /var/www/html/app/Diagnostics/IntentPlanning.php
+COPY app/app/Diagnostics/ObjectiveCoverage.php /var/www/html/app/Diagnostics/ObjectiveCoverage.php
+COPY app/app/Diagnostics/OperationalIntent.php /var/www/html/app/Diagnostics/OperationalIntent.php
+COPY app/app/Diagnostics/PathReadiness.php /var/www/html/app/Diagnostics/PathReadiness.php
+COPY app/app/Diagnostics/Planner.php /var/www/html/app/Diagnostics/Planner.php
+COPY app/app/Diagnostics/OperationalCapabilities.php /var/www/html/app/Diagnostics/OperationalCapabilities.php

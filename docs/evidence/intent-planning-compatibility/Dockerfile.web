@@ -1,0 +1,19 @@
+# Build context: repository root. Explicit files only; never copy the full app tree.
+FROM agent-center-central:greeting-restart-20261112
+COPY app/app/Conversation/DiagnosticExperience.php /var/www/html/app/Conversation/DiagnosticExperience.php
+COPY app/app/Conversation/Engine.php /var/www/html/app/Conversation/Engine.php
+COPY app/app/Conversation/IntentDetector.php /var/www/html/app/Conversation/IntentDetector.php
+COPY app/app/Diagnostics/Catalog.php /var/www/html/app/Diagnostics/Catalog.php
+COPY app/app/Diagnostics/Classifier.php /var/www/html/app/Diagnostics/Classifier.php
+COPY app/app/Diagnostics/Engine.php /var/www/html/app/Diagnostics/Engine.php
+COPY app/app/Diagnostics/IntentParser.php /var/www/html/app/Diagnostics/IntentParser.php
+COPY app/app/Diagnostics/IntentPlanning.php /var/www/html/app/Diagnostics/IntentPlanning.php
+COPY app/app/Diagnostics/ObjectiveCoverage.php /var/www/html/app/Diagnostics/ObjectiveCoverage.php
+COPY app/app/Diagnostics/OperationalIntent.php /var/www/html/app/Diagnostics/OperationalIntent.php
+COPY app/app/Diagnostics/PathReadiness.php /var/www/html/app/Diagnostics/PathReadiness.php
+COPY app/app/Diagnostics/Planner.php /var/www/html/app/Diagnostics/Planner.php
+COPY app/resources/views/diagnostics/executive.blade.php /var/www/html/resources/views/diagnostics/executive.blade.php
+COPY app/app/Diagnostics/OperationalCapabilities.php /var/www/html/app/Diagnostics/OperationalCapabilities.php
+COPY app/app/Llm/Client.php /var/www/html/app/Llm/Client.php
+COPY app/app/Llm/CurlTransport.php /var/www/html/app/Llm/CurlTransport.php
+COPY app/app/Llm/TransportFailure.php /var/www/html/app/Llm/TransportFailure.php

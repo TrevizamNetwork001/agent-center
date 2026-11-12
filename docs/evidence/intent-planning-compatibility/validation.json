@@ -1,0 +1,31 @@
+{
+  "status": "DIAGNOSTIC INTENT PLANNING COMPATIBILITY PASS",
+  "implementation_commits": [
+    "8c6e4c8",
+    "a66a8b6"
+  ],
+  "full_regression": {
+    "tests": 495,
+    "assertions": 3775,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "concurrency": [
+    "task engine PASS",
+    "conversation idle PASS"
+  ],
+  "targeted_tests": {
+    "tests": 23,
+    "assertions": 292,
+    "status": "PASS"
+  },
+  "browser_checks": 30,
+  "tls_image_repetitions": 8,
+  "frontend_build": "PASS",
+  "native_image_contracts": "PASS; authenticated native capabilities/heartbeat; Agent 0.6.2; no Observability",
+  "effective_permission": "UNKNOWN in current published API; route execution blocked",
+  "production_publication": false,
+  "production_probes": 0,
+  "schema_changes": false
+}

@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "image_kind": "web",
+  "observability_present": false,
+  "published_api": {
+    "capabilities": {
+      "status": 200,
+      "effective_destination_decision_returned": false
+    },
+    "heartbeat": {
+      "status": 200,
+      "effective_destination_decision_returned": false
+    }
+  },
+  "agent_version": "0.6.2",
+  "schema_changes": false,
+  "goal": "ROUTE_PATH_ANALYSIS",
+  "profile": "MTR_ICMP",
+  "planned_steps": [
+    "mtr_icmp"
+  ],
+  "permission": {
+    "state": "UNKNOWN",
+    "reason": "effective_policy_unverified",
+    "helper_healthy": null
+  },
+  "runtime_contract": {
+    "schema_version": 1,
+    "online": true,
+    "compatible": true,
+    "capabilities": [
+      "agent_info",
+      "icmp_ping:v1",
+      "dns_lookup:v1",
+      "tcp_connect:v1",
+      "traceroute:v1",
+      "http_probe:v1",
+      "mtr_path_analysis:v1"
+    ],
+    "helper_health": "UNKNOWN",
+    "destination_permission": "UNKNOWN",
+    "source": "published_agent_api"
+  },
+  "web_response": "Objetivo: Análise de rota até 8.8.8.8. Profile planejado: MTR_ICMP. Verificação planejada: MTR ICMP. Autorização efetiva não comprovada: a Agent API publicada não fornece à Central uma decisão por destino/protocolo nem a saúde atual do helper. A capability anunciada não autoriza a execução. Nenhuma ACL foi alterada. Objetivo Análise de rota: NÃO EXECUTADO; solicitação INCONCLUSIVA. Alternativa: peça explicitamente conectividade básica, que não analisa a rota. Nenhuma tarefa foi criada.",
+  "tasks_created": 0,
+  "probes": 0,
+  "authorization_granted": false
+}

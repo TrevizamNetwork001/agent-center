@@ -1,0 +1,9 @@
+{
+    "fixture_interleaving": "reader runs after file creation and before port bytes are written",
+    "observed_port_file_bytes": 0,
+    "observed_port": 0,
+    "public_error": "connection_refused",
+    "expected_fixture_stage": "TLS certificate verification",
+    "actual_stage": "TCP connection to invalid fixture endpoint",
+    "network": "loopback only"
+}
