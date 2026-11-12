@@ -1,0 +1,39 @@
+{
+  "status": "PASS",
+  "polling": "read database only; no Engine sync or additional user message",
+  "history": [
+    {
+      "seconds": 0.44,
+      "status": "PENDING"
+    },
+    {
+      "seconds": 1.96,
+      "status": "PENDING"
+    },
+    {
+      "seconds": 3.48,
+      "status": "PENDING"
+    },
+    {
+      "seconds": 5.0,
+      "status": "PENDING"
+    },
+    {
+      "seconds": 6.5,
+      "status": "PENDING"
+    },
+    {
+      "seconds": 8.04,
+      "status": "PENDING"
+    },
+    {
+      "seconds": 9.81,
+      "status": "PENDING"
+    },
+    {
+      "seconds": 11.4,
+      "status": "DENIED"
+    }
+  ],
+  "probes": 0
+}

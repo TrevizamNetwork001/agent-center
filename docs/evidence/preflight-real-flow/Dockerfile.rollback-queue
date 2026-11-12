@@ -1,0 +1,2 @@
+FROM agent-center-central:preflight-v1-web-20261112
+COPY app/app/Conversation/ResolvePreflight.php /var/www/html/app/Conversation/

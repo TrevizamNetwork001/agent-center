@@ -34,7 +34,7 @@ Restaurar os engines e imagens anteriores da Central, preservando banco, histór
 
 O prazo de entrega depende da fila e do transporte Telegram. Uma autorização que vencer enquanto aguarda entrega é suprimida e exige novo Preflight, nunca transformada em permissão. Uma entrega Telegram ambígua segue o comportamento anterior do outbox: não se repete automaticamente um envio inicial com resultado desconhecido. Nenhum teste libera 8.8.8.8 nem executa MTR.
 
-Resultados, hashes e evidências da publicação serão registrados após as verificações efetivas.
+Resultados, hashes e evidências efetivos constam nas seções seguintes.
 
 ## Validação de laboratório para esta publicação
 
@@ -47,3 +47,33 @@ Resultados, hashes e evidências da publicação serão registrados após as ver
 - Backup local `20261112T195854Z`: integridade verificada e restauração isolada PASS; 16 tabelas protegidas comparadas, FORCE RLS, identidade/configuração e credenciais cifradas conferidas. Sem replicação R2.
 - Precheck operacional: Agent 0.6.5 ativo, sem operações pendentes; política revisão 4; webhook registrado sem backlog; PostgreSQL/TLS, fila e Operations Health verdes. Nenhuma sondagem.
 - Rechecagem específica de RBAC no callback com acompanhamento ainda pendente: revogar o papel operacional impede atualização; cancelamento e outro tenant continuam sem efeito operacional. **13 testes / 141 asserções PASS**, incluindo rollback do schema descartável.
+
+## Publicação observada
+
+Commits integrados: `39b1eed` e `2f16a80`. O complemento foi implementado e homologado antes da publicação, conforme autorização específica do item 8. As 220 alterações preexistentes do checkout foram preservadas por hash; a única sobreposição era uma formatação em teste, cujo conteúdo de trabalho foi preservado integralmente.
+
+Imagens operacionais:
+
+| Papel | Imagem | SHA-256 da imagem |
+|---|---|---|
+| Web | `agent-center-central:preflight-real-flow-web-20261112` | `c125cd7d8a95297ec87fc50f2eaded48cff60bc0e3b3ea44911b4580a2cef5db` |
+| Fila e scheduler | `agent-center-central:preflight-real-flow-queue-20261112` | `d74cc47b5f0eb3be2ff1a23068836f53302b8f049db0c60a5ee1b04169dd1cd9` |
+| Worker diagnóstico | `agent-center-central:preflight-real-flow-diagnostic-20261112` | `d9509c129b88e97262c1037bbd99a428138c1a67bdcc883e17b9dde6c2cacc96` |
+
+O callback autenticado real do Agent 0.6.5 produziu **PENDING → DENIED** e a fila gravou a resposta na conversa em aproximadamente **11,4 segundos**, sem outra mensagem. O observador desta prova apenas lia o banco, sem chamar `Engine::sync`. Uma segunda prova no navegador autenticado validou a atualização automática do DOM pelo polling Web, em desktop e celular, sem erros JavaScript e sem confirmação oferecida.
+
+Telegram: ingresso, identidade, Runner, outbox e entrega nativos foram executados com a decisão real DENIED; o transporte foi capturado e os registros temporários revertidos. Não houve envio externo de teste nem alteração no vínculo real. A atualização Telegram assíncrona sem nova mensagem foi validada em laboratório; a mesma classe revisada foi conferida por hash na fila publicada.
+
+Plano observado: `ROUTE_PATH_ANALYSIS`, `MTR_ICMP`, somente `mtr_icmp`, sem HTTP/HTTPS. Resposta curta: “A política atual não permite analisar a rota até 8.8.8.8. Nenhum teste foi executado.” Agent, identidade, digest/revisão de política 4 e 16 tabelas protegidas permaneceram iguais. Contagens de tarefas e diagnósticos não aumentaram.
+
+HTTPS/login e readiness responderam 200. PostgreSQL/TLS, fila funcional, webhook e scheduler foram verificados. A troca dos containers provocou sete respostas 502 entre 20:09:38,928 e 20:09:43,966 UTC, registradas pelo Health. O alerta de taxa de erros foi preservado e acompanhado, sem limpar logs, alterar limiares ou filtrar as falhas. Não houve falha funcional de preflight ou tarefa executada nesse intervalo.
+
+Evidências sanitizadas: [callback](evidence/preflight-real-flow/production-callback-timing.json), [Web](evidence/preflight-real-flow/production-web-proof.json), [Telegram capturado](evidence/preflight-real-flow/production-telegram-proof.json), [hashes/dados](evidence/preflight-real-flow/production-source-proof.json) e [restauração](evidence/preflight-real-flow/production-restore-proof.json).
+
+Rollback operacional preparado em `/root/preflight-real-flow-publish-private/rollback.sh`; os Dockerfiles reproduzíveis das imagens compatíveis estão junto às evidências. O rollback não precisou ser acionado. A limitação operacional permanece: 8.8.8.8 está DENIED pela política vigente; este patch não libera o destino nem comprova saúde de uma rota não executada.
+
+## Encerramento
+
+**PREFLIGHT REAL FLOW PRODUCTION PASS.** Operations Health final **VERDE**, webhook OK, fila com zero pendências e zero falhas na captura final, scheduler com drain observado e nenhuma falha. Após a janela real de cinco minutos foi reexecutado o coletor existente, sem modificar seu código, filtros, limiares ou logs; a recoleta confirmou recuperação. O intervalo de 502 permanece registrado nas evidências. Nenhuma falha posterior à inicialização foi observada.
+
+[Health final](evidence/preflight-real-flow/production-health-proof.json). Screenshots autenticados Web (desktop/celular) e Operations Health estão preservados no diretório privado de evidências. A sessão temporária de validação foi revogada. Nenhum rollback de produção foi necessário; backup restaurado e imagens de reversão compatíveis continuam disponíveis.

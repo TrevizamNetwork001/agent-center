@@ -136,11 +136,11 @@ class PreflightRealFlowTest extends IdentityTestCase
         $this->assertSame('STALE', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first()->metadata['diagnostic_planning']['status']);
         $c = $engine->send($identity, $c->fresh(), (string) Str::uuid(), 'Quero analisar a rota para 8.8.8.8.');
         $this->assertArrayHasKey('preflight_watch', $c->context_json);
-        $this->operator->forceFill(['role' => \App\Enums\Role::Viewer])->save();
+        $this->operator->forceFill(['role' => Role::Viewer])->save();
         $beforeRevoked = ConversationMessage::count();
         $this->resolve($c);
         $this->assertSame($beforeRevoked, ConversationMessage::count());
-        $this->operator->forceFill(['role' => \App\Enums\Role::Operator])->save();
+        $this->operator->forceFill(['role' => Role::Operator])->save();
         $engine->send($identity, $c, (string) Str::uuid(), 'Cancela');
         $count = ConversationMessage::count();
         $this->resolve($c);

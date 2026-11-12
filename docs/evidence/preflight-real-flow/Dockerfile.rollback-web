@@ -1,0 +1,3 @@
+FROM agent-center-central:preflight-v1-avatar-web-20261112
+# Keep only the queued-job class compatible while restoring the previous engines.
+COPY app/app/Conversation/ResolvePreflight.php /var/www/html/app/Conversation/

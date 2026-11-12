@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "files_per_web_role": 9,
+  "roles": {
+    "agent-center-web-1": "all patched files match reviewed source",
+    "agent-center-worker-1": "all patched files match reviewed source",
+    "agent-center-telegram-scheduler-1": "all patched files match reviewed source"
+  },
+  "protected_tables_unchanged": 16,
+  "agent_unchanged": true,
+  "diagnostic_and_task_counts_unchanged": true
+}

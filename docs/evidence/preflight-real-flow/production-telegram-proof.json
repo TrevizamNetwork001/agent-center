@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "transport": "native ingress/Runner/outbox/Deliver; HTTP captured; transaction rolled back",
+  "decision": {
+    "steps": [
+      "mtr_icmp"
+    ],
+    "reason": "policy_denied",
+    "status": "DENIED",
+    "target": "8.8.8.8",
+    "profile": "MTR_ICMP",
+    "version": 1,
+    "executed": false,
+    "protocol": "icmp",
+    "objective": "ROUTE_PATH_ANALYSIS",
+    "checked_at": "2026-11-12T21:10:23+01:00",
+    "expires_at": 1794514255,
+    "received_at": 1794514219,
+    "authorization": "DENIED",
+    "dispatched_at": 1794514218,
+    "policy_revision": 4
+  },
+  "text": "A política atual não permite analisar a rota até 8.8.8.8. Nenhum teste foi executado.",
+  "external_sends": 0,
+  "probes": 0,
+  "duplicate_update_idempotent": true
+}

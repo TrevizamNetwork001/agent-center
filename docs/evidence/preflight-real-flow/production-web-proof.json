@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "authenticated_https": true,
+  "conversation": "90fccee4-df3e-4374-9cc5-ea6bdbf62256",
+  "automatic_dom_update": true,
+  "user_messages": 1,
+  "confirmation_offered": false,
+  "viewports": [
+    1440,
+    390
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "no_overflow": true,
+  "login_form": true,
+  "page_errors": []
+}

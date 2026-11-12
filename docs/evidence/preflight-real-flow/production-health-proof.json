@@ -1,0 +1,249 @@
+{
+  "status": "PASS",
+  "operations": "VERDE",
+  "webhook": {
+    "method": "getWebhookInfo",
+    "registered": true,
+    "api_status": "OK",
+    "https_url_matches": true,
+    "pending_updates": 0,
+    "last_error_date": null
+  },
+  "queue": {
+    "pending": 0,
+    "failed": 0
+  },
+  "postgresql_tls": true,
+  "rls_force_tables_checked": 10,
+  "runtime_superuser": false,
+  "runtime_bypassrls": false,
+  "no_context_rows_visible": true,
+  "checks": [
+    {
+      "component": "laravel_web",
+      "state": "VERDE",
+      "reason": "authenticated_request_completed",
+      "timestamp": "2026-11-12T21:16:04+01:00",
+      "values": {
+        "request": true
+      },
+      "limit": null
+    },
+    {
+      "component": "postgresql",
+      "state": "VERDE",
+      "reason": "select_1_succeeded",
+      "timestamp": "2026-11-12T21:16:04+01:00",
+      "values": {
+        "select_1": true
+      },
+      "limit": 1
+    },
+    {
+      "component": "postgresql_tls",
+      "state": "VERDE",
+      "reason": "connection_tls_and_client_verification",
+      "timestamp": "2026-11-12T21:16:04+01:00",
+      "values": {
+        "tls": true,
+        "verify_full": true
+      },
+      "limit": true
+    },
+    {
+      "component": "diagnostic_worker",
+      "state": "VERDE",
+      "reason": "functional_loop_recent",
+      "timestamp": "2026-11-12T21:16:04+01:00",
+      "values": {
+        "work_ms": 15.640747,
+        "started_at": "2026-11-12T20:16:02.829832Z",
+        "finished_at": "2026-11-12T20:16:02.843260Z",
+        "scheduled_wait_ms": 2000,
+        "loop_age_seconds": 1.700390161,
+        "iterations": 185,
+        "progress": 0,
+        "same_boot": true
+      },
+      "limit": 15
+    },
+    {
+      "component": "laravel_queue_worker",
+      "state": "VERDE",
+      "reason": "health_job_completed",
+      "timestamp": "2026-11-12T21:16:04+01:00",
+      "values": {
+        "completed_job_age_seconds": 9.785901754
+      },
+      "limit": 90
+    },
+    {
+      "component": "task_engine",
+      "state": "VERDE",
+      "reason": "active_expired_leases",
+      "timestamp": "2026-11-12T21:16:04+01:00",
+      "values": {
+        "active": 0,
+        "expired": 0,
+        "failures_today": 0
+      },
+      "limit": 0
+    },
+    {
+      "component": "agents",
+      "state": "VERDE",
+      "reason": "heartbeat_and_poll_coverage",
+      "timestamp": "2026-11-12T21:16:04+01:00",
+      "values": {
+        "total": 1,
+        "online": 1,
+        "oldest_heartbeat_seconds": 6,
+        "oldest_poll_seconds": 6,
+        "missing_heartbeat": 0,
+        "missing_poll": 0
+      },
+      "limit": {
+        "heartbeat_seconds": 60,
+        "poll_seconds": 30
+      }
+    },
+    {
+      "component": "nginx_external",
+      "state": "VERDE",
+      "reason": "container_functional_health",
+      "timestamp": "2026-11-12T20:15:45.186767+00:00",
+      "values": {
+        "healthy": true
+      },
+      "limit": true
+    },
+    {
+      "component": "fpm_process",
+      "state": "VERDE",
+      "reason": "container_functional_health",
+      "timestamp": "2026-11-12T20:15:45.186767+00:00",
+      "values": {
+        "healthy": true
+      },
+      "limit": true
+    },
+    {
+      "component": "postgresql_container",
+      "state": "VERDE",
+      "reason": "container_functional_health",
+      "timestamp": "2026-11-12T20:15:45.186767+00:00",
+      "values": {
+        "healthy": true
+      },
+      "limit": true
+    },
+    {
+      "component": "queue_container",
+      "state": "VERDE",
+      "reason": "container_functional_health",
+      "timestamp": "2026-11-12T20:15:45.186767+00:00",
+      "values": {
+        "healthy": true
+      },
+      "limit": true
+    },
+    {
+      "component": "diagnostic_container",
+      "state": "VERDE",
+      "reason": "container_functional_health",
+      "timestamp": "2026-11-12T20:15:45.186767+00:00",
+      "values": {
+        "healthy": true
+      },
+      "limit": true
+    },
+    {
+      "component": "web_https",
+      "state": "VERDE",
+      "reason": "https_status_probe",
+      "timestamp": "2026-11-12T20:15:45.186767+00:00",
+      "values": {
+        "http_status": 200
+      },
+      "limit": {
+        "expected_status": 200
+      }
+    },
+    {
+      "component": "agent_api_external",
+      "state": "VERDE",
+      "reason": "https_status_probe",
+      "timestamp": "2026-11-12T20:15:45.186767+00:00",
+      "values": {
+        "http_status": 422
+      },
+      "limit": {
+        "expected_status": 422
+      }
+    },
+    {
+      "component": "http_error_rate",
+      "state": "VERDE",
+      "reason": "sanitized_status_log_5m",
+      "timestamp": "2026-11-12T20:15:45.186767+00:00",
+      "values": {
+        "requests": 121,
+        "http_5xx": 0,
+        "rate": 0
+      },
+      "limit": {
+        "max_rate": 0.05,
+        "window_seconds": 300,
+        "max_samples": 10000
+      }
+    },
+    {
+      "component": "backup_local",
+      "state": "VERDE",
+      "reason": "generation_integrity_verified",
+      "timestamp": "2026-11-12T20:15:45.186767+00:00",
+      "values": {
+        "age_seconds": 1012.8106846809387
+      },
+      "limit": {
+        "max_age_seconds": 93600
+      }
+    },
+    {
+      "component": "backup_external",
+      "state": "VERDE",
+      "reason": "r2_encrypted_upload_download_verified",
+      "timestamp": "2026-11-12T20:15:45.186767+00:00",
+      "values": {
+        "age_seconds": 64596.81092786789
+      },
+      "limit": {
+        "max_age_seconds": 93600
+      }
+    },
+    {
+      "component": "fencing_runtime",
+      "state": "VERDE",
+      "reason": "active_attempt_generation_mismatch",
+      "timestamp": "2026-11-12T21:16:04+01:00",
+      "values": {
+        "mismatches": 0
+      },
+      "limit": 0
+    },
+    {
+      "component": "agent_maintenance",
+      "state": "VERDE",
+      "reason": "interrupted_or_stalled_operations",
+      "timestamp": "2026-11-12T21:16:04+01:00",
+      "values": {
+        "uncertain": 0,
+        "stalled": 0
+      },
+      "limit": 300
+    }
+  ],
+  "scheduler_drain_observed": true,
+  "scheduler_failures": 0,
+  "collector": "existing collector rerun after actual five-minute window; no logs, thresholds or filters changed"
+}
