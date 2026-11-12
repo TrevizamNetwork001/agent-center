@@ -47,6 +47,20 @@ use Tests\IntelligenceTestCase;
 
 class TelegramTest extends IntelligenceTestCase
 {
+    public function test_idle_timer_does_not_block_help_when_conversations_are_disabled(): void
+    {
+        $this->link();
+        $this->say('Olá');
+        ConversationSetting::query()->update(['enabled' => false]);
+        foreach ([false, true] as $enabled) {
+            config(['conversation.idle_enabled' => $enabled, 'conversation.idle_tenants' => [$this->a->id]]);
+            $this->say('/help');
+            $this->assertSame('PROCESSED', Update::latest('update_id')->first()->status);
+        }
+        $this->assertSame(0, ConversationMessage::where('event_key', 'idle_closed')->count());
+        $this->assertSame(0, Diagnostic::count());
+    }
+
     public function test_idle_private_sweep_enqueues_one_thank_you_and_next_greeting_starts_new_chat(): void
     {
         config(['conversation.idle_enabled' => true, 'conversation.idle_tenants' => [$this->a->id]]);

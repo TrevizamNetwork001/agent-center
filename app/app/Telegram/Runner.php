@@ -89,7 +89,7 @@ class Runner
                     $identity = new Identity($base->tenantId, $base->user, $base->channel, $base->contactId, $group ? $context->id : null);
                     $chat = $group && $group->reply_mode === 'private' ? $link->chat_id : $row->chat_id;
                     $text = $incoming->body;
-                    if ($context->conversation_id && in_array($text, ['/help', '/ajuda', '/start', '/historico', '/history', '/agents', '/status', '/resultado', '/unlink', '/desvincular'], true)) {
+                    if (config('conversation.idle_enabled') && in_array($identity->tenantId, config('conversation.idle_tenants', []), true) && app(Engine::class)->enabled() && $context->conversation_id && in_array($text, ['/help', '/ajuda', '/start', '/historico', '/history', '/agents', '/status', '/resultado', '/unlink', '/desvincular'], true)) {
                         app(Engine::class)->touch($identity, Conversation::findOrFail($context->conversation_id));
                     }
                     if ($text === '/unlink confirm' || $text === '/desvincular confirmar') {
