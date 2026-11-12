@@ -1,0 +1,222 @@
+{
+    "status": "PASS",
+    "scope": "LAB only; real OpenAI; separate three-turn conversations; each scenario rolled back, no real Telegram transport",
+    "requests": 3,
+    "max_output_tokens_each": 1024,
+    "store": false,
+    "timeout_seconds_max": 10,
+    "operational_counts_unchanged": true,
+    "transcript": [
+        {
+            "channel": "telegram",
+            "input": "boa noite ce ta bao?",
+            "response": "Boa noite! Tudo certo por aqui. E cê, tá bão?",
+            "state": "ACTIVE",
+            "metadata": {
+                "tone": "RELAXED",
+                "usage": {
+                    "input_tokens": 901,
+                    "total_tokens": 943,
+                    "output_tokens": 42
+                },
+                "model_id": "60131360-de58-405f-9eb1-c63433048fb7",
+                "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+                "request_id": "req_66bde1e1146449d591c22801b5d87eee",
+                "social_act": "ASK_ASSISTANT_WELLBEING",
+                "provider_id": "b6cf9cf8-ff17-49ed-b1a4-6fb757158ed8",
+                "language_status": "ASSISTED",
+                "style_vocabulary": [
+                    "bão",
+                    "cê"
+                ],
+                "context_sequences": [
+                    2
+                ],
+                "prompt_version_id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876"
+            },
+            "generator_context": {
+                "recent_turns": [
+                    {
+                        "role": "user",
+                        "text": "boa noite ce ta bao?"
+                    }
+                ],
+                "speaker_vocabulary": [
+                    "bão",
+                    "cê"
+                ],
+                "social_act": "ASK_ASSISTANT_WELLBEING",
+                "conversation_state": "ACTIVE",
+                "tone": "RELAXED",
+                "severity": "ROUTINE",
+                "known_destination": false,
+                "pending_confirmation": false,
+                "diagnostic_running": false
+            }
+        },
+        {
+            "channel": "telegram",
+            "input": "e ai jovem da internet",
+            "response": "Opa, jovem da internet! Pode chegar, estou por aqui.",
+            "state": "ACTIVE",
+            "metadata": {
+                "tone": "RELAXED",
+                "social_act": "CONVERSATION",
+                "language_status": "LOCAL",
+                "style_vocabulary": [
+                    "jovem da internet",
+                    "bão",
+                    "cê"
+                ]
+            },
+            "generator_context": null
+        },
+        {
+            "channel": "telegram",
+            "input": "Boa noite. Como você está?",
+            "response": "Boa noite! Tudo certo por aqui. E você, como está?",
+            "state": "ACTIVE",
+            "metadata": {
+                "tone": "CASUAL",
+                "usage": {
+                    "input_tokens": 1032,
+                    "total_tokens": 1072,
+                    "output_tokens": 40
+                },
+                "model_id": "60131360-de58-405f-9eb1-c63433048fb7",
+                "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+                "request_id": "req_0f0721ba60b940b2aacd9a7797501dfa",
+                "social_act": "ASK_ASSISTANT_WELLBEING",
+                "provider_id": "b6cf9cf8-ff17-49ed-b1a4-6fb757158ed8",
+                "language_status": "ASSISTED",
+                "style_vocabulary": [],
+                "context_sequences": [
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ],
+                "prompt_version_id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876"
+            },
+            "generator_context": {
+                "recent_turns": [
+                    {
+                        "role": "user",
+                        "text": "boa noite ce ta bao?"
+                    },
+                    {
+                        "role": "assistant",
+                        "text": "Boa noite! Tudo certo por aqui. E cê, tá bão?"
+                    },
+                    {
+                        "role": "user",
+                        "text": "e ai jovem da internet"
+                    },
+                    {
+                        "role": "assistant",
+                        "text": "Opa, jovem da internet! Pode chegar, estou por aqui."
+                    },
+                    {
+                        "role": "user",
+                        "text": "Boa noite. Como você está?"
+                    }
+                ],
+                "speaker_vocabulary": [],
+                "social_act": "ASK_ASSISTANT_WELLBEING",
+                "conversation_state": "ACTIVE",
+                "tone": "CASUAL",
+                "severity": "ROUTINE",
+                "known_destination": false,
+                "pending_confirmation": false,
+                "diagnostic_running": false
+            }
+        },
+        {
+            "channel": "telegram",
+            "input": "Internet hoje ta barril kk",
+            "response": "Internet assim atrapalha mesmo. Tá lenta o tempo todo ou vai e volta?",
+            "state": "ACTIVE",
+            "metadata": {
+                "tone": "RELAXED",
+                "usage": {
+                    "input_tokens": 1054,
+                    "total_tokens": 1097,
+                    "output_tokens": 43
+                },
+                "model_id": "60131360-de58-405f-9eb1-c63433048fb7",
+                "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+                "request_id": "req_b7273edf5d2040e28a07d807d9f63f62",
+                "social_act": "ROUTINE_SLOWNESS",
+                "provider_id": "b6cf9cf8-ff17-49ed-b1a4-6fb757158ed8",
+                "language_status": "ASSISTED",
+                "style_vocabulary": [
+                    "barril",
+                    "kkk",
+                    "jovem da internet"
+                ],
+                "context_sequences": [
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "prompt_version_id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876"
+            },
+            "generator_context": {
+                "recent_turns": [
+                    {
+                        "role": "user",
+                        "text": "e ai jovem da internet"
+                    },
+                    {
+                        "role": "assistant",
+                        "text": "Opa, jovem da internet! Pode chegar, estou por aqui."
+                    },
+                    {
+                        "role": "user",
+                        "text": "Boa noite. Como você está?"
+                    },
+                    {
+                        "role": "assistant",
+                        "text": "Boa noite! Tudo certo por aqui. E você, como está?"
+                    },
+                    {
+                        "role": "user",
+                        "text": "Internet hoje ta barril kk"
+                    }
+                ],
+                "speaker_vocabulary": [
+                    "barril",
+                    "kkk",
+                    "jovem da internet"
+                ],
+                "social_act": "ROUTINE_SLOWNESS",
+                "conversation_state": "ACTIVE",
+                "tone": "RELAXED",
+                "severity": "ROUTINE",
+                "known_destination": false,
+                "pending_confirmation": false,
+                "diagnostic_running": false
+            }
+        },
+        {
+            "channel": "telegram",
+            "input": "marcha",
+            "response": "Marcha! 😄",
+            "state": "ACTIVE",
+            "metadata": {
+                "tone": "RELAXED",
+                "social_act": "CASUAL_ACK",
+                "language_status": "LOCAL",
+                "style_vocabulary": [
+                    "marcha",
+                    "barril",
+                    "kkk"
+                ]
+            },
+            "generator_context": null
+        }
+    ]
+}

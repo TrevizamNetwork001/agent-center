@@ -1,0 +1,25 @@
+{
+  "url": "http://127.0.0.1:18811/conversations/555537eb-6301-4096-a42d-926695b64832",
+  "transcript": [
+    {
+      "input": "boa noite ce ta bao?",
+      "response": "Boa noite! Tudo bão por aqui! E por aí, tudo bão?"
+    },
+    {
+      "input": "e ai jovem da internet",
+      "response": "Opa, jovem da internet! Pode chegar, estou por aqui."
+    },
+    {
+      "input": "Boa noite. Como você está?",
+      "response": "Boa noite! Por aqui, tudo certo. Como você está?"
+    },
+    {
+      "input": "Internet hoje ta barril kk",
+      "response": "Pelo que você contou, a internet tá barril. É lentidão, quedas ou outro tipo de dificuldade?"
+    },
+    {
+      "input": "marcha",
+      "response": "Marcha! 😄"
+    }
+  ]
+}

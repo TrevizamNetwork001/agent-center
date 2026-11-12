@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "groups": [
+    {
+      "group": 0,
+      "tests": 146,
+      "assertions": 952
+    },
+    {
+      "group": 1,
+      "tests": 135,
+      "assertions": 986
+    },
+    {
+      "group": 2,
+      "tests": 149,
+      "assertions": 1094
+    }
+  ],
+  "total_tests": 430,
+  "total_assertions": 3032,
+  "all_41_test_files_covered": true,
+  "task_engine_concurrency": "PASS"
+}

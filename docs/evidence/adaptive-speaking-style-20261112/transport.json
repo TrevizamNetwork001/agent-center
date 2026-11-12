@@ -1,0 +1,89 @@
+{
+    "status": "PASS",
+    "transport": "Telegram fixture, native ingress\/runner\/deliver",
+    "conversation": "79240c53-4c8f-4a3c-86b6-78630341899e",
+    "transcript": [
+        {
+            "input": "boa noite ce ta bao?",
+            "response": "Boa noite! Por aqui, tudo bão! E cê, tá bão?",
+            "metadata": {
+                "tone": "RELAXED",
+                "social_act": "ASK_ASSISTANT_WELLBEING",
+                "language_status": "LOCAL",
+                "style_vocabulary": [
+                    "bão",
+                    "cê"
+                ]
+            },
+            "state": "ACTIVE",
+            "telegram_matches_panel_history": true,
+            "history_footer": false
+        },
+        {
+            "input": "e ai jovem da internet",
+            "response": "Opa, jovem da internet! Tudo certo por aqui. Como vai?",
+            "metadata": {
+                "tone": "RELAXED",
+                "social_act": "CONVERSATION",
+                "language_status": "LOCAL",
+                "style_vocabulary": [
+                    "jovem da internet",
+                    "bão",
+                    "cê"
+                ]
+            },
+            "state": "ACTIVE",
+            "telegram_matches_panel_history": true,
+            "history_footer": false
+        },
+        {
+            "input": "Boa noite. Como você está?",
+            "response": "Boa noite! Tudo certo por aqui. E com você?",
+            "metadata": {
+                "tone": "CASUAL",
+                "social_act": "ASK_ASSISTANT_WELLBEING",
+                "language_status": "LOCAL",
+                "style_vocabulary": []
+            },
+            "state": "ACTIVE",
+            "telegram_matches_panel_history": true,
+            "history_footer": false
+        },
+        {
+            "input": "Internet hoje ta barril kk",
+            "response": "Pelo seu relato, a internet tá barril hoje. É lentidão, quedas ou outro tipo de dificuldade?",
+            "metadata": {
+                "tone": "RELAXED",
+                "social_act": "ROUTINE_SLOWNESS",
+                "language_status": "LOCAL",
+                "style_vocabulary": [
+                    "barril",
+                    "kkk",
+                    "jovem da internet"
+                ]
+            },
+            "state": "ACTIVE",
+            "telegram_matches_panel_history": true,
+            "history_footer": false
+        },
+        {
+            "input": "marcha",
+            "response": "Marcha!",
+            "metadata": {
+                "tone": "RELAXED",
+                "social_act": "CASUAL_ACK",
+                "language_status": "LOCAL",
+                "style_vocabulary": [
+                    "marcha",
+                    "barril",
+                    "kkk"
+                ]
+            },
+            "state": "ACTIVE",
+            "telegram_matches_panel_history": true,
+            "history_footer": false
+        }
+    ],
+    "history_command_same_conversation": true,
+    "operational_counts_unchanged": true
+}

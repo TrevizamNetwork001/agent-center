@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "runtime_files": [
+    "app/Conversation/Language.php",
+    "app/Conversation/ConversationToneDetector.php"
+  ],
+  "unchanged_sha256": {
+    "app/app/Conversation/Engine.php": "0f7bdfa0ea039ba87965ab16e52236b0ee73ae0d19fd67253af7ef7fed24c1ce",
+    "app/app/Conversation/IntentDetector.php": "1a0f0f00c3b8d91e2029894f1e4f41419bb4f74b616988b3a5d435d234a10be9",
+    "app/app/Telegram/Runner.php": "dda76c99e3933b8262fe9db6cf7853b044149c8cf5bb223baa4a521b8d3f3d62",
+    "app/app/Telegram/Deliver.php": "dc7889bba31e4c78ae8edb94534bbbab3466d3fb2c479bff66a9b6538c282d80",
+    "app/app/Telegram/Access.php": "f0cbccb6167e5273eda130722b1164649d5d07cf36fedcf1d42255ddb6ba29f8"
+  },
+  "new_skills": false,
+  "production_modified": false
+}
