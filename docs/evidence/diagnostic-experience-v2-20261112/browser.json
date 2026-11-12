@@ -1,0 +1,177 @@
+{
+  "status": "PASS",
+  "results": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "classification": "NORMAL",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "classification": "INDICIO_DE_FALHA",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "classification": "INCONCLUSIVO",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "classification": "ERRO_DE_EXECUCAO",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "classification": "NORMAL",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "classification": "INDICIO_DE_FALHA",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "classification": "INCONCLUSIVO",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "classification": "ERRO_DE_EXECUCAO",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "classification": "NORMAL",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "classification": "INDICIO_DE_FALHA",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "classification": "INCONCLUSIVO",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "classification": "ERRO_DE_EXECUCAO",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "classification": "NORMAL",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "classification": "INDICIO_DE_FALHA",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "classification": "INCONCLUSIVO",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "classification": "ERRO_DE_EXECUCAO",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "classification": "NORMAL",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "classification": "INDICIO_DE_FALHA",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "classification": "INCONCLUSIVO",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "classification": "ERRO_DE_EXECUCAO",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "classification": "NORMAL",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "classification": "INDICIO_DE_FALHA",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "classification": "INCONCLUSIVO",
+      "authenticated": true,
+      "no_overflow": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "classification": "ERRO_DE_EXECUCAO",
+      "authenticated": true,
+      "no_overflow": true
+    }
+  ],
+  "context_both_channels": true,
+  "anonymous_requires_login": true,
+  "cross_tenant_404": true,
+  "javascript_errors": []
+}

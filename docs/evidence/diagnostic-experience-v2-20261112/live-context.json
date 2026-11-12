@@ -1,0 +1,86 @@
+{
+    "status": "PASS",
+    "transport": "real OpenAI, existing authorized knowledge_assistance binding; question seeded in isolated lab",
+    "calls": 2,
+    "max_output_tokens_each": 1024,
+    "store": false,
+    "timeout_seconds_max": 10,
+    "contexts": [
+        {
+            "kind": "waiting_duration",
+            "value": "15 dias",
+            "question_sequence": 2,
+            "question": "Há quanto tempo você está esperando resposta?"
+        },
+        {
+            "kind": "waiting_duration",
+            "value": "15 dias",
+            "question_sequence": 1,
+            "question": "Há quanto tempo você está esperando resposta?"
+        }
+    ],
+    "transcript": [
+        {
+            "channel": "web",
+            "question": "Há quanto tempo você está esperando resposta?",
+            "input": "15 dias",
+            "reply": "Você já está esperando uma resposta há 15 dias. É uma espera longa. Sobre qual assunto você aguarda retorno?",
+            "metadata": {
+                "tone": "CASUAL",
+                "usage": {
+                    "input_tokens": 1036,
+                    "total_tokens": 1086,
+                    "output_tokens": 50
+                },
+                "model_id": "60131360-de58-405f-9eb1-c63433048fb7",
+                "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+                "request_id": "req_b41f26feefa641e0a63e1f8377ec77a5",
+                "social_act": "CONVERSATION",
+                "provider_id": "b6cf9cf8-ff17-49ed-b1a4-6fb757158ed8",
+                "context_answer": {
+                    "kind": "waiting_duration",
+                    "value": "15 dias",
+                    "question_sequence": 2
+                },
+                "language_status": "ASSISTED",
+                "style_vocabulary": [],
+                "context_sequences": [
+                    3
+                ],
+                "prompt_version_id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876"
+            }
+        },
+        {
+            "channel": "telegram",
+            "question": "Há quanto tempo você está esperando resposta?",
+            "input": "15 dias",
+            "reply": "Esperar 15 dias por uma resposta é um transtorno. Sobre qual assunto você está aguardando retorno?",
+            "metadata": {
+                "tone": "CASUAL",
+                "usage": {
+                    "input_tokens": 1036,
+                    "total_tokens": 1084,
+                    "output_tokens": 48
+                },
+                "model_id": "60131360-de58-405f-9eb1-c63433048fb7",
+                "binding_id": "8600f9a2-ab78-4f03-8bb8-de8dc2ebb6ab",
+                "request_id": "req_316439b7e2764717a25ff4cb1bad275a",
+                "social_act": "CONVERSATION",
+                "provider_id": "b6cf9cf8-ff17-49ed-b1a4-6fb757158ed8",
+                "context_answer": {
+                    "kind": "waiting_duration",
+                    "value": "15 dias",
+                    "question_sequence": 1
+                },
+                "language_status": "ASSISTED",
+                "style_vocabulary": [],
+                "context_sequences": [
+                    2
+                ],
+                "prompt_version_id": "8f2b0bb4-8e6e-49f4-bbad-2f50cad6b876"
+            }
+        }
+    ],
+    "operational_counts_unchanged": true,
+    "database_changes": "rolled back"
+}

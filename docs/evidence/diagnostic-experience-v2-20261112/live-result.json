@@ -1,0 +1,24 @@
+{
+    "status": "PASS",
+    "transport": "real OpenAI; existing authorized model; diagnostic binding and prompt created in LAB transaction only",
+    "calls": 1,
+    "result": "Diagnóstico de youtube.com finalizado.\n\n✅ NORMAL\nNão foram encontradas anormalidades no escopo testado.\n\nO que ficou registrado:\n• DNS A: 1 endereço(s) retornado(s) · tempo da sondagem: 3 ms\n• DNS AAAA: 0 endereço(s) retornado(s) · tempo da sondagem: 3 ms\n• Conexão TCP: conexão estabelecida · tempo da sondagem: 7 ms\n• Resposta HTTPS: HTTP 200 · TLS validado · tempo da sondagem: 42 ms\n• Amostra ICMP (complementar): latência média ICMP: indisponível · tempo da sondagem: indisponível · sem resposta dentro do prazo da verificação\n\nNão executadas\/concluídas: Rastreamento de rota: dispensada neste escopo.\n\nLimites: A investigação representa o ponto de observação do Agent, no período deste diagnóstico. Isso não comprova a saúde de toda a rede nem descarta a lentidão percebida pelo cliente. A resposta HTTPS não mede o carregamento completo da página ou a reprodução de vídeo.\n\nPróximo passo: Se o sintoma persistir, amplie o escopo com um novo diagnóstico.\nSe o sintoma persistir, conte em quais clientes ou situações ele acontece. Outro teste exige nova autorização.",
+    "metadata": {
+        "diagnostic_experience": "v2",
+        "diagnostic_id": "d716c4d2-6231-4e31-9b51-2d06fc62f2c0",
+        "classification": "NORMAL",
+        "tracking": true,
+        "result_status": "ASSISTED",
+        "tone": "CASUAL",
+        "binding_id": "96f2a0d6-c0e5-4b45-9983-01a5ac067a9e",
+        "prompt_version_id": "6ebfbfe0-fb3c-4fa1-970f-d466aafca95b",
+        "usage": {
+            "input_tokens": 683,
+            "output_tokens": 45,
+            "total_tokens": 728
+        }
+    },
+    "classification_and_evidence_unchanged": true,
+    "operational_counts_unchanged": true,
+    "database_changes": "rolled back"
+}

@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "production_head": "54cf48f9fc1b89af0fda2be05b8f71896f93c316",
+  "containers": [
+    {
+      "name": "agent-center-web-1",
+      "image": "agent-center-central:telegram-final-v1-20261112",
+      "image_id": "sha256:56f4fc875eae0ee02693b7a105c430dc577dd54ceeab139ef989aef8411d185b",
+      "started_at": "2026-11-12T01:28:52.909063543Z",
+      "running": true
+    },
+    {
+      "name": "agent-center-worker-1",
+      "image": "agent-center-central:telegram-final-v1-20261112",
+      "image_id": "sha256:56f4fc875eae0ee02693b7a105c430dc577dd54ceeab139ef989aef8411d185b",
+      "started_at": "2026-11-12T02:28:56.29671538Z",
+      "running": true
+    },
+    {
+      "name": "agent-center-telegram-scheduler-1",
+      "image": "agent-center-central:telegram-final-v1-20261112",
+      "image_id": "sha256:56f4fc875eae0ee02693b7a105c430dc577dd54ceeab139ef989aef8411d185b",
+      "started_at": "2026-11-12T01:28:53.427382174Z",
+      "running": true
+    },
+    {
+      "name": "agent-center-diagnostic-worker-1",
+      "image": "agent-center-central:agent064-workers-20261110",
+      "image_id": "sha256:f2d4c1e60312c4a68c3ef5dd9412ab52da2fc0b66d7ae22f6c399b8a88d07b1b",
+      "started_at": "2026-11-10T17:27:06.83923917Z",
+      "running": true
+    }
+  ],
+  "production_not_published": true
+}

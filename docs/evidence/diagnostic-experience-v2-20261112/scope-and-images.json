@@ -1,0 +1,43 @@
+{
+  "status": "PASS",
+  "candidate_files_match_committed_source": [
+    "app/app/Conversation/ContextualTurn.php",
+    "app/app/Conversation/ConversationToneDetector.php",
+    "app/app/Conversation/DiagnosticExperience.php",
+    "app/app/Conversation/Engine.php",
+    "app/app/Conversation/IntentDetector.php",
+    "app/app/Conversation/Language.php",
+    "app/app/Conversation/Text.php",
+    "app/app/Http/Controllers/DiagnosticController.php",
+    "app/app/Services/Audit.php",
+    "app/app/Telegram/Client.php",
+    "app/app/Telegram/Deliver.php",
+    "app/app/Telegram/Sweep.php",
+    "app/public/diagnostic-experience.css",
+    "app/resources/views/diagnostics/executive.blade.php",
+    "app/resources/views/diagnostics/result.blade.php",
+    "app/resources/views/diagnostics/show.blade.php"
+  ],
+  "rollback_restored_base_files": [
+    "resources/views/diagnostics/result.blade.php",
+    "resources/views/diagnostics/show.blade.php",
+    "app/Conversation/Language.php",
+    "app/Conversation/Engine.php",
+    "app/Conversation/Text.php",
+    "app/Conversation/ConversationToneDetector.php",
+    "app/Conversation/IntentDetector.php",
+    "app/Http/Controllers/DiagnosticController.php"
+  ],
+  "rollback_retains_durable_v2_delivery": [
+    "Client",
+    "Deliver",
+    "Sweep"
+  ],
+  "protected_files_unchanged": [
+    "app/app/Diagnostics/Engine.php",
+    "app/app/Diagnostics/Classifier.php",
+    "AGENTS.md",
+    "app/AGENTS.md"
+  ],
+  "no_migrations": true
+}

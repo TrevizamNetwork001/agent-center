@@ -1,0 +1,81 @@
+{
+    "fixture": "LAB synthetic measurements; no real equipment or Telegram requests",
+    "classifications": {
+        "NORMAL": "d716c4d2-6231-4e31-9b51-2d06fc62f2c0",
+        "INDICIO_DE_FALHA": "ade1866d-f5f1-4366-a667-c0acd4515794",
+        "INCONCLUSIVO": "686635d3-5595-4d6f-950c-8d33c6375259",
+        "ERRO_DE_EXECUCAO": "57a9d4c2-0043-4d93-bf44-cbe48990e386"
+    },
+    "flow": [
+        {
+            "method": "sendMessage",
+            "message_id": 101,
+            "text": "Fechou. Confirma um novo diagnóstico para youtube.com? As evidências anteriores serão preservadas.",
+            "button": null
+        },
+        {
+            "method": "sendMessage",
+            "message_id": 102,
+            "text": "Fechou. Solicitação aceita para youtube.com. Os testes estão sendo preparados e aguardam execução no Agent. Vou apresentar o resultado aqui quando terminar.",
+            "button": {
+                "text": "Ver diagnóstico completo",
+                "url": "https://central.example.test/diagnostics/d716c4d2-6231-4e31-9b51-2d06fc62f2c0"
+            }
+        },
+        {
+            "method": "editMessageText",
+            "message_id": 102,
+            "text": "Acompanhamento de youtube.com\nAs verificações estão na fila. Aguardando execução no Agent.",
+            "button": {
+                "text": "Ver diagnóstico completo",
+                "url": "https://central.example.test/diagnostics/d716c4d2-6231-4e31-9b51-2d06fc62f2c0"
+            }
+        },
+        {
+            "method": "editMessageText",
+            "message_id": 102,
+            "text": "Acompanhamento de youtube.com\nO Agent recebeu a solicitação. Aguardando o início da execução das verificações.",
+            "button": {
+                "text": "Ver diagnóstico completo",
+                "url": "https://central.example.test/diagnostics/d716c4d2-6231-4e31-9b51-2d06fc62f2c0"
+            }
+        },
+        {
+            "method": "editMessageText",
+            "message_id": 102,
+            "text": "Acompanhamento de youtube.com\nHá verificações em execução no Agent. O resultado será enviado aqui ao concluir.",
+            "button": {
+                "text": "Ver diagnóstico completo",
+                "url": "https://central.example.test/diagnostics/d716c4d2-6231-4e31-9b51-2d06fc62f2c0"
+            }
+        },
+        {
+            "method": "editMessageText",
+            "message_id": 102,
+            "text": "Prontinho, meu rei! Terminei a verificação de youtube.com.\n\n✅ NORMAL\nNão foram encontradas anormalidades no escopo testado.\n\nO que ficou registrado:\n• Conexão TCP: conexão estabelecida · tempo da sondagem: 7 ms\n• Amostra ICMP (complementar): latência média ICMP: indisponível · tempo da sondagem: indisponível · sem resposta dentro do prazo da verificação\n• DNS A: 1 endereço(s) retornado(s) · tempo da sondagem: 3 ms\n• Resposta HTTPS: HTTP 200 · TLS validado · tempo da sondagem: 42 ms\n• DNS AAAA: 0 endereço(s) retornado(s) · tempo da sondagem: 3 ms\n\nNão executadas/concluídas: Rastreamento de rota: dispensada neste escopo.\n\nLimites: A investigação representa o ponto de observação do Agent, no período deste diagnóstico. Isso não comprova a saúde de toda a rede nem descarta a lentidão percebida pelo cliente. A resposta HTTPS não mede o carregamento completo da página ou a reprodução de vídeo.\n\nPróximo passo: Se o sintoma persistir, amplie o escopo com um novo diagnóstico.\nSe o sintoma persistir, conte em quais clientes ou situações ele acontece. Outro teste exige nova autorização.",
+            "button": {
+                "text": "Ver diagnóstico completo",
+                "url": "https://central.example.test/diagnostics/d716c4d2-6231-4e31-9b51-2d06fc62f2c0"
+            }
+        }
+    ],
+    "normal_conversation": "52af792e-3963-4b28-8460-516f66438c24",
+    "normal_body": "Prontinho, meu rei! Terminei a verificação de youtube.com.\n\n✅ NORMAL\nNão foram encontradas anormalidades no escopo testado.\n\nO que ficou registrado:\n• Conexão TCP: conexão estabelecida · tempo da sondagem: 7 ms\n• Amostra ICMP (complementar): latência média ICMP: indisponível · tempo da sondagem: indisponível · sem resposta dentro do prazo da verificação\n• DNS A: 1 endereço(s) retornado(s) · tempo da sondagem: 3 ms\n• Resposta HTTPS: HTTP 200 · TLS validado · tempo da sondagem: 42 ms\n• DNS AAAA: 0 endereço(s) retornado(s) · tempo da sondagem: 3 ms\n\nNão executadas/concluídas: Rastreamento de rota: dispensada neste escopo.\n\nLimites: A investigação representa o ponto de observação do Agent, no período deste diagnóstico. Isso não comprova a saúde de toda a rede nem descarta a lentidão percebida pelo cliente. A resposta HTTPS não mede o carregamento completo da página ou a reprodução de vídeo.\n\nPróximo passo: Se o sintoma persistir, amplie o escopo com um novo diagnóstico.\nSe o sintoma persistir, conte em quais clientes ou situações ele acontece. Outro teste exige nova autorização.",
+    "followup": "Entendi. Os testes do Agent não mostraram anormalidades no escopo verificado. A dificuldade ocorre em todos os clientes ou apenas em alguns? Nenhum novo teste foi iniciado.",
+    "context": {
+        "web": {
+            "conversation": "ca5666a3-7e44-4a3f-80d8-defeb1e4f3d8",
+            "question": "Há quanto tempo você está esperando resposta?",
+            "answer": "Você está esperando resposta há 15 dias. Chegou a receber algum retorno nesse período?",
+            "next": "Você continua sem retorno. O que estava tentando resolver com esse contato?",
+            "closed": "CLOSED"
+        },
+        "telegram": {
+            "conversation": "0ea9bf44-2d44-403c-bd04-62870faca931",
+            "question": "Há quanto tempo você está esperando resposta?",
+            "answer": "Você está esperando resposta há 15 dias. Chegou a receber algum retorno nesse período?",
+            "next": "Você continua sem retorno. O que estava tentando resolver com esse contato?",
+            "closed": "CLOSED"
+        }
+    }
+}

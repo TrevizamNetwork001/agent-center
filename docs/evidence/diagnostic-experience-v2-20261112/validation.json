@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "groups": [
+    {
+      "group": 0,
+      "tests": 166,
+      "assertions": 1130
+    },
+    {
+      "group": 1,
+      "tests": 149,
+      "assertions": 1127
+    },
+    {
+      "group": 2,
+      "tests": 156,
+      "assertions": 1209
+    }
+  ],
+  "total_tests": 471,
+  "total_assertions": 3466,
+  "test_files": 44,
+  "task_engine_concurrency": "PASS",
+  "conversation_idle_concurrency": "PASS",
+  "pint_changed_php_files": 16,
+  "frontend_build": "PASS",
+  "browser": "PASS: 24 layouts plus two conversation histories",
+  "real_openai_context": "PASS: 2 requests, ASSISTED in both channels, transactions rolled back",
+  "publication": "NOT AUTHORIZED; not performed",
+  "real_openai_diagnostic": "PASS: 1 captured final request; ASSISTED; official classification/evidence unchanged; LAB binding/prompt transaction rolled back",
+  "secret_scan": "PASS: scoped local pattern scan, zero findings",
+  "diff_check": "PASS"
+}
