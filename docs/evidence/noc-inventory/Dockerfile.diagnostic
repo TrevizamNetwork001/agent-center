@@ -10,6 +10,4 @@ COPY app/app/Providers/AppServiceProvider.php /var/www/html/app/Providers/AppSer
 COPY app/app/Services/Audit.php /var/www/html/app/Services/Audit.php
 COPY app/resources/noc-catalog.json app/resources/noc-fixtures.json /var/www/html/resources/
 COPY app/resources/views/noc /var/www/html/resources/views/noc
-COPY app/resources/views/layout.blade.php /var/www/html/resources/views/layout.blade.php
 COPY app/database/migrations/2026_11_13_000001_create_noc_inventory.php /var/www/html/database/migrations/
-COPY deploy/noc-inventory/web.operational.php /var/www/html/routes/web.php

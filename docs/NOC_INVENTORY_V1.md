@@ -70,7 +70,7 @@ Um adaptador futuro precisará de identidade verificada, referência de credenci
 
 ## Publicação e rollback
 
-As imagens incrementais derivam das três imagens operacionais do Preflight Real Flow. O artefato `deploy/noc-inventory/web.operational.php` conserva a ausência da rota de Observability que existe no checkout histórico, mas não na imagem publicada; acrescenta somente as rotas NOC. Não copia Python Agent, Lifecycle ou Preflight.
+As imagens incrementais derivam das três imagens operacionais do Preflight Real Flow. Web e fila usam o artefato `deploy/noc-inventory/web.operational.php`, que conserva a ausência da rota de Observability que existe no checkout histórico, mas não na imagem publicada; acrescenta somente as rotas NOC. Não copia Python Agent, Lifecycle ou Preflight.
 
 1. Prechecks de Health/versões/operações, hash de política e trabalho preexistente; backup local com prune desativado e restauração isolada.
 2. Construir e testar as imagens Web/fila/diagnóstico, sem habilitar conectividade de equipamentos.
@@ -98,3 +98,5 @@ Resultados, commits, imagens e screenshots efetivos serão registrados após a h
 A confirmação final incluiu requests Web/Telegram, RAG/Knowledge preservados, RBAC, CSRF, duplicidades, edição concorrente por revisão, FORCE RLS, FK entre tenants, histórico imutável, fixtures, intenção e ausência de substitutos. A autorização de publicação será aplicada somente a este módulo. [Evidências de teste](evidence/noc-inventory/test-proof.json), [interface](evidence/noc-inventory/ui-proof.json) e [screenshots](evidence/noc-inventory/screenshots).
 
 Revalidação focada final: **16 testes / 324 asserções PASS**, incluindo seleção de identidade com pontuação no pedido, planejamento sem Profile de VM e contrato futuro sem `execute`/`connect`. Secret scan e diff check PASS.
+
+A checagem de empacotamento confirmou que o worker de diagnóstico possui bootstrap/rotas distintos da Web (sem arquivo de rotas Telegram). Sua imagem preserva essas rotas e layout originais, recebendo somente o núcleo/bibliotecas necessários; não se injeta o roteamento Web nesse papel. O teste de bootstrap da imagem é obrigatório antes da publicação.
