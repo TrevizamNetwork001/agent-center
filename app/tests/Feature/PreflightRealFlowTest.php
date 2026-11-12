@@ -6,14 +6,17 @@ use App\Agent\Protocol;
 use App\Conversation\Engine;
 use App\Conversation\Identity;
 use App\Conversation\PlanningReply;
+use App\Conversation\ResolvePreflight;
 use App\Diagnostics\Catalog;
 use App\Diagnostics\OperationalCapabilities;
 use App\Diagnostics\Preflight;
+use App\Enums\Role;
 use App\Models\Agent;
 use App\Models\AgentTask;
 use App\Models\ConversationMessage;
 use App\Models\ConversationSetting;
 use App\Models\Diagnostic;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 use Tests\IdentityTestCase;
 
@@ -43,6 +46,149 @@ class PreflightRealFlowTest extends IdentityTestCase
     private function decision(array $request, string $state = 'ALLOWED'): array
     {
         return ['schema_version' => 1, 'id' => $request['id'], 'state' => $state, 'reason' => $state === 'ALLOWED' ? 'authorized' : ($state === 'DENIED' ? 'policy_denied' : 'unverified'), 'helper_healthy' => $state === 'ALLOWED' ? true : null, 'agent_version' => '0.6.5', 'policy_digest' => $request['policy_digest'], 'helper_version' => '0.6.5', 'effective_revision' => str_repeat('a', 64)];
+    }
+
+    private function waiting(): array
+    {
+        Queue::fake();
+        [$agent] = $this->agent();
+        app(Catalog::class)->ensure();
+        (new ConversationSetting)->forceFill(['tenant_id' => $this->a->id, 'enabled' => true, 'retention_days' => 30, 'updated_by' => $this->admin->id])->save();
+        $engine = app(Engine::class);
+        $identity = Identity::web($this->operator);
+        $c = $engine->create($identity, (string) Str::uuid(), $agent->id);
+        $c = $engine->send($identity, $c, (string) Str::uuid(), 'Quero analisar a rota para 8.8.8.8.');
+        $this->assertSame('PENDING', $c->context_json['preflight_watch']['phase']);
+        Queue::assertPushed(ResolvePreflight::class, fn ($job) => $job->conversationId === $c->id && $job->delay->timestamp === $c->context_json['preflight_watch']['request']['expires_at']);
+
+        return [$agent, $c, $identity, $engine];
+    }
+
+    private function resolve($c): void
+    {
+        (new ResolvePreflight($this->a->id, $c->id))->handle(app(Engine::class));
+        $this->context()->forUser($this->operator);
+    }
+
+    public function test_terminal_denial_is_automatic_without_new_user_turn_and_duplicate_jobs_are_idempotent(): void
+    {
+        [$agent, $c] = $this->waiting();
+        $this->travel(18)->seconds();
+        $request = app(Preflight::class)->exchange($agent, null);
+        $this->travel(1)->seconds();
+        app(Preflight::class)->exchange($agent, $this->decision($request, 'DENIED'));
+        Queue::assertPushed(ResolvePreflight::class, 2);
+        $this->resolve($c);
+        $this->resolve($c);
+        app(Preflight::class)->exchange($agent, $this->decision($request, 'DENIED'));
+        $this->resolve($c);
+        $messages = ConversationMessage::where('conversation_id', $c->id)->get();
+        $this->assertSame(1, $messages->where('sender_type', 'user')->count());
+        $this->assertSame(1, $messages->filter(fn ($m) => ($m->metadata['diagnostic_planning']['status'] ?? null) === 'DENIED')->count());
+        $this->assertArrayNotHasKey('pending', $c->fresh()->context_json);
+        $this->assertArrayNotHasKey('preflight_watch', $c->fresh()->context_json);
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_allowed_update_expires_and_old_confirmation_cannot_execute(): void
+    {
+        [$agent, $c, $identity, $engine] = $this->waiting();
+        $request = app(Preflight::class)->exchange($agent, null);
+        app(Preflight::class)->exchange($agent, $this->decision($request));
+        $this->resolve($c);
+        $this->assertSame('WAITING_FOR_CONFIRMATION', $c->fresh()->state);
+        $count = ConversationMessage::count();
+        $this->resolve($c);
+        $this->assertSame($count, ConversationMessage::count());
+        $this->travel(11)->seconds();
+        $this->resolve($c);
+        $this->assertSame('FOLLOW_UP', $c->fresh()->state);
+        $this->assertArrayNotHasKey('pending', $c->fresh()->context_json);
+        $engine->send($identity, $c->fresh(), (string) Str::uuid(), 'Confirmo');
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_pending_deadline_and_slow_allowed_response_never_grant_confirmation(): void
+    {
+        [$agent, $c] = $this->waiting();
+        $this->travel(46)->seconds();
+        $this->resolve($c);
+        $this->assertArrayNotHasKey('preflight_watch', $c->fresh()->context_json);
+        $last = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first();
+        $this->assertSame('ERROR', $last->metadata['diagnostic_planning']['status']);
+        $this->assertStringNotContainsString('política atual não permite', $last->body);
+        $this->assertNull(app(Preflight::class)->exchange($agent, null));
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_changed_policy_cancelled_and_cross_tenant_waits_cannot_be_confirmed(): void
+    {
+        [$agent, $c, $identity, $engine] = $this->waiting();
+        $request = app(Preflight::class)->exchange($agent, null);
+        app(Preflight::class)->exchange($agent, $this->decision($request));
+        $metadata = $agent->fresh()->metadata;
+        $metadata['managed_settings']['revision']++;
+        $agent->forceFill(['metadata' => $metadata])->save();
+        $this->resolve($c);
+        $this->assertArrayNotHasKey('pending', $c->fresh()->context_json);
+        $this->assertSame('STALE', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first()->metadata['diagnostic_planning']['status']);
+        $c = $engine->send($identity, $c->fresh(), (string) Str::uuid(), 'Quero analisar a rota para 8.8.8.8.');
+        $this->assertArrayHasKey('preflight_watch', $c->context_json);
+        $this->operator->forceFill(['role' => \App\Enums\Role::Viewer])->save();
+        $beforeRevoked = ConversationMessage::count();
+        $this->resolve($c);
+        $this->assertSame($beforeRevoked, ConversationMessage::count());
+        $this->operator->forceFill(['role' => \App\Enums\Role::Operator])->save();
+        $engine->send($identity, $c, (string) Str::uuid(), 'Cancela');
+        $count = ConversationMessage::count();
+        $this->resolve($c);
+        (new ResolvePreflight($this->b->id, $c->id))->handle($engine);
+        $this->context()->forUser($this->operator);
+        $this->assertSame($count, ConversationMessage::count());
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_expired_allowed_callback_helper_failure_and_revoked_role_cannot_offer_confirmation(): void
+    {
+        [$agent, $c] = $this->waiting();
+        $request = app(Preflight::class)->exchange($agent, null);
+        app(Preflight::class)->exchange($agent, $this->decision($request));
+        $this->travel(11)->seconds();
+        $this->resolve($c);
+        $this->assertNotSame('WAITING_FOR_CONFIRMATION', $c->fresh()->state);
+        $this->assertSame('STALE', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first()->metadata['diagnostic_planning']['status']);
+        $this->assertSame(0, Diagnostic::count());
+    }
+
+    public function test_helper_unavailable_callback_is_not_policy_denial(): void
+    {
+        [$agent, $c] = $this->waiting();
+        $request = app(Preflight::class)->exchange($agent, null);
+        $result = [...$this->decision($request, 'UNKNOWN'), 'helper_healthy' => false, 'reason' => 'helper_unavailable'];
+        app(Preflight::class)->exchange($agent, $result);
+        $this->resolve($c);
+        $last = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first();
+        $this->assertSame('HELPER_UNAVAILABLE', $last->metadata['diagnostic_planning']['status']);
+        $this->assertSame('UNKNOWN', $last->metadata['diagnostic_planning']['authorization']);
+        $this->assertArrayNotHasKey('pending', $c->fresh()->context_json);
+    }
+
+    public function test_revoked_role_and_changed_target_suppress_old_callback(): void
+    {
+        [$agent, $c, $identity, $engine] = $this->waiting();
+        $request = app(Preflight::class)->exchange($agent, null);
+        $engine->send($identity, $c, (string) Str::uuid(), 'Quero analisar a rota para 1.1.1.1.');
+        app(Preflight::class)->exchange($agent, $this->decision($request));
+        $count = ConversationMessage::count();
+        $this->resolve($c);
+        $this->assertSame($count, ConversationMessage::count());
+        $this->assertArrayNotHasKey('pending', $c->fresh()->context_json);
+        $this->operator->forceFill(['role' => Role::Viewer])->save();
+        $this->resolve($c);
+        $this->assertSame($count, ConversationMessage::count());
+        $this->assertSame(0, Diagnostic::count());
     }
 
     public function test_real_timing_pending_then_denied_then_stale_never_grants_execution(): void

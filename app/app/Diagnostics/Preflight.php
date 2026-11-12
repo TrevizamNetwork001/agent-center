@@ -4,7 +4,9 @@ namespace App\Diagnostics;
 
 use App\Agent\ManagedSettings;
 use App\Agent\Protocol;
+use App\Conversation\ResolvePreflight;
 use App\Models\Agent;
+use App\Models\Conversation;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -64,6 +66,36 @@ class Preflight
         }
     }
 
+    /** Read an existing proof without issuing a query or extending its lifetime. */
+    public function observation(Agent $agent, array $binding): array
+    {
+        $record = $agent->metadata['diagnostic_preflight_v1'] ?? [];
+        $request = $record['request'] ?? [];
+        $unknown = ['state' => 'UNKNOWN', 'reason' => 'preflight_stale'];
+        foreach (['id', 'destination', 'protocol', 'policy_digest'] as $field) {
+            if (! isset($binding[$field]) || ($request[$field] ?? null) !== $binding[$field]) {
+                return $unknown;
+            }
+        }
+        if ($request['expires_at'] <= now()->timestamp && ! isset($record['result'])) {
+            return ['state' => 'UNKNOWN', 'reason' => 'preflight_timeout'];
+        }
+        if ($this->digest($agent) !== $request['policy_digest'] || $request['expires_at'] <= now()->timestamp) {
+            return $unknown;
+        }
+        if ($agent->version !== '0.6.5' || $agent->status !== 'active' || $agent->revoked_at || ! $agent->last_heartbeat_at?->gt(now()->subSeconds(60))) {
+            return ['state' => 'UNKNOWN', 'reason' => 'agent_unavailable'];
+        }
+        if (! isset($record['result'])) {
+            return ['state' => 'UNKNOWN', 'reason' => 'preflight_pending'];
+        }
+        if (($record['received_at'] ?? 0) <= now()->subSeconds(10)->timestamp || ($record['dispatched_at'] ?? 0) <= now()->subSeconds(10)->timestamp) {
+            return $unknown;
+        }
+
+        return $record['result'];
+    }
+
     public function exchange(Agent $agent, ?array $result): ?array
     {
         return DB::transaction(function () use ($agent, $result) {
@@ -89,6 +121,9 @@ class Preflight
                 } else {
                     $record = [...$record, 'result' => $result, 'received_at' => now()->timestamp];
                     $a->forceFill(['metadata' => [...$meta, 'diagnostic_preflight_v1' => $record]])->save();
+                    foreach (Conversation::where('status', 'OPEN')->where('context_json->preflight_watch->request->id', $request['id'])->where('context_json->preflight_watch->agent_id', $a->id)->pluck('id') as $conversation) {
+                        ResolvePreflight::dispatch($a->tenant_id, $conversation)->afterCommit();
+                    }
                 }
 
                 return null;

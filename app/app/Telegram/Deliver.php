@@ -2,6 +2,9 @@
 
 namespace App\Telegram;
 
+use App\Conversation\ResolvePreflight;
+use App\Diagnostics\Preflight;
+use App\Models\Agent;
 use App\Models\Conversation;
 use App\Models\ConversationMessage;
 use App\Models\Diagnostic;
@@ -73,6 +76,30 @@ class Deliver implements ShouldQueue
                         $conversation = Conversation::findOrFail($o->conversation_id);
                         $allowed = $allowed && $conversation->user_id === $link->user_id && $conversation->contact_id === $link->id && $conversation->telegram_context_id === ($o->context_id ?: null);
                         $body = mb_substr($m->body, 0, 2300);
+                        if (($m->metadata['diagnostic_planning']['status'] ?? null) === 'PENDING') {
+                            $watch = $conversation->context_json['preflight_watch'] ?? [];
+                            $agent = Agent::find($watch['agent_id'] ?? null);
+                            $proof = $agent ? app(Preflight::class)->observation($agent, $watch['request'] ?? []) : [];
+                            if (($watch['request']['id'] ?? null) !== ($m->metadata['diagnostic_planning']['request_id'] ?? null) || ($proof['reason'] ?? null) !== 'preflight_pending') {
+                                $o->forceFill(['status' => 'SUPPRESSED', 'body_cipher' => null, 'last_error' => 'SUPERSEDED_PREFLIGHT_PENDING'])->save();
+                                ResolvePreflight::dispatch($this->tenant, $conversation->id)->afterCommit();
+
+                                return;
+                            }
+                        }
+                        if (($m->metadata['diagnostic_planning']['authorization'] ?? null) === 'ALLOWED' && isset($m->metadata['diagnostic_planning']['request_id'])) {
+                            $watch = $conversation->context_json['preflight_watch'] ?? [];
+                            $agent = Agent::find($watch['agent_id'] ?? null);
+                            $proof = $agent ? app(Preflight::class)->observation($agent, $watch['request'] ?? []) : [];
+                            $current = ($proof['state'] ?? null) === 'ALLOWED' && ($watch['request']['id'] ?? null) === ($m->metadata['diagnostic_planning']['request_id'] ?? null)
+                                && $conversation->state === 'WAITING_FOR_CONFIRMATION' && ($group ? $context->conversation_id : $link->conversation_id) === $conversation->id;
+                            if (! $current) {
+                                $o->forceFill(['status' => 'SUPPRESSED', 'body_cipher' => null, 'last_error' => 'PREFLIGHT_NO_LONGER_VALID'])->save();
+                                ResolvePreflight::dispatch($this->tenant, $conversation->id)->afterCommit();
+
+                                return;
+                            }
+                        }
                         $tracking = ($m->metadata['diagnostic_experience'] ?? '') === 'v2' && ($m->metadata['tracking'] ?? false) === true;
                         if ($tracking) {
                             $diagnostic = Diagnostic::find($m->metadata['diagnostic_id'] ?? null);

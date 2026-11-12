@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Agent\Protocol;
 use App\Conversation\Engine;
 use App\Conversation\Identity;
+use App\Conversation\ResolvePreflight;
 use App\Diagnostics\Catalog;
 use App\Diagnostics\Classifier;
 use App\Diagnostics\Preflight;
@@ -74,11 +75,17 @@ class TelegramTest extends IntelligenceTestCase
         $this->receive($text, update: $serial);
         $this->process();
         $this->assertSame($count, ConversationMessage::where('conversation_id', $c->id)->count());
+        $this->deliverAll();
         $this->travel(18)->seconds();
         app(Preflight::class)->exchange($agent, null);
         $this->travel(1)->seconds();
         app(Preflight::class)->exchange($agent, ['schema_version' => 1, 'id' => $request['id'], 'state' => 'DENIED', 'reason' => 'policy_denied', 'helper_healthy' => null, 'agent_version' => '0.6.5', 'policy_digest' => $request['policy_digest']]);
-        $this->say($text);
+        // Execute the queued callback, without another inbound Telegram message.
+        (new ResolvePreflight($this->a->id, $c->id))->handle(app(Engine::class));
+        $this->scope();
+        (new ResolvePreflight($this->a->id, $c->id))->handle(app(Engine::class));
+        $this->scope();
+        $this->assertSame(1, ConversationMessage::where('conversation_id', $c->id)->where('sender_type', 'user')->count());
         $last = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first();
         $this->assertStringContainsString('política atual não permite', $last->body);
         $this->assertStringContainsString('Nenhum teste foi executado', $last->body);
@@ -94,6 +101,31 @@ class TelegramTest extends IntelligenceTestCase
         if ($directory = getenv('PREFLIGHT_FLOW_PROOF_DIR')) {
             file_put_contents($directory.'/telegram.json', json_encode(['pending' => $first->body, 'denied' => $last->body, 'metadata' => $last->metadata], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         }
+    }
+
+    public function test_async_allowed_confirmation_is_suppressed_if_delivery_is_delayed_past_validity(): void
+    {
+        $agent = $this->agent();
+        $agent->forceFill(['version' => '0.6.5', 'last_heartbeat_at' => now(), 'metadata' => [...$agent->metadata, 'mtr_capability_confirmed_at' => now()->toIso8601String()]])->save();
+        $link = $this->link();
+        $this->say('Quero analisar a rota para 8.8.8.8.');
+        $c = $this->conversation($link);
+        $request = app(Preflight::class)->exchange($agent, null);
+        app(Preflight::class)->exchange($agent, ['schema_version' => 1, 'id' => $request['id'], 'state' => 'ALLOWED', 'reason' => 'authorized', 'helper_healthy' => true, 'helper_version' => '0.6.5', 'effective_revision' => str_repeat('a', 64), 'agent_version' => '0.6.5', 'policy_digest' => $request['policy_digest']]);
+        (new ResolvePreflight($this->a->id, $c->id))->handle(app(Engine::class));
+        $this->scope();
+        $this->assertSame('WAITING_FOR_CONFIRMATION', $c->fresh()->state);
+        $confirmation = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first();
+        $this->travel(11)->seconds();
+        $this->deliverAll();
+        $this->assertSame('SUPPRESSED', Outbound::where('message_id', $confirmation->id)->sole()->status);
+        Http::assertNotSent(fn ($r) => str_contains($r['text'] ?? '', 'Confirma a execução'));
+        $this->assertSame(1, Outbound::where('conversation_id', $c->id)->where('last_error', 'SUPERSEDED_PREFLIGHT_PENDING')->count());
+        (new ResolvePreflight($this->a->id, $c->id))->handle(app(Engine::class));
+        $this->scope();
+        $this->assertArrayNotHasKey('pending', $c->fresh()->context_json);
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, Diagnostic::count());
     }
 
     public function test_exact_ip_route_request_uses_existing_mtr_profile_after_explicit_confirmation(): void

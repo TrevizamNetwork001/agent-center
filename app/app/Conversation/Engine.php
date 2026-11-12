@@ -11,6 +11,7 @@ use App\Diagnostics\IntentPlanning;
 use App\Diagnostics\OperationalIntent;
 use App\Diagnostics\PathReadiness;
 use App\Diagnostics\Planner;
+use App\Diagnostics\Preflight;
 use App\Models\Agent;
 use App\Models\Conversation;
 use App\Models\ConversationEvent;
@@ -103,6 +104,8 @@ class Engine
                 return Conversation::findOrFail($duplicate->conversation_id);
             }
             $c = Conversation::whereKey($conversation->id)->lockForUpdate()->firstOrFail();
+            // A new user turn supersedes an in-flight question; never notify an old target.
+            $c->context_json = array_diff_key($c->context_json, ['preflight_watch' => true]);
             $this->synchronize($c, $i);
             $det = app(IntentDetector::class);
             $intent = $det->detect($body, State::from($c->state));
@@ -208,7 +211,7 @@ class Engine
             } elseif ($intent === Intent::Confirm && ($c->context_json['confirm_cancel'] ?? false)) {
                 $this->cancel($c, $i);
             } elseif ($intent === Intent::Deny) {
-                $c->context_json = array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'objective_question', 'requested_objective']));
+                $c->context_json = array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'objective_question', 'requested_objective', 'preflight_watch']));
                 if ($state === State::Confirmation) {
                     $this->transition($c, State::FollowUp, 'denied');
                 }$this->reply($c, 'Certo. Nenhum novo teste foi iniciado.');
@@ -316,7 +319,7 @@ class Engine
             return false;
         }
         // A changed objective invalidates any previous permission to execute.
-        $c->context_json = array_diff_key($c->context_json, ['pending' => true]);
+        $c->context_json = array_diff_key($c->context_json, ['pending' => true, 'preflight_watch' => true]);
         if ($c->state === State::Confirmation->value) {
             $this->transition($c, State::FollowUp, 'objective_changed');
         }
@@ -377,7 +380,7 @@ class Engine
             $planningMeta = ['diagnostic_planning' => ['version' => 1, 'objective' => $goal->value, 'profile' => $key,
                 'agent_id' => $agent->id, 'target' => $target, 'protocol' => $protocol, 'authorization' => $authorization,
                 'status' => match ($reason) {
-                    'preflight_stale' => 'STALE', 'helper_unavailable' => 'HELPER_UNAVAILABLE', 'preflight_timeout' => 'COMMUNICATION_TIMEOUT', default => $authorization
+                    'preflight_pending' => 'PENDING', 'preflight_stale' => 'STALE', 'preflight_timeout' => 'ERROR', 'preflight_busy', 'agent_unavailable', 'preflight_incompatible' => 'UNAVAILABLE', 'helper_unavailable' => 'HELPER_UNAVAILABLE', default => $authorization
                 },
                 'reason' => $reason, 'checked_at' => now()->toIso8601String(), 'executed' => false,
                 'steps' => array_column($plan['steps'], 'key'), 'request_id' => $matching ? ($query['id'] ?? null) : null,
@@ -394,12 +397,22 @@ class Engine
             $body = $c->channel === 'telegram' && $goal === OperationalIntent::Route
                 ? app(PlanningReply::class)->blocked($target, $reason)
                 : $scope.$explanation.' Objetivo '.$goal->label().': NÃO EXECUTADO; solicitação INCONCLUSIVA.'.$alternative.' Nenhuma tarefa foi criada.';
+            if ($goal === OperationalIntent::Route && $matching && ! isset($slot['result']) && ($query['expires_at'] ?? 0) > now()->timestamp && ($query['policy_digest'] ?? null) === app(Preflight::class)->digest($agent->fresh())) {
+                $c->context_json = [...$c->context_json, 'preflight_watch' => ['agent_id' => $agent->id, 'request' => $query, 'phase' => 'PENDING']];
+                $planningMeta['diagnostic_planning']['status'] = 'PENDING';
+                $body = 'A consulta de autorização para analisar a rota até '.$target.' está pendente. Avisarei aqui quando terminar. Nenhum teste foi executado.';
+                ResolvePreflight::dispatch($c->tenant_id, $c->id)->delay(now()->setTimestamp($query['expires_at']))->afterCommit();
+            }
             $this->reply($c, $body, $planningMeta);
 
             return true;
         }
         $c->context_json = [...array_diff_key($c->context_json, array_flip(['objective_question', 'requested_objective'])), 'agent_id' => $agent->id,
             'pending' => ['issued_at' => now()->timestamp, 'profile' => $key, 'target' => $target, 'objective' => [...$objective, 'plan_digest' => Digest::hash($plan)]]];
+        if ($goal === OperationalIntent::Route && $matching) {
+            $c->context_json = [...$c->context_json, 'preflight_watch' => ['agent_id' => $agent->id, 'request' => $query, 'phase' => 'ALLOWED']];
+            ResolvePreflight::dispatch($c->tenant_id, $c->id)->delay(now()->setTimestamp(min($query['expires_at'], $slot['dispatched_at'] + 10, $slot['received_at'] + 10)))->afterCommit();
+        }
         $this->transition($c, State::Confirmation, 'execution_confirmation');
         $confirmation = $c->channel === 'telegram' && $goal === OperationalIntent::Route ? app(PlanningReply::class)->confirmation($target) : $prefix.$planning->confirmation($plan);
         $this->reply($c, $confirmation, $planningMeta);
@@ -534,8 +547,48 @@ class Engine
         });
     }
 
+    private function resolvePreflight(Conversation $c, Identity $identity): void
+    {
+        $watch = $c->context_json['preflight_watch'] ?? null;
+        if (! $watch || $c->status !== 'OPEN') {
+            return;
+        }
+        $agent = Agent::find($watch['agent_id']);
+        $decision = $agent ? app(Preflight::class)->observation($agent, $watch['request']) : ['state' => 'UNKNOWN', 'reason' => 'agent_unavailable'];
+        if ($decision['reason'] === 'preflight_pending') {
+            return;
+        }
+        if ($watch['phase'] === 'ALLOWED' && $decision['state'] === 'ALLOWED') {
+            return;
+        }
+        $c->context_json = array_diff_key($c->context_json, ['preflight_watch' => true]);
+        $request = $watch['request'];
+        if ($decision['state'] === 'ALLOWED') {
+            // Reuse the existing planner and its checks. No task is created here.
+            $this->objectiveRequest($c, $identity, 'Quero analisar a rota '.$request['protocol'].' para '.$request['destination'], '');
+
+            return;
+        }
+        $c->context_json = array_diff_key($c->context_json, ['pending' => true]);
+        if ($c->state === State::Confirmation->value) {
+            $this->transition($c, State::FollowUp, 'preflight_invalidated');
+        }
+        $reason = $decision['reason'];
+        $status = $decision['state'] === 'DENIED' ? 'DENIED' : match ($reason) {
+            'preflight_stale' => 'STALE', 'preflight_timeout' => 'ERROR', 'helper_unavailable' => 'HELPER_UNAVAILABLE', 'agent_unavailable' => 'UNAVAILABLE', default => 'UNKNOWN'
+        };
+        $meta = ['diagnostic_planning' => ['version' => 1, 'objective' => OperationalIntent::Route->value, 'profile' => $request['protocol'] === 'tcp' ? 'MTR_TCP' : 'MTR_ICMP',
+            'agent_id' => $watch['agent_id'], 'request_id' => $request['id'], 'target' => $request['destination'], 'protocol' => $request['protocol'], 'authorization' => $decision['state'], 'status' => $status,
+            'reason' => $reason, 'checked_at' => now()->toIso8601String(), 'expires_at' => $request['expires_at'], 'policy_revision' => $request['policy_revision'], 'steps' => [$request['protocol'] === 'tcp' ? 'mtr_tcp' : 'mtr_icmp'], 'dispatched_at' => $agent?->metadata['diagnostic_preflight_v1']['dispatched_at'] ?? null, 'received_at' => $agent?->metadata['diagnostic_preflight_v1']['received_at'] ?? null, 'executed' => false]];
+        $body = $reason === 'preflight_stale'
+            ? 'A consulta de autorização venceu ou perdeu a validade. Para continuar, solicite uma nova análise de rota. Nenhum teste foi executado.'
+            : app(PlanningReply::class)->blocked($request['destination'], $reason);
+        $this->message($c, 'system', 'text', $body, null, $meta, eventKey: 'preflight:'.$request['id'].':'.$status);
+    }
+
     private function synchronize(Conversation $c, Identity $identity): void
     {
+        $this->resolvePreflight($c, $identity);
         if (! $c->current_diagnostic_id) {
             return;
         }
@@ -601,7 +654,7 @@ class Engine
             return;
         }
         if (in_array($next, [State::Closed, State::Cancelled], true)) {
-            $c->context_json = array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'pending_question', 'objective_question', 'requested_objective']));
+            $c->context_json = array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'pending_question', 'objective_question', 'requested_objective', 'preflight_watch']));
         }
         $c->state = $next->value;
         $c->status = match ($next) {
