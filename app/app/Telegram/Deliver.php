@@ -8,7 +8,10 @@ use App\Models\Agent;
 use App\Models\Conversation;
 use App\Models\ConversationMessage;
 use App\Models\Diagnostic;
+use App\Models\NocDevice;
+use App\Models\NocSimulation;
 use App\Models\Tenant;
+use App\Noc\Analysis\Contracts;
 use App\Rag\Retrieval;
 use App\Tenancy\TenantContext;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -98,6 +101,14 @@ class Deliver implements ShouldQueue
                                 ResolvePreflight::dispatch($this->tenant, $conversation->id)->afterCommit();
 
                                 return;
+                            }
+                        }
+                        if (isset($m->metadata['device_simulation_id'])) {
+                            $sim = NocSimulation::whereKey($m->metadata['device_simulation_id'])->where('actor_id', $identity->user->id)->first();
+                            $device = $sim ? NocDevice::find($sim->device_id) : null;
+                            $allowed = $allowed && app(Contracts::class)->labEnabled() && $device && ($sim->result['mode'] ?? null) === 'SIMULATED';
+                            if ($allowed) {
+                                Gate::forUser($identity->user)->authorize('simulate', $device);
                             }
                         }
                         $tracking = ($m->metadata['diagnostic_experience'] ?? '') === 'v2' && ($m->metadata['tracking'] ?? false) === true;

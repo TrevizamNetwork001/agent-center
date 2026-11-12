@@ -17,9 +17,12 @@ use App\Models\DiagnosticStep;
 use App\Models\LlmBinding;
 use App\Models\LlmModel;
 use App\Models\LlmProvider;
+use App\Models\NocDevice;
+use App\Models\NocSimulation;
 use App\Models\Prompt;
 use App\Models\PromptVersion;
 use App\Models\User;
+use App\Noc\Analysis\Contracts;
 use App\Tenancy\TenantContext;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
@@ -286,6 +289,36 @@ class DiagnosticExperience
         return ['text' => Text::clean(implode("\n", $lines)), 'metadata' => $meta];
     }
 
+    public function simulationResult(Conversation $c, NocSimulation $simulation, Identity $identity, bool $explain = false): array
+    {
+        abort_unless(app(Contracts::class)->labEnabled() && $c->tenant_id === $identity->tenantId && $c->user_id === $identity->user->id && $simulation->tenant_id === $identity->tenantId && $simulation->actor_id === $identity->user->id, 403);
+        $device = NocDevice::findOrFail($simulation->device_id);
+        Gate::forUser($identity->user)->authorize('simulate', $device);
+        $s = $simulation->result;
+        abort_unless(($s['mode'] ?? null) === 'SIMULATED' && ($s['environment'] ?? null) === 'LAB' && $simulation->is_simulated, 403);
+        $tone = $this->tone($c);
+        $intro = ['lab' => $tone['style'] === 'RELAXED' ? 'Pronto! A simulação de laboratório está disponível.' : 'Resultado da simulação de laboratório.'];
+        $bridge = ['facts' => 'O cenário apresenta:'];
+        $facts = array_slice($s['facts'], 0, 6);
+        $choice = ['summary' => 'lab', 'explanation' => 'facts', 'next_steps' => array_map(fn ($i) => $i.':short', array_keys($facts))];
+        $meta = ['diagnostic_experience' => self::VERSION, 'tracking' => false, 'simulation' => true, 'device_simulation_id' => $simulation->id, 'classification' => $s['classification'], 'objective_coverage' => $s['coverage'], 'result_status' => 'LOCAL', 'tone' => $tone['style']];
+        // A fixture action has no network transport. Explanation is a separate explicit, opted-in action.
+        $binding = $explain ? LlmBinding::where('purpose', 'diagnostic_explanation')->where('enabled', true)->first() : null;
+        if ($binding && ($binding->config['allow_external_context'] ?? false) === true && ($binding->config['allow_conversation_language'] ?? false) === true) {
+            [$choice,$extra] = $this->compose($c, $identity, $binding, $s, $tone, $intro, $bridge, $facts, $choice);
+            $meta = [...$meta, ...$extra];
+        }
+        $lines = ['SIMULATED / LAB', $intro[$choice['summary']], $s['summary'], 'Classificação do cenário: '.$s['classification'].'.', $bridge[$choice['explanation']]];
+        foreach ($choice['next_steps'] as $id) {
+            [$index,$format] = explode(':', $id);
+            $lines[] = '• '.$facts[(int) $index][$format === 'plain' ? 'plain' : 'text'];
+        }
+        $lines[] = 'Cobertura da simulação: '.$s['coverage']['status'].'. Consulta operacional: NÃO EXECUTADA.';
+        $lines[] = 'Esses dados são de simulação e não representam o estado de um roteador real. Detalhes e limitações no painel autenticado.';
+
+        return ['text' => Text::clean(implode("\n", $lines)), 'metadata' => $meta];
+    }
+
     private function compose($c, $identity, $binding, array $s, array $tone, array $intro, array $bridge, array $facts, array $fallback): array
     {
         $failure = fn ($reason) => [$fallback, ['result_status' => 'FALLBACK', 'result_reason' => $reason]];
@@ -307,7 +340,7 @@ class DiagnosticExperience
         }
         $c->context_json = [...$c->context_json, 'language_calls' => ($c->context_json['language_calls'] ?? 0) + 1];
         $recent = ConversationMessage::where('conversation_id', $c->id)->where('sender_type', 'user')->latest('sequence')->limit(3)->pluck('body')->map(fn ($t) => mb_substr(preg_replace('/\b[0-9]{5,20}:[A-Za-z0-9_-]{30,100}\b/', '[REDACTED]', Text::clean($t)), 0, 160))->reverse()->values()->all();
-        $data = ['classification' => $s['classification'], 'official_summary' => $s['summary'], 'tone' => $tone['style'], 'recent_user_turns' => $recent, 'intros' => $intro, 'bridges' => $bridge, 'facts' => $facts];
+        $data = ['classification' => $s['classification'], 'official_summary' => $s['summary'], 'tone' => $tone['style'], 'recent_user_turns' => ($s['simulation'] ?? false) ? [] : $recent, 'intros' => $intro, 'bridges' => $bridge, 'facts' => $facts];
         try {
             $limited = clone $p;
             $limited->timeout = min(10, $p->timeout);

@@ -1262,5 +1262,965 @@
       ],
       "implementation_state": "DOCUMENTED"
     }
+  },
+  "device_analysis": {
+    "schema_version": 1,
+    "platforms": {
+      "ne8000-vrp8": {
+        "manufacturer": "huawei",
+        "inventory_platform": "huawei-vrp",
+        "family": "VRP8",
+        "model_pattern": "^(?:NE8000|NETENGINE 8000)(?: (?:M4|M8|M14))?$",
+        "version_pattern": "^V800R0(?:22C00SPC600|23C00SPC500)$",
+        "fixture_model": "NE8000 M4",
+        "fixture_version": "V800R023C00SPC500",
+        "scope": "LAB_ONLY_DECLARED; modelo/release declarados, identidade não verificada em equipamento"
+      },
+      "ccr-routeros7": {
+        "manufacturer": "mikrotik",
+        "inventory_platform": "routeros7",
+        "family": "ROUTEROS7",
+        "model_pattern": "^CCR2004-16G-2S\\+(?:PC)?$",
+        "version_pattern": "^(?:RouterOS )?7\\.(?:15\\.3|16\\.2|17\\.2)(?: \\(stable\\))?$",
+        "fixture_model": "CCR2004-16G-2S+",
+        "fixture_version": "7.16.2",
+        "scope": "LAB_ONLY_DECLARED; apenas modelos e releases da matriz, não toda a família CCR"
+      }
+    },
+    "contracts": {
+      "DEVICE_IDENTIFICATION_READ": {
+        "id": "DEVICE_IDENTIFICATION_READ",
+        "objective": "Identificação da plataforma",
+        "capability_id": "system.resources",
+        "kind": "identity",
+        "specialists": [
+          "ne8000-vrp8",
+          "ccr-routeros7"
+        ],
+        "implementation_state": "SIMULATED",
+        "manufacturer_families": {
+          "ne8000-vrp8": "huawei/VRP8",
+          "ccr-routeros7": "mikrotik/ROUTEROS7"
+        },
+        "compatible_models_versions": {
+          "ne8000-vrp8": {
+            "model_pattern": "^(?:NE8000|NETENGINE 8000)(?: (?:M4|M8|M14))?$",
+            "version_pattern": "^V800R0(?:22C00SPC600|23C00SPC500)$"
+          },
+          "ccr-routeros7": {
+            "model_pattern": "^CCR2004-16G-2S\\+(?:PC)?$",
+            "version_pattern": "^(?:RouterOS )?7\\.(?:15\\.3|16\\.2|17\\.2)(?: \\(stable\\))?$"
+          }
+        },
+        "parameters": [],
+        "input_schema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "description"
+          ],
+          "additionalProperties": false
+        },
+        "max_input_bytes": 1024,
+        "max_evidence_bytes": 65536,
+        "max_rows": 128,
+        "timeout_ms": 5000,
+        "concurrency_limit": 1,
+        "prerequisites": [
+          "Simulação explicitamente solicitada",
+          "Tenant habilitado em laboratório",
+          "RBAC simulate do inventário",
+          "Revisão do cadastro correspondente",
+          "Plataforma/modelo/release declarados compatíveis"
+        ],
+        "unavailable_when": [
+          "Ambiente de produção",
+          "Ausência de habilitação LAB/tenant",
+          "Modelo ou versão desconhecidos/incompatíveis",
+          "Evidência inválida ou de outra plataforma",
+          "Nenhum executor de equipamento homologado"
+        ],
+        "evidence_format": "device-analysis-evidence/v1; SIMULATED / LAB; JSON estruturado sem CLI",
+        "authorization": {
+          "administrative": "NocDevicePolicy.simulate",
+          "operational": "NOT_GRANTED; autorização efetiva por equipamento exigida antes de futuro acesso real"
+        }
+      },
+      "DEVICE_BGP_PEERS_READ": {
+        "id": "DEVICE_BGP_PEERS_READ",
+        "objective": "Sessões BGP",
+        "capability_id": "routing.bgp.sessions",
+        "kind": "bgp",
+        "specialists": [
+          "ne8000-vrp8",
+          "ccr-routeros7"
+        ],
+        "implementation_state": "SIMULATED",
+        "manufacturer_families": {
+          "ne8000-vrp8": "huawei/VRP8",
+          "ccr-routeros7": "mikrotik/ROUTEROS7"
+        },
+        "compatible_models_versions": {
+          "ne8000-vrp8": {
+            "model_pattern": "^(?:NE8000|NETENGINE 8000)(?: (?:M4|M8|M14))?$",
+            "version_pattern": "^V800R0(?:22C00SPC600|23C00SPC500)$"
+          },
+          "ccr-routeros7": {
+            "model_pattern": "^CCR2004-16G-2S\\+(?:PC)?$",
+            "version_pattern": "^(?:RouterOS )?7\\.(?:15\\.3|16\\.2|17\\.2)(?: \\(stable\\))?$"
+          }
+        },
+        "parameters": [
+          "peer"
+        ],
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "peer": {
+              "type": "string",
+              "format": "ip",
+              "maxLength": 45
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "peer": {
+                    "type": "string",
+                    "format": "ip",
+                    "maxLength": 45
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "ESTABLISHED",
+                      "IDLE",
+                      "ACTIVE",
+                      "CONNECT",
+                      "OPENSENT",
+                      "OPENCONFIRM",
+                      "UNKNOWN"
+                    ]
+                  },
+                  "uptime_seconds": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "transitions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "from": {
+                          "type": "string",
+                          "enum": [
+                            "ESTABLISHED",
+                            "IDLE",
+                            "ACTIVE",
+                            "CONNECT",
+                            "OPENSENT",
+                            "OPENCONFIRM",
+                            "UNKNOWN"
+                          ]
+                        },
+                        "to": {
+                          "type": "string",
+                          "enum": [
+                            "ESTABLISHED",
+                            "IDLE",
+                            "ACTIVE",
+                            "CONNECT",
+                            "OPENSENT",
+                            "OPENCONFIRM",
+                            "UNKNOWN"
+                          ]
+                        },
+                        "age_seconds": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "reason": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "HOLD_TIMER_EXPIRED",
+                            "LINK_DOWN",
+                            "ADMIN_DISABLED",
+                            "PEER_NOTIFICATION",
+                            "UNKNOWN",
+                            null
+                          ]
+                        }
+                      },
+                      "required": [
+                        "from",
+                        "to",
+                        "age_seconds",
+                        "reason"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "maxItems": 128
+                  }
+                },
+                "required": [
+                  "peer",
+                  "state",
+                  "uptime_seconds",
+                  "transitions"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 128
+            }
+          },
+          "required": [
+            "items"
+          ],
+          "additionalProperties": false
+        },
+        "max_input_bytes": 1024,
+        "max_evidence_bytes": 65536,
+        "max_rows": 128,
+        "timeout_ms": 5000,
+        "concurrency_limit": 1,
+        "prerequisites": [
+          "Simulação explicitamente solicitada",
+          "Tenant habilitado em laboratório",
+          "RBAC simulate do inventário",
+          "Revisão do cadastro correspondente",
+          "Plataforma/modelo/release declarados compatíveis"
+        ],
+        "unavailable_when": [
+          "Ambiente de produção",
+          "Ausência de habilitação LAB/tenant",
+          "Modelo ou versão desconhecidos/incompatíveis",
+          "Evidência inválida ou de outra plataforma",
+          "Nenhum executor de equipamento homologado"
+        ],
+        "evidence_format": "device-analysis-evidence/v1; SIMULATED / LAB; JSON estruturado sem CLI",
+        "authorization": {
+          "administrative": "NocDevicePolicy.simulate",
+          "operational": "NOT_GRANTED; autorização efetiva por equipamento exigida antes de futuro acesso real"
+        }
+      },
+      "DEVICE_ROUTE_LOOKUP_READ": {
+        "id": "DEVICE_ROUTE_LOOKUP_READ",
+        "objective": "Consulta de rota",
+        "capability_id": "routing.table",
+        "kind": "route",
+        "specialists": [
+          "ne8000-vrp8",
+          "ccr-routeros7"
+        ],
+        "implementation_state": "SIMULATED",
+        "manufacturer_families": {
+          "ne8000-vrp8": "huawei/VRP8",
+          "ccr-routeros7": "mikrotik/ROUTEROS7"
+        },
+        "compatible_models_versions": {
+          "ne8000-vrp8": {
+            "model_pattern": "^(?:NE8000|NETENGINE 8000)(?: (?:M4|M8|M14))?$",
+            "version_pattern": "^V800R0(?:22C00SPC600|23C00SPC500)$"
+          },
+          "ccr-routeros7": {
+            "model_pattern": "^CCR2004-16G-2S\\+(?:PC)?$",
+            "version_pattern": "^(?:RouterOS )?7\\.(?:15\\.3|16\\.2|17\\.2)(?: \\(stable\\))?$"
+          }
+        },
+        "parameters": [
+          "destination",
+          "table"
+        ],
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "destination": {
+              "type": "string",
+              "format": "ip",
+              "maxLength": 45
+            },
+            "table": {
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9_.:-]+$"
+            }
+          },
+          "required": [
+            "destination"
+          ],
+          "additionalProperties": false
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "destination": {
+              "type": "string",
+              "format": "ip",
+              "maxLength": 45
+            },
+            "table": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "found": {
+              "type": "boolean"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "prefix": {
+                    "type": "string",
+                    "format": "cidr",
+                    "maxLength": 49
+                  },
+                  "next_hop": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "ip",
+                    "maxLength": 45
+                  },
+                  "protocol": {
+                    "type": "string",
+                    "enum": [
+                      "BGP",
+                      "OSPF",
+                      "STATIC",
+                      "CONNECTED",
+                      "UNKNOWN"
+                    ]
+                  },
+                  "preference": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "metric": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "prefix",
+                  "next_hop",
+                  "protocol",
+                  "preference",
+                  "metric"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 128
+            }
+          },
+          "required": [
+            "destination",
+            "table",
+            "found",
+            "items"
+          ],
+          "additionalProperties": false
+        },
+        "max_input_bytes": 1024,
+        "max_evidence_bytes": 65536,
+        "max_rows": 128,
+        "timeout_ms": 5000,
+        "concurrency_limit": 1,
+        "prerequisites": [
+          "Simulação explicitamente solicitada",
+          "Tenant habilitado em laboratório",
+          "RBAC simulate do inventário",
+          "Revisão do cadastro correspondente",
+          "Plataforma/modelo/release declarados compatíveis"
+        ],
+        "unavailable_when": [
+          "Ambiente de produção",
+          "Ausência de habilitação LAB/tenant",
+          "Modelo ou versão desconhecidos/incompatíveis",
+          "Evidência inválida ou de outra plataforma",
+          "Nenhum executor de equipamento homologado"
+        ],
+        "evidence_format": "device-analysis-evidence/v1; SIMULATED / LAB; JSON estruturado sem CLI",
+        "authorization": {
+          "administrative": "NocDevicePolicy.simulate",
+          "operational": "NOT_GRANTED; autorização efetiva por equipamento exigida antes de futuro acesso real"
+        }
+      },
+      "DEVICE_INTERFACES_READ": {
+        "id": "DEVICE_INTERFACES_READ",
+        "objective": "Interfaces",
+        "capability_id": "system.interfaces",
+        "kind": "interfaces",
+        "specialists": [
+          "ne8000-vrp8",
+          "ccr-routeros7"
+        ],
+        "implementation_state": "SIMULATED",
+        "manufacturer_families": {
+          "ne8000-vrp8": "huawei/VRP8",
+          "ccr-routeros7": "mikrotik/ROUTEROS7"
+        },
+        "compatible_models_versions": {
+          "ne8000-vrp8": {
+            "model_pattern": "^(?:NE8000|NETENGINE 8000)(?: (?:M4|M8|M14))?$",
+            "version_pattern": "^V800R0(?:22C00SPC600|23C00SPC500)$"
+          },
+          "ccr-routeros7": {
+            "model_pattern": "^CCR2004-16G-2S\\+(?:PC)?$",
+            "version_pattern": "^(?:RouterOS )?7\\.(?:15\\.3|16\\.2|17\\.2)(?: \\(stable\\))?$"
+          }
+        },
+        "parameters": [
+          "interface"
+        ],
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "interface": {
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9_.:/+-]+$"
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "interface": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "admin_state": {
+                    "type": "string",
+                    "enum": [
+                      "UP",
+                      "DOWN",
+                      "UNKNOWN"
+                    ]
+                  },
+                  "oper_state": {
+                    "type": "string",
+                    "enum": [
+                      "UP",
+                      "DOWN",
+                      "UNKNOWN"
+                    ]
+                  },
+                  "speed_bps": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "flaps_total": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "interface",
+                  "admin_state",
+                  "oper_state",
+                  "speed_bps",
+                  "flaps_total"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 128
+            }
+          },
+          "required": [
+            "items"
+          ],
+          "additionalProperties": false
+        },
+        "max_input_bytes": 1024,
+        "max_evidence_bytes": 65536,
+        "max_rows": 128,
+        "timeout_ms": 5000,
+        "concurrency_limit": 1,
+        "prerequisites": [
+          "Simulação explicitamente solicitada",
+          "Tenant habilitado em laboratório",
+          "RBAC simulate do inventário",
+          "Revisão do cadastro correspondente",
+          "Plataforma/modelo/release declarados compatíveis"
+        ],
+        "unavailable_when": [
+          "Ambiente de produção",
+          "Ausência de habilitação LAB/tenant",
+          "Modelo ou versão desconhecidos/incompatíveis",
+          "Evidência inválida ou de outra plataforma",
+          "Nenhum executor de equipamento homologado"
+        ],
+        "evidence_format": "device-analysis-evidence/v1; SIMULATED / LAB; JSON estruturado sem CLI",
+        "authorization": {
+          "administrative": "NocDevicePolicy.simulate",
+          "operational": "NOT_GRANTED; autorização efetiva por equipamento exigida antes de futuro acesso real"
+        }
+      },
+      "DEVICE_INTERFACE_COUNTERS_READ": {
+        "id": "DEVICE_INTERFACE_COUNTERS_READ",
+        "objective": "Erros e contadores de interfaces",
+        "capability_id": "switching.errors",
+        "kind": "counters",
+        "specialists": [
+          "ne8000-vrp8",
+          "ccr-routeros7"
+        ],
+        "implementation_state": "SIMULATED",
+        "manufacturer_families": {
+          "ne8000-vrp8": "huawei/VRP8",
+          "ccr-routeros7": "mikrotik/ROUTEROS7"
+        },
+        "compatible_models_versions": {
+          "ne8000-vrp8": {
+            "model_pattern": "^(?:NE8000|NETENGINE 8000)(?: (?:M4|M8|M14))?$",
+            "version_pattern": "^V800R0(?:22C00SPC600|23C00SPC500)$"
+          },
+          "ccr-routeros7": {
+            "model_pattern": "^CCR2004-16G-2S\\+(?:PC)?$",
+            "version_pattern": "^(?:RouterOS )?7\\.(?:15\\.3|16\\.2|17\\.2)(?: \\(stable\\))?$"
+          }
+        },
+        "parameters": [
+          "interface"
+        ],
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "interface": {
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9_.:/+-]+$"
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "interface": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "rx_errors": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "tx_errors": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "crc_errors": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "link_downs": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "baseline_rx_errors": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "baseline_tx_errors": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "baseline_crc_errors": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "baseline_link_downs": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "sample_seconds": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "boot_id": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "baseline_boot_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 64
+                  }
+                },
+                "required": [
+                  "interface",
+                  "rx_errors",
+                  "tx_errors",
+                  "crc_errors",
+                  "link_downs",
+                  "baseline_rx_errors",
+                  "baseline_tx_errors",
+                  "baseline_crc_errors",
+                  "baseline_link_downs",
+                  "sample_seconds",
+                  "boot_id",
+                  "baseline_boot_id"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 128
+            }
+          },
+          "required": [
+            "items"
+          ],
+          "additionalProperties": false
+        },
+        "max_input_bytes": 1024,
+        "max_evidence_bytes": 65536,
+        "max_rows": 128,
+        "timeout_ms": 5000,
+        "concurrency_limit": 1,
+        "prerequisites": [
+          "Simulação explicitamente solicitada",
+          "Tenant habilitado em laboratório",
+          "RBAC simulate do inventário",
+          "Revisão do cadastro correspondente",
+          "Plataforma/modelo/release declarados compatíveis"
+        ],
+        "unavailable_when": [
+          "Ambiente de produção",
+          "Ausência de habilitação LAB/tenant",
+          "Modelo ou versão desconhecidos/incompatíveis",
+          "Evidência inválida ou de outra plataforma",
+          "Nenhum executor de equipamento homologado"
+        ],
+        "evidence_format": "device-analysis-evidence/v1; SIMULATED / LAB; JSON estruturado sem CLI",
+        "authorization": {
+          "administrative": "NocDevicePolicy.simulate",
+          "operational": "NOT_GRANTED; autorização efetiva por equipamento exigida antes de futuro acesso real"
+        }
+      },
+      "DEVICE_RESOURCES_READ": {
+        "id": "DEVICE_RESOURCES_READ",
+        "objective": "CPU e memória",
+        "capability_id": "system.resources",
+        "kind": "resources",
+        "specialists": [
+          "ne8000-vrp8",
+          "ccr-routeros7"
+        ],
+        "implementation_state": "SIMULATED",
+        "manufacturer_families": {
+          "ne8000-vrp8": "huawei/VRP8",
+          "ccr-routeros7": "mikrotik/ROUTEROS7"
+        },
+        "compatible_models_versions": {
+          "ne8000-vrp8": {
+            "model_pattern": "^(?:NE8000|NETENGINE 8000)(?: (?:M4|M8|M14))?$",
+            "version_pattern": "^V800R0(?:22C00SPC600|23C00SPC500)$"
+          },
+          "ccr-routeros7": {
+            "model_pattern": "^CCR2004-16G-2S\\+(?:PC)?$",
+            "version_pattern": "^(?:RouterOS )?7\\.(?:15\\.3|16\\.2|17\\.2)(?: \\(stable\\))?$"
+          }
+        },
+        "parameters": [
+          "cpu_reference_percent",
+          "memory_reference_percent"
+        ],
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "cpu_reference_percent": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "memory_reference_percent": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "cpu_percent": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 100
+            },
+            "memory_total_bytes": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "memory_used_bytes": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "window_seconds": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "references": {
+              "type": "object",
+              "properties": {
+                "cpu_percent": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "memory_percent": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "LAB_FIXTURE",
+                    "LAB_OPERATOR",
+                    "NONE"
+                  ]
+                }
+              },
+              "required": [
+                "cpu_percent",
+                "memory_percent",
+                "source"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "cpu_percent",
+            "memory_total_bytes",
+            "memory_used_bytes",
+            "window_seconds",
+            "references"
+          ],
+          "additionalProperties": false
+        },
+        "max_input_bytes": 1024,
+        "max_evidence_bytes": 65536,
+        "max_rows": 128,
+        "timeout_ms": 5000,
+        "concurrency_limit": 1,
+        "prerequisites": [
+          "Simulação explicitamente solicitada",
+          "Tenant habilitado em laboratório",
+          "RBAC simulate do inventário",
+          "Revisão do cadastro correspondente",
+          "Plataforma/modelo/release declarados compatíveis"
+        ],
+        "unavailable_when": [
+          "Ambiente de produção",
+          "Ausência de habilitação LAB/tenant",
+          "Modelo ou versão desconhecidos/incompatíveis",
+          "Evidência inválida ou de outra plataforma",
+          "Nenhum executor de equipamento homologado"
+        ],
+        "evidence_format": "device-analysis-evidence/v1; SIMULATED / LAB; JSON estruturado sem CLI",
+        "authorization": {
+          "administrative": "NocDevicePolicy.simulate",
+          "operational": "NOT_GRANTED; autorização efetiva por equipamento exigida antes de futuro acesso real"
+        }
+      },
+      "DEVICE_ALARMS_READ": {
+        "id": "DEVICE_ALARMS_READ",
+        "objective": "Alarmes documentados",
+        "capability_id": "system.resources",
+        "kind": "alarms",
+        "specialists": [
+          "ne8000-vrp8"
+        ],
+        "implementation_state": "DOCUMENTED",
+        "manufacturer_families": {
+          "ne8000-vrp8": "huawei/VRP8"
+        },
+        "compatible_models_versions": {
+          "ne8000-vrp8": {
+            "model_pattern": "^(?:NE8000|NETENGINE 8000)(?: (?:M4|M8|M14))?$",
+            "version_pattern": "^V800R0(?:22C00SPC600|23C00SPC500)$"
+          }
+        },
+        "parameters": [],
+        "input_schema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "CRITICAL",
+                      "MAJOR",
+                      "MINOR",
+                      "WARNING",
+                      "UNKNOWN"
+                    ]
+                  },
+                  "documented": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "code",
+                  "severity",
+                  "documented"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 128
+            }
+          },
+          "required": [
+            "items"
+          ],
+          "additionalProperties": false
+        },
+        "max_input_bytes": 1024,
+        "max_evidence_bytes": 65536,
+        "max_rows": 128,
+        "timeout_ms": 5000,
+        "concurrency_limit": 1,
+        "prerequisites": [
+          "Simulação explicitamente solicitada",
+          "Tenant habilitado em laboratório",
+          "RBAC simulate do inventário",
+          "Revisão do cadastro correspondente",
+          "Plataforma/modelo/release declarados compatíveis"
+        ],
+        "unavailable_when": [
+          "Ambiente de produção",
+          "Ausência de habilitação LAB/tenant",
+          "Modelo ou versão desconhecidos/incompatíveis",
+          "Evidência inválida ou de outra plataforma",
+          "Nenhum executor de equipamento homologado"
+        ],
+        "evidence_format": "device-analysis-evidence/v1; SIMULATED / LAB; JSON estruturado sem CLI",
+        "authorization": {
+          "administrative": "NocDevicePolicy.simulate",
+          "operational": "NOT_GRANTED; autorização efetiva por equipamento exigida antes de futuro acesso real"
+        }
+      }
+    }
   }
 }

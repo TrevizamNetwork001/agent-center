@@ -21,6 +21,7 @@ use App\Models\Diagnostic;
 use App\Models\DiagnosticConclusion;
 use App\Models\DiagnosticInterpretation;
 use App\Models\Profile;
+use App\Noc\Analysis\ConversationSimulation;
 use App\Noc\IntentInterpreter;
 use App\Rag\Answer;
 use App\Services\Audit;
@@ -113,6 +114,11 @@ class Engine
             if (isset($c->context_json['objective_question']) && preg_match('/^(?:rota|caminho|conectividade|ping|dns|site|porta|\d{1,5})[.!? ]*$/i', trim(Str::ascii($body)))) {
                 $intent = Intent::Start;
             }
+            if (app(ConversationSimulation::class)->request($body)) {
+                $intent = Intent::Simulation;
+            } elseif (preg_match('/^explique a simula[çc][ãa]o[.! ]*$/iu', trim($body))) {
+                $intent = Intent::SimulationExplanation;
+            }
             // Questions about an existing result are not requests for a new test.
             if ($c->current_diagnostic_id && in_array($c->state, ['DIAGNOSTIC_COMPLETED', 'FOLLOW_UP'], true)
                 && preg_match('/^(?:quais (?:testes|verificacoes)|o que (?:voce )?(?:testou|verificou)|(?:por que|porque).*(?:normal|falha|inconclusivo|erro|resultado)|o que significa (?:esse |o )?(?:resultado|normal|falha|inconclusivo|erro))\b/', Str::lower(Str::ascii(trim($body))))
@@ -121,7 +127,7 @@ class Engine
             }
             $idleRestart = $c->state === 'CLOSED' && ($c->context_json['closed_due_to_inactivity'] ?? false)
                 && ! in_array($intent, [Intent::Confirm, Intent::Deny, Intent::Cancel, Intent::Close, Intent::Acknowledge], true);
-            if ($idleRestart || (in_array($c->state, ['CLOSED', 'CANCELLED'], true) && in_array($intent, [Intent::Start, Intent::Another, Intent::Target, Intent::Path, Intent::Greeting, Intent::Social], true))) {
+            if ($idleRestart || (in_array($c->state, ['CLOSED', 'CANCELLED'], true) && in_array($intent, [Intent::Simulation, Intent::SimulationExplanation, Intent::Start, Intent::Another, Intent::Target, Intent::Path, Intent::Greeting, Intent::Social], true))) {
                 $c = $this->create($i, (string) Str::uuid(), $c->context_json['agent_id'] ?? null);
             }
             abort_if($c->sequence >= config('conversation.max_messages'), 422, 'Limite desta conversa alcançado. Abra uma nova conversa.');
@@ -145,6 +151,18 @@ class Engine
             }
             if ($state === State::Closed) {
                 $this->reply($c, 'Conversa encerrada. Uma nova solicitação de teste abre outra conversa.');
+            } elseif (in_array($intent, [Intent::Simulation, Intent::SimulationExplanation], true)) {
+                if ($state === State::Running) {
+                    $this->reply($c, 'Há um diagnóstico em execução. Encerre-o antes de abrir uma simulação de laboratório.');
+                } else {
+                    $c->context_json = array_diff_key($c->context_json, ['pending' => true, 'pending_question' => true, 'objective_question' => true, 'preflight_watch' => true]);
+                    if ($state === State::Confirmation) {
+                        $this->transition($c, State::FollowUp, 'lab_simulation_requested');
+                    }
+                    $simulator = app(ConversationSimulation::class);
+                    $result = $intent === Intent::Simulation ? $simulator->run($c, $i, $key, $safe) : $simulator->explain($c, $i);
+                    $this->reply($c, $result['text'], $result['metadata']);
+                }
             } elseif ($intent === Intent::Knowledge) {
                 $answer = app(Answer::class)->run($i->user, $safe);
                 $references = array_map(fn ($s) => array_intersect_key($s, array_flip(['id', 'document_id', 'version_id', 'version_number', 'position', 'offset_start', 'offset_end'])), $answer['sources']);

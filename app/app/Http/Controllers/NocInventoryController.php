@@ -7,6 +7,7 @@ use App\Http\Requests\NocDeviceRequest;
 use App\Models\NocDevice;
 use App\Models\NocDeviceRevision;
 use App\Models\NocSimulation;
+use App\Noc\Analysis\Simulation;
 use App\Noc\Catalog;
 use App\Noc\Inventory;
 use Illuminate\Http\Request;
@@ -77,7 +78,7 @@ class NocInventoryController extends Controller
     {
         Gate::authorize('view', $nocDevice);
 
-        return view('noc.show', ['nocDevice' => $nocDevice, 'catalog' => $catalog->all(), 'capabilities' => $catalog->forDevice($nocDevice), 'history' => NocDeviceRevision::where('device_id', $nocDevice->id)->orderByDesc('revision')->paginate(10, ['*'], 'history_page'), 'simulations' => NocSimulation::where('device_id', $nocDevice->id)->latest('created_at')->paginate(5, ['*'], 'simulation_page'), 'fixtures' => $catalog->fixtures()]);
+        return view('noc.show', ['nocDevice' => $nocDevice, 'catalog' => $catalog->all(), 'capabilities' => $catalog->forDevice($nocDevice), 'history' => NocDeviceRevision::where('device_id', $nocDevice->id)->orderByDesc('revision')->paginate(10, ['*'], 'history_page'), 'simulations' => NocSimulation::where('device_id', $nocDevice->id)->latest('created_at')->paginate(5, ['*'], 'simulation_page'), 'fixtures' => $catalog->fixtures(), 'analysisContracts' => $catalog->analysisForDevice($nocDevice), 'analysisFixtures' => app(Simulation::class)->fixtures($nocDevice)]);
     }
 
     public function capabilities(Catalog $catalog)
@@ -91,7 +92,7 @@ class NocInventoryController extends Controller
     {
         Gate::authorize('simulate', $nocDevice);
         $v = $r->validated();
-        $service->simulate($r->user(), $nocDevice, $v['fixture'], $v['request_key']);
+        $service->simulate($r->user(), $nocDevice, $v['fixture'], $v['request_key'], $v['parameters'] ?? [], isset($v['device_revision']) ? (int) $v['device_revision'] : null);
 
         return redirect()->route('noc.show', $nocDevice)->with('success', 'SIMULADO — cenário salvo apenas no histórico demonstrativo deste módulo.');
     }

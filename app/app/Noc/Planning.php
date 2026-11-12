@@ -18,9 +18,21 @@ class Planning
         Gate::forUser($user)->authorize('viewAny', NocDevice::class);
         $intent = OperationalIntent::from($request['intent']);
         $cap = match ($intent) {
-            OperationalIntent::DeviceBgp => 'routing.bgp.sessions',OperationalIntent::DeviceRouting => 'routing.table',OperationalIntent::DeviceOptical => 'ftth.optical.signal',OperationalIntent::DeviceInterfaces => 'system.interfaces',OperationalIntent::DevicePppoe => 'bng.sessions',OperationalIntent::DeviceOnu => 'ftth.onu.status',default => null
+            OperationalIntent::DeviceCounters => 'switching.errors', OperationalIntent::DeviceResources, OperationalIntent::DeviceIdentity, OperationalIntent::DeviceAlarms => 'system.resources', OperationalIntent::DeviceBgp => 'routing.bgp.sessions',OperationalIntent::DeviceRouting => 'routing.table',OperationalIntent::DeviceOptical => 'ftth.optical.signal',OperationalIntent::DeviceInterfaces => 'system.interfaces',OperationalIntent::DevicePppoe => 'bng.sessions',OperationalIntent::DeviceOnu => 'ftth.onu.status',default => null
         };
         abort_unless($cap !== null, 422);
+        $matches = $this->deviceIds($body);
+        $ambiguous = (bool) $request['ambiguous'];
+
+        return ['schema_version' => 1, 'intent' => $intent->value, 'capability_id' => $cap, 'analysis_contract_id' => match ($intent) {
+            OperationalIntent::DeviceBgp => 'DEVICE_BGP_PEERS_READ', OperationalIntent::DeviceRouting => 'DEVICE_ROUTE_LOOKUP_READ', OperationalIntent::DeviceInterfaces => 'DEVICE_INTERFACES_READ', OperationalIntent::DeviceCounters => 'DEVICE_INTERFACE_COUNTERS_READ', OperationalIntent::DeviceResources => 'DEVICE_RESOURCES_READ', OperationalIntent::DeviceIdentity => 'DEVICE_IDENTIFICATION_READ', OperationalIntent::DeviceAlarms => 'DEVICE_ALARMS_READ', default => null
+        }, 'state' => $ambiguous ? 'NEEDS_CLARIFICATION' : 'UNAVAILABLE', 'authorization' => 'UNKNOWN', 'operational_enabled' => false, 'device_id' => count($matches) === 1 ? $matches[0] : null, 'device_selection' => count($matches) > 1 ? 'AMBIGUOUS' : (count($matches) === 1 ? 'EXACT' : 'NOT_SELECTED'),
+            'parameters' => ['destination' => app(IntentDetector::class)->target($body)], 'planned_steps' => [], 'executed_steps' => [], 'classification' => null, 'objective_coverage' => 'NOT_EXECUTED', 'simulation' => false,
+            'reply' => $ambiguous ? 'Você quer consultar a tabela de roteamento do equipamento ou analisar o caminho a partir do Agent? Nenhum teste foi executado.' : self::UNAVAILABLE.' Nenhum teste foi executado.'];
+    }
+
+    public function deviceIds(string $body): array
+    {
         // Tenant-scoped exact names/hostnames only, never resolve DNS or guess equipment ownership.
         $normalized = Str::lower($body);
         $matches = [];
@@ -37,10 +49,7 @@ class Planning
                 break;
             }
         }
-        $ambiguous = (bool) $request['ambiguous'];
 
-        return ['schema_version' => 1, 'intent' => $intent->value, 'capability_id' => $cap, 'state' => $ambiguous ? 'NEEDS_CLARIFICATION' : 'UNAVAILABLE', 'authorization' => 'UNKNOWN', 'operational_enabled' => false, 'device_id' => count($matches) === 1 ? $matches[0] : null, 'device_selection' => count($matches) > 1 ? 'AMBIGUOUS' : (count($matches) === 1 ? 'EXACT' : 'NOT_SELECTED'),
-            'parameters' => ['destination' => app(IntentDetector::class)->target($body)], 'planned_steps' => [], 'executed_steps' => [], 'classification' => null, 'objective_coverage' => 'NOT_EXECUTED', 'simulation' => false,
-            'reply' => $ambiguous ? 'Você quer consultar a tabela de roteamento do equipamento ou analisar o caminho a partir do Agent? Nenhum teste foi executado.' : self::UNAVAILABLE.' Nenhum teste foi executado.'];
+        return $matches;
     }
 }

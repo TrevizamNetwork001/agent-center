@@ -1,0 +1,1214 @@
+{
+  "da-ne8000-identification": {
+    "id": "da-ne8000-identification",
+    "label": "Identificação",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_IDENTIFICATION_READ",
+    "capability_id": "system.resources",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_IDENTIFICATION_READ",
+      "status": "OK",
+      "payload": {
+        "description": "Identidade fictícia da plataforma para validação do contrato."
+      }
+    }
+  },
+  "da-ne8000-bgp-established": {
+    "id": "da-ne8000-bgp-established",
+    "label": "BGP Established",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_BGP_PEERS_READ",
+    "capability_id": "routing.bgp.sessions",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": "bgp-established",
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_BGP_PEERS_READ",
+      "status": "OK",
+      "payload": {
+        "peer_rows": [
+          {
+            "peer": "192.0.2.2",
+            "state": "ESTABLISHED",
+            "uptime_seconds": 3600,
+            "transitions": []
+          },
+          {
+            "peer": "192.0.2.3",
+            "state": "ESTABLISHED",
+            "uptime_seconds": 3600,
+            "transitions": []
+          },
+          {
+            "peer": "192.0.2.4",
+            "state": "ESTABLISHED",
+            "uptime_seconds": 3600,
+            "transitions": []
+          }
+        ]
+      }
+    }
+  },
+  "da-ne8000-bgp-idle": {
+    "id": "da-ne8000-bgp-idle",
+    "label": "Dois peers Established e um Idle",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_BGP_PEERS_READ",
+    "capability_id": "routing.bgp.sessions",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": "bgp-down",
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_BGP_PEERS_READ",
+      "status": "OK",
+      "payload": {
+        "peer_rows": [
+          {
+            "peer": "192.0.2.2",
+            "state": "ESTABLISHED",
+            "uptime_seconds": 3600,
+            "transitions": []
+          },
+          {
+            "peer": "192.0.2.3",
+            "state": "ESTABLISHED",
+            "uptime_seconds": 3600,
+            "transitions": []
+          },
+          {
+            "peer": "192.0.2.4",
+            "state": "IDLE",
+            "uptime_seconds": 0,
+            "transitions": []
+          }
+        ]
+      }
+    }
+  },
+  "da-ne8000-bgp-active": {
+    "id": "da-ne8000-bgp-active",
+    "label": "BGP Active",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_BGP_PEERS_READ",
+    "capability_id": "routing.bgp.sessions",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_BGP_PEERS_READ",
+      "status": "OK",
+      "payload": {
+        "peer_rows": [
+          {
+            "peer": "192.0.2.2",
+            "state": "ACTIVE",
+            "uptime_seconds": 0,
+            "transitions": []
+          }
+        ]
+      }
+    }
+  },
+  "da-ne8000-bgp-unstable": {
+    "id": "da-ne8000-bgp-unstable",
+    "label": "Sessão com transições",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_BGP_PEERS_READ",
+    "capability_id": "routing.bgp.sessions",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_BGP_PEERS_READ",
+      "status": "OK",
+      "payload": {
+        "peer_rows": [
+          {
+            "peer": "192.0.2.2",
+            "state": "ESTABLISHED",
+            "uptime_seconds": 25,
+            "transitions": [
+              {
+                "from": "ESTABLISHED",
+                "to": "IDLE",
+                "age_seconds": 90,
+                "reason": "HOLD_TIMER_EXPIRED"
+              },
+              {
+                "from": "IDLE",
+                "to": "ESTABLISHED",
+                "age_seconds": 25,
+                "reason": null
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "da-ne8000-route-found": {
+    "id": "da-ne8000-route-found",
+    "label": "Rota encontrada",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_ROUTE_LOOKUP_READ",
+    "capability_id": "routing.table",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_ROUTE_LOOKUP_READ",
+      "status": "OK",
+      "payload": {
+        "destination": "8.8.8.8",
+        "table": "public",
+        "found": true,
+        "route_rows": [
+          {
+            "prefix": "8.8.8.0/24",
+            "next_hop": "192.0.2.1",
+            "protocol": "BGP",
+            "preference": 20,
+            "metric": 0
+          }
+        ]
+      }
+    }
+  },
+  "da-ne8000-route-absent": {
+    "id": "da-ne8000-route-absent",
+    "label": "Rota ausente",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_ROUTE_LOOKUP_READ",
+    "capability_id": "routing.table",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_ROUTE_LOOKUP_READ",
+      "status": "OK",
+      "payload": {
+        "destination": "8.8.8.8",
+        "table": "public",
+        "found": false,
+        "route_rows": []
+      }
+    }
+  },
+  "da-ne8000-interface-up": {
+    "id": "da-ne8000-interface-up",
+    "label": "Interface operacional",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_INTERFACES_READ",
+    "capability_id": "system.interfaces",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_INTERFACES_READ",
+      "status": "OK",
+      "payload": {
+        "interface_rows": [
+          {
+            "interface": "uplink-demo-1",
+            "admin_state": "UP",
+            "oper_state": "UP",
+            "speed_bps": 10000000000,
+            "flaps_total": 12
+          }
+        ]
+      }
+    }
+  },
+  "da-ne8000-interface-down": {
+    "id": "da-ne8000-interface-down",
+    "label": "Interface administrativamente ativa sem link",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_INTERFACES_READ",
+    "capability_id": "system.interfaces",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_INTERFACES_READ",
+      "status": "OK",
+      "payload": {
+        "interface_rows": [
+          {
+            "interface": "uplink-demo-1",
+            "admin_state": "UP",
+            "oper_state": "DOWN",
+            "speed_bps": null,
+            "flaps_total": 12
+          }
+        ]
+      }
+    }
+  },
+  "da-ne8000-interface-errors": {
+    "id": "da-ne8000-interface-errors",
+    "label": "Crescimento de CRC em janela conhecida",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_INTERFACE_COUNTERS_READ",
+    "capability_id": "switching.errors",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": "interface-crc",
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_INTERFACE_COUNTERS_READ",
+      "status": "OK",
+      "payload": {
+        "counter_rows": [
+          {
+            "interface": "uplink-demo-1",
+            "rx_errors": 120,
+            "tx_errors": 0,
+            "crc_errors": 120,
+            "link_downs": 12,
+            "baseline_rx_errors": 0,
+            "baseline_tx_errors": 0,
+            "baseline_crc_errors": 0,
+            "baseline_link_downs": 12,
+            "sample_seconds": 300,
+            "boot_id": "lab-boot-1",
+            "baseline_boot_id": "lab-boot-1"
+          }
+        ]
+      }
+    }
+  },
+  "da-ne8000-counters-accumulated": {
+    "id": "da-ne8000-counters-accumulated",
+    "label": "Contador acumulado sem linha de base",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_INTERFACE_COUNTERS_READ",
+    "capability_id": "switching.errors",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_INTERFACE_COUNTERS_READ",
+      "status": "OK",
+      "payload": {
+        "counter_rows": [
+          {
+            "interface": "uplink-demo-1",
+            "rx_errors": 120,
+            "tx_errors": 2,
+            "crc_errors": 120,
+            "link_downs": 12,
+            "baseline_rx_errors": null,
+            "baseline_tx_errors": null,
+            "baseline_crc_errors": null,
+            "baseline_link_downs": null,
+            "sample_seconds": null,
+            "boot_id": "lab-boot-1",
+            "baseline_boot_id": null
+          }
+        ]
+      }
+    }
+  },
+  "da-ne8000-counters-reset": {
+    "id": "da-ne8000-counters-reset",
+    "label": "Contadores reiniciados",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_INTERFACE_COUNTERS_READ",
+    "capability_id": "switching.errors",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_INTERFACE_COUNTERS_READ",
+      "status": "OK",
+      "payload": {
+        "counter_rows": [
+          {
+            "interface": "uplink-demo-1",
+            "rx_errors": 0,
+            "tx_errors": 0,
+            "crc_errors": 0,
+            "link_downs": 0,
+            "baseline_rx_errors": 120,
+            "baseline_tx_errors": 0,
+            "baseline_crc_errors": 120,
+            "baseline_link_downs": 12,
+            "sample_seconds": 300,
+            "boot_id": "lab-boot-2",
+            "baseline_boot_id": "lab-boot-1"
+          }
+        ]
+      }
+    }
+  },
+  "da-ne8000-cpu-high": {
+    "id": "da-ne8000-cpu-high",
+    "label": "CPU acima da referência LAB",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_RESOURCES_READ",
+    "capability_id": "system.resources",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_RESOURCES_READ",
+      "status": "OK",
+      "payload": {
+        "cpu_percent": 92,
+        "memory_total_bytes": 1073741824,
+        "memory_used_bytes": 536870912,
+        "window_seconds": 60,
+        "references": {
+          "cpu_percent": 80,
+          "memory_percent": 85,
+          "source": "LAB_FIXTURE"
+        }
+      }
+    }
+  },
+  "da-ne8000-memory-high": {
+    "id": "da-ne8000-memory-high",
+    "label": "Memória acima da referência LAB",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_RESOURCES_READ",
+    "capability_id": "system.resources",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_RESOURCES_READ",
+      "status": "OK",
+      "payload": {
+        "cpu_percent": 20,
+        "memory_total_bytes": 1073741824,
+        "memory_used_bytes": 1030792151,
+        "window_seconds": 60,
+        "references": {
+          "cpu_percent": 80,
+          "memory_percent": 85,
+          "source": "LAB_FIXTURE"
+        }
+      }
+    }
+  },
+  "da-ne8000-resources-no-reference": {
+    "id": "da-ne8000-resources-no-reference",
+    "label": "Recursos sem referência configurada",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_RESOURCES_READ",
+    "capability_id": "system.resources",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_RESOURCES_READ",
+      "status": "OK",
+      "payload": {
+        "cpu_percent": 92,
+        "memory_total_bytes": 1073741824,
+        "memory_used_bytes": 1030792151,
+        "window_seconds": 60,
+        "references": {
+          "cpu_percent": null,
+          "memory_percent": null,
+          "source": "NONE"
+        }
+      }
+    }
+  },
+  "da-ne8000-insufficient-data": {
+    "id": "da-ne8000-insufficient-data",
+    "label": "Dados insuficientes",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_BGP_PEERS_READ",
+    "capability_id": "routing.bgp.sessions",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": "insufficient-data",
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_BGP_PEERS_READ",
+      "status": "PARTIAL",
+      "payload": {
+        "peer_rows": []
+      }
+    }
+  },
+  "da-ne8000-device-unavailable": {
+    "id": "da-ne8000-device-unavailable",
+    "label": "Equipamento indisponível no cenário",
+    "specialist": "ne8000-vrp8",
+    "contract_id": "DEVICE_IDENTIFICATION_READ",
+    "capability_id": "system.resources",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "huawei",
+        "model": "NE8000 M4",
+        "platform_family": "VRP8",
+        "os_version": "V800R023C00SPC500"
+      },
+      "contract_id": "DEVICE_IDENTIFICATION_READ",
+      "status": "UNAVAILABLE",
+      "payload": {
+        "description": "Não há evidência de identificação neste cenário."
+      }
+    }
+  },
+  "da-ros7-identification": {
+    "id": "da-ros7-identification",
+    "label": "Identificação",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_IDENTIFICATION_READ",
+    "capability_id": "system.resources",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_IDENTIFICATION_READ",
+      "status": "OK",
+      "payload": {
+        "description": "Identidade fictícia da plataforma para validação do contrato."
+      }
+    }
+  },
+  "da-ros7-bgp-established": {
+    "id": "da-ros7-bgp-established",
+    "label": "BGP Established",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_BGP_PEERS_READ",
+    "capability_id": "routing.bgp.sessions",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": "bgp-established",
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_BGP_PEERS_READ",
+      "status": "OK",
+      "payload": {
+        "sessions": [
+          {
+            "peer": "192.0.2.2",
+            "state": "established",
+            "uptime-seconds": "3600",
+            "transitions": []
+          },
+          {
+            "peer": "192.0.2.3",
+            "state": "established",
+            "uptime-seconds": "3600",
+            "transitions": []
+          },
+          {
+            "peer": "192.0.2.4",
+            "state": "established",
+            "uptime-seconds": "3600",
+            "transitions": []
+          }
+        ]
+      }
+    }
+  },
+  "da-ros7-bgp-idle": {
+    "id": "da-ros7-bgp-idle",
+    "label": "Dois peers Established e um Idle",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_BGP_PEERS_READ",
+    "capability_id": "routing.bgp.sessions",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": "bgp-down",
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_BGP_PEERS_READ",
+      "status": "OK",
+      "payload": {
+        "sessions": [
+          {
+            "peer": "192.0.2.2",
+            "state": "established",
+            "uptime-seconds": "3600",
+            "transitions": []
+          },
+          {
+            "peer": "192.0.2.3",
+            "state": "established",
+            "uptime-seconds": "3600",
+            "transitions": []
+          },
+          {
+            "peer": "192.0.2.4",
+            "state": "idle",
+            "uptime-seconds": "0",
+            "transitions": []
+          }
+        ]
+      }
+    }
+  },
+  "da-ros7-bgp-active": {
+    "id": "da-ros7-bgp-active",
+    "label": "BGP Active",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_BGP_PEERS_READ",
+    "capability_id": "routing.bgp.sessions",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_BGP_PEERS_READ",
+      "status": "OK",
+      "payload": {
+        "sessions": [
+          {
+            "peer": "192.0.2.2",
+            "state": "active",
+            "uptime-seconds": "0",
+            "transitions": []
+          }
+        ]
+      }
+    }
+  },
+  "da-ros7-bgp-unstable": {
+    "id": "da-ros7-bgp-unstable",
+    "label": "Sessão com transições",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_BGP_PEERS_READ",
+    "capability_id": "routing.bgp.sessions",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_BGP_PEERS_READ",
+      "status": "OK",
+      "payload": {
+        "sessions": [
+          {
+            "peer": "192.0.2.2",
+            "state": "established",
+            "uptime-seconds": "25",
+            "transitions": [
+              {
+                "from": "ESTABLISHED",
+                "to": "IDLE",
+                "age-seconds": "90",
+                "reason": "HOLD_TIMER_EXPIRED"
+              },
+              {
+                "from": "IDLE",
+                "to": "ESTABLISHED",
+                "age-seconds": "25",
+                "reason": null
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "da-ros7-route-found": {
+    "id": "da-ros7-route-found",
+    "label": "Rota encontrada",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_ROUTE_LOOKUP_READ",
+    "capability_id": "routing.table",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_ROUTE_LOOKUP_READ",
+      "status": "OK",
+      "payload": {
+        "destination": "8.8.8.8",
+        "table": "main",
+        "found": true,
+        "items": [
+          {
+            "prefix": "8.8.8.0/24",
+            "next-hop": "192.0.2.1",
+            "protocol": "BGP",
+            "preference": "20",
+            "metric": "0"
+          }
+        ]
+      }
+    }
+  },
+  "da-ros7-route-absent": {
+    "id": "da-ros7-route-absent",
+    "label": "Rota ausente",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_ROUTE_LOOKUP_READ",
+    "capability_id": "routing.table",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_ROUTE_LOOKUP_READ",
+      "status": "OK",
+      "payload": {
+        "destination": "8.8.8.8",
+        "table": "main",
+        "found": false,
+        "items": []
+      }
+    }
+  },
+  "da-ros7-interface-up": {
+    "id": "da-ros7-interface-up",
+    "label": "Interface operacional",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_INTERFACES_READ",
+    "capability_id": "system.interfaces",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_INTERFACES_READ",
+      "status": "OK",
+      "payload": {
+        "interfaces": [
+          {
+            "interface": "uplink-demo-1",
+            "admin-state": "UP",
+            "oper-state": "UP",
+            "speed-bps": "10000000000",
+            "flaps-total": "12"
+          }
+        ]
+      }
+    }
+  },
+  "da-ros7-interface-down": {
+    "id": "da-ros7-interface-down",
+    "label": "Interface administrativamente ativa sem link",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_INTERFACES_READ",
+    "capability_id": "system.interfaces",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_INTERFACES_READ",
+      "status": "OK",
+      "payload": {
+        "interfaces": [
+          {
+            "interface": "uplink-demo-1",
+            "admin-state": "UP",
+            "oper-state": "DOWN",
+            "speed-bps": null,
+            "flaps-total": "12"
+          }
+        ]
+      }
+    }
+  },
+  "da-ros7-interface-errors": {
+    "id": "da-ros7-interface-errors",
+    "label": "Crescimento de CRC em janela conhecida",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_INTERFACE_COUNTERS_READ",
+    "capability_id": "switching.errors",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": "interface-crc",
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_INTERFACE_COUNTERS_READ",
+      "status": "OK",
+      "payload": {
+        "counters": [
+          {
+            "interface": "uplink-demo-1",
+            "rx-errors": "120",
+            "tx-errors": "0",
+            "crc-errors": "120",
+            "link-downs": "12",
+            "baseline-rx-errors": "0",
+            "baseline-tx-errors": "0",
+            "baseline-crc-errors": "0",
+            "baseline-link-downs": "12",
+            "sample-seconds": "300",
+            "boot-id": "lab-boot-1",
+            "baseline-boot-id": "lab-boot-1"
+          }
+        ]
+      }
+    }
+  },
+  "da-ros7-counters-accumulated": {
+    "id": "da-ros7-counters-accumulated",
+    "label": "Contador acumulado sem linha de base",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_INTERFACE_COUNTERS_READ",
+    "capability_id": "switching.errors",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_INTERFACE_COUNTERS_READ",
+      "status": "OK",
+      "payload": {
+        "counters": [
+          {
+            "interface": "uplink-demo-1",
+            "rx-errors": "120",
+            "tx-errors": "2",
+            "crc-errors": "120",
+            "link-downs": "12",
+            "baseline-rx-errors": null,
+            "baseline-tx-errors": null,
+            "baseline-crc-errors": null,
+            "baseline-link-downs": null,
+            "sample-seconds": null,
+            "boot-id": "lab-boot-1",
+            "baseline-boot-id": null
+          }
+        ]
+      }
+    }
+  },
+  "da-ros7-counters-reset": {
+    "id": "da-ros7-counters-reset",
+    "label": "Contadores reiniciados",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_INTERFACE_COUNTERS_READ",
+    "capability_id": "switching.errors",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_INTERFACE_COUNTERS_READ",
+      "status": "OK",
+      "payload": {
+        "counters": [
+          {
+            "interface": "uplink-demo-1",
+            "rx-errors": "0",
+            "tx-errors": "0",
+            "crc-errors": "0",
+            "link-downs": "0",
+            "baseline-rx-errors": "120",
+            "baseline-tx-errors": "0",
+            "baseline-crc-errors": "120",
+            "baseline-link-downs": "12",
+            "sample-seconds": "300",
+            "boot-id": "lab-boot-2",
+            "baseline-boot-id": "lab-boot-1"
+          }
+        ]
+      }
+    }
+  },
+  "da-ros7-cpu-high": {
+    "id": "da-ros7-cpu-high",
+    "label": "CPU acima da referência LAB",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_RESOURCES_READ",
+    "capability_id": "system.resources",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_RESOURCES_READ",
+      "status": "OK",
+      "payload": {
+        "cpu-percent": "92",
+        "memory-total-bytes": "1073741824",
+        "memory-used-bytes": "536870912",
+        "window-seconds": "60",
+        "references": {
+          "cpu-percent": "80",
+          "memory-percent": "85",
+          "source": "LAB_FIXTURE"
+        }
+      }
+    }
+  },
+  "da-ros7-memory-high": {
+    "id": "da-ros7-memory-high",
+    "label": "Memória acima da referência LAB",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_RESOURCES_READ",
+    "capability_id": "system.resources",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_RESOURCES_READ",
+      "status": "OK",
+      "payload": {
+        "cpu-percent": "20",
+        "memory-total-bytes": "1073741824",
+        "memory-used-bytes": "1030792151",
+        "window-seconds": "60",
+        "references": {
+          "cpu-percent": "80",
+          "memory-percent": "85",
+          "source": "LAB_FIXTURE"
+        }
+      }
+    }
+  },
+  "da-ros7-resources-no-reference": {
+    "id": "da-ros7-resources-no-reference",
+    "label": "Recursos sem referência configurada",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_RESOURCES_READ",
+    "capability_id": "system.resources",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_RESOURCES_READ",
+      "status": "OK",
+      "payload": {
+        "cpu-percent": "92",
+        "memory-total-bytes": "1073741824",
+        "memory-used-bytes": "1030792151",
+        "window-seconds": "60",
+        "references": {
+          "cpu-percent": null,
+          "memory-percent": null,
+          "source": "NONE"
+        }
+      }
+    }
+  },
+  "da-ros7-insufficient-data": {
+    "id": "da-ros7-insufficient-data",
+    "label": "Dados insuficientes",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_BGP_PEERS_READ",
+    "capability_id": "routing.bgp.sessions",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": "insufficient-data",
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_BGP_PEERS_READ",
+      "status": "PARTIAL",
+      "payload": {
+        "sessions": []
+      }
+    }
+  },
+  "da-ros7-device-unavailable": {
+    "id": "da-ros7-device-unavailable",
+    "label": "Equipamento indisponível no cenário",
+    "specialist": "ccr-routeros7",
+    "contract_id": "DEVICE_IDENTIFICATION_READ",
+    "capability_id": "system.resources",
+    "simulation": true,
+    "source": "FIXTURE",
+    "reuses_fixture": null,
+    "raw": {
+      "schema_version": 1,
+      "mode": "SIMULATED",
+      "environment": "LAB",
+      "identity": {
+        "manufacturer": "mikrotik",
+        "model": "CCR2004-16G-2S+",
+        "platform_family": "ROUTEROS7",
+        "os_version": "7.16.2"
+      },
+      "contract_id": "DEVICE_IDENTIFICATION_READ",
+      "status": "UNAVAILABLE",
+      "payload": {
+        "description": "Não há evidência de identificação neste cenário."
+      }
+    }
+  }
+}

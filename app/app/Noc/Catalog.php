@@ -3,6 +3,8 @@
 namespace App\Noc;
 
 use App\Models\NocDevice;
+use App\Noc\Analysis\Contracts;
+use App\Noc\Analysis\Simulation;
 use Illuminate\Validation\ValidationException;
 
 /** Administrative metadata only. No entry grants an operational capability. */
@@ -32,8 +34,19 @@ class Catalog
         return $items;
     }
 
-    public function fixtureFor(NocDevice $device, string $key): array
+    public function analysisForDevice(NocDevice $device): array
     {
+        return app(Contracts::class)->forDevice($device);
+    }
+
+    public function fixtureFor(NocDevice $device, string $key, array $parameters = []): array
+    {
+        if (str_starts_with($key, 'da-')) {
+            return app(Simulation::class)->result($device, $key, $parameters);
+        }
+        if ($parameters) {
+            throw ValidationException::withMessages(['parameters' => 'Cenário genérico não aceita parâmetros de consulta.']);
+        }
         $fixture = $this->fixtures()[$key] ?? null;
         if (! $fixture) {
             throw ValidationException::withMessages(['fixture' => 'Cenário de simulação inválido.']);

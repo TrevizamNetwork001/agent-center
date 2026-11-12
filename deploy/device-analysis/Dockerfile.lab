@@ -1,0 +1,12 @@
+# LAB packaging only. Keep the operational role-specific bootstrap, routes and vendor tree.
+ARG BASE_IMAGE=agent-center-central:noc-inventory-web-final-20261112
+FROM ${BASE_IMAGE}
+COPY --chown=www-data:www-data app/app/Noc/ /var/www/html/app/Noc/
+COPY --chown=www-data:www-data app/app/Diagnostics/OperationalIntent.php /var/www/html/app/Diagnostics/OperationalIntent.php
+COPY --chown=www-data:www-data app/app/Conversation/DiagnosticExperience.php app/app/Conversation/Engine.php app/app/Conversation/Intent.php /var/www/html/app/Conversation/
+COPY --chown=www-data:www-data app/app/Http/Controllers/NocInventoryController.php /var/www/html/app/Http/Controllers/NocInventoryController.php
+COPY --chown=www-data:www-data app/app/Http/Requests/NocActionRequest.php /var/www/html/app/Http/Requests/NocActionRequest.php
+COPY --chown=www-data:www-data app/app/Telegram/Deliver.php /var/www/html/app/Telegram/Deliver.php
+COPY --chown=www-data:www-data app/config/device_analysis.php /var/www/html/config/device_analysis.php
+COPY --chown=www-data:www-data app/resources/noc-catalog.json app/resources/device-analysis-fixtures.json /var/www/html/resources/
+COPY --chown=www-data:www-data app/resources/views/noc/ /var/www/html/resources/views/noc/

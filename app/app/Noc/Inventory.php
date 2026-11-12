@@ -2,11 +2,13 @@
 
 namespace App\Noc;
 
+use App\Diagnostics\Digest;
 use App\Http\Requests\NocDeviceRequest;
 use App\Models\NocDevice;
 use App\Models\NocDeviceRevision;
 use App\Models\NocSimulation;
 use App\Models\User;
+use App\Noc\Analysis\Contracts;
 use App\Services\Audit;
 use App\Tenancy\TenantContext;
 use Illuminate\Database\QueryException;
@@ -49,20 +51,26 @@ class Inventory
         }
     }
 
-    public function simulate(User $actor, NocDevice $device, string $fixture, string $key): NocSimulation
+    public function simulate(User $actor, NocDevice $device, string $fixture, string $key, array $parameters = [], ?int $expectedRevision = null): NocSimulation
     {
         Gate::forUser($actor)->authorize('simulate', $device);
+        if (str_starts_with($fixture, 'da-')) {
+            abort_unless(app(Contracts::class)->labEnabled(), 403);
+        }
 
-        return DB::transaction(function () use ($actor, $device, $fixture, $key) {
+        return DB::transaction(function () use ($actor, $device, $fixture, $key, $parameters, $expectedRevision) {
             DB::select('SELECT pg_advisory_xact_lock(7830, ?::integer)', [$actor->id]);
             $d = NocDevice::whereKey($device->id)->lockForUpdate()->firstOrFail();
             $old = NocSimulation::where('actor_id', $actor->id)->where('request_key', $key)->first();
             if ($old) {
-                abort_unless($old->device_id === $d->id && $old->fixture === $fixture, 409);
+                abort_unless($old->device_id === $d->id && $old->fixture === $fixture && Digest::hash($old->result['parameters'] ?? []) === Digest::hash($parameters) && ($expectedRevision === null || $old->result['device_revision'] === $expectedRevision), 409);
 
                 return $old;
             }
-            $result = app(Catalog::class)->fixtureFor($d, $fixture);
+            if (str_starts_with($fixture, 'da-')) {
+                abort_unless($expectedRevision !== null && $expectedRevision === $d->revision, 409, 'Revisão do equipamento mudou; reabra o cenário.');
+            }
+            $result = app(Catalog::class)->fixtureFor($d, $fixture, $parameters);
             $row = (new NocSimulation)->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $d->tenant_id, 'device_id' => $d->id, 'actor_id' => $actor->id, 'request_key' => $key, 'fixture' => $fixture, 'result' => $result, 'is_simulated' => true, 'created_at' => now()]);
             $row->save();
             app(Audit::class)->record('noc.simulation_created', $actor, $d->tenant_id, 'noc_simulation', metadata: ['device_id' => $d->id]);

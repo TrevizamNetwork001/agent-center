@@ -4,6 +4,8 @@ namespace App\Conversation;
 
 enum Intent: string
 {
+    case Simulation = 'REQUEST_DEVICE_LAB_SIMULATION';
+    case SimulationExplanation = 'EXPLAIN_DEVICE_LAB_SIMULATION';
     case Greeting = 'GREETING';
     case Social = 'SOCIAL';
     case Topic = 'CHANGE_TOPIC';
