@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "generation": "20261112T024720Z",
+  "protected_tables_match": 16,
+  "rag_force_rls": true,
+  "credentials_decrypt_from_backup_key": true,
+  "agent_configuration_preserved": true,
+  "restore_database_removed_by_existing_runner": true
+}

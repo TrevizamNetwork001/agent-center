@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "candidate_commit": "1918167835673c1e65c5555053284e581b9c7b1e",
+  "groups": [
+    {
+      "group": 0,
+      "tests": 166,
+      "assertions": 1130
+    },
+    {
+      "group": 1,
+      "tests": 149,
+      "assertions": 1127
+    },
+    {
+      "group": 2,
+      "tests": 156,
+      "assertions": 1209
+    }
+  ],
+  "total_tests": 471,
+  "assertions": 3466,
+  "diagnostic_concurrency": "PASS",
+  "idle_concurrency": "PASS",
+  "pint": "16 files PASS",
+  "build": "PASS",
+  "secret_scan": "Scoped local pattern scan PASS, zero findings",
+  "diff_check": "PASS",
+  "backup_restore": "PASS",
+  "production_schema_transactional_smoke": "PASS"
+}

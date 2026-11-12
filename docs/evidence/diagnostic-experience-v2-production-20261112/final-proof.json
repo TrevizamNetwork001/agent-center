@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "result": "AGENT CENTER DIAGNOSTIC EXPERIENCE V2 PRODUCTION PASS",
+  "candidate_head": "1918167835673c1e65c5555053284e581b9c7b1e",
+  "runtime_image": "agent-center-central:diagnostic-experience-v2-20261112",
+  "runtime_digest": "sha256:04c78a7c6c0a2ab12b7183e9d8d312a8c1e5e7d098d20b03ac16730e1694db49",
+  "backup_generation": "20261112T024720Z",
+  "rollback_image": "agent-center-central:diagnostic-v2-compatible-rollback-20261112",
+  "rollback_digest": "sha256:6909e71b85665a36fe721927b4ebfca94245599a3f3ee912f5a6e83094c017ae",
+  "rollback_executed": false,
+  "protected_tables_unchanged": 16,
+  "agent_configuration_unchanged": true,
+  "tasks_before_after": 102,
+  "diagnostics_before_after": 29,
+  "new_network_probes": 0,
+  "external_telegram_test_sends": 0,
+  "rag_limitation": "No indexed RAG documents/chunks in tenant 1 before or after release; no_match expected",
+  "diagnostic_language_mode": "Rich deterministic result active; diagnostic_explanation binding not enabled automatically",
+  "openai_conversation": "ASSISTED in Web and Telegram in published runtime"
+}

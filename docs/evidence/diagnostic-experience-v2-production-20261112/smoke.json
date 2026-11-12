@@ -1,0 +1,118 @@
+{
+    "status": "PASS",
+    "context": {
+        "web": {
+            "question": "Há quanto tempo você está esperando resposta?",
+            "input": "15 dias",
+            "reply": "Você está esperando uma resposta há 15 dias. É uma espera longa. Sobre qual assunto você aguarda retorno?",
+            "language_status": "ASSISTED",
+            "usage": {
+                "input_tokens": 1036,
+                "total_tokens": 1085,
+                "output_tokens": 49
+            },
+            "closed": "CLOSED",
+            "history_preserved": true
+        },
+        "telegram": {
+            "question": "Há quanto tempo você está esperando resposta?",
+            "input": "15 dias",
+            "reply": "Entendi, você está há 15 dias esperando uma resposta. Essa demora é inconveniente. Sobre qual assunto você aguarda retorno?",
+            "language_status": "ASSISTED",
+            "usage": {
+                "input_tokens": 1036,
+                "total_tokens": 1089,
+                "output_tokens": 53
+            },
+            "closed": "CLOSED",
+            "history_preserved": true
+        }
+    },
+    "diagnostic_flow": [
+        {
+            "method": "sendMessage",
+            "message_id": 101,
+            "text": "Fechou. Confirma um novo diagnóstico para youtube.com? As evidências anteriores serão preservadas.",
+            "button": null
+        },
+        {
+            "method": "sendMessage",
+            "message_id": 102,
+            "text": "Marcha! O diagnóstico ainda aguarda sua confirmação explícita.",
+            "button": null
+        },
+        {
+            "method": "sendMessage",
+            "message_id": 103,
+            "text": "Fechou. Solicitação aceita para youtube.com. Os testes estão sendo preparados e aguardam execução no Agent. Vou apresentar o resultado aqui quando terminar.",
+            "button": {
+                "text": "Ver diagnóstico completo",
+                "url": "https://agente.trevizamnetwork.com.br/diagnostics/17beadd3-78dd-4d97-818c-5d34ebe81c17"
+            }
+        },
+        {
+            "method": "editMessageText",
+            "message_id": 103,
+            "text": "Acompanhamento de youtube.com\nAs verificações estão na fila. Aguardando execução no Agent.",
+            "button": {
+                "text": "Ver diagnóstico completo",
+                "url": "https://agente.trevizamnetwork.com.br/diagnostics/17beadd3-78dd-4d97-818c-5d34ebe81c17"
+            }
+        },
+        {
+            "method": "editMessageText",
+            "message_id": 103,
+            "text": "Acompanhamento de youtube.com\nO Agent recebeu a solicitação. Aguardando o início da execução das verificações.",
+            "button": {
+                "text": "Ver diagnóstico completo",
+                "url": "https://agente.trevizamnetwork.com.br/diagnostics/17beadd3-78dd-4d97-818c-5d34ebe81c17"
+            }
+        },
+        {
+            "method": "editMessageText",
+            "message_id": 103,
+            "text": "Acompanhamento de youtube.com\nHá verificações em execução no Agent. O resultado será enviado aqui ao concluir.",
+            "button": {
+                "text": "Ver diagnóstico completo",
+                "url": "https://agente.trevizamnetwork.com.br/diagnostics/17beadd3-78dd-4d97-818c-5d34ebe81c17"
+            }
+        },
+        {
+            "method": "sendMessage",
+            "message_id": 104,
+            "text": "Há um diagnóstico em execução. Confirma o cancelamento?",
+            "button": null
+        },
+        {
+            "method": "sendMessage",
+            "message_id": 105,
+            "text": "Certo. Nenhum novo teste foi iniciado.",
+            "button": null
+        },
+        {
+            "method": "editMessageText",
+            "message_id": 103,
+            "text": "Prontinho! Terminei a verificação de youtube.com.\n\n✅ NORMAL\nNão foram encontradas anormalidades no escopo testado.\n\nO que ficou registrado:\n• Conexão TCP: conexão estabelecida · tempo da sondagem: 7 ms\n• Amostra ICMP (complementar): latência média ICMP: indisponível · tempo da sondagem: indisponível · sem resposta dentro do prazo da verificação\n• DNS A: 1 endereço(s) retornado(s) · tempo da sondagem: 3 ms\n• Resposta HTTPS: HTTP 200 · TLS validado · tempo da sondagem: 42 ms\n• DNS AAAA: 0 endereço(s) retornado(s) · tempo da sondagem: 3 ms\n\nNão executadas/concluídas: Rastreamento de rota: dispensada neste escopo.\n\nLimites: A investigação representa o ponto de observação do Agent, no período deste diagnóstico. Isso não comprova a saúde de toda a rede nem descarta a lentidão percebida pelo cliente. A resposta HTTPS não mede o carregamento completo da página ou a reprodução de vídeo.\n\nPróximo passo: Se o sintoma persistir, amplie o escopo com um novo diagnóstico.\nSe o sintoma persistir, conte em quais clientes ou situações ele acontece. Outro teste exige nova autorização.",
+            "button": {
+                "text": "Ver diagnóstico completo",
+                "url": "https://agente.trevizamnetwork.com.br/diagnostics/17beadd3-78dd-4d97-818c-5d34ebe81c17"
+            }
+        }
+    ],
+    "fixture_notice": "Native protocol with synthetic responses, inside rolled-back transaction; no network probes and no Telegram sends",
+    "active_diagnostic_idle_protected": true,
+    "active_close_requires_confirmation": true,
+    "followup_no_new_diagnostic": true,
+    "existing_real_result": {
+        "diagnostic_id": "24087c35-2e18-43fc-a943-bb98636b8ac4",
+        "target": "youtube.com",
+        "classification": "NORMAL",
+        "response": "Diagnóstico de youtube.com finalizado.\n\n✅ NORMAL\nNão foram encontradas anormalidades no escopo testado.\n\nO que ficou registrado:\n• Conexão TCP: conexão estabelecida · tempo da sondagem: 4.84 ms\n• Amostra ICMP (complementar): perda de respostas ICMP: 0% · latência média ICMP: 3.33 ms · 5 de 5 respostas · tempo da sondagem: 4014.13 ms\n• DNS A: 1 endereço(s) retornado(s) · tempo da sondagem: 1.93 ms\n• Resposta HTTPS: HTTP 301 · redirecionamento recebido; destino do redirecionamento não testado · TLS validado · tempo da sondagem: 153.01 ms\n• DNS AAAA: 1 endereço(s) retornado(s) · tempo da sondagem: 1.8 ms\n\nNão executadas/concluídas: Rastreamento de rota: dispensada neste escopo.\n\nLimites: A investigação representa o ponto de observação do Agent, no período deste diagnóstico. Isso não comprova a saúde de toda a rede nem descarta a lentidão percebida pelo cliente. A resposta HTTPS não mede o carregamento completo da página ou a reprodução de vídeo.\n\nPróximo passo: Se o sintoma persistir, amplie o escopo com um novo diagnóstico.\nSe o sintoma persistir, conte em quais clientes ou situações ele acontece. Outro teste exige nova autorização.",
+        "new_execution": false
+    },
+    "all_records_rolled_back": true,
+    "original_link_restored": true,
+    "task_counts_unchanged": true,
+    "real_openai_requests": 2,
+    "external_telegram_sends": 0
+}

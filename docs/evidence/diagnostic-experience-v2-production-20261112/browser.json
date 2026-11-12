@@ -1,0 +1,152 @@
+{
+  "status": "PASS",
+  "https": true,
+  "read_only": true,
+  "anonymous_requires_login": true,
+  "results": [
+    {
+      "key": "diagnostic",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "operations",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "history",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "diagnostic",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "operations",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "history",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "diagnostic",
+      "width": 768,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 768,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "operations",
+      "width": 768,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "history",
+      "width": 768,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "diagnostic",
+      "width": 768,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 768,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "operations",
+      "width": 768,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "history",
+      "width": 768,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "diagnostic",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "operations",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "history",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "key": "diagnostic",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "telegram",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "operations",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "key": "history",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    }
+  ]
+}

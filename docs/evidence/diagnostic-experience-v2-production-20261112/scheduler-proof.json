@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "running": true,
+  "image": "agent-center-central:diagnostic-experience-v2-20261112",
+  "minute_schedule": [
+    "telegram:drain 1",
+    "conversations:close-idle 1"
+  ],
+  "idle_minutes": 15,
+  "scheduled_runs_observed": 6,
+  "errors_after_restart": 0
+}

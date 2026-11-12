@@ -1,0 +1,10 @@
+{
+    "status": "PASS",
+    "command": "\/historico",
+    "path": "Published native Ingress, Runner, outbox, Deliver",
+    "authenticated_history_url": true,
+    "inbound_replay_idempotent": true,
+    "existing_conversation_preserved": true,
+    "records_rolled_back": true,
+    "external_telegram_sends": 0
+}
