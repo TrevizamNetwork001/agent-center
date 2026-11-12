@@ -83,4 +83,37 @@ class AccountProfileTest extends IdentityTestCase
         $this->assertSame('Administrador da plataforma', $this->inspect($this->platform)->name);
         $this->assertNull($this->inspect($this->platform)->tenant_id);
     }
+
+    public function test_avatar_revalidation_saves_image_bytes_and_still_requires_its_owner(): void
+    {
+        Storage::fake('local');
+        $this->actingAs($this->viewer)->patch('/account/profile', ['name' => $this->viewer->name, 'avatar' => $this->image()])->assertRedirect();
+        $owner = $this->inspect($this->viewer);
+        $response = $this->actingAs($owner)->get('/account/avatar')->assertOk();
+        $etag = $response->headers->get('ETag');
+        $this->assertNotEmpty($etag);
+        $this->assertTrue($response->headers->hasCacheControlDirective('private'));
+        $this->assertTrue($response->headers->hasCacheControlDirective('must-revalidate'));
+        $this->assertFalse($response->headers->hasCacheControlDirective('no-store'));
+        $this->withHeaders(['If-None-Match' => $etag])->get('/account/avatar')->assertNotModified();
+        $this->get('/account/profile')->assertOk()->assertHeader('Cache-Control', 'no-store, private');
+        $this->flushSession();
+        $this->app['auth']->forgetGuards();
+        $this->withHeaders(['If-None-Match' => $etag])->get('/account/avatar')->assertRedirect(route('login'));
+        $this->actingAs($this->other)->withHeaders(['If-None-Match' => $etag])->get('/account/avatar')->assertNotFound();
+    }
+
+    public function test_avatar_replacement_and_removal_invalidate_the_previous_validator(): void
+    {
+        Storage::fake('local');
+        $this->actingAs($this->viewer)->patch('/account/profile', ['name' => $this->viewer->name, 'avatar' => $this->image()])->assertRedirect();
+        $owner = $this->inspect($this->viewer);
+        $etag = $this->actingAs($owner)->get('/account/avatar')->headers->get('ETag');
+        $this->patch('/account/profile', ['name' => $owner->name, 'avatar' => $this->image()])->assertRedirect();
+        $owner = $this->inspect($owner);
+        $response = $this->actingAs($owner)->withHeaders(['If-None-Match' => $etag])->get('/account/avatar')->assertOk();
+        $this->assertNotSame($etag, $response->headers->get('ETag'));
+        $this->patch('/account/profile', ['name' => $owner->name, 'remove_avatar' => '1'])->assertRedirect();
+        $this->actingAs($this->inspect($owner))->get('/account/avatar')->assertNotFound();
+    }
 }

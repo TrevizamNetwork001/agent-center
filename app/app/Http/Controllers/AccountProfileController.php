@@ -67,7 +67,13 @@ class AccountProfileController extends Controller
         $disk = Storage::disk('local');
         abort_unless($disk->exists($user->avatar_path), 404);
 
-        return response()->file($disk->path($user->avatar_path), ['Content-Type' => $user->avatar_mime, 'X-Content-Type-Options' => 'nosniff', 'Content-Security-Policy' => "default-src 'none'; sandbox", 'Cache-Control' => 'private, no-store']);
+        $response = response()->file($disk->path($user->avatar_path), ['Content-Type' => $user->avatar_mime, 'X-Content-Type-Options' => 'nosniff', 'Content-Security-Policy' => "default-src 'none'; sandbox", 'Cache-Control' => 'private, max-age=0, must-revalidate']);
+        $response->setPrivate();
+        $response->setAutoEtag();
+        $response->setEtag(hash('sha256', $user->id.'|'.$user->avatar_path.'|'.$response->getEtag()));
+        $response->isNotModified($request);
+
+        return $response;
     }
 
     private function ownedPath(int $user, string $path): bool

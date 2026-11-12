@@ -7,6 +7,7 @@ use App\Tenancy\TenantContext;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ResolveTenant
 {
@@ -32,7 +33,11 @@ class ResolveTenant
             }
 
             $response = $next($request);
-            $response->headers->set('Cache-Control', 'no-store, private');
+            // Only the authenticated owner's image may revalidate its private cache.
+            // HTML, errors, redirects and every other tenant response remain no-store.
+            if (! $request->routeIs('account.avatar') || ! $response instanceof BinaryFileResponse || ! in_array($response->getStatusCode(), [200, 304], true)) {
+                $response->headers->set('Cache-Control', 'no-store, private');
+            }
             if ($response->headers->has('X-AC-Fragment')) {
                 $response->headers->set('X-AC-Tenant', (string) ($context->tenantId ?? 'platform'));
             }
