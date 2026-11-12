@@ -21,9 +21,10 @@ class Language
 
     public function reply(Conversation $c, Identity $identity, Intent $intent, string $body, array $tone): array
     {
-        $fallback = $this->local($c, $intent, $body, $tone);
+        $voice = $this->voice($c, $tone);
+        $fallback = $this->local($c, $intent, $body, $tone, $voice);
         $act = $this->socialAct($body);
-        $result = ['text' => $fallback, 'metadata' => ['language_status' => 'LOCAL', 'tone' => $tone['style'], 'social_act' => $act]];
+        $result = ['text' => $fallback, 'metadata' => ['language_status' => 'LOCAL', 'tone' => $tone['style'], 'social_act' => $act, 'style_vocabulary' => $voice]];
         // Greetings, acknowledgments, context changes, technical/serious messages and
         // every operational turn are deterministic and never spend LLM budget.
         $wellbeing = app(SocialText::class)->wellbeing($body);
@@ -58,12 +59,12 @@ class Language
             ->orderByDesc('sequence')->limit(5)->get()->reverse()->values();
         $turns = $history->map(fn ($m) => ['role' => $m->sender_type === 'user' ? 'user' : 'assistant', 'text' => mb_substr(Text::clean($m->body), 0, 160)])->all();
         $result['metadata']['context_sequences'] = $history->pluck('sequence')->all();
-        $data = ['recent_turns' => $turns, 'social_act' => $act, 'conversation_state' => $c->state, 'tone' => $tone['style'], 'severity' => $tone['severity'], 'known_destination' => isset($c->context_json['pending']['target']) || isset($c->context_json['provided_target']) || $c->current_target !== null, 'pending_confirmation' => isset($c->context_json['pending']), 'diagnostic_running' => $c->state === State::Running->value];
+        $data = ['recent_turns' => $turns, 'speaker_vocabulary' => $voice, 'social_act' => $act, 'conversation_state' => $c->state, 'tone' => $tone['style'], 'severity' => $tone['severity'], 'known_destination' => isset($c->context_json['pending']['target']) || isset($c->context_json['provided_target']) || $c->current_target !== null, 'pending_confirmation' => isset($c->context_json['pending']), 'diagnostic_running' => $c->state === State::Running->value];
         $vars = ['classification' => 'CONVERSATIONAL_NO_EVIDENCE', 'profile' => 'CONVERSATION', 'target' => '', 'knowledge' => '[]', 'evidence' => json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)];
         $response = [];
         try {
             $renderer = app(PromptRenderer::class);
-            $messages = [['role' => 'system', 'content' => self::BOUNDARY.' Use recent_turns to continue the actual exchange, including your previous replies. Do not introduce yourself again or repeat institutional identity, availability or offers to help. Only explain your identity if explicitly asked about it; never claim human feelings. ASK_ASSISTANT_WELLBEING: answer briefly and naturally, optionally return the question. SHARE_USER_WELLBEING: acknowledge their answer, without asking again how they are or talking about yourself. ROUTINE_SLOWNESS: preserve the current friendly tone, recognize the inconvenience and ask one useful question; no invented measurement, technical instruction or operation. Never claim the network is healthy.'], ['role' => 'user', 'content' => json_encode(['administrative_template' => $renderer->render($version->system_template, $vars)."\n".$renderer->render($version->user_template ?? '{{evidence}}', $vars), 'conversation' => $data], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)]];
+            $messages = [['role' => 'system', 'content' => self::BOUNDARY.' Use recent_turns to continue the actual exchange, including your previous replies. Do not introduce yourself again or repeat institutional identity, availability or offers to help. Only explain your identity if explicitly asked about it; never claim human feelings. ASK_ASSISTANT_WELLBEING: answer briefly and naturally, optionally return the question. SHARE_USER_WELLBEING: acknowledge their answer, without asking again how they are or talking about yourself. ROUTINE_SLOWNESS: preserve the current friendly tone, recognize the inconvenience and ask one useful question; no invented measurement, technical instruction or operation. Never claim the network is healthy. Adapt to the LATEST user register, not just your previous replies: CASUAL and FORMAL mean standard Portuguese without slang, familiar nicknames, laughter or emoji. RELAXED allows light Brazilian colloquial phrasing, contractions and at most one occasional friendly address. Prefer speaker_vocabulary actually observed in this conversation; echo its register without parroting or correcting spelling. For example a speaker using ce/bao can receive ce/bao naturally, rather than a standardized tudo certo answer. Friendly addresses such as meu chapa or jovem da internet are optional in RELAXED greetings; these are conversational idioms, not age claims. Prefer observed addresses. Use distinctive complaint slang like barril only when the user has actually reported that kind of inconvenience. Do not use a nickname or catchphrase in every reply, do not force regionalisms, and do not infer age or region. Words like marcha/bora express conversational rapport only: they never confirm or execute operations.'], ['role' => 'user', 'content' => json_encode(['administrative_template' => $renderer->render($version->system_template, $vars)."\n".$renderer->render($version->user_template ?? '{{evidence}}', $vars), 'conversation' => $data], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)]];
             $limited = clone $provider;
             $limited->timeout = min(10, $provider->timeout);
             $response = app(Client::class)->call($limited, $model, $messages);
@@ -72,7 +73,7 @@ class Language
         }
         $meta = ['binding_id' => $b->id, 'prompt_version_id' => $version->id, 'provider_id' => $provider->id, 'model_id' => $model->id, 'usage' => $response['usage'] ?? [], 'request_id' => $response['request_id'] ?? null];
         $text = $response['output']['summary'] ?? null;
-        if (! is_string($text) || ! $this->acceptable($text) || ! $this->natural($text, $body) || ($response['output']['next_steps'] ?? null) !== []) {
+        if (! is_string($text) || ! $this->acceptable($text) || ! $this->natural($text, $body, $tone, $voice, $act) || ($response['output']['next_steps'] ?? null) !== []) {
             $failed = $this->fallback($result, isset($response['output']) ? 'invalid_output' : ($response['error'] ?? 'provider_unavailable'));
             $failed['metadata'] += $meta;
 
@@ -86,7 +87,7 @@ class Language
             return $failed;
         }
 
-        return ['text' => Text::clean($text), 'metadata' => ['language_status' => 'ASSISTED', 'tone' => $tone['style'], 'social_act' => $act, 'context_sequences' => $history->pluck('sequence')->all(), ...$meta]];
+        return ['text' => Text::clean($text), 'metadata' => ['language_status' => 'ASSISTED', 'tone' => $tone['style'], 'social_act' => $act, 'style_vocabulary' => $voice, 'context_sequences' => $history->pluck('sequence')->all(), ...$meta]];
     }
 
     private function socialAct(string $body): string
@@ -94,18 +95,46 @@ class Language
         $s = Str::lower(Str::ascii($body));
 
         return match (true) {
-            app(SocialText::class)->wellbeing($body) => 'ASK_ASSISTANT_WELLBEING',
+            app(SocialText::class)->wellbeing(preg_replace('/\b(?:meu chapa|meu consagrado|jovem da internet)\b/', '', $s)) => 'ASK_ASSISTANT_WELLBEING',
             (bool) preg_match('/^(?:eu )?(?:to|tou|estou) (?:bao|bom|bem|suave)\b|\btudo (?:bem|certo) tambem\b/', trim($s)) => 'SHARE_USER_WELLBEING',
-            (bool) preg_match('/\b(rede|carroca|lento|lenta|lentidao|travando)\b/', $s) => 'ROUTINE_SLOWNESS',
+            (bool) preg_match('/^(?:marcha|bora)[.!? ]*$/', trim($s)) => 'CASUAL_ACK',
+            (bool) preg_match('/\b(rede|carroca|lento|lenta|lentidao|travando)\b/', $s) || (preg_match('/\bbarril\b/', $s) && preg_match('/\b(internet|youtube|video|site|conexao)\b/', $s)) => 'ROUTINE_SLOWNESS',
             default => 'CONVERSATION',
         };
     }
 
-    private function natural(string $text, string $body): bool
+    private function voice(Conversation $c, array $tone): array
+    {
+        if ($tone['style'] !== 'RELAXED' || $tone['severity'] === 'SERIOUS') {
+            return [];
+        }
+        $recent = ConversationMessage::where('conversation_id', $c->id)->where('sender_type', 'user')->latest('sequence')->limit(3)->pluck('body');
+        $vocabulary = [];
+        foreach ($recent as $body) {
+            $text = Str::lower(Str::ascii(Text::clean($body)));
+            foreach (['meu chapa' => '(?:meu )?chapa', 'meu consagrado' => '(?:meu )?consagrado', 'meu rei' => 'meu rei', 'jovem da internet' => 'jovem da internet', 'bão' => 'bao', 'cê' => 'ce', 'marcha' => 'marcha', 'bora' => 'bora', 'barril' => 'barril', 'kkk' => 'kk+'] as $word => $pattern) {
+                if (preg_match('/\b'.$pattern.'\b/', $text)) {
+                    $vocabulary[$word] = $word;
+                }
+            }
+        }
+
+        return array_slice(array_values($vocabulary), 0, 6);
+    }
+
+    private function natural(string $text, string $body, array $tone, array $voice, string $act): bool
     {
         // Explicit identity/role questions may receive a truthful explanation.
         if (preg_match('/\b(quem (?:e|eh)|voce (?:e|eh)|o que voce faz|como e (?:ajudar|ser))\b/', Str::lower(Str::ascii($body)))) {
             return true;
+        }
+
+        $plain = Str::lower(Str::ascii($text));
+        if ($tone['style'] !== 'RELAXED' && ! preg_match('/\b(significado|significa|expressao|termo)\b/', Str::lower(Str::ascii($body))) && preg_match('/\b(bao|ce|meu chapa|meu rei|meu consagrado|jovem da internet|marcha|bora|kk+)\b|[😂😄🤣😅]/u', $plain)) {
+            return false;
+        }
+        if ($tone['style'] === 'RELAXED' && $act === 'ASK_ASSISTANT_WELLBEING' && (in_array('bão', $voice, true) || in_array('cê', $voice, true)) && ! preg_match('/\b(bao|ce|chapa|meu rei|consagrado|jovem da internet)\b/', $plain)) {
+            return false;
         }
 
         return ! preg_match('/\b(assistente virtual|agent center|(?:disponivel|disposicao|pronto) (?:para|pra|a) ajudar)\b/', Str::lower(Str::ascii($text)));
@@ -129,7 +158,7 @@ class Language
         return $result;
     }
 
-    private function local(Conversation $c, Intent $intent, string $body, array $tone): string
+    private function local(Conversation $c, Intent $intent, string $body, array $tone, array $voice): string
     {
         $s = Str::lower(Str::ascii($body));
         if (app(ConversationToneDetector::class)->preference($body) !== null) {
@@ -142,16 +171,28 @@ class Language
             return 'A confirmação vale somente para o destino e o perfil que estão pendentes. Ela é consumida uma única vez; uma mensagem de conversa não autoriza um novo diagnóstico.';
         }
         $act = $this->socialAct($body);
+        $last = ConversationMessage::where('conversation_id', $c->id)->where('sender_type', 'system')->latest('sequence')->value('body') ?? '';
         if ($act === 'ASK_ASSISTANT_WELLBEING') {
-            $formal = in_array($tone['style'], ['FORMAL', 'TECHNICAL'], true) || $tone['severity'] === 'SERIOUS';
-            $openings = $formal ? ['Tudo certo por aqui.', 'Por aqui, tudo certo.'] : ['Tudo certo por aqui!', 'Por aqui, tudo certo!'];
-            $questions = $formal ? ['E com você?', 'Como você está?'] : ['E você, tá bem?', 'Como estão as coisas por aí?'];
+            $formal = $tone['style'] !== 'RELAXED' || $tone['severity'] === 'SERIOUS';
+            $salutation = match (true) {
+                str_contains($s, 'boa noite') => 'Boa noite', str_contains($s, 'boa tarde') => 'Boa tarde', str_contains($s, 'bom dia') => 'Bom dia', default => '',
+            };
+            $address = collect($voice)->first(fn ($word) => in_array($word, ['meu chapa', 'meu consagrado', 'meu rei', 'jovem da internet'], true));
+            $greeting = $salutation !== '' ? $salutation.(! $formal && $address && ! str_contains($last, $address) ? ', '.$address : '').'! ' : '';
+            $well = ! $formal && in_array('bão', $voice, true) ? 'bão' : 'certo';
+            $openings = $formal ? [$greeting.'Tudo certo por aqui.', $greeting.'Por aqui, tudo certo.'] : [$greeting.'Tudo '.$well.' por aqui!', $greeting.'Por aqui, tudo '.$well.'!'];
+            $questions = $formal ? ['E com você?', 'Como você está?'] : (in_array('cê', $voice, true) ? ['E cê, tá bão?', 'E por aí, tudo bão?'] : ['E você, tá bem?', 'Como estão as coisas por aí?']);
             $choices = [];
             foreach ($openings as $opening) {
                 foreach ($questions as $question) {
                     $choices[] = $opening.' '.$question;
                 }
             }
+        } elseif ($act === 'CASUAL_ACK') {
+            $ack = $tone['style'] === 'RELAXED' && $tone['severity'] !== 'SERIOUS' ? (str_contains($s, 'marcha') ? 'Marcha!' : 'Bora!') : 'Entendido.';
+            $choices = isset($c->context_json['pending'])
+                ? [$ack.' O diagnóstico ainda aguarda sua confirmação explícita.']
+                : [$ack, $ack.($tone['style'] === 'RELAXED' && $tone['severity'] !== 'SERIOUS' ? ' 😄' : ' Podemos continuar a conversa.')];
         } elseif ($act === 'SHARE_USER_WELLBEING') {
             $choices = $tone['style'] === 'RELAXED' && $tone['severity'] !== 'SERIOUS'
                 ? ['Aí sim! 😄', 'Boa! Que bom que tá tudo certo.']
@@ -166,6 +207,10 @@ class Language
                 str_contains($s, 'bao') => 'Bão.', str_contains($s, 'boa tarde') => 'Boa tarde!', str_contains($s, 'bom dia') => 'Bom dia!', str_contains($s, 'boa noite') => 'Boa noite!',
                 $tone['style'] === 'RELAXED' => 'Opa!', default => 'Olá!',
             };
+            $address = collect($voice)->first(fn ($word) => in_array($word, ['meu chapa', 'meu consagrado', 'meu rei', 'jovem da internet'], true));
+            if ($address && ! str_contains($last, $address)) {
+                $salutation = rtrim($salutation, '.!').', '.$address.'!';
+            }
             $choices = $tone['style'] === 'FORMAL'
                 ? [$salutation.' Seja bem-vindo. Estou à disposição.', $salutation.' É um prazer ajudar.']
                 : [$salutation.' Tudo certo por aqui. Como vai?', $salutation.' Bom te ver por aqui!', $salutation.' Pode chegar, estou por aqui.'];
@@ -183,7 +228,6 @@ class Language
             $known = $c->context_json['pending']['target'] ?? $c->context_json['provided_target'] ?? $c->current_target;
             $choices = [$known ? 'Estou acompanhando. O destino '.$known.' e o histórico continuam registrados; me conta o que mudou.' : 'Estou por aqui. Me conta um pouco mais para eu entender.', 'Pode continuar, estou acompanhando o contexto.'];
         }
-        $last = ConversationMessage::where('conversation_id', $c->id)->where('sender_type', 'system')->latest('sequence')->value('body');
         $index = intdiv($c->sequence, 2) % count($choices);
         if ($choices[$index] === $last) {
             $index = ($index + 1) % count($choices);

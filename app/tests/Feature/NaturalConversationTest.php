@@ -55,7 +55,7 @@ class NaturalConversationTest extends IntelligenceTestCase
             $c = $this->say($c, 'ce ta bao ?');
             $m = $this->last($c);
             $this->assertSame('FALLBACK', $m->metadata['language_status']);
-            $this->assertMatchesRegularExpression('/(Tudo certo|tudo certo)/u', $m->body);
+            $this->assertMatchesRegularExpression('/tudo (?:certo|bão)/iu', $m->body);
             $this->assertNotSame($last, $m->body);
             $last = $m->body;
         }
@@ -174,6 +174,102 @@ class NaturalConversationTest extends IntelligenceTestCase
         $payload = json_encode($client->calls);
         $this->assertStringNotContainsString('SENSITIVE_DIAGNOSTIC_OR_RAG_CONTEXT', $payload);
         $this->assertStringNotContainsString('fixture-private-password', $payload);
+        $this->assertSame(0, AgentTask::count());
+    }
+
+    public function test_latest_speaking_register_moves_both_directions_without_changing_preferences(): void
+    {
+        $tone = app(ConversationToneDetector::class);
+        $this->assertSame('RELAXED', $tone->detect(['boa noite ce ta bao?'])['style']);
+        $this->assertSame('CASUAL', $tone->detect(['boa noite ce ta bao?', 'Boa noite. Como você está?'])['style']);
+        $this->assertSame('CASUAL', $tone->detect(['marcha meu chapa', 'Boa noite.'])['style']);
+        $this->assertSame('RELAXED', $tone->detect(['Tudo bem por aqui 😂'])['style']);
+        $this->assertSame('FORMAL', $tone->detect(['marcha meu chapa', 'Poderia explicar, por gentileza?'])['style']);
+        $this->assertSame('RELAXED', $tone->detect(['Poderia explicar, por gentileza?', 'e aí jovem da internet'])['style']);
+        $this->assertSame('FORMAL', $tone->detect(['marcha meu chapa'], 'FORMAL')['style']);
+        $this->assertSame('TECHNICAL', $tone->detect(['queda geral, clientes sem serviço', 'marcha meu chapa kk'])['style']);
+    }
+
+    public function test_fallback_mirrors_observed_slang_and_stops_when_the_user_switches_to_standard_portuguese(): void
+    {
+        $this->binding();
+        $this->client(['error' => 'timeout']);
+        $c = $this->say($this->conversation(), 'boa noite meu chapa ce ta bao?');
+        $reply = $this->last($c);
+        $this->assertStringContainsString('meu chapa', $reply->body);
+        $this->assertStringContainsString('bão', $reply->body);
+        $this->assertContains('meu chapa', $reply->metadata['style_vocabulary']);
+        $c = $this->say($c, 'Boa noite. Como você está?');
+        $reply = $this->last($c);
+        $this->assertSame('CASUAL', $reply->metadata['tone']);
+        $this->assertSame([], $reply->metadata['style_vocabulary']);
+        $this->assertDoesNotMatchRegularExpression('/\b(?:chapa|bão|cê|kk)\b|😄/u', $reply->body);
+        $c = $this->say($c, 'e ai jovem da internet');
+        $this->assertStringContainsString('jovem da internet', $this->last($c)->body);
+        $this->assertSame(0, AgentTask::count());
+    }
+
+    public function test_marcha_and_bora_are_conversational_acknowledgments_not_operational_confirmation(): void
+    {
+        $this->binding();
+        $client = $this->client();
+        $c = $this->say($this->conversation(), 'Outro diagnóstico para google.com');
+        $pending = $c->context_json['pending'];
+        foreach (['marcha', 'bora', 'bora analisar isso direito kk'] as $body) {
+            $c = $this->say($c, $body);
+            $this->assertSame('WAITING_FOR_CONFIRMATION', $c->state);
+            $this->assertEquals($pending, $c->context_json['pending']);
+            $this->assertNotSame(Intent::Confirm, app(IntentDetector::class)->detect($body, State::Confirmation));
+            $this->assertSame(0, Diagnostic::count());
+            $this->assertSame(0, AgentTask::count());
+        }
+        $this->assertCount(1, $client->calls);
+    }
+
+    public function test_user_vocabulary_is_bounded_and_not_carried_into_another_conversation(): void
+    {
+        $this->binding();
+        $client = $this->client();
+        $c = $this->say($this->conversation(), 'e ai meu chapa');
+        $c = $this->say($c, 'boa noite ce ta bao?');
+        $payload = json_decode($client->calls[0]['messages'][1]['content'], true)['conversation'];
+        $this->assertContains('meu chapa', $payload['speaker_vocabulary']);
+        $this->assertContains('bão', $payload['speaker_vocabulary']);
+        $this->assertLessThanOrEqual(6, count($payload['speaker_vocabulary']));
+        $other = $this->say($this->conversation(), 'Como você está?');
+        $payload = json_decode($client->calls[1]['messages'][1]['content'], true)['conversation'];
+        $this->assertSame([], $payload['speaker_vocabulary']);
+        $this->assertSame('CASUAL', $payload['tone']);
+        $this->assertStringNotContainsString('meu chapa', json_encode($payload));
+        $this->assertSame(0, AgentTask::count());
+    }
+
+    public function test_barril_in_a_network_complaint_keeps_light_empathy_without_a_diagnosis(): void
+    {
+        $c = $this->say($this->conversation(), 'Internet hoje ta barril kk');
+        $reply = $this->last($c);
+        $this->assertSame('RELAXED', $reply->metadata['tone']);
+        $this->assertSame('ROUTINE_SLOWNESS', $reply->metadata['social_act']);
+        $this->assertContains('barril', $reply->metadata['style_vocabulary']);
+        $this->assertSame(1, substr_count($reply->body, '?'));
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+    }
+
+    public function test_mismatched_model_style_uses_a_matching_fallback_without_retry(): void
+    {
+        $this->binding();
+        $client = $this->client(['output' => ['summary' => 'Boa noite! Tudo certo por aqui. E por aí?', 'next_steps' => []]]);
+        $c = $this->say($this->conversation(), 'boa noite ce ta bao?');
+        $this->assertSame('invalid_output', $this->last($c)->metadata['language_reason']);
+        $this->assertStringContainsString('bão', $this->last($c)->body);
+        $this->assertCount(1, $client->calls);
+        $client = $this->client(['output' => ['summary' => 'E aí, meu chapa! Tudo bão? 😄', 'next_steps' => []]]);
+        $c = $this->say($c, 'Boa noite. Como você está?');
+        $this->assertSame('CASUAL', $this->last($c)->metadata['tone']);
+        $this->assertSame('invalid_output', $this->last($c)->metadata['language_reason']);
+        $this->assertDoesNotMatchRegularExpression('/\b(?:chapa|bão|cê)\b|😄/u', $this->last($c)->body);
+        $this->assertCount(1, $client->calls);
         $this->assertSame(0, AgentTask::count());
     }
 

@@ -292,6 +292,30 @@ class TelegramTest extends IntelligenceTestCase
         Http::assertSent(fn ($r) => ($r['text'] ?? '') === 'Histórico: '.route('conversations.show', $c->id));
     }
 
+    public function test_telegram_mirrors_slang_then_returns_to_standard_portuguese(): void
+    {
+        $link = $this->link();
+        $this->say('boa noite ce ta bao?');
+        $c = $this->conversation($link);
+        $last = fn () => ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->firstOrFail();
+        $this->assertStringContainsString('bão', $last()->body);
+        $this->assertSame('RELAXED', $last()->metadata['tone']);
+        $this->say('marcha');
+        $this->assertSame('CASUAL_ACK', $last()->metadata['social_act']);
+        $this->assertStringContainsString('Marcha', $last()->body);
+        $this->say('Boa noite. Como você está?');
+        $this->assertSame('CASUAL', $last()->metadata['tone']);
+        $this->assertSame([], $last()->metadata['style_vocabulary']);
+        $this->assertDoesNotMatchRegularExpression('/\b(?:bão|chapa|cê|marcha)\b|😄/iu', $last()->body);
+        $this->say('Internet hoje ta barril kk');
+        $this->assertSame('RELAXED', $last()->metadata['tone']);
+        $this->assertContains('barril', $last()->metadata['style_vocabulary']);
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, Diagnostic::count());
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => ($r['text'] ?? '') === $last()->body);
+    }
+
     private Bot $bot;
 
     private int $serial = 10;

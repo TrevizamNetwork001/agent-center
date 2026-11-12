@@ -6,6 +6,12 @@ use Illuminate\Support\Str;
 
 class ConversationToneDetector
 {
+    private const TECHNICAL = '/\b(bng|pppoe|radius|bgp|olt|onu|dns|tcp|tls|ipv6|lease)\b/';
+
+    private const FORMAL = '/\b(poderia|por gentileza|por favor|prezado|verificar a conectividade)\b/';
+
+    private const INFORMAL = '/\b(mano|valeu|parceiro|consagrado|meu rei|chapa|jovem da internet|calabreso|salve|fechou|bao|beleza|bora|marcha|barril|trem|carroca|to|ta|e ai|ce|vc|suave|kk+)\b/';
+
     public function detect(array $recent, ?string $preference = null): array
     {
         $messages = array_map(fn ($s) => Str::lower(Str::ascii($s)), array_slice($recent, -4));
@@ -14,11 +20,19 @@ class ConversationToneDetector
         // Recent explicit signals outweigh earlier slang; neutral replies keep continuity.
         foreach ($messages as $s) {
             $style = match (true) {
-                (bool) preg_match('/\b(bng|pppoe|radius|bgp|olt|onu|dns|tcp|tls|ipv6|lease)\b/', $s) => 'TECHNICAL',
-                (bool) preg_match('/\b(poderia|por gentileza|por favor|prezado|verificar a conectividade)\b/', $s) => 'FORMAL',
-                (bool) preg_match('/\b(mano|valeu|parceiro|consagrado|meu rei|calabreso|salve|fechou|bao|trem|carroca|to|e ai|ce|vc|suave|kkkk*)\b/', $s) => 'RELAXED',
+                (bool) preg_match(self::TECHNICAL, $s) => 'TECHNICAL',
+                (bool) preg_match(self::FORMAL, $s) => 'FORMAL',
+                (bool) preg_match(self::INFORMAL, $s) => 'RELAXED',
                 default => $style,
             };
+        }
+        // Standard greetings reset inherited slang too. Brief operational
+        // confirmations keep continuity; explicit preferences and incidents win.
+        $emoji = (bool) preg_match('/[😂😄🤣😅]/u', (string) end($recent));
+        if ($emoji && ! preg_match(self::TECHNICAL, $latest) && ! preg_match(self::FORMAL, $latest)) {
+            $style = 'RELAXED';
+        } elseif ((mb_strlen(trim($latest)) >= 12 || preg_match('/^(?:boa noite|boa tarde|bom dia|ola|tudo bem)[.!? ]*$/', trim($latest))) && ! preg_match(self::TECHNICAL, $latest) && ! preg_match(self::FORMAL, $latest) && ! preg_match(self::INFORMAL, $latest)) {
+            $style = 'CASUAL';
         }
         if (in_array($preference, ['FORMAL', 'TECHNICAL', 'CASUAL', 'RELAXED'], true)) {
             $style = $preference;
