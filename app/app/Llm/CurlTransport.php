@@ -37,11 +37,13 @@ class CurlTransport
         $ok = curl_exec($c);
         $status = (int) curl_getinfo($c, CURLINFO_RESPONSE_CODE);
         $error = curl_errno($c);
+        $osError = (int) curl_getinfo($c, CURLINFO_OS_ERRNO);
+        $connectTime = (float) curl_getinfo($c, CURLINFO_CONNECT_TIME);
+        $tlsTime = (float) curl_getinfo($c, CURLINFO_APPCONNECT_TIME);
+        $verifyResult = (int) curl_getinfo($c, CURLINFO_SSL_VERIFYRESULT);
         curl_close($c);
         if ($ok === false) {
-            return ['error' => $oversize ? 'response_too_large' : match ($error) {
-                CURLE_OPERATION_TIMEDOUT => 'timeout',CURLE_COULDNT_RESOLVE_HOST => 'dns_failure',CURLE_COULDNT_CONNECT => 'connection_refused',CURLE_ABORTED_BY_CALLBACK => 'cancelled',default => 'transport_failure'
-            }];
+            return TransportFailure::classify($error, $osError, $connectTime, $tlsTime, $verifyResult, $oversize);
         }
 
         return ['status' => $status, 'body' => $body, 'request_id' => $requestId];

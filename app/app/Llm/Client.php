@@ -67,7 +67,7 @@ class Client
                 continue;
             }
             if (isset($r['error'])) {
-                return $finish(['error' => $r['error']]);
+                return $finish(['error' => $r['error']] + (isset($r['transport_detail']) ? ['transport_detail' => array_intersect_key($r['transport_detail'], array_flip(['stage', 'category', 'curl_errno', 'os_errno', 'ssl_verify_result', 'tcp_connected', 'tls_established']))] : []));
             }
             if ($status !== 200) {
                 return $finish(['error' => match (true) {

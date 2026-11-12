@@ -47,18 +47,24 @@ class LlmHttpTest extends IntelligenceTestCase
         }
     }
 
-    private function server(int $status, string $body, int $delay = 0): int
+    private function server(int $status, string $body, int $delay = 0, int $publishDelay = 0): int
     {
         $this->stopServer();
         @unlink($this->dir.'/port');
-        file_put_contents($this->dir.'/response.json', json_encode(compact('status', 'body', 'delay')));
+        file_put_contents($this->dir.'/response.json', json_encode(['status' => $status, 'body' => $body, 'delay' => $delay, 'publish_delay' => $publishDelay]));
         $this->process = proc_open([PHP_BINARY, base_path('tests/Fixtures/llm-server.php'), $this->dir], [0 => ['file', '/dev/null', 'r'], 1 => ['file', '/dev/null', 'w'], 2 => ['file', '/dev/null', 'w']], $pipes);
         $deadline = microtime(true) + 3;
         while (! file_exists($this->dir.'/port')) {
             if (microtime(true) > $deadline) {
                 $this->fail('Local TLS fake did not start');
             }usleep(10000);
-        }$port = (int) file_get_contents($this->dir.'/port');
+        }
+        $raw = file_get_contents($this->dir.'/port');
+        $this->assertMatchesRegularExpression('/^[0-9]{1,5}$/D', $raw);
+        $port = (int) $raw;
+        $this->assertGreaterThan(0, $port);
+        $this->assertLessThanOrEqual(65535, $port);
+        $this->assertTrue(proc_get_status($this->process)['running']);
         $this->endpoint($port);
         $this->app->instance(CurlTransport::class, new CurlTransport($this->dir.'/cert.pem'));
 
@@ -110,10 +116,30 @@ class LlmHttpTest extends IntelligenceTestCase
         $this->assertSame('timeout', app(Client::class)->call($p, $m, [['role' => 'user', 'content' => 'test']])['error']);
         $this->stopServer();
         $this->endpoint($port);
-        $this->assertSame('connection_refused', app(Client::class)->call($p, $m, [['role' => 'user', 'content' => 'test']])['error']);
+        $refused = app(Client::class)->call($p, $m, [['role' => 'user', 'content' => 'test']]);
+        $this->assertSame('connection_refused', $refused['error']);
+        $this->assertSame('tcp_connect', $refused['transport_detail']['stage']);
+        $this->assertFalse($refused['transport_detail']['tls_established']);
         $this->server(200, '{}');
         $this->app->instance(CurlTransport::class, new CurlTransport);
-        $this->assertSame('transport_failure', app(Client::class)->call($p, $m, [['role' => 'user', 'content' => 'test']])['error']);
+        $tls = app(Client::class)->call($p, $m, [['role' => 'user', 'content' => 'test']]);
+        $this->assertSame('transport_failure', $tls['error']);
+        $this->assertSame('tls_handshake', $tls['transport_detail']['stage']);
+        $this->assertSame('tls_certificate_verification_failed', $tls['transport_detail']['category']);
+        $this->assertSame(CURLE_SSL_CACERT, $tls['transport_detail']['curl_errno']);
+        $events = file_get_contents($this->dir.'/events.jsonl');
+        $this->assertStringContainsString('tcp_accepted', $events);
         $this->assertSame('cancelled', app(Client::class)->call($p, $m, [['role' => 'user', 'content' => 'test']], fn () => true)['error']);
+    }
+
+    public function test_readiness_is_atomic_even_when_publication_is_delayed(): void
+    {
+        $port = $this->server(200, '{}', publishDelay: 250000);
+        $this->assertGreaterThan(0, $port);
+        $this->app->instance(CurlTransport::class, new CurlTransport);
+        $provider = $this->provider();
+        $result = app(Client::class)->call($provider, $this->model($provider), [['role' => 'user', 'content' => 'test']]);
+        $this->assertSame('transport_failure', $result['error']);
+        $this->assertSame('tls_handshake', $result['transport_detail']['stage']);
     }
 }
