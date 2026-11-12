@@ -1,0 +1,119 @@
+{
+  "status": "PASS",
+  "views": [
+    {
+      "page": "ne8000",
+      "width": 390,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "routeros7",
+      "width": 390,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "conversation",
+      "width": 390,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "ne8000",
+      "width": 390,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "routeros7",
+      "width": 390,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "conversation",
+      "width": 390,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "ne8000",
+      "width": 768,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "routeros7",
+      "width": 768,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "conversation",
+      "width": 768,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "ne8000",
+      "width": 768,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "routeros7",
+      "width": 768,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "conversation",
+      "width": 768,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "ne8000",
+      "width": 1440,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "routeros7",
+      "width": 1440,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "conversation",
+      "width": 1440,
+      "theme": "light",
+      "status": "PASS"
+    },
+    {
+      "page": "ne8000",
+      "width": 1440,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "routeros7",
+      "width": 1440,
+      "theme": "dark",
+      "status": "PASS"
+    },
+    {
+      "page": "conversation",
+      "width": 1440,
+      "theme": "dark",
+      "status": "PASS"
+    }
+  ],
+  "keyboard_details": true,
+  "native_csrf_simulation_form": true,
+  "optional_resource_reference_form": true,
+  "web_conversation_simulation": true,
+  "page_errors": [],
+  "scope": "isolated fixtures only; no equipment access"
+}

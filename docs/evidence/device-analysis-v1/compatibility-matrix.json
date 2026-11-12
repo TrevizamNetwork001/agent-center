@@ -1,0 +1,106 @@
+{
+    "status": "PASS",
+    "scope": "Declared LAB metadata, not a hardware\/CLI qualification",
+    "cases": [
+        {
+            "model": "NE8000 M4",
+            "version": "V800R022C00SPC600",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "NE8000 M4",
+            "version": "V800R023C00SPC500",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "NE8000 M8",
+            "version": "V800R022C00SPC600",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "NE8000 M8",
+            "version": "V800R023C00SPC500",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "NE8000 M14",
+            "version": "V800R022C00SPC600",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "NE8000 M14",
+            "version": "V800R023C00SPC500",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "NETENGINE 8000 M4",
+            "version": "V800R022C00SPC600",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "NETENGINE 8000 M4",
+            "version": "V800R023C00SPC500",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "CCR2004-16G-2S+",
+            "version": "7.15.3",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "CCR2004-16G-2S+",
+            "version": "RouterOS 7.15.3 (stable)",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "CCR2004-16G-2S+",
+            "version": "7.16.2",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "CCR2004-16G-2S+",
+            "version": "RouterOS 7.16.2 (stable)",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "CCR2004-16G-2S+",
+            "version": "7.17.2",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "CCR2004-16G-2S+",
+            "version": "RouterOS 7.17.2 (stable)",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "CCR2004-16G-2S+PC",
+            "version": "7.15.3",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "CCR2004-16G-2S+PC",
+            "version": "RouterOS 7.15.3 (stable)",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "CCR2004-16G-2S+PC",
+            "version": "7.16.2",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "CCR2004-16G-2S+PC",
+            "version": "RouterOS 7.16.2 (stable)",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "CCR2004-16G-2S+PC",
+            "version": "7.17.2",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        },
+        {
+            "model": "CCR2004-16G-2S+PC",
+            "version": "RouterOS 7.17.2 (stable)",
+            "state": "LAB_DECLARED_COMPATIBLE"
+        }
+    ]
+}

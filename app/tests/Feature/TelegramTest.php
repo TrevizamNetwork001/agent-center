@@ -18,6 +18,8 @@ use App\Models\ConversationMessage;
 use App\Models\ConversationSetting;
 use App\Models\Diagnostic;
 use App\Models\DiagnosticConclusion;
+use App\Models\NocSimulation;
+use App\Noc\Inventory;
 use App\Noc\Planning;
 use App\Rag\Index;
 use App\Telegram\Access;
@@ -54,6 +56,36 @@ use Tests\Support\PathReadinessFixture;
 class TelegramTest extends IntelligenceTestCase
 {
     use PathReadinessFixture;
+
+    public function test_device_analysis_lab_uses_native_ingress_outbox_and_dedup_without_real_tasks(): void
+    {
+        $link = $this->link();
+        config(['device_analysis.lab_enabled' => true, 'device_analysis.lab_tenants' => [$this->a->id]]);
+        $d = app(Inventory::class)->save($this->admin, ['name' => 'NE8000', 'hostname' => 'ne8000.lab.example', 'management_ip' => '192.0.2.10', 'manufacturer' => 'huawei', 'platform' => 'huawei-vrp', 'model' => 'NE8000 M4', 'os_version' => 'V800R023C00SPC500', 'category' => 'router', 'network_role' => 'Borda', 'pop' => 'LAB', 'environment' => 'lab', 'admin_status' => 'active']);
+        $serial = ++$this->serial;
+        $this->receive('Simule bgp-idle no NE8000', update: $serial);
+        $this->process();
+        $c = $this->conversation($link);
+        $m = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first();
+        $this->assertStringContainsString('SIMULATED / LAB', $m->body);
+        $this->assertSame('ATTENTION', $m->metadata['classification']);
+        $this->assertSame(1, NocSimulation::count());
+        $count = ConversationMessage::where('conversation_id', $c->id)->count();
+        $this->receive('Simule bgp-idle no NE8000', update: $serial);
+        $this->process();
+        $this->assertSame($count, ConversationMessage::where('conversation_id', $c->id)->count());
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', 'SIMULATED / LAB') && str_contains($r['text'], 'NÃO EXECUTADA'));
+        Http::assertNotSent(fn ($r) => str_contains($r['text'] ?? '', 'Confirma a execução'));
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, Diagnostic::count());
+        // A lab message must be suppressed if tenant lab access is removed before delivery.
+        $this->say('Simule bgp-active no NE8000');
+        $m = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first();
+        config(['device_analysis.lab_tenants' => []]);
+        $this->deliverAll();
+        $this->assertSame('SUPPRESSED', Outbound::where('message_id', $m->id)->sole()->status);
+    }
 
     public function test_noc_device_queries_are_understood_without_profiles_preflight_or_tasks(): void
     {

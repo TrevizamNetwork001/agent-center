@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "implementation_commit": "2186588",
+  "laravel": {
+    "tests": 545,
+    "assertions": 4649,
+    "warnings": 0,
+    "postgresql_force_rls": true,
+    "migration_rollback": "PASS"
+  },
+  "concurrency": [
+    "Task Engine claims/fencing/idempotence",
+    "Conversation idle",
+    "Preflight terminal notifications",
+    "Device simulations: 4 processes, one row and audit, zero tasks"
+  ],
+  "pint": {
+    "status": "PASS",
+    "files": 342
+  },
+  "build": {
+    "status": "PASS",
+    "npm_audit_vulnerabilities": 0
+  },
+  "ui": {
+    "status": "PASS",
+    "views": 18,
+    "page_errors": 0
+  },
+  "secrets": "PASS: staged Git index, repository scanner; basic pattern scan, not an external specialized scanner",
+  "real_equipment_connections": 0,
+  "real_probes": 0,
+  "production_published": false,
+  "log_sha256": {
+    "full-final.log": "a0885bbd5f534edea0bfbb899c8ecd6702eff8fafa6ea309921e79d299f8feea",
+    "pint-final-test.log": "64ab1f7407863b377c73ffef99c6324de5e93ac571293eaed61f6f68fbfdbdd5",
+    "build.log": "ae0751e4a71a8dff08546dfd6e96657343f03147d5a9daa957846427922b0a82",
+    "concurrency.log": "10e5f92bf067b8abb29f37ed607d9f22d9076729792225594f877eca2a76db3d",
+    "ui-final.log": "b6b22b3c214f72bd5af184691a0839b5b820ed24b44863f24b9b737b743a36c2",
+    "route-parity.log": "30a1918e11299e082e963c5e163a050491a1e227db096dd81836918dd720b94a",
+    "packages-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "views-package.log": "25c9ce6f8cea56be6904bc1b43005a6056aa567ff2c3d14f295ac5ae81865744",
+    "session-cleanup.log": "49c70a306dd5f827ff0b1928c24ac250f8bb645c27a3e3e36b4c9ea5e26fd787",
+    "compatibility-matrix.log": "0d43c0fe5f5825eb9e58d1b63a3c65985b002099016d47e58b60333518cd57e8",
+    "secret-final.log": "aaae9f535961ebbb5afbb8d83d098d3b682c7245111cd7c141de62a1f27c27ee"
+  }
+}

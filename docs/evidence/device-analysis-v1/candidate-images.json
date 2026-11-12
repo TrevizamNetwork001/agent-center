@@ -1,0 +1,20 @@
+[
+  {
+    "role": "web",
+    "tag": "agent-center-central:device-analysis-v1-web-lab-20261112",
+    "id": "sha256:1a3df7d64afd3f77049e50a7d6870b1c73434ef7661e66ebf0af5a6daaefe7d4",
+    "published": false
+  },
+  {
+    "role": "queue",
+    "tag": "agent-center-central:device-analysis-v1-queue-lab-20261112",
+    "id": "sha256:bbed14e203950dff3269a2a696c321ee7738e4481e64bb041ff235c0a0add776",
+    "published": false
+  },
+  {
+    "role": "diagnostic",
+    "tag": "agent-center-central:device-analysis-v1-diagnostic-lab-20261112",
+    "id": "sha256:da3ab8e1063735e6d870ad309f9ab9a24def292b4360ef136f9a5424afe82d76",
+    "published": false
+  }
+]

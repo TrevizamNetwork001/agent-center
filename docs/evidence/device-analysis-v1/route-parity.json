@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "roles": [
+    {
+      "role": "web",
+      "routes": 136,
+      "unchanged": true,
+      "new_remote_endpoints": 0
+    },
+    {
+      "role": "queue",
+      "routes": 136,
+      "unchanged": true,
+      "new_remote_endpoints": 0
+    },
+    {
+      "role": "diagnostic",
+      "routes": 96,
+      "unchanged": true,
+      "new_remote_endpoints": 0
+    }
+  ]
+}

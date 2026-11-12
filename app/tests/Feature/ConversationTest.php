@@ -425,7 +425,10 @@ class ConversationTest extends IdentityTestCase
         }$this->assertSame(Intent::Close, $d->detect('não precisa mais', State::Completed));
         $this->assertSame(Intent::Target, $d->detect('youtube.com', State::Target));
         $this->assertSame(Intent::Continue, $d->detect('mas continua travando', State::Completed));
-        $this->assertCount(17, Intent::cases());
+        $this->assertCount(19, Intent::cases());
+        $this->assertSame(Intent::Simulation, Intent::from('REQUEST_DEVICE_LAB_SIMULATION'));
+        $this->assertSame(Intent::SimulationExplanation, Intent::from('EXPLAIN_DEVICE_LAB_SIMULATION'));
+        $this->assertNull(Intent::tryFrom('EXECUTE_ARBITRARY_DEVICE_COMMAND'));
     }
 
     public function test_message_limit_rate_limit_and_immutable_payload(): void
