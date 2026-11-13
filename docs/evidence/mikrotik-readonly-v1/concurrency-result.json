@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "duplicate_requests": 4,
+  "duplicate_results": 1,
+  "distinct_actors": 4,
+  "serialized_protocol_queries": 5,
+  "overlap": false,
+  "agent_tasks": 0
+}

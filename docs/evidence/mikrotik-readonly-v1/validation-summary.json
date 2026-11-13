@@ -1,0 +1,70 @@
+{
+  "full_laravel_before_final_tightening": {
+    "tests": 583,
+    "assertions": 5389,
+    "passed": true
+  },
+  "python_agent_regression": {
+    "tests": 185,
+    "passed": true,
+    "agent_files_modified_by_delivery": false
+  },
+  "pint": {
+    "files": 21,
+    "passed": true
+  },
+  "build": {
+    "passed": true,
+    "location": "disposable directory; no published assets"
+  },
+  "ruff_scoped_tooling": {
+    "passed": true
+  },
+  "ruff_global": {
+    "passed": false,
+    "preexisting": [
+      {
+        "file": "agent/src/agent_center/heartbeat.py",
+        "line": 1,
+        "code": "I001"
+      },
+      {
+        "file": "agent/src/agent_center/update/remote.py",
+        "line": 8,
+        "code": "I001"
+      }
+    ]
+  },
+  "real_chr": {
+    "executed": false,
+    "reason": "no operational authorization"
+  },
+  "production_hardware": {
+    "executed": false,
+    "reason": "outside scope"
+  },
+  "production_publish": false,
+  "management_probes": 0,
+  "operational_tasks_created": 0,
+  "final_scoped_laravel": {
+    "tests": 54,
+    "assertions": 1281,
+    "passed": true,
+    "includes_final_semantic_and_security_tightening": true,
+    "unit_tests": 5,
+    "new_routeros_ssh_feature_tests": 10,
+    "native_telegram_integration": true
+  },
+  "rollback": {
+    "empty_schema_down": true,
+    "populated_guard": true,
+    "data_preserved": true
+  },
+  "secret_scan": {
+    "passed": true,
+    "scope": "Git index; built-in basic scanner; source and sanitized evidence"
+  },
+  "diff_check": {
+    "passed": true
+  }
+}

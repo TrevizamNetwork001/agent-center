@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "network": "none; local route fulfillment only",
+  "results": [
+    {
+      "width": 390,
+      "theme": "light",
+      "typedForms": 6,
+      "simulated": true,
+      "overflow": false,
+      "keyboardFocus": true,
+      "errors": 0
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "typedForms": 6,
+      "simulated": true,
+      "overflow": false,
+      "keyboardFocus": true,
+      "errors": 0
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "typedForms": 6,
+      "simulated": true,
+      "overflow": false,
+      "keyboardFocus": true,
+      "errors": 0
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "typedForms": 6,
+      "simulated": true,
+      "overflow": false,
+      "keyboardFocus": true,
+      "errors": 0
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "typedForms": 6,
+      "simulated": true,
+      "overflow": false,
+      "keyboardFocus": true,
+      "errors": 0
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "typedForms": 6,
+      "simulated": true,
+      "overflow": false,
+      "keyboardFocus": true,
+      "errors": 0
+    }
+  ]
+}
