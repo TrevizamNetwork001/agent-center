@@ -14,7 +14,7 @@ class DeviceReadOnlyLabController extends Controller
     {
         $v = $request->validated();
         try {
-            $inventory->simulate($request->user(), $nocDevice, 'ssh-'.$v['operation'], $v['request_key'], $v['parameters'] ?? [], $v['device_revision']);
+            $inventory->simulate($request->user(), $nocDevice, (($v['protocol'] ?? '') === 'routeros7-v1' ? 'ssh-ros7-' : 'ssh-').$v['operation'], $v['request_key'], $v['parameters'] ?? [], $v['device_revision']);
         } catch (Failure $e) {
             throw ValidationException::withMessages(['analysis' => $e->getMessage()]);
         }

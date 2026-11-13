@@ -62,6 +62,9 @@ class Session(paramiko.ServerInterface):
 def handle(sock, platform):
     global ACTIVE, MAX_ACTIVE
     scenario = (STATE / 'scenario').read_text().strip()
+    router_v1 = platform == 'routeros' and scenario.startswith('ros-')
+    if router_v1:
+        scenario = scenario[4:]
     if scenario == 'unavailable':
         sock.close()
         return
@@ -76,7 +79,7 @@ def handle(sock, platform):
         transport.add_server_key(paramiko.RSAKey.from_private_key_file(str(STATE / 'host')))
         session = Session(scenario)
         transport.start_server(server=session)
-        fixtures = json.loads(FIXTURES.read_text())[platform]
+        fixtures = json.loads(FIXTURES.read_text())['routeros_v1' if router_v1 else platform]
         query_number = 0
         while transport.is_active():
             channel = transport.accept(2)
@@ -90,6 +93,27 @@ def handle(sock, platform):
                 channel.close()
                 continue
             output = fixtures[command]
+            if router_v1:
+                if scenario == 'unsupported':
+                    output = output.replace('7.16.2', '6.49.17')
+                elif scenario in ('empty', 'no-bgp') and 'bgp session' in command:
+                    output = ''
+                elif scenario == 'no-bgp' and 'bgp connection' in command:
+                    output = '0\n'
+                elif scenario == 'partial' and command == '/system resource print':
+                    output = 'version: 7.16.2 (stable)\nboard-name: CCR2004-16G-2S+\n'
+                elif scenario == 'high' and command == '/system resource print':
+                    output = output.replace('12%', '99%').replace('768.0MiB', '1.0MiB')
+                elif scenario == 'sensitive' and 'bgp session' in command:
+                    output = '0 E name=peer remote.address=192.0.2.1 password=FIXTURE_REDACT_ME\n'
+                elif scenario == 'rows' and 'bgp session' in command:
+                    output = ''.join(f'{i} E name=peer{i} remote.address=192.0.2.1\n' for i in range(129))
+                elif scenario == 'aggregate-rows' and command.startswith('/routing route print '):
+                    prefix = command.split('dst-address=', 1)[1].split()[0]
+                    output = ''.join(f'{i} b dst-address={prefix} routing-table=main gateway=192.0.2.1 distance=20\n' for i in range(100))
+                elif scenario == 'disconnect' and query_number > 0:
+                    transport.close()
+                    return
             query_number += 1
             started_ns = time.monotonic_ns()
             if scenario == 'timeout' and query_number > 1:

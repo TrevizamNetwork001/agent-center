@@ -65,6 +65,7 @@ for attempt in {1..30}; do
 done
 test -f "$lab_state/ready"
 docker network inspect "$lab_net" --format '{{.Internal}}' | rg -x true
+docker exec "$lab_ssh" python3 /protocol/check-isolation.py
 docker exec "$lab_ssh" python3 /protocol/check-boundaries.py
 TEST_PG_CONTAINER="$lab_pg" TEST_NETWORK="container:$lab_ssh" TEST_OWNER_ENV="$lab_state/owner.env" TEST_RUNTIME_ENV="$lab_state/runtime.env" TEST_CA_FILE="$lab_state/tls/ca.crt" \
 TEST_IMAGE="$lab_image" TEST_DEVICE_PROTOCOL_STATE="$lab_state" \

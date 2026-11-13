@@ -17,6 +17,7 @@
 </form>
 @endforeach
 </div>
+@include('noc.routeros-protocol-lab')
 <p class="form-note">Na conversa: “Simule ssh-bgp no NE8000”, “Simule ssh-route no CCR”, “Simule ssh-interfaces no CCR” ou “Simule ssh-resources no NE8000”. Rota de laboratório fixa: 8.8.8.8, tabela main. MTR continua separado, a partir do Agent.</p>
 @endcan
 </section>

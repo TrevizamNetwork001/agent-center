@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Noc\Analysis\Contracts;
 use App\Noc\ReadOnlyLab\Access;
 use App\Noc\ReadOnlyLab\Operation;
+use App\Noc\ReadOnlyLab\RouterOs7\Protocol;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -19,7 +20,7 @@ class DeviceReadOnlyLabRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if (array_diff(array_keys($this->all()), ['operation', 'request_key', 'device_revision', 'parameters', '_token'])) {
+        if (array_diff(array_keys($this->all()), ['operation', 'request_key', 'device_revision', 'parameters', 'protocol', '_token'])) {
             $this->erase();
             throw ValidationException::withMessages(['analysis' => 'Campo não permitido.']);
         }
@@ -40,7 +41,7 @@ class DeviceReadOnlyLabRequest extends FormRequest
 
     public function rules(): array
     {
-        return ['operation' => ['required', Rule::enum(Operation::class)], 'request_key' => 'required|uuid', 'device_revision' => 'required|integer|min:1', 'parameters' => 'sometimes|array|max:4'];
+        return ['operation' => ['required', Rule::in(array_unique([...array_column(Operation::cases(), 'value'), ...array_column(\App\Noc\ReadOnlyLab\RouterOs7\Operation::cases(), 'value')]))], 'request_key' => 'required|uuid', 'device_revision' => 'required|integer|min:1', 'parameters' => 'sometimes|array|max:4', 'protocol' => ['sometimes', Rule::in(['routeros7-v1'])]];
     }
 
     public function after(): array
@@ -50,7 +51,15 @@ class DeviceReadOnlyLabRequest extends FormRequest
                 return;
             }
             try {
-                $c = app(Contracts::class)->require($this->route('nocDevice'), $this->input('operation'));
+                $op = $this->input('operation');
+                if ($this->input('protocol') === 'routeros7-v1') {
+                    $typed = \App\Noc\ReadOnlyLab\RouterOs7\Operation::from($op);
+                    app(Protocol::class)->parameters($typed, $this->input('parameters', []));
+                    $op = $typed->contract();
+                } elseif (Operation::tryFrom($op) === null) {
+                    throw ValidationException::withMessages(['operation' => 'Operação exige protocolo especializado.']);
+                }
+                $c = app(Contracts::class)->require($this->route('nocDevice'), $op);
                 app(Contracts::class)->parameters($c, $this->input('parameters', []));
             } catch (ValidationException $e) {
                 foreach ($e->errors() as $key => $messages) {

@@ -30,6 +30,11 @@ docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_
 if [ "${TEST_DEVICE_PROTOCOL_CONCURRENCY:-0}" = 1 ]; then
  docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/device-readonly-concurrency.php
 fi
+if [ "${TEST_ROUTEROS_PROTOCOL_CONCURRENCY:-0}" = 1 ]; then
+ docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/mikrotik-protocol-concurrency.php
+ test -s "$TEST_DEVICE_PROTOCOL_STATE/mikrotik-concurrency-result.json"
+ docker run --rm --network "$test_network" --env-file "$test_owner_env" -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/mikrotik-protocol-rollback.php
+fi
 if [ "${TEST_DIAGNOSTIC_CONCURRENCY:-0}" = 1 ]; then
  docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/diagnostic-concurrency.php
 fi
@@ -37,7 +42,7 @@ if [ "${TEST_CONVERSATION_IDLE_CONCURRENCY:-0}" = 1 ]; then
  docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/conversation-idle-concurrency.php
  docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/preflight-concurrency.php
 fi
-if [ "${TEST_DEVICE_PROTOCOL_CONCURRENCY:-0}" = 1 ]; then
+if [ "${TEST_DEVICE_PROTOCOL_CONCURRENCY:-0}" = 1 ] || [ "${TEST_ROUTEROS_PROTOCOL_CONCURRENCY:-0}" = 1 ]; then
  # The contention fixture is committed. Verify refusal to destroy its data.
  docker run --rm --network "$test_network" --env-file "$test_owner_env" -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/device-readonly-rollback.php
 else

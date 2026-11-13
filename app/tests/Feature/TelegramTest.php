@@ -21,6 +21,8 @@ use App\Models\DiagnosticConclusion;
 use App\Models\NocSimulation;
 use App\Noc\Inventory;
 use App\Noc\Planning;
+use App\Noc\ReadOnlyLab\RouterOs7\Approval;
+use App\Noc\ReadOnlyLab\RouterOs7\Operation;
 use App\Rag\Index;
 use App\Telegram\Access;
 use App\Telegram\Accounts;
@@ -56,6 +58,45 @@ use Tests\Support\PathReadinessFixture;
 class TelegramTest extends IntelligenceTestCase
 {
     use PathReadinessFixture;
+
+    public function test_mikrotik_typed_protocol_uses_native_ingress_outbox_and_freeze(): void
+    {
+        if (getenv('DEVICE_PROTOCOL_LAB') !== '1') {
+            $this->markTestSkipped('Isolated SSH protocol lab required.');
+        }
+        $code = app(Accounts::class)->issue($this->admin, $this->bot);
+        $this->receive('/start '.$code);
+        app(Runner::class)->process($this->a->id, Update::sole()->id);
+        $this->scope();
+        $link = Link::where('status', 'AWAITING_APPROVAL')->sole();
+        app(Accounts::class)->approve($link, $this->admin);
+        config(['device_analysis.lab_enabled' => true, 'device_analysis.lab_tenants' => [$this->a->id],
+            'device_readonly_lab.routeros_protocol' => true, 'device_readonly_lab.enabled' => true, 'device_readonly_lab.tenants' => [$this->a->id], 'llm.key_file' => '/lab/vault']);
+        file_put_contents('/lab/scenario', 'ros-normal');
+        $d = app(Inventory::class)->save($this->admin, ['name' => 'CCR', 'hostname' => 'ssh.lab.example', 'management_ip' => '192.0.2.10', 'manufacturer' => 'mikrotik', 'platform' => 'routeros7', 'model' => 'CCR2004-16G-2S+', 'os_version' => '7.16.2', 'category' => 'router', 'network_role' => 'Borda', 'pop' => 'LAB', 'environment' => 'lab', 'admin_status' => 'active']);
+        app(\App\Noc\ReadOnlyLab\Access::class)->approve($this->admin, $d, file_get_contents('/lab/host.pub'), file_get_contents('/lab/client'));
+        $approval = app(Approval::class);
+        $approval->attest($this->admin, $d, $this->agent(), Operation::Bgp, [], ['read', 'ssh'], $approval->fingerprint(file_get_contents('/lab/host.pub')));
+        $serial = ++$this->serial;
+        $this->receive('Simule routeros-bgp no CCR', update: $serial);
+        $this->process();
+        $c = $this->conversation($link);
+        $m = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first();
+        $this->assertStringContainsString('SIMULADO', $m->body);
+        $this->assertSame('SSH_LOOPBACK_LAB', NocSimulation::sole()->result['transport']);
+        $this->receive('Simule routeros-bgp no CCR', update: $serial);
+        $this->process();
+        $this->assertSame(1, NocSimulation::count());
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', 'SIMULADO') && str_contains($r['text'], 'NÃO EXECUTADA'));
+        $this->say('Simule routeros-bgp no CCR');
+        $m = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first();
+        config(['device_readonly_lab.enabled' => false]);
+        $this->deliverAll();
+        $this->assertSame('SUPPRESSED', Outbound::where('message_id', $m->id)->sole()->status);
+        $this->assertSame(0, AgentTask::count());
+        $this->assertSame(0, Diagnostic::count());
+    }
 
     public function test_device_readonly_ssh_lab_uses_native_telegram_ingress_and_outbox(): void
     {

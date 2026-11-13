@@ -17,7 +17,7 @@ class DeviceLabAccess extends Model
 
     protected function casts(): array
     {
-        return ['expires_at' => 'immutable_datetime', 'revision' => 'integer', 'device_revision' => 'integer'];
+        return ['expires_at' => 'immutable_datetime', 'revision' => 'integer', 'device_revision' => 'integer', 'protocol_approval' => 'array'];
     }
 
     protected static function booted(): void

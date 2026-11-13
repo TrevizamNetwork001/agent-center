@@ -92,7 +92,7 @@ class Inventory
             }
             throw $e;
         } catch (Failure $e) {
-            app(Audit::class)->record('noc.lab_query_failed', $actor, $device->tenant_id, 'noc_device', metadata: ['device_id' => $device->id, 'reason' => $e->reason, 'contract_id' => substr($fixture, 4), 'parameters_digest' => Digest::hash($parameters), 'device_revision' => $device->revision]);
+            app(Audit::class)->record('noc.lab_query_failed', $actor, $device->tenant_id, 'noc_device', metadata: ['device_id' => $device->id, 'reason' => $e->reason, 'contract_id' => substr($fixture, str_starts_with($fixture, 'ssh-ros7-') ? 9 : 4), 'parameters_digest' => Digest::hash($parameters), 'device_revision' => $device->revision]);
             throw $e;
         }
     }

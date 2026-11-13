@@ -20,6 +20,9 @@ class Query
         abort_unless($scope === SimulationScope::LaboratoryConversation && app(Access::class)->enabled(), 403);
         $actor = User::withoutGlobalScopes()->findOrFail(app(TenantContext::class)->userId);
         Gate::forUser($actor)->authorize('simulate', $device);
+        if (str_starts_with($key, 'ssh-ros7-')) {
+            return app(RouterOs7\Query::class)->result($actor, $device, $key, $parameters, $scope);
+        }
         $operation = Operation::tryFrom(substr($key, 4));
         abort_unless(str_starts_with($key, 'ssh-') && $operation !== null, 422);
         $c = app(Contracts::class)->require($device, $operation->value);

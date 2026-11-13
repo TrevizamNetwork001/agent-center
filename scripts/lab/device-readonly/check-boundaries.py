@@ -39,6 +39,18 @@ def run():
                 finally:
                     if channel is not None:
                         channel.close()
+            for forbidden in ('/system reboot', '/interface disable ether1',
+                              '/routing bgp session refresh', '/export',
+                              ':put [/system identity get name]',
+                              '/system resource print\n/system reboot'):
+                channel = transport.open_session(timeout=1)
+                try:
+                    channel.exec_command(forbidden)
+                    if channel.recv_exit_status() != 126:
+                        raise RuntimeError('Command outside closed catalog accepted')
+                    results.append({'port': port, 'request': 'outside_catalog', 'denied': True})
+                finally:
+                    channel.close()
         finally:
             client.close()
     (root / 'protocol-boundaries.json').write_text(json.dumps({'passed': True,

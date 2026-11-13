@@ -42,7 +42,7 @@ class Access
             $row->forceFill(['id' => $row->id ?? (string) Str::uuid(), 'tenant_id' => $d->tenant_id]);
             $cipher = app(SecretVault::class)->encrypt($privateKey, $row->id, $d->tenant_id);
             $row->forceFill([...$cipher, 'device_id' => $d->id, 'device_revision' => $d->revision, 'revision' => ($row->revision ?? 0) + 1,
-                'state' => 'approved_lab', 'host_public_key' => $approvedPublicKey, 'expires_at' => now()->addHour(), 'updated_by' => $actor->id])->save();
+                'protocol_approval' => null, 'state' => 'approved_lab', 'host_public_key' => $approvedPublicKey, 'expires_at' => now()->addHour(), 'updated_by' => $actor->id])->save();
             app(Audit::class)->record('noc.lab_access_rotated', $actor, $d->tenant_id, 'noc_device', metadata: ['device_id' => $d->id, 'revision' => $row->revision]);
 
             return $row;

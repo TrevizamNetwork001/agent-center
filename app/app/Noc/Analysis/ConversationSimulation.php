@@ -37,7 +37,16 @@ class ConversationSimulation
         $prefix = match ($platform) {
             'ne8000-vrp8' => 'da-ne8000-','ccr-routeros7' => 'da-ros7-',default => ''
         };
-        $sshOperation = match (strtolower($m[1])) {
+        $routerOperation = match (strtolower($m[1])) {
+            'routeros-identity' => \App\Noc\ReadOnlyLab\RouterOs7\Operation::Identity,
+            'routeros-bgp' => \App\Noc\ReadOnlyLab\RouterOs7\Operation::Bgp,
+            'routeros-route' => \App\Noc\ReadOnlyLab\RouterOs7\Operation::Route,
+            'routeros-interfaces' => \App\Noc\ReadOnlyLab\RouterOs7\Operation::Interfaces,
+            'routeros-counters' => \App\Noc\ReadOnlyLab\RouterOs7\Operation::Counters,
+            'routeros-resources' => \App\Noc\ReadOnlyLab\RouterOs7\Operation::Resources,
+            default => null,
+        };
+        $sshOperation = $routerOperation ?? match (strtolower($m[1])) {
             'ssh-bgp' => Operation::Bgp,
             'ssh-route' => Operation::Route,
             'ssh-interfaces' => Operation::Interfaces,
@@ -49,8 +58,8 @@ class ConversationSimulation
                 return ['text' => 'SIMULADO: laboratório SSH indisponível. Nenhuma consulta foi executada.', 'metadata' => ['simulation' => false]];
             }
             try {
-                $params = $sshOperation === Operation::Route ? ['destination' => '8.8.8.8'] : [];
-                $sim = app(Inventory::class)->simulate($i->user, $d, 'ssh-'.$sshOperation->value, $key, $params, $d->revision);
+                $params = in_array($sshOperation, [Operation::Route, \App\Noc\ReadOnlyLab\RouterOs7\Operation::Route], true) ? ['destination' => '8.8.8.8'] : [];
+                $sim = app(Inventory::class)->simulate($i->user, $d, ($routerOperation !== null ? 'ssh-ros7-' : 'ssh-').$sshOperation->value, $key, $params, $d->revision);
             } catch (Failure|ValidationException) {
                 return ['text' => 'SIMULADO: a consulta SSH de laboratório não produziu evidências válidas. Detalhes no painel. Nenhuma medição real foi realizada.', 'metadata' => ['simulation' => true, 'operational_enabled' => false]];
             }

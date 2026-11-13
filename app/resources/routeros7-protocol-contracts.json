@@ -1,0 +1,840 @@
+{
+  "schema_version": 1,
+  "mode": "SIMULATED",
+  "contracts": {
+    "DEVICE_IDENTITY_READ": {
+      "id": "DEVICE_IDENTITY_READ",
+      "version": 1,
+      "manufacturer": "mikrotik",
+      "platform": "ROUTEROS7",
+      "exact_version": "7.16.2",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        "required": [
+          "name",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "timeout_ms": 5000,
+      "max_response_bytes": 65536,
+      "max_records": 128,
+      "max_queries": 3,
+      "operational_enabled": false,
+      "audit": "noc.simulation_created / noc.lab_query_failed",
+      "unavailable_when": [
+        "unapproved_or_stale_binding",
+        "unsupported_exact_version",
+        "unknown_or_changed_host_key",
+        "excessive_or_unattested_rights",
+        "invalid_or_truncated_response",
+        "timeout",
+        "volume_limit",
+        "operational_environment"
+      ]
+    },
+    "DEVICE_BGP_PEERS_READ": {
+      "id": "DEVICE_BGP_PEERS_READ",
+      "version": 1,
+      "manufacturer": "mikrotik",
+      "platform": "ROUTEROS7",
+      "exact_version": "7.16.2",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "peer": {
+            "type": "string",
+            "format": "ip",
+            "maxLength": 45
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "peer": {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                "remote_address": {
+                  "type": "string",
+                  "maxLength": 45,
+                  "format": "ip"
+                },
+                "remote_asn": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 4294967295
+                },
+                "state": {
+                  "type": "string",
+                  "enum": [
+                    "ESTABLISHED",
+                    "NOT_ESTABLISHED"
+                  ]
+                },
+                "uptime_seconds": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "advertised_families": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "ip",
+                      "ipv6",
+                      "l2vpn",
+                      "l2vpn-cisco",
+                      "vpnv4",
+                      "vpnv6",
+                      "evpn"
+                    ]
+                  },
+                  "maxItems": 8
+                },
+                "negotiated_families": {
+                  "type": "null"
+                }
+              },
+              "required": [
+                "peer",
+                "remote_address",
+                "remote_asn",
+                "state",
+                "uptime_seconds",
+                "advertised_families",
+                "negotiated_families"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 128
+          },
+          "availability_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64
+          },
+          "configuration_present": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "connections_configured": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "items",
+          "availability_reason",
+          "configuration_present",
+          "connections_configured"
+        ],
+        "additionalProperties": false
+      },
+      "timeout_ms": 5000,
+      "max_response_bytes": 65536,
+      "max_records": 128,
+      "max_queries": 3,
+      "operational_enabled": false,
+      "audit": "noc.simulation_created / noc.lab_query_failed",
+      "unavailable_when": [
+        "unapproved_or_stale_binding",
+        "unsupported_exact_version",
+        "unknown_or_changed_host_key",
+        "excessive_or_unattested_rights",
+        "invalid_or_truncated_response",
+        "timeout",
+        "volume_limit",
+        "operational_environment"
+      ]
+    },
+    "DEVICE_ROUTE_LOOKUP_READ": {
+      "id": "DEVICE_ROUTE_LOOKUP_READ",
+      "version": 1,
+      "manufacturer": "mikrotik",
+      "platform": "ROUTEROS7",
+      "exact_version": "7.16.2",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "destination": {
+            "type": "string",
+            "format": "ip",
+            "maxLength": 45
+          },
+          "table": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_.:-]+$"
+          }
+        },
+        "required": [
+          "destination"
+        ],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "destination": {
+            "type": "string",
+            "maxLength": 45,
+            "format": "ip"
+          },
+          "table": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "found": {
+            "type": "boolean"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "prefix": {
+                  "type": "string",
+                  "maxLength": 49,
+                  "format": "cidr"
+                },
+                "protocol": {
+                  "type": "string",
+                  "enum": [
+                    "BGP",
+                    "OSPF",
+                    "STATIC",
+                    "CONNECTED",
+                    "UNKNOWN"
+                  ]
+                },
+                "configured_gateway": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 45,
+                  "format": "ip"
+                },
+                "effective_next_hop": {
+                  "type": "null"
+                },
+                "preference": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "active": {
+                  "type": "boolean"
+                },
+                "dynamic": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "prefix",
+                "protocol",
+                "configured_gateway",
+                "effective_next_hop",
+                "preference",
+                "metric",
+                "active",
+                "dynamic"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 128
+          },
+          "lookup_semantics": {
+            "type": "string",
+            "enum": [
+              "LONGEST_ACTIVE_OBSERVED_RIB_PREFIX"
+            ]
+          },
+          "forwarding_verified": {
+            "type": "boolean"
+          },
+          "availability_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "destination",
+          "table",
+          "found",
+          "items",
+          "lookup_semantics",
+          "forwarding_verified",
+          "availability_reason"
+        ],
+        "additionalProperties": false
+      },
+      "timeout_ms": 5000,
+      "max_response_bytes": 65536,
+      "max_records": 128,
+      "max_queries": 34,
+      "operational_enabled": false,
+      "audit": "noc.simulation_created / noc.lab_query_failed",
+      "unavailable_when": [
+        "unapproved_or_stale_binding",
+        "unsupported_exact_version",
+        "unknown_or_changed_host_key",
+        "excessive_or_unattested_rights",
+        "invalid_or_truncated_response",
+        "timeout",
+        "volume_limit",
+        "operational_environment"
+      ]
+    },
+    "DEVICE_INTERFACES_READ": {
+      "id": "DEVICE_INTERFACES_READ",
+      "version": 1,
+      "manufacturer": "mikrotik",
+      "platform": "ROUTEROS7",
+      "exact_version": "7.16.2",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "interface": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_.:/+-]+$"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "interface": {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                "admin_state": {
+                  "type": "string",
+                  "enum": [
+                    "UP",
+                    "DOWN",
+                    "UNKNOWN"
+                  ]
+                },
+                "oper_state": {
+                  "type": "string",
+                  "enum": [
+                    "UP",
+                    "DOWN",
+                    "UNKNOWN"
+                  ]
+                },
+                "speed_bps": {
+                  "type": "null"
+                },
+                "rx_byte": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "tx_byte": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "rx_packet": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "tx_packet": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "rx_drop": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "tx_drop": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "tx_queue_drop": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "rx_error": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "tx_error": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "link_downs": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "sample_timestamp": {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                "rate": {
+                  "type": "null"
+                }
+              },
+              "required": [
+                "interface",
+                "admin_state",
+                "oper_state",
+                "speed_bps",
+                "rx_byte",
+                "tx_byte",
+                "rx_packet",
+                "tx_packet",
+                "rx_drop",
+                "tx_drop",
+                "tx_queue_drop",
+                "rx_error",
+                "tx_error",
+                "link_downs",
+                "sample_timestamp",
+                "rate"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 128
+          },
+          "availability_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64
+          },
+          "sample_kind": {
+            "type": "string",
+            "enum": [
+              "STATE"
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "availability_reason",
+          "sample_kind"
+        ],
+        "additionalProperties": false
+      },
+      "timeout_ms": 5000,
+      "max_response_bytes": 65536,
+      "max_records": 128,
+      "max_queries": 3,
+      "operational_enabled": false,
+      "audit": "noc.simulation_created / noc.lab_query_failed",
+      "unavailable_when": [
+        "unapproved_or_stale_binding",
+        "unsupported_exact_version",
+        "unknown_or_changed_host_key",
+        "excessive_or_unattested_rights",
+        "invalid_or_truncated_response",
+        "timeout",
+        "volume_limit",
+        "operational_environment"
+      ]
+    },
+    "DEVICE_INTERFACE_COUNTERS_READ": {
+      "id": "DEVICE_INTERFACE_COUNTERS_READ",
+      "version": 1,
+      "manufacturer": "mikrotik",
+      "platform": "ROUTEROS7",
+      "exact_version": "7.16.2",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "interface": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_.:/+-]+$"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "interface": {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                "admin_state": {
+                  "type": "string",
+                  "enum": [
+                    "UP",
+                    "DOWN",
+                    "UNKNOWN"
+                  ]
+                },
+                "oper_state": {
+                  "type": "string",
+                  "enum": [
+                    "UP",
+                    "DOWN",
+                    "UNKNOWN"
+                  ]
+                },
+                "speed_bps": {
+                  "type": "null"
+                },
+                "rx_byte": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "tx_byte": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "rx_packet": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "tx_packet": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "rx_drop": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "tx_drop": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "tx_queue_drop": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "rx_error": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "tx_error": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "link_downs": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "sample_timestamp": {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                "rate": {
+                  "type": "null"
+                }
+              },
+              "required": [
+                "interface",
+                "admin_state",
+                "oper_state",
+                "speed_bps",
+                "rx_byte",
+                "tx_byte",
+                "rx_packet",
+                "tx_packet",
+                "rx_drop",
+                "tx_drop",
+                "tx_queue_drop",
+                "rx_error",
+                "tx_error",
+                "link_downs",
+                "sample_timestamp",
+                "rate"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 128
+          },
+          "availability_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64
+          },
+          "sample_kind": {
+            "type": "string",
+            "enum": [
+              "ACCUMULATED_COUNTERS"
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "availability_reason",
+          "sample_kind"
+        ],
+        "additionalProperties": false
+      },
+      "timeout_ms": 5000,
+      "max_response_bytes": 65536,
+      "max_records": 128,
+      "max_queries": 3,
+      "operational_enabled": false,
+      "audit": "noc.simulation_created / noc.lab_query_failed",
+      "unavailable_when": [
+        "unapproved_or_stale_binding",
+        "unsupported_exact_version",
+        "unknown_or_changed_host_key",
+        "excessive_or_unattested_rights",
+        "invalid_or_truncated_response",
+        "timeout",
+        "volume_limit",
+        "operational_environment"
+      ]
+    },
+    "DEVICE_RESOURCES_READ": {
+      "id": "DEVICE_RESOURCES_READ",
+      "version": 1,
+      "manufacturer": "mikrotik",
+      "platform": "ROUTEROS7",
+      "exact_version": "7.16.2",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "cpu_reference_percent": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "memory_reference_percent": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "cpu_percent": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100
+          },
+          "memory_total_bytes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "memory_free_bytes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "memory_percent": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100
+          },
+          "uptime_seconds": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "availability_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "cpu_percent",
+          "memory_total_bytes",
+          "memory_free_bytes",
+          "memory_percent",
+          "uptime_seconds",
+          "version",
+          "availability_reason"
+        ],
+        "additionalProperties": false
+      },
+      "timeout_ms": 5000,
+      "max_response_bytes": 65536,
+      "max_records": 128,
+      "max_queries": 3,
+      "operational_enabled": false,
+      "audit": "noc.simulation_created / noc.lab_query_failed",
+      "unavailable_when": [
+        "unapproved_or_stale_binding",
+        "unsupported_exact_version",
+        "unknown_or_changed_host_key",
+        "excessive_or_unattested_rights",
+        "invalid_or_truncated_response",
+        "timeout",
+        "volume_limit",
+        "operational_environment"
+      ]
+    }
+  }
+}
