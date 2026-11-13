@@ -1,0 +1,7 @@
+{
+  "migrations": 24,
+  "force_rls": 43,
+  "audit_immutable": true,
+  "inventory_rows": 1,
+  "device_access_table": null
+}

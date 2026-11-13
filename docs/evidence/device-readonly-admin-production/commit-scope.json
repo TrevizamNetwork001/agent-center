@@ -1,0 +1,384 @@
+{
+  "source_commits": [
+    "bc1e5f5",
+    "d953f6a",
+    "1cf6e02"
+  ],
+  "administrative_publication": "8723cea",
+  "files": [
+    {
+      "path": "app/app/Conversation/DiagnosticExperience.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Http/Controllers/DeviceReadOnlyLabController.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Http/Requests/DeviceReadOnlyLabRequest.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Http/Requests/NocDeviceRequest.php",
+      "category": "Laravel/UI/contratos",
+      "published": true
+    },
+    {
+      "path": "app/app/Llm/SecretVault.php",
+      "category": "Laravel/UI/contratos",
+      "published": true
+    },
+    {
+      "path": "app/app/Models/DeviceLabAccess.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Noc/Analysis/ConversationSimulation.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Noc/Analysis/Evidence.php",
+      "category": "Laravel/UI/contratos",
+      "published": true
+    },
+    {
+      "path": "app/app/Noc/Analysis/Interpretation.php",
+      "category": "Laravel/UI/contratos",
+      "published": true
+    },
+    {
+      "path": "app/app/Noc/Catalog.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Noc/Inventory.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Noc/ReadOnlyLab/Access.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Noc/ReadOnlyLab/Failure.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Noc/ReadOnlyLab/Operation.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Noc/ReadOnlyLab/Parser.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Noc/ReadOnlyLab/Platform.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Noc/ReadOnlyLab/Query.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Noc/ReadOnlyLab/Ssh.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Services/Audit.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/app/Telegram/Deliver.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/config/device_readonly_lab.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/database/migrations/2026_11_13_000002_create_device_lab_accesses.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/public/noc-inventory-form.css",
+      "category": "Laravel/UI/contratos",
+      "published": true
+    },
+    {
+      "path": "app/public/noc-inventory-form.js",
+      "category": "Laravel/UI/contratos",
+      "published": true
+    },
+    {
+      "path": "app/resources/device-readonly-cli-fixtures.json",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/resources/noc-catalog.json",
+      "category": "Laravel/UI/contratos",
+      "published": true
+    },
+    {
+      "path": "app/resources/views/noc/form.blade.php",
+      "category": "Laravel/UI/contratos",
+      "published": true
+    },
+    {
+      "path": "app/resources/views/noc/readonly-lab.blade.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/resources/views/noc/show.blade.php",
+      "category": "Laravel/UI/contratos",
+      "published": true,
+      "handling": "Adaptada da view efetivamente publicada; include readonly-lab original excluído e substituído somente pelo painel administrativo."
+    },
+    {
+      "path": "app/routes/web.php",
+      "category": "Laravel/UI/contratos",
+      "published": false
+    },
+    {
+      "path": "app/tests/Feature/DeviceReadOnlyLabTest.php",
+      "category": "Testes LAB",
+      "published": false
+    },
+    {
+      "path": "app/tests/Feature/DiagnosticsTest.php",
+      "category": "Testes LAB",
+      "published": false
+    },
+    {
+      "path": "app/tests/Feature/KnowledgePromptTest.php",
+      "category": "Testes LAB",
+      "published": false
+    },
+    {
+      "path": "app/tests/Feature/NocInventoryTest.php",
+      "category": "Testes LAB",
+      "published": false
+    },
+    {
+      "path": "app/tests/Feature/TelegramTest.php",
+      "category": "Testes LAB",
+      "published": false
+    },
+    {
+      "path": "app/tests/Support/device-readonly-concurrency.php",
+      "category": "Testes LAB",
+      "published": false
+    },
+    {
+      "path": "app/tests/Support/device-readonly-rollback.php",
+      "category": "Testes LAB",
+      "published": false
+    },
+    {
+      "path": "app/tests/Unit/DeviceReadOnlyEvidenceConsistencyTest.php",
+      "category": "Testes LAB",
+      "published": false
+    },
+    {
+      "path": "app/tests/Unit/DeviceReadOnlyParserTest.php",
+      "category": "Testes LAB",
+      "published": false
+    },
+    {
+      "path": "deploy/database-roles.sql",
+      "category": "Tooling/instalação LAB",
+      "published": false
+    },
+    {
+      "path": "docs/DEVICE_READONLY_V1_LAB.md",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/README.md",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/browser-results.json",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/concurrency-result.json",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/ne8000-1440-dark.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/ne8000-1440-light.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/ne8000-390-dark.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/ne8000-390-light.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/ne8000-result-1440-dark.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/ne8000-result-1440-light.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/ne8000-result-390-dark.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/ne8000-result-390-light.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/noc-form-error-1440-dark.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/noc-form-error-1440-light.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/noc-form-error-390-dark.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/noc-form-error-390-light.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/protocol-boundaries.json",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/results.json",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/routeros7-1440-dark.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/routeros7-1440-light.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/routeros7-390-dark.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/routeros7-390-light.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/routeros7-result-1440-dark.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/routeros7-result-1440-light.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/routeros7-result-390-dark.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "docs/evidence/device-readonly-v1/routeros7-result-390-light.png",
+      "category": "Documentação/evidência LAB",
+      "published": false
+    },
+    {
+      "path": "scripts/lab/device-readonly/Dockerfile",
+      "category": "Tooling LAB",
+      "published": false
+    },
+    {
+      "path": "scripts/lab/device-readonly/browser.cjs",
+      "category": "Tooling LAB",
+      "published": false
+    },
+    {
+      "path": "scripts/lab/device-readonly/check-boundaries.py",
+      "category": "Python/tooling/protocolo LAB",
+      "published": false
+    },
+    {
+      "path": "scripts/lab/device-readonly/postgres-init.sh",
+      "category": "Tooling LAB",
+      "published": false
+    },
+    {
+      "path": "scripts/lab/device-readonly/run.sh",
+      "category": "Tooling LAB",
+      "published": false
+    },
+    {
+      "path": "scripts/lab/device-readonly/server.py",
+      "category": "Python/tooling/protocolo LAB",
+      "published": false
+    },
+    {
+      "path": "scripts/test.sh",
+      "category": "Tooling/instalação LAB",
+      "published": false
+    }
+  ],
+  "python_agent_changes": 0,
+  "new_production_python_dependency": false,
+  "credential_schema_published": false,
+  "operational_route_added": false,
+  "new_administrative_files": [
+    "app/app/Noc/ReadOnlyAdmin.php",
+    "app/resources/views/noc/readonly-admin.blade.php"
+  ]
+}

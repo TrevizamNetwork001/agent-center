@@ -1,0 +1,128 @@
+{
+  "environment": "production",
+  "https_readiness": 200,
+  "certificate_verified": true,
+  "session_secure": true,
+  "session_encrypted": true,
+  "pdo_tls": true,
+  "sslmode": "verify-full",
+  "force_rls": 43,
+  "schema_unchanged": true,
+  "credential_table_present": false,
+  "no_context_visibility": {
+    "agents": 0,
+    "noc_devices": 0,
+    "noc_simulations": 0,
+    "diagnostics": 0,
+    "agent_tasks": 0,
+    "conversation_messages": 0
+  },
+  "runtime_role": {
+    "rolsuper": false,
+    "rolbypassrls": false
+  },
+  "tenants": {
+    "1": {
+      "state": "VERDE",
+      "inventory_unchanged": true,
+      "agent_identity_unchanged": true,
+      "checks": [
+        {
+          "component": "laravel_web",
+          "state": "VERDE",
+          "reason": "authenticated_request_completed"
+        },
+        {
+          "component": "postgresql",
+          "state": "VERDE",
+          "reason": "select_1_succeeded"
+        },
+        {
+          "component": "postgresql_tls",
+          "state": "VERDE",
+          "reason": "connection_tls_and_client_verification"
+        },
+        {
+          "component": "diagnostic_worker",
+          "state": "VERDE",
+          "reason": "functional_loop_recent"
+        },
+        {
+          "component": "laravel_queue_worker",
+          "state": "VERDE",
+          "reason": "health_job_completed"
+        },
+        {
+          "component": "task_engine",
+          "state": "VERDE",
+          "reason": "active_expired_leases"
+        },
+        {
+          "component": "agents",
+          "state": "VERDE",
+          "reason": "heartbeat_and_poll_coverage"
+        },
+        {
+          "component": "nginx_external",
+          "state": "VERDE",
+          "reason": "container_functional_health"
+        },
+        {
+          "component": "fpm_process",
+          "state": "VERDE",
+          "reason": "container_functional_health"
+        },
+        {
+          "component": "postgresql_container",
+          "state": "VERDE",
+          "reason": "container_functional_health"
+        },
+        {
+          "component": "queue_container",
+          "state": "VERDE",
+          "reason": "container_functional_health"
+        },
+        {
+          "component": "diagnostic_container",
+          "state": "VERDE",
+          "reason": "container_functional_health"
+        },
+        {
+          "component": "web_https",
+          "state": "VERDE",
+          "reason": "https_status_probe"
+        },
+        {
+          "component": "agent_api_external",
+          "state": "VERDE",
+          "reason": "https_status_probe"
+        },
+        {
+          "component": "http_error_rate",
+          "state": "VERDE",
+          "reason": "sanitized_status_log_5m"
+        },
+        {
+          "component": "backup_local",
+          "state": "VERDE",
+          "reason": "generation_integrity_verified"
+        },
+        {
+          "component": "backup_external",
+          "state": "VERDE",
+          "reason": "r2_encrypted_upload_download_verified"
+        },
+        {
+          "component": "fencing_runtime",
+          "state": "VERDE",
+          "reason": "active_attempt_generation_mismatch"
+        },
+        {
+          "component": "agent_maintenance",
+          "state": "VERDE",
+          "reason": "interrupted_or_stalled_operations"
+        }
+      ]
+    }
+  }
+}

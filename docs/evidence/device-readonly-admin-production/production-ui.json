@@ -1,0 +1,47 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "width": 390,
+      "theme": "light",
+      "https": true,
+      "inventory": true,
+      "detail_panel": true,
+      "localized_hostname": true,
+      "inputs_preserved": true,
+      "dismissible": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "https": true,
+      "inventory": true,
+      "detail_panel": true,
+      "localized_hostname": true,
+      "inputs_preserved": true,
+      "dismissible": true
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "https": true,
+      "inventory": true,
+      "detail_panel": true,
+      "localized_hostname": true,
+      "inputs_preserved": true,
+      "dismissible": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "https": true,
+      "inventory": true,
+      "detail_panel": true,
+      "localized_hostname": true,
+      "inputs_preserved": true,
+      "dismissible": true
+    }
+  ],
+  "records_created": 0,
+  "real_queries": 0
+}

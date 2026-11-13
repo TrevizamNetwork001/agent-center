@@ -1,0 +1,14 @@
+{
+  "compared_to_prepublication_backup": true,
+  "unchanged": {
+    "profiles": true,
+    "skills": true,
+    "rag_documents": true,
+    "rag_chunks": true,
+    "llm_providers": true,
+    "llm_models": true,
+    "llm_bindings": true,
+    "prompts": true,
+    "knowledge_items": true
+  }
+}

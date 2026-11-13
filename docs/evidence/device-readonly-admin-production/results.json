@@ -1,0 +1,76 @@
+{
+  "result": "DEVICE READ-ONLY V1 ADMIN PRODUCTION PASS",
+  "implementation_commit": "8723cea",
+  "published": true,
+  "laravel": {
+    "tests": 569,
+    "assertions": 5220,
+    "batches": [
+      {
+        "group": "ac",
+        "tests": 164,
+        "assertions": 1408,
+        "passed": true
+      },
+      {
+        "group": "dn",
+        "tests": 202,
+        "assertions": 2472,
+        "passed": true
+      },
+      {
+        "group": "oz",
+        "tests": 203,
+        "assertions": 1340,
+        "passed": true
+      }
+    ]
+  },
+  "python_tests": 185,
+  "image_parity": true,
+  "native_http_candidate_cases": 12,
+  "native_https_production_cases": 4,
+  "screenshots": 20,
+  "backup_generation": "20261113T144651Z",
+  "local_backup_only": true,
+  "restore_verified": true,
+  "vault_restore_verified": true,
+  "image_rollback_history_verified": true,
+  "view_cache_clear_required_on_rollback": true,
+  "pint": "PASS",
+  "ruff_publication_tooling": "PASS",
+  "ruff_agent": {
+    "result": "FAIL — dois I001 preexistentes preservados",
+    "paths": [
+      "agent/src/agent_center/heartbeat.py",
+      "agent/src/agent_center/update/remote.py"
+    ],
+    "introduced_by_source_commits": false,
+    "introduced_by_publication_commit": false
+  },
+  "build": "3 imagens administrativas; sem nova dependência/runtime",
+  "secret_scan": "PASS (scanner básico do índice)",
+  "diff_check": "PASS",
+  "operations_health": "VERDE",
+  "device_freeze": true,
+  "device_credentials_enabled": false,
+  "real_device_connections": 0,
+  "agent_updated": false,
+  "lifecycle_preflight_acls_r2_modified": false,
+  "qa_session_revoked": true,
+  "domain_records_created_in_production": 0,
+  "build_images": [
+    {
+      "role": "web",
+      "image_id": "sha256:4a2dc58f03ae83b9b1d8fcbd4ceea91cda12431225a2bd2355d79826ab66d551"
+    },
+    {
+      "role": "queue",
+      "image_id": "sha256:425ff47d94d3340dc5ed72a6f987b01ab3e3d996ba4d89e321485af9dd6c1b83"
+    },
+    {
+      "role": "diagnostic",
+      "image_id": "sha256:1d3d8fe4540fce5649c1ed64ade8de72fc757ed105c9118de743d8d795c6157e"
+    }
+  ]
+}

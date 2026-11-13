@@ -1,0 +1,89 @@
+[
+  {
+    "role": "web",
+    "image_id": "sha256:4a2dc58f03ae83b9b1d8fcbd4ceea91cda12431225a2bd2355d79826ab66d551",
+    "routes_preserved": 137,
+    "unchanged_files": 392,
+    "allowed_changes": [
+      "app/Http/Requests/NocDeviceRequest.php",
+      "app/Llm/SecretVault.php",
+      "app/Noc/Analysis/Evidence.php",
+      "app/Noc/Analysis/Interpretation.php",
+      "app/Noc/ReadOnlyAdmin.php",
+      "public/noc-inventory-form.css",
+      "public/noc-inventory-form.js",
+      "resources/noc-catalog.json",
+      "resources/views/noc/form.blade.php",
+      "resources/views/noc/readonly-admin.blade.php",
+      "resources/views/noc/show.blade.php"
+    ],
+    "transport_present": false,
+    "credential_migrations": 0,
+    "python_dependency_added": false,
+    "admin_contract": {
+      "mode": "ADMINISTRATIVE_DEMO",
+      "transport": "NONE",
+      "contracts": 4,
+      "freeze": true
+    },
+    "passed": true
+  },
+  {
+    "role": "queue",
+    "image_id": "sha256:425ff47d94d3340dc5ed72a6f987b01ab3e3d996ba4d89e321485af9dd6c1b83",
+    "routes_preserved": 137,
+    "unchanged_files": 392,
+    "allowed_changes": [
+      "app/Http/Requests/NocDeviceRequest.php",
+      "app/Llm/SecretVault.php",
+      "app/Noc/Analysis/Evidence.php",
+      "app/Noc/Analysis/Interpretation.php",
+      "app/Noc/ReadOnlyAdmin.php",
+      "public/noc-inventory-form.css",
+      "public/noc-inventory-form.js",
+      "resources/noc-catalog.json",
+      "resources/views/noc/form.blade.php",
+      "resources/views/noc/readonly-admin.blade.php",
+      "resources/views/noc/show.blade.php"
+    ],
+    "transport_present": false,
+    "credential_migrations": 0,
+    "python_dependency_added": false,
+    "admin_contract": {
+      "mode": "ADMINISTRATIVE_DEMO",
+      "transport": "NONE",
+      "contracts": 4,
+      "freeze": true
+    },
+    "passed": true
+  },
+  {
+    "role": "diagnostic",
+    "image_id": "sha256:1d3d8fe4540fce5649c1ed64ade8de72fc757ed105c9118de743d8d795c6157e",
+    "routes_preserved": 96,
+    "unchanged_files": 300,
+    "allowed_changes": [
+      "app/Http/Requests/NocDeviceRequest.php",
+      "app/Llm/SecretVault.php",
+      "app/Noc/Analysis/Evidence.php",
+      "app/Noc/Analysis/Interpretation.php",
+      "app/Noc/ReadOnlyAdmin.php",
+      "public/noc-inventory-form.css",
+      "public/noc-inventory-form.js",
+      "resources/noc-catalog.json",
+      "resources/views/noc/form.blade.php",
+      "resources/views/noc/readonly-admin.blade.php",
+      "resources/views/noc/show.blade.php"
+    ],
+    "transport_present": false,
+    "credential_migrations": 0,
+    "python_dependency_added": false,
+    "admin_contract": {
+      "mode": "ADMINISTRATIVE_DEMO",
+      "transport": "NONE",
+      "contracts": 4,
+      "freeze": true
+    },
+    "passed": true
+  }
+]

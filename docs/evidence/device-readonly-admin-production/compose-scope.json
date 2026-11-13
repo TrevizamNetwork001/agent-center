@@ -1,0 +1,42 @@
+[
+  {
+    "service": "web",
+    "unrelated_environment_drift": false,
+    "added_keys": [
+      "DEVICE_ANALYSIS_LAB_ENABLED",
+      "DEVICE_ANALYSIS_LAB_TENANTS",
+      "DEVICE_READONLY_LAB_ENABLED",
+      "DEVICE_READONLY_LAB_TENANTS"
+    ]
+  },
+  {
+    "service": "worker",
+    "unrelated_environment_drift": false,
+    "added_keys": [
+      "DEVICE_ANALYSIS_LAB_ENABLED",
+      "DEVICE_ANALYSIS_LAB_TENANTS",
+      "DEVICE_READONLY_LAB_ENABLED",
+      "DEVICE_READONLY_LAB_TENANTS"
+    ]
+  },
+  {
+    "service": "telegram-scheduler",
+    "unrelated_environment_drift": false,
+    "added_keys": [
+      "DEVICE_ANALYSIS_LAB_ENABLED",
+      "DEVICE_ANALYSIS_LAB_TENANTS",
+      "DEVICE_READONLY_LAB_ENABLED",
+      "DEVICE_READONLY_LAB_TENANTS"
+    ]
+  },
+  {
+    "service": "diagnostic-worker",
+    "unrelated_environment_drift": false,
+    "added_keys": [
+      "DEVICE_ANALYSIS_LAB_ENABLED",
+      "DEVICE_ANALYSIS_LAB_TENANTS",
+      "DEVICE_READONLY_LAB_ENABLED",
+      "DEVICE_READONLY_LAB_TENANTS"
+    ]
+  }
+]

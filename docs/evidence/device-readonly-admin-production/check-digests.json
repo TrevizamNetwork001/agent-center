@@ -1,0 +1,14 @@
+{
+  "deploy_precheck": {
+    "passed": true,
+    "sha256": "e01fff5e125a11e31415dc681adf0d8f156144c96700617ef23c278f62cf2a87"
+  },
+  "pint": {
+    "passed": true,
+    "sha256": "d7a9f081a6d08077e54a6db2a436d50423f29b44b4a1c648761353d84f245659"
+  },
+  "ruff_tooling": {
+    "passed": true,
+    "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+  }
+}

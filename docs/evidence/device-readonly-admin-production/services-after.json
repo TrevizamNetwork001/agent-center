@@ -1,0 +1,38 @@
+{
+  "web": {
+    "image": "agent-center-central:device-readonly-admin-web-20261113",
+    "image_id": "sha256:4a2dc58f03ae83b9b1d8fcbd4ceea91cda12431225a2bd2355d79826ab66d551",
+    "status": "running",
+    "health": "healthy"
+  },
+  "worker": {
+    "image": "agent-center-central:device-readonly-admin-queue-20261113",
+    "image_id": "sha256:425ff47d94d3340dc5ed72a6f987b01ab3e3d996ba4d89e321485af9dd6c1b83",
+    "status": "running",
+    "health": "healthy"
+  },
+  "telegram-scheduler": {
+    "image": "agent-center-central:device-readonly-admin-queue-20261113",
+    "image_id": "sha256:425ff47d94d3340dc5ed72a6f987b01ab3e3d996ba4d89e321485af9dd6c1b83",
+    "status": "running",
+    "health": null
+  },
+  "diagnostic-worker": {
+    "image": "agent-center-central:device-readonly-admin-diagnostic-20261113",
+    "image_id": "sha256:1d3d8fe4540fce5649c1ed64ade8de72fc757ed105c9118de743d8d795c6157e",
+    "status": "running",
+    "health": "healthy"
+  },
+  "nginx": {
+    "image": "nginxinc/nginx-unprivileged:stable-alpine@sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03",
+    "image_id": "sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03",
+    "status": "running",
+    "health": "healthy"
+  },
+  "postgres": {
+    "image": "postgres:17-bookworm@sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5",
+    "image_id": "sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5",
+    "status": "running",
+    "health": "healthy"
+  }
+}

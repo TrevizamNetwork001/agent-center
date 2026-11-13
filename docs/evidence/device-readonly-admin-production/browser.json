@@ -1,0 +1,104 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "device": "ne8000",
+      "width": 390,
+      "theme": "light",
+      "native_demo": true,
+      "transport_route_absent": true,
+      "ssh_fixture_rejected": true
+    },
+    {
+      "device": "routeros7",
+      "width": 390,
+      "theme": "light",
+      "native_demo": true,
+      "transport_route_absent": true,
+      "ssh_fixture_rejected": true
+    },
+    {
+      "form": true,
+      "width": 390,
+      "theme": "light",
+      "preserved": true,
+      "localized": true,
+      "auto_dismiss": true
+    },
+    {
+      "device": "ne8000",
+      "width": 390,
+      "theme": "dark",
+      "native_demo": true,
+      "transport_route_absent": true,
+      "ssh_fixture_rejected": true
+    },
+    {
+      "device": "routeros7",
+      "width": 390,
+      "theme": "dark",
+      "native_demo": true,
+      "transport_route_absent": true,
+      "ssh_fixture_rejected": true
+    },
+    {
+      "form": true,
+      "width": 390,
+      "theme": "dark",
+      "preserved": true,
+      "localized": true,
+      "auto_dismiss": true
+    },
+    {
+      "device": "ne8000",
+      "width": 1440,
+      "theme": "light",
+      "native_demo": true,
+      "transport_route_absent": true,
+      "ssh_fixture_rejected": true
+    },
+    {
+      "device": "routeros7",
+      "width": 1440,
+      "theme": "light",
+      "native_demo": true,
+      "transport_route_absent": true,
+      "ssh_fixture_rejected": true
+    },
+    {
+      "form": true,
+      "width": 1440,
+      "theme": "light",
+      "preserved": true,
+      "localized": true,
+      "auto_dismiss": true
+    },
+    {
+      "device": "ne8000",
+      "width": 1440,
+      "theme": "dark",
+      "native_demo": true,
+      "transport_route_absent": true,
+      "ssh_fixture_rejected": true
+    },
+    {
+      "device": "routeros7",
+      "width": 1440,
+      "theme": "dark",
+      "native_demo": true,
+      "transport_route_absent": true,
+      "ssh_fixture_rejected": true
+    },
+    {
+      "form": true,
+      "width": 1440,
+      "theme": "dark",
+      "preserved": true,
+      "localized": true,
+      "auto_dismiss": true
+    }
+  ],
+  "two_tenants": true,
+  "rbac": true,
+  "source": "immutable candidate image, native HTTP/session/CSRF, isolated fixtures; no application source mount"
+}

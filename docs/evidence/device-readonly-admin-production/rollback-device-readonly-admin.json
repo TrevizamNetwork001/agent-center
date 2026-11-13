@@ -1,0 +1,7 @@
+{
+  "simulations": 8,
+  "inventory": 2,
+  "agent_tasks": 0,
+  "credential_table": false,
+  "baseline_can_read_history": true
+}
