@@ -1,0 +1,30 @@
+# Authorized administrative publication only. No executor or device credentials.
+services:
+  web:
+    image: agent-center-central:device-readonly-admin-web-20261113
+    environment:
+      DEVICE_READONLY_LAB_ENABLED: 'false'
+      DEVICE_READONLY_LAB_TENANTS: ''
+      DEVICE_ANALYSIS_LAB_ENABLED: 'false'
+      DEVICE_ANALYSIS_LAB_TENANTS: ''
+  worker:
+    image: agent-center-central:device-readonly-admin-queue-20261113
+    environment:
+      DEVICE_READONLY_LAB_ENABLED: 'false'
+      DEVICE_READONLY_LAB_TENANTS: ''
+      DEVICE_ANALYSIS_LAB_ENABLED: 'false'
+      DEVICE_ANALYSIS_LAB_TENANTS: ''
+  telegram-scheduler:
+    image: agent-center-central:device-readonly-admin-queue-20261113
+    environment:
+      DEVICE_READONLY_LAB_ENABLED: 'false'
+      DEVICE_READONLY_LAB_TENANTS: ''
+      DEVICE_ANALYSIS_LAB_ENABLED: 'false'
+      DEVICE_ANALYSIS_LAB_TENANTS: ''
+  diagnostic-worker:
+    image: agent-center-central:device-readonly-admin-diagnostic-20261113
+    environment:
+      DEVICE_READONLY_LAB_ENABLED: 'false'
+      DEVICE_READONLY_LAB_TENANTS: ''
+      DEVICE_ANALYSIS_LAB_ENABLED: 'false'
+      DEVICE_ANALYSIS_LAB_TENANTS: ''

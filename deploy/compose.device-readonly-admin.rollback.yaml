@@ -1,0 +1,10 @@
+# Image-only rollback. Preserve schema, data, audit history and frozen lab flags.
+services:
+  web:
+    image: agent-center-central:device-analysis-web-20261113
+  worker:
+    image: agent-center-central:device-analysis-queue-20261113
+  telegram-scheduler:
+    image: agent-center-central:device-analysis-queue-20261113
+  diagnostic-worker:
+    image: agent-center-central:device-analysis-diagnostic-20261113
