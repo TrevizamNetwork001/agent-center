@@ -45,10 +45,32 @@ class NocDeviceRequest extends FormRequest
 
     protected function failedValidation(Validator $validator)
     {
-        app('request')->replace([]);
+        // Preserve bounded administrative input on ordinary validation errors.
+        // Keep the existing fail-closed behavior when any field contains sensitive content.
+        $safe = $this->only([...self::FIELDS, 'revision']);
+        $screen = [];
+        foreach (self::FIELDS as $field) {
+            $screen[$field] = ['nullable', 'string', 'max:'.(in_array($field, ['description', 'operational_notes'], true) ? 3000 : ($field === 'hostname' ? 253 : 120)), new SafeText];
+        }
+        $screen['revision'] = ['nullable', 'integer', 'min:1'];
+        if (\Illuminate\Support\Facades\Validator::make($safe, $screen)->fails()) {
+            $safe = [];
+        }
+        app('request')->replace($safe);
         app('request')->query->replace([]);
-        $this->replace([]);
+        $this->replace($safe);
         parent::failedValidation($validator);
+    }
+
+    public function attributes(): array
+    {
+        return ['name' => 'Nome do equipamento', 'hostname' => 'Hostname', 'management_ip' => 'IP de gerenciamento', 'manufacturer' => 'Fabricante', 'platform' => 'Plataforma', 'model' => 'Modelo', 'os_version' => 'Versão do sistema operacional', 'category' => 'Categoria', 'network_role' => 'Função na rede', 'pop' => 'POP/localidade', 'environment' => 'Ambiente', 'description' => 'Descrição', 'admin_status' => 'Estado administrativo', 'operational_notes' => 'Observações operacionais', 'revision' => 'Revisão do cadastro'];
+    }
+
+    public function messages(): array
+    {
+        return ['required' => 'Preencha :attribute.', 'string' => ':attribute deve ser um texto.', 'max' => ':attribute deve ter no máximo :max caracteres.', 'in' => 'Selecione uma opção válida em :attribute.', 'ip' => 'IP de gerenciamento: informe um endereço IPv4 ou IPv6 válido, sem máscara ou URL.',
+            'hostname.regex' => 'Hostname: use letras de a a z, números e hífens, com pontos entre os segmentos. Exemplo: ne8000.pop.exemplo. Não use espaços, sublinhados (_) ou URL.', 'integer' => ':attribute deve ser um número inteiro.', 'min' => ':attribute deve ser pelo menos :min.', 'prohibited' => ':attribute não é permitido nesta ação.'];
     }
 
     public function rules(): array
@@ -56,7 +78,7 @@ class NocDeviceRequest extends FormRequest
         $c = app(Catalog::class)->all();
         $short = ['required', 'string', 'max:120', new SafeText];
 
-        return ['name' => $short, 'hostname' => ['required', 'string', 'max:253', 'regex:/^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$/D'],
+        return ['name' => $short, 'hostname' => ['required', 'string', 'max:253', new SafeText, 'regex:/^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$/D'],
             'management_ip' => ['required', 'ip'], 'manufacturer' => ['required', Rule::in(array_keys($c['manufacturers']))],
             'platform' => ['required', Rule::in(array_keys(array_filter($c['platforms'], fn ($p) => $p['manufacturer'] === $this->input('manufacturer'))))],
             'model' => $short, 'os_version' => ['nullable', 'string', 'max:120', new SafeText], 'category' => ['required', Rule::in(array_keys($c['categories']))],

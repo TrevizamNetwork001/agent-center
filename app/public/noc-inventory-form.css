@@ -1,0 +1,5 @@
+.noc-field-error{display:block;color:var(--red);font-size:12px;line-height:1.5;margin-top:6px}
+form [aria-invalid="true"]{border-color:var(--red);outline-color:var(--red)}
+#main>.feedback[hidden]{display:none}
+#main>.feedback>button{margin-top:8px}
+#noc-hostname-help{display:block;margin-top:8px;font-weight:400;padding:10px 12px}

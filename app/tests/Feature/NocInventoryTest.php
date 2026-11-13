@@ -135,6 +135,26 @@ class NocInventoryTest extends IdentityTestCase
         $this->assertSame(0, NocDevice::count());
     }
 
+    public function test_hostname_error_is_localized_and_preserves_administrative_fields(): void
+    {
+        $data = $this->data(['hostname' => 'NE8000 POP_PRINCIPAL']);
+        $response = $this->asUser($this->admin)->from('/noc-inventory/create')->followingRedirects()->post('/noc-inventory', $data);
+        $response->assertOk()->assertSee('Hostname: use letras de a a z, números e hífens, com pontos entre os segmentos.')
+            ->assertSee('aria-invalid="true"', false)->assertSee('noc-hostname-error');
+        foreach (['name', 'management_ip', 'manufacturer', 'platform', 'model', 'pop', 'description'] as $field) {
+            $response->assertSee($data[$field]);
+            if (in_array($field, ['manufacturer', 'platform'], true)) {
+                $response->assertSee('value="'.$data[$field].'" selected', false);
+            } elseif ($field !== 'description') {
+                $response->assertSee('value="'.$data[$field].'"', false);
+            }
+        }
+        $html = $response->getContent();
+        if (getenv('DEVICE_PROTOCOL_LAB') === '1') {
+            file_put_contents('/lab/noc-form-error.html', preg_replace('/name="_token" value="[^"]+"/', 'value="REMOVED"', $html));
+        }
+    }
+
     public function test_no_secrets_unknown_fields_or_request_ownership_are_accepted_or_flashed(): void
     {
         foreach ([['password' => 'fixture-sensitive-value'], ['tenant_id' => $this->b->id], ['created_by' => $this->other->id], ['commands' => ['arbitrary']], ['implementation_state' => 'AVAILABLE']] as $bad) {
