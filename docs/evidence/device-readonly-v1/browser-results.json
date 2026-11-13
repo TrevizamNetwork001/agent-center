@@ -1,0 +1,98 @@
+{
+  "passed": true,
+  "network": "none; all routes fulfilled from local fixtures",
+  "results": [
+    {
+      "device": "ne8000",
+      "width": 390,
+      "theme": "light",
+      "overflow": false,
+      "simulated": true
+    },
+    {
+      "device": "routeros7",
+      "width": 390,
+      "theme": "light",
+      "overflow": false,
+      "simulated": true
+    },
+    {
+      "form": true,
+      "width": 390,
+      "theme": "light",
+      "preserved": true,
+      "inlineError": true,
+      "dismiss": true,
+      "autoDismiss": true
+    },
+    {
+      "device": "ne8000",
+      "width": 390,
+      "theme": "dark",
+      "overflow": false,
+      "simulated": true
+    },
+    {
+      "device": "routeros7",
+      "width": 390,
+      "theme": "dark",
+      "overflow": false,
+      "simulated": true
+    },
+    {
+      "form": true,
+      "width": 390,
+      "theme": "dark",
+      "preserved": true,
+      "inlineError": true,
+      "dismiss": true,
+      "autoDismiss": true
+    },
+    {
+      "device": "ne8000",
+      "width": 1440,
+      "theme": "light",
+      "overflow": false,
+      "simulated": true
+    },
+    {
+      "device": "routeros7",
+      "width": 1440,
+      "theme": "light",
+      "overflow": false,
+      "simulated": true
+    },
+    {
+      "form": true,
+      "width": 1440,
+      "theme": "light",
+      "preserved": true,
+      "inlineError": true,
+      "dismiss": true,
+      "autoDismiss": true
+    },
+    {
+      "device": "ne8000",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": false,
+      "simulated": true
+    },
+    {
+      "device": "routeros7",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": false,
+      "simulated": true
+    },
+    {
+      "form": true,
+      "width": 1440,
+      "theme": "dark",
+      "preserved": true,
+      "inlineError": true,
+      "dismiss": true,
+      "autoDismiss": true
+    }
+  ]
+}

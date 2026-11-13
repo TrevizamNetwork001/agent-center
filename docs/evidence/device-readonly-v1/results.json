@@ -1,0 +1,150 @@
+{
+  "status": "AGENT CENTER DEVICE READ-ONLY V1 LAB PASS",
+  "scope": "SIMULADO; SSH protocol against isolated fixture servers; vendor hardware NOT TESTED",
+  "commits": {
+    "lab": "bc1e5f5",
+    "inventory_form": "d953f6a"
+  },
+  "laravel": {
+    "passed": true,
+    "tests": 568,
+    "assertions": 5205,
+    "batches": [
+      {
+        "classes": "A-C",
+        "tests": 164,
+        "assertions": 1408,
+        "passed": true,
+        "empty_schema_rollback": "PASS"
+      },
+      {
+        "classes": "D-N",
+        "tests": 201,
+        "assertions": 2457,
+        "passed": true,
+        "empty_schema_rollback": "PASS"
+      },
+      {
+        "classes": "O-Z",
+        "tests": 203,
+        "assertions": 1340,
+        "passed": true,
+        "empty_schema_rollback": "PASS"
+      }
+    ]
+  },
+  "python": {
+    "passed": true,
+    "tests": 185,
+    "network": "none",
+    "agent_source_changes_by_this_delivery": false
+  },
+  "supplemental_integration": {
+    "passed": true,
+    "tests": 31,
+    "assertions": 531,
+    "includes": [
+      "native SSH",
+      "two tenants",
+      "FORCE RLS",
+      "RBAC",
+      "CSRF",
+      "inventory",
+      "intent planning/freeze",
+      "web",
+      "Telegram ingress/outbox",
+      "expiry/rotation/revocation",
+      "fault matrix",
+      "concurrency",
+      "populated rollback guard"
+    ]
+  },
+  "pint": {
+    "passed": true,
+    "changed_php_files": 32
+  },
+  "ruff_laboratory": {
+    "passed": true
+  },
+  "ruff_global_agent": {
+    "passed": false,
+    "preexisting_unchanged": true,
+    "findings": [
+      {
+        "path": "agent/src/agent_center/heartbeat.py",
+        "rule": "I001"
+      },
+      {
+        "path": "agent/src/agent_center/update/remote.py",
+        "rule": "I001"
+      }
+    ],
+    "note": "No Agent source or operational Agent was changed. Global Agent lint is not certified by this lab result."
+  },
+  "frontend_build": {
+    "passed": true,
+    "location": "disposable frontend directory; no publication"
+  },
+  "browser": {
+    "passed": true,
+    "cases": 12,
+    "screenshots": 20,
+    "widths": [
+      390,
+      1440
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "keyboard_dismiss": true,
+    "automatic_dismiss": true,
+    "input_preservation": true,
+    "network": "none"
+  },
+  "secret_scan": {
+    "scope": "Git index; basic repository scanner",
+    "passed": true
+  },
+  "diff_check": {
+    "passed": true
+  },
+  "production": {
+    "deployed": false,
+    "device_operations_enabled": false,
+    "real_device_connections": 0,
+    "real_credentials_enabled": 0,
+    "agent_updated": false,
+    "published_preflight_modified": false,
+    "operational_lifecycle_modified": false,
+    "r2_accessed": false
+  },
+  "limitations": [
+    "Synthetic CLI fixture dialects only; no vendor firmware or hardware certification.",
+    "Route fixture is fixed to 8.8.8.8, main table; RouterOS fixture has an exact /32 entry.",
+    "Global Agent Ruff has two preexisting import-order errors, outside this delivery.",
+    "Functional regressions ran in the existing workspace; unrelated preexisting edits were preserved and excluded from these commits."
+  ],
+  "screenshots_sha256": {
+    "ne8000-1440-dark.png": "336776b6632a1d2635c9e5f84f0e8f4d6ad2e18ffbf2e0ce45ef40fca2f9dae8",
+    "ne8000-1440-light.png": "deaf41a2972ac1eedfe85e73dd03414e54e7698ae697dda89494ec3e2e1bbe02",
+    "ne8000-390-dark.png": "ad1baaaa30598b8d41f7205bf270a83c8d3f91853c1728819397d7b51277363a",
+    "ne8000-390-light.png": "632773672f3bddeee1a8e79c3d8b6c29541fcc313705709a3ee69351733dd102",
+    "ne8000-result-1440-dark.png": "eec5a29f859baa69b800a8be115b5c4f9ce368ed2c0ee4bd8671333a691342fd",
+    "ne8000-result-1440-light.png": "a16c82450aadef7be64639d7019801ee760e370484d6b9f0b74fe0a806840871",
+    "ne8000-result-390-dark.png": "c2582e623fb814f3433124c03469545fcf0f085fe742c03a8b6b209cb94dfb41",
+    "ne8000-result-390-light.png": "aed0fee095fd77728d6510d35f7d53b25e0cf9459bcf9f2fca6310ab1917161d",
+    "noc-form-error-1440-dark.png": "392aa0f81f86c33bf8d6d6b69a8e90eff98c49cd6ea1c8790dc575798442140d",
+    "noc-form-error-1440-light.png": "ff4db6e1ec88c1fd9ebdad3c1a22bf5046c212f8915e321d8a95508a11dc1f94",
+    "noc-form-error-390-dark.png": "67e1c50df9fe215a2c5ad6c69b2d25c5fa32ee6de62e60e767a7c576ef06e1a2",
+    "noc-form-error-390-light.png": "5ff30527a24feb1e85872013f20cfb04ce29a70e4bdb2d49439b37b9f8028c5c",
+    "routeros7-1440-dark.png": "641b4815bfbde1d226798516ec49cc005ccf836502945a70918b1b221602c585",
+    "routeros7-1440-light.png": "5736ba59594ba8a07b055189dd6f02e886d8cb54448f0b3511229af2d67b31c1",
+    "routeros7-390-dark.png": "ad1baaaa30598b8d41f7205bf270a83c8d3f91853c1728819397d7b51277363a",
+    "routeros7-390-light.png": "632773672f3bddeee1a8e79c3d8b6c29541fcc313705709a3ee69351733dd102",
+    "routeros7-result-1440-dark.png": "e6b9ec3846135da205f36d832eb2a8e717dc46a78f6505127402628d02cff812",
+    "routeros7-result-1440-light.png": "abd00ba9204a8212071da78d60f72fdc5f049caa3ab39e59a1ed1f8ea983455a",
+    "routeros7-result-390-dark.png": "df4466215bfb99245ebb7f01dbcc7139b1aa0eb89daddfea44c28135a8e8cc1a",
+    "routeros7-result-390-light.png": "81eff1f32c37eebf481ae8ac9dd4edc2718cb1abc36f8f285e94445e802c9c69"
+  }
+}
