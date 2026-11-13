@@ -9,6 +9,7 @@ use App\Models\NocDeviceRevision;
 use App\Models\NocSimulation;
 use App\Models\User;
 use App\Noc\Analysis\SimulationScope;
+use App\Noc\ReadOnlyLab\Failure;
 use App\Services\Audit;
 use App\Tenancy\TenantContext;
 use Illuminate\Database\QueryException;
@@ -57,28 +58,42 @@ class Inventory
         if ($scope === SimulationScope::AdministrativeDemo) {
             abort_unless(str_starts_with($fixture, 'da-'), 422);
         }
-        if (str_starts_with($fixture, 'da-')) {
+        if ((str_starts_with($fixture, 'da-') || str_starts_with($fixture, 'ssh-'))) {
             abort_unless($scope->enabled(), 403);
         }
 
-        return DB::transaction(function () use ($actor, $device, $fixture, $key, $parameters, $expectedRevision, $scope) {
-            DB::select('SELECT pg_advisory_xact_lock(7830, ?::integer)', [$actor->id]);
-            $d = NocDevice::whereKey($device->id)->lockForUpdate()->firstOrFail();
-            $old = NocSimulation::where('actor_id', $actor->id)->where('request_key', $key)->first();
-            if ($old) {
-                abort_unless(($old->result['simulation_scope'] ?? SimulationScope::LaboratoryConversation->value) === $scope->value && $old->device_id === $d->id && $old->fixture === $fixture && Digest::hash($old->result['parameters'] ?? []) === Digest::hash($parameters) && ($expectedRevision === null || $old->result['device_revision'] === $expectedRevision), 409);
+        try {
+            return DB::transaction(function () use ($actor, $device, $fixture, $key, $parameters, $expectedRevision, $scope) {
+                if (str_starts_with($fixture, 'ssh-')) {
+                    DB::statement("SET LOCAL lock_timeout = '2s'");
+                }
+                DB::select('SELECT pg_advisory_xact_lock(7830, ?::integer)', [$actor->id]);
+                $d = NocDevice::whereKey($device->id)->lockForUpdate()->firstOrFail();
+                $old = NocSimulation::where('actor_id', $actor->id)->where('request_key', $key)->first();
+                if ($old) {
+                    abort_unless(($old->result['simulation_scope'] ?? SimulationScope::LaboratoryConversation->value) === $scope->value && $old->device_id === $d->id && $old->fixture === $fixture && Digest::hash($old->result['parameters'] ?? []) === Digest::hash($parameters) && ($expectedRevision === null || $old->result['device_revision'] === $expectedRevision), 409);
 
-                return $old;
-            }
-            if (str_starts_with($fixture, 'da-')) {
-                abort_unless($expectedRevision !== null && $expectedRevision === $d->revision, 409, 'Revisão do equipamento mudou; reabra o cenário.');
-            }
-            $result = app(Catalog::class)->fixtureFor($d, $fixture, $parameters, $scope);
-            $row = (new NocSimulation)->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $d->tenant_id, 'device_id' => $d->id, 'actor_id' => $actor->id, 'request_key' => $key, 'fixture' => $fixture, 'result' => $result, 'is_simulated' => true, 'created_at' => now()]);
-            $row->save();
-            app(Audit::class)->record('noc.simulation_created', $actor, $d->tenant_id, 'noc_simulation', metadata: ['device_id' => $d->id, 'simulation_scope' => $scope->value]);
+                    return $old;
+                }
+                if ((str_starts_with($fixture, 'da-') || str_starts_with($fixture, 'ssh-'))) {
+                    abort_unless($expectedRevision !== null && $expectedRevision === $d->revision, 409, 'Revisão do equipamento mudou; reabra o cenário.');
+                }
+                $result = app(Catalog::class)->fixtureFor($d, $fixture, $parameters, $scope);
+                $row = (new NocSimulation)->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $d->tenant_id, 'device_id' => $d->id, 'actor_id' => $actor->id, 'request_key' => $key, 'fixture' => $fixture, 'result' => $result, 'is_simulated' => true, 'created_at' => now()]);
+                $row->save();
+                app(Audit::class)->record('noc.simulation_created', $actor, $d->tenant_id, 'noc_simulation', metadata: ['device_id' => $d->id, 'simulation_scope' => $scope->value, 'contract_id' => $result['contract_id'] ?? null, 'parameters_digest' => Digest::hash($parameters), 'device_revision' => $d->revision, 'access_revision' => $result['access_revision'] ?? null]);
 
-            return $row;
-        });
+                return $row;
+            });
+        } catch (QueryException $e) {
+            if (str_starts_with($fixture, 'ssh-') && ($e->errorInfo[0] ?? null) === '55P03') {
+                app(Audit::class)->record('noc.lab_query_failed', $actor, $device->tenant_id, 'noc_device', metadata: ['device_id' => $device->id, 'reason' => 'LAB_BUSY']);
+                throw new Failure('LAB_BUSY');
+            }
+            throw $e;
+        } catch (Failure $e) {
+            app(Audit::class)->record('noc.lab_query_failed', $actor, $device->tenant_id, 'noc_device', metadata: ['device_id' => $device->id, 'reason' => $e->reason, 'contract_id' => substr($fixture, 4), 'parameters_digest' => Digest::hash($parameters), 'device_revision' => $device->revision]);
+            throw $e;
+        }
     }
 }

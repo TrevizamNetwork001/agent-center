@@ -1487,6 +1487,14 @@
                       "additionalProperties": false
                     },
                     "maxItems": 128
+                  },
+                  "address_family": {
+                    "type": "string",
+                    "enum": [
+                      "IPV4_UNICAST",
+                      "IPV6_UNICAST",
+                      "UNKNOWN"
+                    ]
                   }
                 },
                 "required": [
@@ -1758,6 +1766,38 @@
                     "maximum": 9007199254740991
                   },
                   "flaps_total": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "rx_bytes": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "tx_bytes": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "rx_errors": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "tx_errors": {
                     "type": [
                       "integer",
                       "null"
@@ -2094,6 +2134,14 @@
                 "source"
               ],
               "additionalProperties": false
+            },
+            "memory_percent": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 100
             }
           },
           "required": [

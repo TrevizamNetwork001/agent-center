@@ -9,6 +9,9 @@ use App\Models\NocDevice;
 use App\Models\NocSimulation;
 use App\Noc\Inventory;
 use App\Noc\Planning;
+use App\Noc\ReadOnlyLab\Access;
+use App\Noc\ReadOnlyLab\Failure;
+use App\Noc\ReadOnlyLab\Operation;
 use Illuminate\Validation\ValidationException;
 
 /** An explicit LAB action through the existing conversation and inventory transaction. */
@@ -34,6 +37,27 @@ class ConversationSimulation
         $prefix = match ($platform) {
             'ne8000-vrp8' => 'da-ne8000-','ccr-routeros7' => 'da-ros7-',default => ''
         };
+        $sshOperation = match (strtolower($m[1])) {
+            'ssh-bgp' => Operation::Bgp,
+            'ssh-route' => Operation::Route,
+            'ssh-interfaces' => Operation::Interfaces,
+            'ssh-resources' => Operation::Resources,
+            default => null,
+        };
+        if ($sshOperation !== null) {
+            if (! app(Access::class)->enabled()) {
+                return ['text' => 'SIMULADO: laboratório SSH indisponível. Nenhuma consulta foi executada.', 'metadata' => ['simulation' => false]];
+            }
+            try {
+                $params = $sshOperation === Operation::Route ? ['destination' => '8.8.8.8'] : [];
+                $sim = app(Inventory::class)->simulate($i->user, $d, 'ssh-'.$sshOperation->value, $key, $params, $d->revision);
+            } catch (Failure|ValidationException) {
+                return ['text' => 'SIMULADO: a consulta SSH de laboratório não produziu evidências válidas. Detalhes no painel. Nenhuma medição real foi realizada.', 'metadata' => ['simulation' => true, 'operational_enabled' => false]];
+            }
+            $c->context_json = [...$c->context_json, 'last_device_simulation_id' => $sim->id];
+
+            return app(DiagnosticExperience::class)->simulationResult($c, $sim, $i);
+        }
         $fixture = $prefix.strtolower($m[1]);
         $f = app(Simulation::class)->fixtures($d)[$fixture] ?? null;
         if (! $f) {

@@ -108,6 +108,9 @@ class Deliver implements ShouldQueue
                             $sim = NocSimulation::whereKey($m->metadata['device_simulation_id'])->where('actor_id', $identity->user->id)->first();
                             $device = $sim ? NocDevice::find($sim->device_id) : null;
                             $allowed = $allowed && app(Contracts::class)->labEnabled() && $device && ($sim->result['mode'] ?? null) === 'SIMULATED' && ($sim->result['simulation_scope'] ?? null) !== SimulationScope::AdministrativeDemo->value;
+                            if (isset($sim->result['transport'])) {
+                                $allowed = $allowed && app(\App\Noc\ReadOnlyLab\Access::class)->enabled();
+                            }
                             if ($allowed) {
                                 Gate::forUser($identity->user)->authorize('simulate', $device);
                             }

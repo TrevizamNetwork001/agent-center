@@ -304,13 +304,13 @@ class DiagnosticExperience
         $facts = array_slice($s['facts'], 0, 6);
         $choice = ['summary' => 'lab', 'explanation' => 'facts', 'next_steps' => array_map(fn ($i) => $i.':short', array_keys($facts))];
         $meta = ['diagnostic_experience' => self::VERSION, 'tracking' => false, 'simulation' => true, 'device_simulation_id' => $simulation->id, 'classification' => $s['classification'], 'objective_coverage' => $s['coverage'], 'result_status' => 'LOCAL', 'tone' => $tone['style']];
-        // A fixture action has no network transport. Explanation is a separate explicit, opted-in action.
+        // Explanation is separate and opted-in; lab evidence never grants operational authority.
         $binding = $explain ? LlmBinding::where('purpose', 'diagnostic_explanation')->where('enabled', true)->first() : null;
         if ($binding && ($binding->config['allow_external_context'] ?? false) === true && ($binding->config['allow_conversation_language'] ?? false) === true) {
             [$choice,$extra] = $this->compose($c, $identity, $binding, $s, $tone, $intro, $bridge, $facts, $choice);
             $meta = [...$meta, ...$extra];
         }
-        $lines = ['SIMULATED / LAB', $intro[$choice['summary']], $s['summary'], 'Classificação do cenário: '.$s['classification'].'.', $bridge[$choice['explanation']]];
+        $lines = [isset($s['transport']) ? 'SIMULADO · SIMULATED / LAB · SSH fictício' : 'SIMULATED / LAB', $intro[$choice['summary']], $s['summary'], 'Classificação do cenário: '.$s['classification'].'.', $bridge[$choice['explanation']]];
         foreach ($choice['next_steps'] as $id) {
             [$index,$format] = explode(':', $id);
             $lines[] = '• '.$facts[(int) $index][$format === 'plain' ? 'plain' : 'text'];

@@ -6,6 +6,7 @@ use App\Models\NocDevice;
 use App\Noc\Analysis\Contracts;
 use App\Noc\Analysis\Simulation;
 use App\Noc\Analysis\SimulationScope;
+use App\Noc\ReadOnlyLab\Query;
 use Illuminate\Validation\ValidationException;
 
 /** Administrative metadata only. No entry grants an operational capability. */
@@ -42,6 +43,9 @@ class Catalog
 
     public function fixtureFor(NocDevice $device, string $key, array $parameters = [], SimulationScope $scope = SimulationScope::LaboratoryConversation): array
     {
+        if (str_starts_with($key, 'ssh-')) {
+            return app(Query::class)->result($device, $key, $parameters, $scope);
+        }
         if (str_starts_with($key, 'da-')) {
             return app(Simulation::class)->result($device, $key, $parameters, $scope);
         }

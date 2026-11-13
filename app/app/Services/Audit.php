@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Noc\ReadOnlyLab\Operation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -11,7 +12,7 @@ class Audit
 {
     public function record(string $event, ?User $actor = null, ?int $tenantId = null, ?string $entity = null, ?int $entityId = null, array $metadata = []): void
     {
-        if ($event !== 'llm.identity_registered' && ! in_array($event, ['noc.device_created', 'noc.device_updated', 'noc.device_deactivated', 'noc.simulation_created', 'conversation.diagnostic_presented', 'telegram.link_admin_assigned', 'telegram.group_code_created', 'telegram.group_claimed', 'telegram.group_verified', 'telegram.group_revoked', 'telegram.member_authorized', 'telegram.member_revoked', 'telegram.configured', 'telegram.webhook_changed', 'telegram.link_code_created', 'telegram.link_claimed', 'telegram.link_verified', 'telegram.link_revoked', 'telegram.tested', 'telegram.processing_failed', 'telegram.delivery_failed', 'telegram.delivery_retry', 'conversation.language_rendered', 'rag.reindexed', 'rag.searched', 'rag.answered', 'agent.lifecycle_bootstrap_authorized', 'agent.lifecycle_bootstrap_completed', 'agent.permission_requested', 'agent.release_quarantined', 'agent.recovery_requested', 'agent.recovery_verified', 'agent.maintenance_saved', 'agent.maintenance_checked', 'agent.maintenance_removed', 'agent.release_published', 'agent.settings_updated', 'backup.settings_updated', 'backup.requested', 'agent.created', 'agent.deleted', 'agent.enrollment_requested', 'agent.enrollment_approved', 'agent.update_requested', 'agent.update_authorized', 'agent.update_approved', 'agent.update_started', 'agent.update_completed', 'agent.update_failed', 'agent.rollback_requested', 'agent.rollback_completed', 'agent.rollback_failed', 'conversation.transitioned', 'conversation.rollout_updated', 'auth.login_success', 'auth.login_failed', 'auth.logout', 'auth.password_changed', 'user.created', 'user.updated', 'user.disabled', 'tenant.created', 'tenant.updated', 'agent.enrollment_created', 'agent.enrolled', 'agent.capabilities_updated', 'agent.revoked', 'diagnostic.created', 'diagnostic.started', 'diagnostic.cancel_requested', 'diagnostic.cancelled', 'diagnostic.completed', 'diagnostic.failed', 'profile.created', 'profile.updated', 'skill.enabled', 'skill.schema_updated', 'skill.disabled', 'knowledge.created', 'knowledge.version_created', 'knowledge.published', 'knowledge.superseded', 'knowledge.rollback_created', 'knowledge.archived', 'prompt.created', 'prompt.version_created', 'prompt.published', 'prompt.superseded', 'prompt.rollback_created', 'prompt.archived', 'llm.provider_created', 'llm.provider_updated', 'llm.secret_updated', 'llm.model_created', 'llm.binding_updated'], true)) {
+        if ($event !== 'llm.identity_registered' && ! in_array($event, ['noc.lab_access_rotated', 'noc.lab_access_revoked', 'noc.lab_query_failed', 'noc.device_created', 'noc.device_updated', 'noc.device_deactivated', 'noc.simulation_created', 'conversation.diagnostic_presented', 'telegram.link_admin_assigned', 'telegram.group_code_created', 'telegram.group_claimed', 'telegram.group_verified', 'telegram.group_revoked', 'telegram.member_authorized', 'telegram.member_revoked', 'telegram.configured', 'telegram.webhook_changed', 'telegram.link_code_created', 'telegram.link_claimed', 'telegram.link_verified', 'telegram.link_revoked', 'telegram.tested', 'telegram.processing_failed', 'telegram.delivery_failed', 'telegram.delivery_retry', 'conversation.language_rendered', 'rag.reindexed', 'rag.searched', 'rag.answered', 'agent.lifecycle_bootstrap_authorized', 'agent.lifecycle_bootstrap_completed', 'agent.permission_requested', 'agent.release_quarantined', 'agent.recovery_requested', 'agent.recovery_verified', 'agent.maintenance_saved', 'agent.maintenance_checked', 'agent.maintenance_removed', 'agent.release_published', 'agent.settings_updated', 'backup.settings_updated', 'backup.requested', 'agent.created', 'agent.deleted', 'agent.enrollment_requested', 'agent.enrollment_approved', 'agent.update_requested', 'agent.update_authorized', 'agent.update_approved', 'agent.update_started', 'agent.update_completed', 'agent.update_failed', 'agent.rollback_requested', 'agent.rollback_completed', 'agent.rollback_failed', 'conversation.transitioned', 'conversation.rollout_updated', 'auth.login_success', 'auth.login_failed', 'auth.logout', 'auth.password_changed', 'user.created', 'user.updated', 'user.disabled', 'tenant.created', 'tenant.updated', 'agent.enrollment_created', 'agent.enrolled', 'agent.capabilities_updated', 'agent.revoked', 'diagnostic.created', 'diagnostic.started', 'diagnostic.cancel_requested', 'diagnostic.cancelled', 'diagnostic.completed', 'diagnostic.failed', 'profile.created', 'profile.updated', 'skill.enabled', 'skill.schema_updated', 'skill.disabled', 'knowledge.created', 'knowledge.version_created', 'knowledge.published', 'knowledge.superseded', 'knowledge.rollback_created', 'knowledge.archived', 'prompt.created', 'prompt.version_created', 'prompt.published', 'prompt.superseded', 'prompt.rollback_created', 'prompt.archived', 'llm.provider_created', 'llm.provider_updated', 'llm.secret_updated', 'llm.model_created', 'llm.binding_updated'], true)) {
             throw new InvalidArgumentException('Evento não permitido.');
         }
         $safe = [];
@@ -76,6 +77,22 @@ class Audit
         foreach (['device_id', 'link_id', 'release_id', 'operation_id', 'conversation_id', 'agent_id', 'enrollment_id', 'diagnostic_id', 'profile_id', 'skill_id', 'knowledge_id', 'version_id', 'prompt_id', 'provider_id', 'model_id', 'binding_id'] as $key) {
             if (isset($metadata[$key]) && is_string($metadata[$key]) && Str::isUuid($metadata[$key])) {
                 $safe[$key] = $metadata[$key];
+            }
+        }
+        if (in_array($event, ['noc.lab_access_rotated', 'noc.lab_access_revoked', 'noc.lab_query_failed', 'noc.simulation_created'], true)) {
+            if (in_array($metadata['contract_id'] ?? null, array_column(Operation::cases(), 'value'), true)) {
+                $safe['contract_id'] = $metadata['contract_id'];
+            }
+            foreach (['revision', 'device_revision', 'access_revision'] as $field) {
+                if (is_int($metadata[$field] ?? null) && $metadata[$field] > 0) {
+                    $safe[$field] = $metadata[$field];
+                }
+            }
+            if (is_string($metadata['parameters_digest'] ?? null) && preg_match('/^[a-f0-9]{64}$/D', $metadata['parameters_digest'])) {
+                $safe['parameters_digest'] = $metadata['parameters_digest'];
+            }
+            if (in_array($metadata['reason'] ?? null, ['LAB_BUSY', 'LAB_ROUTE_NOT_SUPPORTED', 'HOST_IDENTITY_REJECTED', 'AUTHENTICATION_FAILED', 'SSH_UNAVAILABLE_OR_NEGOTIATION_FAILED', 'TIMEOUT', 'OUTPUT_LIMIT', 'INVALID_RESPONSE', 'UNRECOGNIZED_OR_TRUNCATED_OUTPUT', 'INVALID_ROWS', 'INVALID_MEMORY', 'INVALID_EVIDENCE', 'LAB_CREDENTIAL_UNAVAILABLE', 'LAB_ACCESS_NOT_APPROVED'], true)) {
+                $safe['reason'] = $metadata['reason'];
             }
         }
         // Dados de requisição, email, senha, hash, cookie, headers e tokens nunca entram aqui.

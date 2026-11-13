@@ -74,6 +74,9 @@ class Interpretation
                     }
                     $facts[] = $this->fact('interface', $r['interface'].': administrativo '.$r['admin_state'].', operacional '.$r['oper_state'].', velocidade '.($r['speed_bps'] === null ? 'não informada' : $r['speed_bps'].' bit/s').'. Flaps acumulados: '.($r['flaps_total'] ?? 'não informados').'.');
                 }
+                if (isset($data['items'][0]['rx_errors'])) {
+                    $limitations[] = 'Bytes e erros são contadores acumulados de uma única amostra. Sem janela temporal não indicam crescimento nem falha.';
+                }
                 $limitations[] = 'Porta administrativamente desativada não é classificada como falha. Flaps acumulados sem janela não indicam crescimento.';
                 break;
             case 'counters':
@@ -106,7 +109,7 @@ class Interpretation
                 break;
             case 'resources':
                 $cpu = $data['cpu_percent'];
-                $mem = $data['memory_total_bytes'] !== null && $data['memory_total_bytes'] > 0 && $data['memory_used_bytes'] !== null ? round(100 * $data['memory_used_bytes'] / $data['memory_total_bytes'], 2) : null;
+                $mem = $data['memory_percent'] ?? ($data['memory_total_bytes'] !== null && $data['memory_total_bytes'] > 0 && $data['memory_used_bytes'] !== null ? round(100 * $data['memory_used_bytes'] / $data['memory_total_bytes'], 2) : null);
                 foreach (['cpu_percent' => [$cpu, 'CPU'], 'memory_percent' => [$mem, 'Memória']] as $key => [$value,$label]) {
                     $ref = $data['references'][$key];
                     $text = $label.': '.($value === null ? 'sem dados' : $value.'%').'. Referência '.($ref === null ? 'não configurada' : $ref.'%').' ('.$data['references']['source'].').';

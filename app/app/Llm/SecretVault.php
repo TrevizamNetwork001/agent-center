@@ -15,7 +15,7 @@ class SecretVault
         return is_string($k) && strlen($k) === 32 ? $k : null;
     }
 
-    public function encrypt(string $secret, string $provider, int $tenant): array
+    public function encrypt(#[\SensitiveParameter] string $secret, string $provider, int $tenant): array
     {
         $k = $this->key((string) config('llm.key_file'));
         if (! $k) {

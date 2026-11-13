@@ -45,6 +45,10 @@ class Evidence
         if ($contract['kind'] === 'resources' && $data['memory_used_bytes'] !== null && $data['memory_total_bytes'] !== null && $data['memory_used_bytes'] > $data['memory_total_bytes']) {
             $schema->invalid('memory');
         }
+        if ($contract['kind'] === 'resources' && isset($data['memory_percent'], $data['memory_used_bytes'], $data['memory_total_bytes']) && $data['memory_total_bytes'] > 0
+            && abs($data['memory_percent'] - round(100 * $data['memory_used_bytes'] / $data['memory_total_bytes'], 2)) > 0.01) {
+            $schema->invalid('memory_percent_consistency');
+        }
         if ($contract['kind'] === 'route' && ($data['found'] !== ($data['items'] !== []))) {
             $schema->invalid('route_consistency');
         }

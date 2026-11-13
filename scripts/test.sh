@@ -12,12 +12,24 @@ test_image=${TEST_IMAGE:-agent-center-tooling:foundation}
 docker exec "$test_pg_container" sh -c 'createdb -U "$POSTGRES_USER" -O "$APP_DB_USER" agent_center_test'
 cleanup() { docker exec "$test_pg_container" sh -c 'dropdb -U "$POSTGRES_USER" agent_center_test'; }
 trap cleanup EXIT
+composer_network=()
 mounts=(--mount "type=bind,src=$PWD/app,dst=/var/www/html")
+# Optional ephemeral state for the isolated device protocol laboratory.
+if [ -n "${TEST_DEVICE_PROTOCOL_STATE:-}" ]; then
+ composer_network=(--network none)
+ test -d "$TEST_DEVICE_PROTOCOL_STATE"
+ test -f "$TEST_DEVICE_PROTOCOL_STATE/empty.env"
+ mounts+=(--mount "type=bind,src=$TEST_DEVICE_PROTOCOL_STATE/empty.env,dst=/var/www/html/.env,readonly")
+ mounts+=(--mount "type=bind,src=$TEST_DEVICE_PROTOCOL_STATE,dst=/lab")
+fi
 if [ -f "$test_ca" ]; then mounts+=(--mount "type=bind,src=$test_ca,dst=/run/pg-tls/ca.crt,readonly"); fi
-docker run --rm "${mounts[@]}" "$test_image" composer install --no-interaction --prefer-dist
+docker run --rm "${composer_network[@]}" "${mounts[@]}" "$test_image" composer install --no-interaction --prefer-dist
 docker run --rm --network "$test_network" --env-file "$test_owner_env" -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php artisan migrate --force
 docker exec -i "$test_pg_container" sh -c 'psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d agent_center_test -f /dev/stdin' < deploy/database-roles.sql
 docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php vendor/bin/phpunit --display-warnings --fail-on-warning "$@"
+if [ "${TEST_DEVICE_PROTOCOL_CONCURRENCY:-0}" = 1 ]; then
+ docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/device-readonly-concurrency.php
+fi
 if [ "${TEST_DIAGNOSTIC_CONCURRENCY:-0}" = 1 ]; then
  docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/diagnostic-concurrency.php
 fi
@@ -25,4 +37,9 @@ if [ "${TEST_CONVERSATION_IDLE_CONCURRENCY:-0}" = 1 ]; then
  docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/conversation-idle-concurrency.php
  docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/preflight-concurrency.php
 fi
-docker run --rm --network "$test_network" --env-file "$test_owner_env" -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php artisan migrate:rollback --force
+if [ "${TEST_DEVICE_PROTOCOL_CONCURRENCY:-0}" = 1 ]; then
+ # The contention fixture is committed. Verify refusal to destroy its data.
+ docker run --rm --network "$test_network" --env-file "$test_owner_env" -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/device-readonly-rollback.php
+else
+ docker run --rm --network "$test_network" --env-file "$test_owner_env" -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php artisan migrate:rollback --force
+fi

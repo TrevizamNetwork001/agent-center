@@ -36,3 +36,6 @@ SELECT format('GRANT SELECT, INSERT, UPDATE ON TABLE public.%I TO %I',tablename,
 
 SELECT format('GRANT SELECT, INSERT, UPDATE ON TABLE public.noc_devices TO %I', :'runtime_user') WHERE to_regclass('public.noc_devices') IS NOT NULL \gexec
 SELECT format('GRANT SELECT, INSERT ON TABLE public.%I TO %I',tablename,:'runtime_user') FROM pg_tables WHERE schemaname='public' AND tablename IN ('noc_device_revisions','noc_simulations') \gexec
+
+-- New laboratory-only resource; does not grant permission to query devices.
+SELECT format('GRANT SELECT, INSERT, UPDATE ON TABLE public.device_lab_accesses TO %I', :'runtime_user') WHERE to_regclass('public.device_lab_accesses') IS NOT NULL \gexec

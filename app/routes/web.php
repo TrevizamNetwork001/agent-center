@@ -12,6 +12,7 @@ use App\Http\Controllers\AuditController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeviceReadOnlyLabController;
 use App\Http\Controllers\DiagnosticCatalogController;
 use App\Http\Controllers\DiagnosticController;
 use App\Http\Controllers\KnowledgeController;
@@ -146,6 +147,7 @@ Route::middleware(['auth', 'auth.session', 'password.changed'])->prefix('noc-inv
     Route::get('/{nocDevice}/edit', [NocInventoryController::class, 'edit'])->whereUuid('nocDevice')->name('noc.edit');
     Route::put('/{nocDevice}', [NocInventoryController::class, 'update'])->whereUuid('nocDevice')->middleware('throttle:30,1')->name('noc.update');
     Route::post('/{nocDevice}/deactivate', [NocInventoryController::class, 'deactivate'])->whereUuid('nocDevice')->middleware('throttle:30,1')->name('noc.deactivate');
+    Route::post('/{nocDevice}/readonly-lab', [DeviceReadOnlyLabController::class, 'store'])->whereUuid('nocDevice')->middleware('throttle:10,1')->name('noc.readonly-lab');
     Route::post('/{nocDevice}/simulations', [NocInventoryController::class, 'simulate'])->whereUuid('nocDevice')->middleware('throttle:30,1')->name('noc.simulate');
 });
 

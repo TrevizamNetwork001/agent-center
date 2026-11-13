@@ -1,0 +1,15 @@
+{
+  "huawei": {
+    "display version": "VRP (R) software, Version 8.230 (V800R023C00SPC500)\nHUAWEI NE8000 M4\n",
+    "display bgp peer": "Peer V AS MsgRcvd MsgSent OutQ Up/Down State PrefRcv\n192.0.2.1 4 64512 100 100 0 01:00:00 Established 3\n192.0.2.2 4 64513 200 200 0 02:00:00 Established 5\n192.0.2.3 4 64514 0 0 0 00:00:00 Idle 0\n",
+    "display ip routing-table 8.8.8.8": "Destination/Mask Proto Pre Cost Flags NextHop Interface\n8.8.8.8/32 BGP 255 0 RD 192.0.2.1 GE0/0/0\n",
+    "display interface": "Interface Admin Physical Speed RX-bytes TX-bytes RX-errors TX-errors\nGE0/0/0 UP UP 1000000000 1000 2000 7 0\nGE0/0/1 DOWN DOWN 1000000000 0 0 0 0\n",
+    "display health": "Slot CPU Usage Memory Usage\n0 12% 40%\n"
+  },
+  "routeros": {
+    "/system resource print": "version: 7.16.2\nboard-name: CCR2004-16G-2S+\ncpu-load: 12%\ntotal-memory: 1073741824\nfree-memory: 536870912\n",
+    "/routing bgp session print detail without-paging": "Flags: E - established\n0 remote.address=192.0.2.1 uptime=01:00:00 state=established address-families=ip\n1 remote.address=192.0.2.2 uptime=02:00:00 state=established address-families=ip\n2 remote.address=192.0.2.3 uptime=00:00:00 state=idle address-families=ip\n",
+    "/ip route print detail without-paging where dst-address=8.8.8.8/32": "Flags: A - active; b - bgp\n0 Ab dst-address=8.8.8.8/32 gateway=192.0.2.1 distance=20 routing-table=main\n",
+    "/interface print stats-detail without-paging": "Flags: R - running; X - disabled\n0 name=ether1 disabled=false running=true speed=1000000000 rx-byte=1000 tx-byte=2000 rx-error=7 tx-error=0\n1 name=ether2 disabled=true running=false speed=1000000000 rx-byte=0 tx-byte=0 rx-error=0 tx-error=0\n"
+  }
+}
