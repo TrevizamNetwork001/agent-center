@@ -1,5 +1,7 @@
 # MikroTik Read-Only Integration V1 — avaliação de prontidão
 
+Registro histórico da avaliação documental `3955be0`. A implementação posterior e suas evidências estão em [MIKROTIK_READONLY_INTEGRATION_V1_IMPLEMENTED.md](MIKROTIK_READONLY_INTEGRATION_V1_IMPLEMENTED.md).
+
 Data: 2026-11-14. Base Git: `487ed69`, após `25ff80a`.
 
 **BLOCKED: o fluxo RouterOS existente não passa pelo Task Engine nem pelo Python Agent. A integração solicitada não foi implementada nesta rodada.** Este documento não é evidência de conclusão e não autoriza execução. Não existe candidata de Agent produzida por esta rodada.

@@ -1,0 +1,6 @@
+Filter list data could not be fetched from some sources (ignored per policy.ignore-unreachable); matches may be incomplete:
+  - curl error 6 while downloading https://repo.packagist.org/packages.json: Could not resolve host: repo.packagist.org
+Time: 01:33.683, Memory: 62.50 MB
+OK (2 tests, 261 assertions)
+Mikrotik populated rollback guard PASS: approval evidence preserved.
+Device Read-Only populated rollback guard PASS: data preserved.

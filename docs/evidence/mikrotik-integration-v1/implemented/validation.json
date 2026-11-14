@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-14",
+  "result": "MIKROTIK READ-ONLY INTEGRATION LAB PASS",
+  "code_commit": "7f2dd4b28a127024fce6bc63a398692ef7b564cf",
+  "laravel_full": {
+    "tests": 587,
+    "assertions": 5437,
+    "skipped": 1,
+    "errors": 0,
+    "failures": 0,
+    "skip_reason": "Integrated Runtime test requires the dedicated private namespace; executed successfully in the acceptance runner."
+  },
+  "integrated_acceptance": {
+    "tests": 2,
+    "assertions": 261,
+    "result": "PASS",
+    "ssh": "real SSH protocol against isolated simulator",
+    "agent_api": "real HTTP and native authentication",
+    "six_conversation_operations": true,
+    "tasks": 32,
+    "attempts": 24,
+    "conclusions": 32,
+    "blocked_before_dispatch": 8,
+    "operational_device_access": false
+  },
+  "python": {
+    "tests": 190,
+    "result": "PASS",
+    "runtime": "Python 3.13 non-root tooling; network none"
+  },
+  "pint": {
+    "files": 380,
+    "result": "PASS"
+  },
+  "ruff": {
+    "agent": "PASS",
+    "new_lab_tooling": "PASS"
+  },
+  "build": {
+    "result": "PASS",
+    "command": "npm ci --include=optional --ignore-scripts && npm run build",
+    "runtime": "Node 24 Linux amd64 glibc",
+    "lockfile_changed": false,
+    "npm_reported_vulnerabilities": 0
+  },
+  "visual": {
+    "result": "PASS",
+    "widths": [
+      390,
+      768,
+      1440
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "screenshots": 6,
+    "js_errors": 0,
+    "horizontal_overflow": false,
+    "manual_inspection": [
+      "390-dark",
+      "1440-light"
+    ]
+  },
+  "preexisting": {
+    "pint_three_files": "Minimal workspace formatting corrections; recorded separately in baseline-formatting.patch",
+    "ruff_two_imports": "Minimal workspace import sorting; no updater or Lifecycle behavior changed",
+    "rolldown_binding": "Resolved by clean locked platform-correct build",
+    "root_host_self_check": "Environmental failure retained in historical report; compatible non-root Python tooling passes",
+    "composer_advisories": "Unavailable in network-isolated composer install; no fresh Composer advisory audit claimed"
+  },
+  "rollback_guards": {
+    "approval_preserved": true,
+    "credentials_preserved": true
+  },
+  "production": {
+    "deployed": false,
+    "agent_updated": false,
+    "device_connected": false,
+    "device_freeze": true,
+    "acl_changed": false,
+    "lifecycle_changed": false,
+    "r2_changed": false
+  },
+  "secret_scan": "PASS (basic Git index scan; see secret-scan.log)",
+  "diff_check": "PASS"
+}

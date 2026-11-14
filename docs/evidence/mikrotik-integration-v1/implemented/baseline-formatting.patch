@@ -1,0 +1,35 @@
+--- a/agent/src/agent_center/heartbeat.py
++++ b/agent/src/agent_center/heartbeat.py
+@@ -5,0 +6 @@
++from .observability import record_applied
+@@ -8 +8,0 @@
+-from .observability import record_applied
+--- a/agent/src/agent_center/update/remote.py
++++ b/agent/src/agent_center/update/remote.py
+@@ -14,0 +15 @@
++import shutil
+@@ -15,0 +17 @@
++import stat
+@@ -18,2 +19,0 @@
+-import shutil
+-import stat
+--- a/app/app/Web/AuditPresentation.php
++++ b/app/app/Web/AuditPresentation.php
+@@ -103 +102,0 @@
+-
+--- a/app/tests/Feature/AgentManagedSettingsTest.php
++++ b/app/tests/Feature/AgentManagedSettingsTest.php
+@@ -112 +112 @@
+-        $this->actingAs($this->admin)->get('/agents')->assertOk()->assertSee('Adicionar agente no provedor')->assertSee('Escolha um agente')->assertSee('<details class="card agent-enrollment" id="enrollment">',false)->assertDontSee('Novo enrollment');
++        $this->actingAs($this->admin)->get('/agents')->assertOk()->assertSee('Adicionar agente no provedor')->assertSee('Escolha um agente')->assertSee('<details class="card agent-enrollment" id="enrollment">', false)->assertDontSee('Novo enrollment');
+--- a/app/tests/Support/LayoutAuditSnapshotTest.php
++++ b/app/tests/Support/LayoutAuditSnapshotTest.php
+@@ -7,0 +8,2 @@
++use Illuminate\Support\Facades\Auth;
++use Tests\Feature\WebUxTest;
+@@ -10 +12 @@
+-class LayoutAuditSnapshotTest extends \Tests\Feature\WebUxTest
++class LayoutAuditSnapshotTest extends WebUxTest
+@@ -55 +57 @@
+-        \Illuminate\Support\Facades\Auth::forgetGuards();
++        Auth::forgetGuards();

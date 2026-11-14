@@ -1,0 +1,406 @@
+[
+  {
+    "platform": "huawei",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp connection print count-only"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system identity print"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp connection print count-only"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing route print terse without-paging where dst-address=8.8.8.8/32 && routing-table=main"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing route print terse without-paging where dst-address=8.8.8.8/31 && routing-table=main"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing route print terse without-paging where dst-address=8.8.8.8/30 && routing-table=main"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing route print terse without-paging where dst-address=8.8.8.8/29 && routing-table=main"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing route print terse without-paging where dst-address=8.8.8.0/28 && routing-table=main"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing route print terse without-paging where dst-address=8.8.8.0/27 && routing-table=main"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing route print terse without-paging where dst-address=8.8.8.0/26 && routing-table=main"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing route print terse without-paging where dst-address=8.8.8.0/25 && routing-table=main"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing route print terse without-paging where dst-address=8.8.8.0/24 && routing-table=main"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/interface print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/interface print stats-detail without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp connection print count-only"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp connection print count-only"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp connection print count-only"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp connection print count-only"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp connection print count-only"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp connection print count-only"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp connection print count-only"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp connection print count-only"
+  },
+  {
+    "platform": "routeros",
+    "event": "connect"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/system resource print"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp session print terse without-paging"
+  },
+  {
+    "platform": "routeros",
+    "event": "fixed_query",
+    "command": "/routing bgp connection print count-only"
+  }
+]

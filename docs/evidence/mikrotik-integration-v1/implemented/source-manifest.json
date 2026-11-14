@@ -1,0 +1,146 @@
+{
+  "code_commit": "7f2dd4b28a127024fce6bc63a398692ef7b564cf",
+  "files": {
+    "agent/src/agent_center/capabilities.py": {
+      "committed_sha256": "f30a3e24260a13947245e4600649766a31deee8572f0ae2369448b266a482f75",
+      "validated_worktree_sha256": "eeeb2b33256e528ef9c870a732564cf523c77fa095642bf875da1769acaf5209",
+      "preserved_preexisting_delta": true
+    },
+    "agent/src/agent_center/routeros7_lab.py": {
+      "committed_sha256": "a907c6260385942bae1647af73a14bc41fa29b8bdf6258fa4a5ae888b6567091",
+      "validated_worktree_sha256": "a907c6260385942bae1647af73a14bc41fa29b8bdf6258fa4a5ae888b6567091",
+      "preserved_preexisting_delta": false
+    },
+    "agent/tests/test_routeros7_lab.py": {
+      "committed_sha256": "c14815b149fddbdfc5f837c5be4a2cff04634bc85bfff1af00c16f4534caed67",
+      "validated_worktree_sha256": "c14815b149fddbdfc5f837c5be4a2cff04634bc85bfff1af00c16f4534caed67",
+      "preserved_preexisting_delta": false
+    },
+    "app/app/Agent/Protocol.php": {
+      "committed_sha256": "e5267233614d26d82277d7f0dd61e3f1a22b046b67ddc2c7676a6c70fba16020",
+      "validated_worktree_sha256": "e5267233614d26d82277d7f0dd61e3f1a22b046b67ddc2c7676a6c70fba16020",
+      "preserved_preexisting_delta": false
+    },
+    "app/app/Conversation/DiagnosticExperience.php": {
+      "committed_sha256": "b41e52fa1a381c6897a4a811b523cfb0f6275aaf8dbcb3f2af36210152ffd8dd",
+      "validated_worktree_sha256": "b41e52fa1a381c6897a4a811b523cfb0f6275aaf8dbcb3f2af36210152ffd8dd",
+      "preserved_preexisting_delta": false
+    },
+    "app/app/Conversation/Engine.php": {
+      "committed_sha256": "d309b032678abe259d82f6a86e7241d3a313e078504f7355f51d7f2c118fdd89",
+      "validated_worktree_sha256": "d309b032678abe259d82f6a86e7241d3a313e078504f7355f51d7f2c118fdd89",
+      "preserved_preexisting_delta": false
+    },
+    "app/app/Diagnostics/Classifier.php": {
+      "committed_sha256": "3c0a982921c227c9c19e9b20a4898336a87c2206c92cdb39c0ea3e372104a108",
+      "validated_worktree_sha256": "3c0a982921c227c9c19e9b20a4898336a87c2206c92cdb39c0ea3e372104a108",
+      "preserved_preexisting_delta": false
+    },
+    "app/app/Diagnostics/Engine.php": {
+      "committed_sha256": "5d176fecf489c3922fa49cf85dc1c48ff33528a6e45c1cb4092e8a2d4db51488",
+      "validated_worktree_sha256": "5d176fecf489c3922fa49cf85dc1c48ff33528a6e45c1cb4092e8a2d4db51488",
+      "preserved_preexisting_delta": false
+    },
+    "app/app/Diagnostics/Normalizer.php": {
+      "committed_sha256": "6a32e4aaeae45afc8cb2c645ba2d17fd048d2cb936d8eda0155627c698d6c4d3",
+      "validated_worktree_sha256": "6a32e4aaeae45afc8cb2c645ba2d17fd048d2cb936d8eda0155627c698d6c4d3",
+      "preserved_preexisting_delta": false
+    },
+    "app/app/Diagnostics/Preflight.php": {
+      "committed_sha256": "649e6a20e3ec3c9746696af171e3eebaefd06ffb8ea6d023acc7d7583b32e651",
+      "validated_worktree_sha256": "649e6a20e3ec3c9746696af171e3eebaefd06ffb8ea6d023acc7d7583b32e651",
+      "preserved_preexisting_delta": false
+    },
+    "app/app/Http/Requests/Agent/ProtocolRequest.php": {
+      "committed_sha256": "acf5b65203b55a1acee79482c84a91c90b6077c5a05733734fbab657c4e8380c",
+      "validated_worktree_sha256": "acf5b65203b55a1acee79482c84a91c90b6077c5a05733734fbab657c4e8380c",
+      "preserved_preexisting_delta": false
+    },
+    "app/app/Noc/ReadOnlyLab/RouterOs7/Approval.php": {
+      "committed_sha256": "074b41f7b0bb0304a7caa1e44c0c06eb598e66371cc79055eee01e2921644eeb",
+      "validated_worktree_sha256": "074b41f7b0bb0304a7caa1e44c0c06eb598e66371cc79055eee01e2921644eeb",
+      "preserved_preexisting_delta": false
+    },
+    "app/app/Noc/ReadOnlyLab/RouterOs7/Integration.php": {
+      "committed_sha256": "b05643c233d0b432a39d6070b601a0f7d42670400feceb7260c32cb9cea4b208",
+      "validated_worktree_sha256": "b05643c233d0b432a39d6070b601a0f7d42670400feceb7260c32cb9cea4b208",
+      "preserved_preexisting_delta": false
+    },
+    "app/app/Noc/ReadOnlyLab/Ssh.php": {
+      "committed_sha256": "1fa705579a43061ebf4703e62b50f8e9b682101acf096a0d65f6071c1435b2c5",
+      "validated_worktree_sha256": "1fa705579a43061ebf4703e62b50f8e9b682101acf096a0d65f6071c1435b2c5",
+      "preserved_preexisting_delta": false
+    },
+    "app/app/Services/Audit.php": {
+      "committed_sha256": "25670c887e0b3ffdda18a5308c7ede7f2b0885b7017b0c9192af8c65beac3faa",
+      "validated_worktree_sha256": "25670c887e0b3ffdda18a5308c7ede7f2b0885b7017b0c9192af8c65beac3faa",
+      "preserved_preexisting_delta": false
+    },
+    "app/app/Telegram/Deliver.php": {
+      "committed_sha256": "4dd6f9cf8fab3fad8f30fe662f2300f340f24a1807b3b680657337eff5d3e92d",
+      "validated_worktree_sha256": "4dd6f9cf8fab3fad8f30fe662f2300f340f24a1807b3b680657337eff5d3e92d",
+      "preserved_preexisting_delta": false
+    },
+    "app/resources/views/diagnostics/evidence.blade.php": {
+      "committed_sha256": "dcdc025a73bc1f1a23596a66357cfef01e3b1eb2f9babdc1c995951350185d1c",
+      "validated_worktree_sha256": "dcdc025a73bc1f1a23596a66357cfef01e3b1eb2f9babdc1c995951350185d1c",
+      "preserved_preexisting_delta": false
+    },
+    "app/tests/Feature/RouterOsTaskIntegrationTest.php": {
+      "committed_sha256": "5ee67bac013a648257c1b6eb28866791540a651547626cbcd8cd6b511ceeb2ca",
+      "validated_worktree_sha256": "5ee67bac013a648257c1b6eb28866791540a651547626cbcd8cd6b511ceeb2ca",
+      "preserved_preexisting_delta": false
+    },
+    "app/tests/Unit/RouterOsAgentEvidenceTest.php": {
+      "committed_sha256": "214ca5d60b9cbaefe243bc12d91a0b07793c9924fe67bbd7e4723c8ff469805f",
+      "validated_worktree_sha256": "214ca5d60b9cbaefe243bc12d91a0b07793c9924fe67bbd7e4723c8ff469805f",
+      "preserved_preexisting_delta": false
+    },
+    "scripts/lab/device-readonly/run.sh": {
+      "committed_sha256": "7505aee0c54f885912bf5e36b02716c67458574a6db432dcb592e3489b76f732",
+      "validated_worktree_sha256": "7505aee0c54f885912bf5e36b02716c67458574a6db432dcb592e3489b76f732",
+      "preserved_preexisting_delta": false
+    },
+    "scripts/lab/device-readonly/server.py": {
+      "committed_sha256": "691ae027935f40b0574cea77feb219becab313b5ab500ecb686f6b6ebdd4ea1b",
+      "validated_worktree_sha256": "691ae027935f40b0574cea77feb219becab313b5ab500ecb686f6b6ebdd4ea1b",
+      "preserved_preexisting_delta": false
+    },
+    "scripts/lab/routeros-tasks/Dockerfile": {
+      "committed_sha256": "0178151b3d054a29d7537c9e3ff9dfe7eb5f088b0a818ba339aa89352ff3b572",
+      "validated_worktree_sha256": "0178151b3d054a29d7537c9e3ff9dfe7eb5f088b0a818ba339aa89352ff3b572",
+      "preserved_preexisting_delta": false
+    },
+    "scripts/lab/routeros-tasks/browser.cjs": {
+      "committed_sha256": "f99adb49e2172a9d6bfbaa1da68767f4a620fe9fa3680e46b6348ababce75f80",
+      "validated_worktree_sha256": "f99adb49e2172a9d6bfbaa1da68767f4a620fe9fa3680e46b6348ababce75f80",
+      "preserved_preexisting_delta": false
+    },
+    "scripts/lab/routeros-tasks/build.sh": {
+      "committed_sha256": "7b278324aee449d9a5abaa3acdc1d3f11d1702274e76acd504ca5882df78b3db",
+      "validated_worktree_sha256": "7b278324aee449d9a5abaa3acdc1d3f11d1702274e76acd504ca5882df78b3db",
+      "preserved_preexisting_delta": false
+    },
+    "scripts/lab/routeros-tasks/central.php": {
+      "committed_sha256": "98fcfbe1cb0c989127e3ac86ab2d8ecc601e892d6cfde822a77bd6763a8c91af",
+      "validated_worktree_sha256": "98fcfbe1cb0c989127e3ac86ab2d8ecc601e892d6cfde822a77bd6763a8c91af",
+      "preserved_preexisting_delta": false
+    },
+    "scripts/lab/routeros-tasks/journal-proof.py": {
+      "committed_sha256": "f2e4a504a46bc0b5ade5bcf3c110c72d3585dbe093f5322a0a2cc3c12f4dab3a",
+      "validated_worktree_sha256": "f2e4a504a46bc0b5ade5bcf3c110c72d3585dbe093f5322a0a2cc3c12f4dab3a",
+      "preserved_preexisting_delta": false
+    },
+    "scripts/lab/routeros-tasks/launch.py": {
+      "committed_sha256": "280654b3c6f8a477524303a3842b9f1138209cf501c651fc077f649a8c72fef1",
+      "validated_worktree_sha256": "280654b3c6f8a477524303a3842b9f1138209cf501c651fc077f649a8c72fef1",
+      "preserved_preexisting_delta": false
+    },
+    "scripts/test.sh": {
+      "committed_sha256": "a0c10115bcf5c4cbda7f5e9cf54f73b2c60bc96a00b7bada7c6a28ab0de41ef1",
+      "validated_worktree_sha256": "a0c10115bcf5c4cbda7f5e9cf54f73b2c60bc96a00b7bada7c6a28ab0de41ef1",
+      "preserved_preexisting_delta": false
+    }
+  },
+  "note": "Only capabilities.py retains its earlier self-check performance adjustment in the validated worktree; that preexisting change is excluded from the feature commit."
+}
