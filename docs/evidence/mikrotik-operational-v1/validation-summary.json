@@ -1,0 +1,20 @@
+{
+  "status": "BLOCKED",
+  "code_commit": "995e93b",
+  "candidate_release_signed": false,
+  "operational_changes": false,
+  "physical_device_access": false,
+  "new_candidate_e2e_completed": false,
+  "lifecycle_ssh_update_rollback_completed": false,
+  "package_lock_sha256": "3250c753403102996eb504594d651757cfe88730695931df7f39498e30b96760",
+  "bundle_sha256": "8a15ced87e8900f986a28da78ba62ed2293ca01d1d7d7eca0444dd2beb6cc942",
+  "workspace_python_tests": 190,
+  "candidate_regression_tests_collected": 173,
+  "candidate_regression_failures": 1,
+  "candidate_import_errors": 2,
+  "new_provenance_tests": 7,
+  "targeted_hardening_tests": 5,
+  "laravel_tests": 588,
+  "laravel_assertions": 5150,
+  "laravel_skipped": 21
+}

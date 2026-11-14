@@ -1,0 +1,12 @@
+test_arbitrary_queries_are_rejected (test_candidate.CandidateTests.test_arbitrary_queries_are_rejected) ... ok
+test_dependency_lock_closes_versions_hashes_and_license_files (test_candidate.CandidateTests.test_dependency_lock_closes_versions_hashes_and_license_files) ... ok
+test_extracted_source_hashes_match_verified_archive (test_candidate.CandidateTests.test_extracted_source_hashes_match_verified_archive) ... ok
+test_freeze_cannot_be_released_by_candidate_import (test_candidate.CandidateTests.test_freeze_cannot_be_released_by_candidate_import) ... ok
+test_lifecycle_rejects_unimplemented_ssh_component (test_candidate.CandidateTests.test_lifecycle_rejects_unimplemented_ssh_component) ... ok
+test_missing_wheels_are_not_a_valid_bundle (test_candidate.CandidateTests.test_missing_wheels_are_not_a_valid_bundle) ... ok
+test_operational_safety_code_is_preserved_byte_for_byte (test_candidate.CandidateTests.test_operational_safety_code_is_preserved_byte_for_byte) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.012s
+
+OK

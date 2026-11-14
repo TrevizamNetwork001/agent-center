@@ -1,0 +1,8 @@
+Result=success
+ExecMainStatus=0
+CapabilityBoundingSet=
+AmbientCapabilities=
+User=65534
+Group=65534
+PrivateDevices=yes
+NoNewPrivileges=yes

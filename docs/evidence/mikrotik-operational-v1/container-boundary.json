@@ -1,0 +1,1 @@
+{"network":"none","cgroup_namespace":"private","readonly_rootfs":true,"privileged_init_container":true,"host_bind_mounts":null}

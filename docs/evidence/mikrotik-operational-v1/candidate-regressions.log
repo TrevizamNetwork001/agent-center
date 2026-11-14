@@ -1,0 +1,105 @@
+........................................................policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+..............................policy_rejected
+.......................EE.........................................policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+..policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+policy_rejected
+......F............
+======================================================================
+ERROR: test_observability (unittest.loader._FailedTest.test_observability)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_observability
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.13/unittest/loader.py", line 403, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "/usr/local/lib/python3.13/unittest/loader.py", line 346, in _get_module_from_name
+    __import__(name)
+    ~~~~~~~~~~^^^^^^
+  File "/agent/tests/test_observability.py", line 8, in <module>
+    from agent_center import mtr, mtr_helper, observability
+ImportError: cannot import name 'observability' from 'agent_center' (/candidate/agent_center/__init__.py)
+
+
+======================================================================
+ERROR: test_observation_boundary (unittest.loader._FailedTest.test_observation_boundary)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_observation_boundary
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.13/unittest/loader.py", line 403, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "/usr/local/lib/python3.13/unittest/loader.py", line 346, in _get_module_from_name
+    __import__(name)
+    ~~~~~~~~~~^^^^^^
+  File "/agent/tests/test_observation_boundary.py", line 10, in <module>
+    from agent_center import observation_worker as worker
+ImportError: cannot import name 'observation_worker' from 'agent_center' (/candidate/agent_center/__init__.py)
+
+
+======================================================================
+FAIL: test_real_packaged_dry_run_and_exit_codes (test_update.UpdateTests.test_real_packaged_dry_run_and_exit_codes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/agent/tests/test_update.py", line 121, in test_real_packaged_dry_run_and_exit_codes
+    self.assertEqual(info["version"], __version__)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '0.6.4' != '0.6.6'
+- 0.6.4
+?     ^
++ 0.6.6
+?     ^
+
+
+----------------------------------------------------------------------
+Ran 173 tests in 15.037s
+
+FAILED (failures=1, errors=2)

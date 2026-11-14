@@ -1,0 +1,18 @@
+{
+  "agent_version": "0.6.6",
+  "uid": 65534,
+  "python": "3.13.5",
+  "systemd_pid1": true,
+  "effective_capabilities": 0,
+  "bounding_capabilities": 0,
+  "no_new_privileges": true,
+  "debian": "13",
+  "network_mode": "none",
+  "paramiko": "3.5.1",
+  "cryptography": "46.0.3",
+  "bcrypt": "5.0.0",
+  "pynacl": "1.6.0",
+  "cffi": "2.0.0",
+  "lab_capability_advertised": false,
+  "kind": "OFFLINE_STARTUP_PROBE_ONLY"
+}
