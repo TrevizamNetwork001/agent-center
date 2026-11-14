@@ -265,6 +265,52 @@ class RouterOsTaskIntegrationTest extends IdentityTestCase
         Http::assertSent(fn ($request) => str_contains($request['text'] ?? '', 'Peers BGP: 2') && str_contains($request['text'], 'SIMULADO'));
     }
 
+    public function test_identity_only_physical_preparation_stays_simulated_and_blocks_other_capabilities(): void
+    {
+        $d = $this->runQuery(Operation::Identity);
+        $input = DiagnosticStep::where('diagnostic_id', $d->id)->sole()->definition['input'];
+        $this->assertSame($d->id, app(Integration::class)->enqueue($this->admin, $this->agent->fresh(), $input)->id);
+        $this->assertSame(1, AgentTask::where('diagnostic_id', $d->id)->count());
+        $connections = count(file('/lab/connections.jsonl'));
+        foreach (Operation::cases() as $op) {
+            if ($op === Operation::Identity) {
+                continue;
+            }
+            $decision = app(Preflight::class)->device($this->admin, $this->device->fresh(), $this->agent->fresh(), $op, $op === Operation::Route ? ['destination' => '8.8.8.8'] : []);
+            $this->assertSame('DENIED', $decision['state']);
+        }
+        $this->context()->forUser($this->viewer);
+        $this->assertSame('DENIED', app(Preflight::class)->device($this->viewer, $this->device, $this->agent->fresh(), Operation::Identity, [])['state']);
+        $this->context()->forUser($this->other);
+        $this->assertNull(NocDevice::withoutGlobalScopes()->find($this->device->id));
+        $this->context()->forUser($this->admin);
+        $bad = $input;
+        $bad['binding']['equipment_id'] = (string) Str::uuid();
+        $this->assertSame('policy_denied', app(Preflight::class)->deviceTask($this->agent, $bad));
+        $row = DeviceLabAccess::where('device_id', $this->device->id)->sole();
+        $proof = $row->protocol_approval;
+        $proof['expires_at'] = now()->subMinute()->toIso8601String();
+        $row->forceFill(['protocol_approval' => $proof])->save();
+        $this->assertSame('STALE', app(Preflight::class)->device($this->admin, $this->device, $this->agent->fresh(), Operation::Identity, [])['state']);
+        $this->assertSame($connections, count(file('/lab/connections.jsonl')));
+        $wrong = RSA::createKey(2048);
+        app(Access::class)->approve($this->admin, $this->device, $wrong->getPublicKey()->toString('OpenSSH'), file_get_contents('/lab/client'));
+        $this->runQuery(Operation::Identity, expectedError: 'routeros_identity_rejected');
+        app(Access::class)->approve($this->admin, $this->device, file_get_contents('/lab/host.pub'), file_get_contents('/lab/client'));
+        $this->runQuery(Operation::Identity, scenario: 'timeout', expectedError: 'timeout');
+        @unlink('/lab/query-held');
+        @unlink('/lab/query-release');
+        file_put_contents('/lab/scenario', 'ros-hold');
+        $input = $this->authorize(Operation::Identity);
+        $cancelled = app(Integration::class)->enqueue($this->admin, $this->agent->fresh(), $input);
+        app(Engine::class)->tick();
+        $this->waitFor(fn () => is_file('/lab/query-held'), 'identity cancellation barrier');
+        app(Engine::class)->cancel($cancelled, $this->admin);
+        $this->waitFor(fn () => $cancelled->fresh()->status === 'CANCELLED', 'identity cancellation');
+        $this->assertTrue(Protocol::policy($this->agent->id)['device_operations_frozen']);
+        file_put_contents('/lab/physical-identity-offline.json', json_encode(['mode' => 'SIMULATED', 'physical_ready' => false, 'operation' => Operation::Identity->value, 'other_five_denied' => true, 'cases' => ['identity', 'wrong_host_key', 'viewer', 'other_equipment', 'other_tenant', 'other_capabilities', 'expired_policy', 'duplicate', 'timeout', 'cancellation'], 'queries' => $this->proof, 'device_freeze' => true, 'physical_connections' => 0], JSON_PRETTY_PRINT));
+    }
+
     private function telegramFlow(): void
     {
         file_put_contents('/lab/scenario', 'ros-normal');

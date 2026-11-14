@@ -1,0 +1,27 @@
+{
+  "version": "0.6.4",
+  "sequence": 2,
+  "minimum_sequence": 1,
+  "source_sha256": "cfa597aace8254c22245bf2699a608064d1cb0b8d5143e17a2eea6d5df566799",
+  "artifacts": {
+    "agent.pyz": "a73b2bde39327124bb622c0550142a4144eb1cd8bee2501077be6630a0b1d30f",
+    "remote-updater.pyz": "52bdc2c6463cd5c4fce5f015a24362f89cdbd52e3a73d7133710aa66eb2b3512",
+    "updater.pyz": "1d0c1ee78027b90edcb082cbc1ccde6100d8b9dfcd9fc495f850451430e9db99",
+    "helper.pyz": "d5c3d3140d56b8f0f15080e1336bbb43fe4e0ee5a9526fc1d4c97cf7bf4ceed2",
+    "updater-bootstrap.pyz": "3a51f2f2b8e9e62a8587da95f91cc48183128589b921c8f809d5caacdf173911"
+  },
+  "deterministic": true,
+  "same_source_all_components": true,
+  "signature_verified_with_provided_key": true,
+  "production_trust_verified": false,
+  "production_ready": false,
+  "published": false,
+  "gates": [
+    "central_version_compatibility",
+    "signed_updater_distribution_and_rollback",
+    "native_debian13_systemd_lab",
+    "registered_agent_transport_observation",
+    "production_trust_anchor",
+    "operational_deployment_authorization"
+  ]
+}

@@ -1,0 +1,198 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 339B done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/agent-center-tooling:foundation
+#2 DONE 0.1s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.1s
+
+#4 [1/3] FROM docker.io/library/agent-center-tooling:foundation@sha256:861633875f8101309bb4887fff32b65050e51c9ca05ea6581dc9fc2f4b05baa7
+#4 resolve docker.io/library/agent-center-tooling:foundation@sha256:861633875f8101309bb4887fff32b65050e51c9ca05ea6581dc9fc2f4b05baa7 0.1s done
+#4 DONE 0.1s
+
+#5 [2/3] RUN apt-get update && apt-get install -y --no-install-recommends python3-paramiko && rm -rf /var/lib/apt/lists/*
+#5 CACHED
+
+#6 [3/3] WORKDIR /var/www/html
+#6 CACHED
+
+#7 exporting to image
+#7 exporting layers 0.0s done
+#7 exporting manifest sha256:76d503dae4a9eac8fbf0de54b252df8857108e0fd1116259118e09fe8573c60b done
+#7 exporting config sha256:f4a8b878fafd86b748fc926c51b7113fd5e33b350dd158a374af3a9a21d3ffbb done
+#7 exporting attestation manifest sha256:8d276d80ab904d540b6272daa95e3d3db27a0fe651d487d47e4472f20ffac8d1
+#7 exporting attestation manifest sha256:8d276d80ab904d540b6272daa95e3d3db27a0fe651d487d47e4472f20ffac8d1 0.0s done
+#7 exporting manifest list sha256:323daa254c2528da091e6f73b38640953b30e48f264814bcbef406cf43dc224b 0.0s done
+#7 naming to docker.io/library/agent-center-device-readonly-lab:local done
+#7 unpacking to docker.io/library/agent-center-device-readonly-lab:local 0.0s done
+#7 DONE 0.3s
+true
+Network isolation PASS: no default route; fixed loopback transport; no external probes.
+Secsh channel 2 open FAILED: : Administratively prohibited
+Secsh channel 2 open FAILED: : Administratively prohibited
+Protocol boundaries PASS: both endpoints reject PTY, shell and forwarding.
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 279B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/agent-center-python-tools:0.5.2
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context:
+#3 transferring context: 591B done
+#3 DONE 0.0s
+
+#4 [1/2] FROM docker.io/library/agent-center-python-tools:0.5.2@sha256:682126a551272025c2cd2a4aef5d705c160a94e9587c8618e81246a8934789f5
+#4 resolve docker.io/library/agent-center-python-tools:0.5.2@sha256:682126a551272025c2cd2a4aef5d705c160a94e9587c8618e81246a8934789f5 0.1s done
+#4 DONE 0.1s
+
+#5 [2/2] RUN pip install --no-cache-dir paramiko==3.5.1 bcrypt==5.0.0 cryptography==46.0.3 pynacl==1.6.0 cffi==2.0.0 pycparser==2.23
+#5 CACHED
+
+#6 exporting to image
+#6 exporting layers done
+#6 exporting manifest sha256:479ae7d98c70ff9b92e67db2229ac718a223e1582c32bc37578f99e04e1b9dea done
+#6 exporting config sha256:18e9034986725ab9140579c61348592eaa89be7661eee747cee243b513932c75 0.0s done
+#6 exporting attestation manifest sha256:8564302b03e6b7e462a8bb185a2788fb74503e1883ad27d2a9afbc594abce468
+#6 exporting attestation manifest sha256:8564302b03e6b7e462a8bb185a2788fb74503e1883ad27d2a9afbc594abce468 0.1s done
+#6 exporting manifest list sha256:c325970d06bb6991b7408c4726218dd3a85632da8a88b130721b6e8a16cc83c6 0.1s done
+#6 naming to docker.io/library/agent-center-routeros-candidate:lab
+#6 naming to docker.io/library/agent-center-routeros-candidate:lab 0.0s done
+#6 unpacking to docker.io/library/agent-center-routeros-candidate:lab 0.1s done
+#6 DONE 0.5s
+Installing dependencies from lock file (including require-dev)
+Verifying lock file contents can be installed on current platform.
+Filter list data could not be fetched from some sources (ignored per policy.ignore-unreachable); matches may be incomplete:
+  - curl error 6 while downloading https://repo.packagist.org/packages.json: Could not resolve host: repo.packagist.org
+Nothing to install, update or remove
+Generating optimized autoload files
+> Illuminate\Foundation\ComposerScripts::postAutoloadDump
+> @php artisan package:discover --ansi
+
+   INFO  Discovering packages.
+
+  laravel/pail .......................................................... DONE
+  laravel/pao ........................................................... DONE
+  laravel/tinker ........................................................ DONE
+  nesbot/carbon ......................................................... DONE
+  nunomaduro/collision .................................................. DONE
+  nunomaduro/termwind ................................................... DONE
+
+81 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+
+   INFO  Preparing database.
+
+  Creating migration table ...................................... 91.26ms DONE
+
+   INFO  Running migrations.
+
+  0001_01_01_000000_create_users_table .......................... 86.06ms DONE
+  0001_01_01_000001_create_cache_table .......................... 64.39ms DONE
+  0001_01_01_000002_create_jobs_table ........................... 51.47ms DONE
+  2026_11_04_160000_create_identity_and_audit .................. 113.40ms DONE
+  2026_11_04_170000_create_agents_and_enrollments ............... 61.75ms DONE
+  2026_11_04_180000_create_diagnostic_engine ................... 127.58ms DONE
+  2026_11_04_190000_add_operational_read_indexes ................ 24.29ms DONE
+  2026_11_04_200000_create_knowledge_and_llm ................... 203.18ms DONE
+  2026_11_04_210000_agent_operations ............................ 23.95ms DONE
+  2026_11_04_210000_create_conversation_platform ................ 77.89ms DONE
+  2026_11_04_220000_agent_update_intents ........................ 51.81ms DONE
+  2026_11_05_140000_add_agent_deleted_at ........................ 13.51ms DONE
+  2026_11_05_220000_add_diagnostic_performance .................. 18.95ms DONE
+  2026_11_06_000000_allow_mtr_path_analysis ...................... 9.83ms DONE
+  2026_11_06_100000_create_agent_releases ....................... 27.65ms DONE
+  2026_11_06_120000_create_agent_maintenance_accesses ........... 36.94ms DONE
+  2026_11_06_153500_add_password_to_agent_maintenance_accesses ... 4.46ms DONE
+  2026_11_07_150000_create_agent_release_quarantines ............ 26.98ms DONE
+  2026_11_07_180000_add_maintenance_access_lifetime .............. 4.56ms DONE
+  2026_11_07_210000_create_rag_index ............................ 45.71ms DONE
+  2026_11_12_000001_add_telegram_channel ....................... 102.88ms DONE
+  2026_11_12_000002_add_telegram_companies ...................... 91.87ms DONE
+  2026_11_12_000003_add_account_avatar .......................... 15.50ms DONE
+  2026_11_13_000001_create_noc_inventory ........................ 63.40ms DONE
+  2026_11_13_000002_create_device_lab_accesses .................. 15.15ms DONE
+  2026_11_13_000003_add_routeros_lab_approval .................... 3.46ms DONE
+
+SET
+SET
+CREATE ROLE
+ALTER ROLE
+GRANT
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+PHPUnit 12.5.43 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.27
+Configuration: /var/www/html/phpunit.xml
+
+.                                                                   1 / 1 (100%)
+
+Time: 00:22.405, Memory: 54.50 MB
+
+OK (1 test, 41 assertions)
+Mikrotik populated rollback guard PASS: approval evidence preserved.
+Device Read-Only populated rollback guard PASS: data preserved.

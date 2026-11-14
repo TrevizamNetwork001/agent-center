@@ -95,12 +95,25 @@ if [ "${ROUTEROS_TASK_LAB:-0}" = 1 ]; then
       --mount "type=bind,src=$lab_state,dst=/lab" --mount "type=bind,src=$lab_state/tls/ca.crt,dst=/run/pg-tls/ca.crt,readonly" \
       --mount "type=bind,src=$PWD/scripts/lab/routeros-tasks,dst=/integration,readonly" \
       "$lab_image" php -S 127.0.0.1:8089 /integration/central.php >/dev/null
+    candidate_mount=()
+    if [ -n "${ROUTEROS_PACKAGED_CANDIDATE:-}" ]; then
+        case "$ROUTEROS_PACKAGED_CANDIDATE" in /tmp/*/agent.pyz) ;; *) echo 'Candidate must be a temporary laboratory bundle'; exit 1;; esac
+        test -f "$ROUTEROS_PACKAGED_CANDIDATE"
+        test ! -L "$ROUTEROS_PACKAGED_CANDIDATE"
+        candidate_bundle=${ROUTEROS_PACKAGED_CANDIDATE%/agent.pyz}
+        for metadata in manifest.json signature.base64 signer-public.pem; do
+            test -f "$candidate_bundle/$metadata"
+            test ! -L "$candidate_bundle/$metadata"
+            candidate_mount+=(--mount "type=bind,src=$candidate_bundle/$metadata,dst=/integration-candidate/$metadata,readonly")
+        done
+        candidate_mount+=(--mount "type=bind,src=$ROUTEROS_PACKAGED_CANDIDATE,dst=/integration-candidate/agent.pyz,readonly")
+    fi
     docker run -d --name "$lab_candidate" --network "container:$lab_ssh" --user 65534:65534 --cap-drop ALL --security-opt no-new-privileges \
       -e PYTHONPATH=/candidate/src -e PYTHONDONTWRITEBYTECODE=1 \
       --mount "type=volume,src=$lab_private,dst=/lab/agent-private" \
       --mount "type=bind,src=$PWD/agent,dst=/candidate,readonly" --mount "type=bind,src=$lab_state,dst=/lab" \
       --mount "type=bind,src=$PWD/scripts/lab/routeros-tasks,dst=/integration,readonly" \
-      agent-center-routeros-candidate:lab python /integration/launch.py >/dev/null
+      "${candidate_mount[@]}" agent-center-routeros-candidate:lab python /integration/launch.py >/dev/null
 fi
 TEST_PG_CONTAINER="$lab_pg" TEST_NETWORK="container:$lab_ssh" TEST_OWNER_ENV="$lab_state/owner.env" TEST_RUNTIME_ENV="$lab_state/runtime.env" TEST_CA_FILE="$lab_state/tls/ca.crt" \
 TEST_IMAGE="$lab_image" TEST_DEVICE_PROTOCOL_STATE="$lab_state" \

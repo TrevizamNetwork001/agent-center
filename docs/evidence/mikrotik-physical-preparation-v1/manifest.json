@@ -1,0 +1,1 @@
+{"components":[{"dependencies":["python3.13","mtr0.95"],"helper_sha256":"d5c3d3140d56b8f0f15080e1336bbb43fe4e0ee5a9526fc1d4c97cf7bf4ceed2","id":"mtr","profile":"network-raw-helper","version":"0.6.4"}],"platform":"debian13","schema_version":1,"sequence":2,"sha256":"a73b2bde39327124bb622c0550142a4144eb1cd8bee2501077be6630a0b1d30f","size":73311,"version":"0.6.4"}

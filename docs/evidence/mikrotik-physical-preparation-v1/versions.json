@@ -1,0 +1,12 @@
+{
+  "php": "8.4.27",
+  "laravel": "v13.40.0",
+  "phpseclib": "3.0.58",
+  "scope": "Local vendor/tooling only; not a deployed Central inspection",
+  "postgres_tooling": "17.11",
+  "python_candidate_tooling": "3.13.18",
+  "candidate_tooling_os": "Debian 12 x86_64",
+  "source_agent_version": "0.6.4",
+  "operator_declared_operational_version": "0.6.5",
+  "production_components_verified": false
+}

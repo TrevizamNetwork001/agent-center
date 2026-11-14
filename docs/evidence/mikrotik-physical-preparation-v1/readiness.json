@@ -1,0 +1,77 @@
+{
+  "result": "BLOCKED",
+  "candidate": {
+    "version": "0.6.4",
+    "sequence": 2,
+    "minimum_sequence": 1,
+    "source_sha256": "cfa597aace8254c22245bf2699a608064d1cb0b8d5143e17a2eea6d5df566799",
+    "artifacts": {
+      "agent.pyz": "a73b2bde39327124bb622c0550142a4144eb1cd8bee2501077be6630a0b1d30f",
+      "remote-updater.pyz": "52bdc2c6463cd5c4fce5f015a24362f89cdbd52e3a73d7133710aa66eb2b3512",
+      "updater.pyz": "1d0c1ee78027b90edcb082cbc1ccde6100d8b9dfcd9fc495f850451430e9db99",
+      "helper.pyz": "d5c3d3140d56b8f0f15080e1336bbb43fe4e0ee5a9526fc1d4c97cf7bf4ceed2",
+      "updater-bootstrap.pyz": "3a51f2f2b8e9e62a8587da95f91cc48183128589b921c8f809d5caacdf173911"
+    },
+    "deterministic": true,
+    "same_source_all_components": true,
+    "signature_verified_with_provided_key": true,
+    "production_trust_verified": false,
+    "production_ready": false,
+    "published": false,
+    "gates": [
+      "central_version_compatibility",
+      "signed_updater_distribution_and_rollback",
+      "native_debian13_systemd_lab",
+      "registered_agent_transport_observation",
+      "production_trust_anchor",
+      "operational_deployment_authorization"
+    ]
+  },
+  "native_verifier": "PASS",
+  "native_updater_dry_run": {
+    "valid": true,
+    "sha256": "a73b2bde39327124bb622c0550142a4144eb1cd8bee2501077be6630a0b1d30f",
+    "apply": false
+  },
+  "identity_journal_config_runtime_unchanged": true,
+  "negative_verification": {
+    "tamper": "artifact_mismatch",
+    "replay": "replay_or_downgrade",
+    "platform": "incompatible_platform",
+    "ssh_component": "unsupported_component"
+  },
+  "artifact_has_adapter": true,
+  "artifact_bundles_ssh_dependencies": false,
+  "lab_dependencies_effective": {
+    "paramiko": "3.5.1",
+    "cryptography": "46.0.3",
+    "bcrypt": "5.0.0",
+    "pynacl": "1.6.0",
+    "cffi": "2.0.0",
+    "pycparser": "2.23"
+  },
+  "python": "3.13.18",
+  "uid": 65534,
+  "effective_lab_platform": {
+    "id": "debian",
+    "version_id": "12",
+    "architecture": "x86_64"
+  },
+  "manifest_platform": "debian13",
+  "native_debian13_systemd_precheck_proven": false,
+  "operational_version_declared_by_operator": "0.6.5",
+  "candidate_version": "0.6.4",
+  "candidate_newer_than_declared_operational": false,
+  "production_runtime_inspected": false,
+  "production_trust_verified": false,
+  "blockers": [
+    "Adapter and Central require simulator namespace and fixed loopback; no physical execution grant contract exists.",
+    "Lifecycle component allowlist supports MTR only, not SSH dependencies; archive validator forbids third-party/binary members.",
+    "Current source version is 0.6.4, older than operator-declared operational 0.6.5; no promotion or downgrade authorized.",
+    "Effective offline tooling host is debian 12; native Debian 13/systemd precheck is not proven."
+  ],
+  "physical_connections": 0,
+  "published": false,
+  "operational_agent_updated": false,
+  "device_freeze": true
+}

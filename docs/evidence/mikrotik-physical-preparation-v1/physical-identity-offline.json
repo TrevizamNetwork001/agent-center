@@ -1,0 +1,73 @@
+{
+    "mode": "SIMULATED",
+    "physical_ready": false,
+    "operation": "DEVICE_IDENTITY_READ",
+    "other_five_denied": true,
+    "cases": [
+        "identity",
+        "wrong_host_key",
+        "viewer",
+        "other_equipment",
+        "other_tenant",
+        "other_capabilities",
+        "expired_policy",
+        "duplicate",
+        "timeout",
+        "cancellation"
+    ],
+    "queries": [
+        {
+            "operation": "DEVICE_IDENTITY_READ",
+            "scenario": "normal",
+            "request": "Verifique a identifica\u00e7\u00e3o do roteador MikroTik de borda.",
+            "reply": "LABORAT\u00d3RIO \/ SIMULADO: Identidade: CCR-LAB; RouterOS 7.16.2. N\u00e3o s\u00e3o medi\u00e7\u00f5es do equipamento f\u00edsico; compatibilidade com hardware n\u00e3o verificada. Detalhes no painel do diagn\u00f3stico.",
+            "task_id": "b208dcc1-45a1-4ee0-8f61-70c1951c9a5c",
+            "result": {
+                "ok": true,
+                "data": {
+                    "data": {
+                        "name": "CCR-LAB",
+                        "version": "7.16.2"
+                    },
+                    "mode": "SIMULATED",
+                    "status": "PARTIAL",
+                    "complete": false,
+                    "identity": {
+                        "model": "CCR2004-16G-2S+",
+                        "os_version": "7.16.2",
+                        "manufacturer": "mikrotik",
+                        "platform_family": "ROUTEROS7"
+                    },
+                    "contract_id": "DEVICE_IDENTITY_READ",
+                    "environment": "LAB",
+                    "binding_digest": "c7bbd3c5ca0e91aeef15bc80ab0aa2b99bdc2b8287e67fb7c259efe1e46c3bfb",
+                    "schema_version": 1
+                }
+            }
+        },
+        {
+            "operation": "DEVICE_IDENTITY_READ",
+            "scenario": "normal",
+            "request": "Verifique a identifica\u00e7\u00e3o do roteador MikroTik de borda.",
+            "reply": "LABORAT\u00d3RIO \/ SIMULADO: Consulta n\u00e3o produziu evid\u00eancias v\u00e1lidas. N\u00e3o s\u00e3o medi\u00e7\u00f5es do equipamento f\u00edsico; compatibilidade com hardware n\u00e3o verificada. Detalhes no painel do diagn\u00f3stico.",
+            "task_id": "eabb835a-03a7-4ed1-ae2c-ac032e4429a4",
+            "result": {
+                "ok": false,
+                "error": "routeros_identity_rejected"
+            }
+        },
+        {
+            "operation": "DEVICE_IDENTITY_READ",
+            "scenario": "timeout",
+            "request": "Verifique a identifica\u00e7\u00e3o do roteador MikroTik de borda.",
+            "reply": "LABORAT\u00d3RIO \/ SIMULADO: Consulta n\u00e3o produziu evid\u00eancias v\u00e1lidas. N\u00e3o s\u00e3o medi\u00e7\u00f5es do equipamento f\u00edsico; compatibilidade com hardware n\u00e3o verificada. Detalhes no painel do diagn\u00f3stico.",
+            "task_id": "3012a40d-7e3f-4fc7-a4e7-3531580a67b6",
+            "result": {
+                "ok": false,
+                "error": "timeout"
+            }
+        }
+    ],
+    "device_freeze": true,
+    "physical_connections": 0
+}
