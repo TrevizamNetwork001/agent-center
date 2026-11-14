@@ -1,0 +1,13 @@
+{
+  "base_version": "0.6.5",
+  "candidate_version": "0.6.6",
+  "base_artifact": "a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315",
+  "strategy": "Exact signed source extraction with individually reviewed additive integration and JSON/self-check hardening; all other base files unchanged.",
+  "candidate_only": true,
+  "published": false,
+  "reviewed_changes": [
+    "__init__.py: candidate version only",
+    "capabilities.py: additive RouterOS dispatcher and bounded legacy self-check",
+    "api.py: reject recursive JSON as typed errors"
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "lifecycle_installation_validated": false,
+  "packages": {
+    "bcrypt": {
+      "bytes": 278240,
+      "license_files": {
+        "bcrypt-5.0.0.dist-info/licenses/": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bcrypt-5.0.0.dist-info/licenses/LICENSE": "8173d5c29b4f956d532781d2b86e4e30f83e6b7878dce18c919451d6ba707c90"
+      },
+      "requires_dist": [
+        "pytest!=3.3.0,>=3.2.1; extra == \"tests\"",
+        "mypy; extra == \"typecheck\""
+      ],
+      "requires_python": ">=3.8",
+      "sha256": "611f0a17aa4a25a69362dcc299fda5c8a3d4f160e2abb3831041feb77393a14a",
+      "version": "5.0.0",
+      "wheel": "bcrypt-5.0.0-cp39-abi3-manylinux_2_34_x86_64.whl"
+    },
+    "cffi": {
+      "bytes": 219499,
+      "license_files": {
+        "cffi-2.0.0.dist-info/licenses/": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cffi-2.0.0.dist-info/licenses/AUTHORS": "2a67a60bbfb33759d67d645ff131b8e6d6bc4cafc232d751fcac3eda4d314cc8",
+        "cffi-2.0.0.dist-info/licenses/LICENSE": "5ba24ddc57067f9249add644c3afc41a5d6dc37e23433ef759d95df370b0af63"
+      },
+      "requires_dist": [
+        "pycparser; implementation_name != \"PyPy\""
+      ],
+      "requires_python": ">=3.9",
+      "sha256": "c8d3b5532fc71b7a77c09192b4a5a200ea992702734a2e9279a37f2478236f26",
+      "version": "2.0.0",
+      "wheel": "cffi-2.0.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+    },
+    "cryptography": {
+      "bytes": 4481596,
+      "license_files": {
+        "cryptography-46.0.3.dist-info/licenses/": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cryptography-46.0.3.dist-info/licenses/LICENSE": "3e0c7c091a948b82533ba98fd7cbb40432d6f1a9acbf85f5922d2f99a93ae6bb",
+        "cryptography-46.0.3.dist-info/licenses/LICENSE.APACHE": "aac73b3148f6d1d7111dbca32099f68d26c644c6813ae1e4f05f6579aa2663fe",
+        "cryptography-46.0.3.dist-info/licenses/LICENSE.BSD": "602c4c7482de6479dd2e9793cda275e5e63d773dacd1eca689232ab7008fb4fb"
+      },
+      "requires_dist": [
+        "cffi>=1.14 ; python_full_version == '3.8.*' and platform_python_implementation != 'PyPy'",
+        "cffi>=2.0.0 ; python_full_version >= '3.9' and platform_python_implementation != 'PyPy'",
+        "typing-extensions>=4.13.2 ; python_full_version < '3.11'",
+        "bcrypt>=3.1.5 ; extra == 'ssh'",
+        "nox[uv]>=2024.4.15 ; extra == 'nox'",
+        "cryptography-vectors==46.0.3 ; extra == 'test'",
+        "pytest>=7.4.0 ; extra == 'test'",
+        "pytest-benchmark>=4.0 ; extra == 'test'",
+        "pytest-cov>=2.10.1 ; extra == 'test'",
+        "pytest-xdist>=3.5.0 ; extra == 'test'",
+        "pretend>=0.7 ; extra == 'test'",
+        "certifi>=2024 ; extra == 'test'",
+        "pytest-randomly ; extra == 'test-randomorder'",
+        "sphinx>=5.3.0 ; extra == 'docs'",
+        "sphinx-rtd-theme>=3.0.0 ; extra == 'docs'",
+        "sphinx-inline-tabs ; extra == 'docs'",
+        "pyenchant>=3 ; extra == 'docstest'",
+        "readme-renderer>=30.0 ; extra == 'docstest'",
+        "sphinxcontrib-spelling>=7.3.1 ; extra == 'docstest'",
+        "build>=1.0.0 ; extra == 'sdist'",
+        "ruff>=0.11.11 ; extra == 'pep8test'",
+        "mypy>=1.14 ; extra == 'pep8test'",
+        "check-sdist ; extra == 'pep8test'",
+        "click>=8.0.1 ; extra == 'pep8test'"
+      ],
+      "requires_python": ">=3.8, !=3.9.0, !=3.9.1",
+      "sha256": "10b01676fc208c3e6feeb25a8b83d81767e8059e1fe86e1dc62d10a3018fa926",
+      "version": "46.0.3",
+      "wheel": "cryptography-46.0.3-cp311-abi3-manylinux_2_34_x86_64.whl"
+    },
+    "paramiko": {
+      "bytes": 227298,
+      "license_files": {
+        "paramiko-3.5.1.dist-info/LICENSE": "5fa25bf5f395fd26e701c2e1de4ca7d162816986dc791c22f8f4226857ad1bb2"
+      },
+      "requires_dist": [
+        "bcrypt>=3.2",
+        "cryptography>=3.3",
+        "pynacl>=1.5",
+        "pyasn1>=0.1.7; extra == \"gssapi\"",
+        "gssapi>=1.4.1; platform_system != \"Windows\" and extra == \"gssapi\"",
+        "pywin32>=2.1.8; platform_system == \"Windows\" and extra == \"gssapi\"",
+        "invoke>=2.0; extra == \"invoke\"",
+        "pyasn1>=0.1.7; extra == \"all\"",
+        "gssapi>=1.4.1; platform_system != \"Windows\" and extra == \"all\"",
+        "pywin32>=2.1.8; platform_system == \"Windows\" and extra == \"all\"",
+        "invoke>=2.0; extra == \"all\""
+      ],
+      "requires_python": ">=3.6",
+      "sha256": "43b9a0501fc2b5e70680388d9346cf252cfb7d00b0667c39e80eb43a408b8f61",
+      "version": "3.5.1",
+      "wheel": "paramiko-3.5.1-py3-none-any.whl"
+    },
+    "pycparser": {
+      "bytes": 118140,
+      "license_files": {
+        "pycparser-2.23.dist-info/LICENSE": "0c846399369ea76ddd7b5c44fe6d16497415fcf015f5cbb508c24bf98b81c5b1"
+      },
+      "requires_dist": [],
+      "requires_python": ">=3.8",
+      "sha256": "e5c6e8d3fbad53479cab09ac03729e0a9faf2bee3db8208a550daf5af81a5934",
+      "version": "2.23",
+      "wheel": "pycparser-2.23-py3-none-any.whl"
+    },
+    "pynacl": {
+      "bytes": 1401794,
+      "license_files": {
+        "pynacl-1.6.0.dist-info/licenses/": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pynacl-1.6.0.dist-info/licenses/LICENSE": "d3174ad63e721d4c9dccb8ad4320848992d314369bc46319720b5802c9153fe9"
+      },
+      "requires_dist": [
+        "cffi>=1.4.1; platform_python_implementation != \"PyPy\" and python_version < \"3.14\"",
+        "cffi>=2.0.0; platform_python_implementation != \"PyPy\" and python_version >= \"3.14\"",
+        "pytest>=7.4.0; extra == \"tests\"",
+        "pytest-cov>=2.10.1; extra == \"tests\"",
+        "pytest-xdist>=3.5.0; extra == \"tests\"",
+        "hypothesis>=3.27.0; extra == \"tests\"",
+        "sphinx<7; extra == \"docs\"",
+        "sphinx_rtd_theme; extra == \"docs\""
+      ],
+      "requires_python": ">=3.8",
+      "sha256": "49c336dd80ea54780bcff6a03ee1a476be1612423010472e60af83452aa0f442",
+      "version": "1.6.0",
+      "wheel": "pynacl-1.6.0-cp38-abi3-manylinux_2_34_x86_64.whl"
+    }
+  },
+  "platform": "debian13-amd64",
+  "python": "3.13",
+  "schema_version": 1
+}
