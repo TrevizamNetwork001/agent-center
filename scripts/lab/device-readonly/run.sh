@@ -7,8 +7,12 @@ lab_net=device-readonly-v1-isolated
 lab_ssh=device-readonly-v1-ssh
 lab_pg=device-readonly-v1-postgres
 lab_image=agent-center-device-readonly-lab:local
+lab_central=routeros-task-lab-central
+lab_candidate=routeros-task-lab-candidate
+lab_private=routeros-task-lab-private
+lab_private_created=0
 test ! -e "$lab_state"
-for name in "$lab_ssh" "$lab_pg"; do
+for name in "$lab_ssh" "$lab_pg" "$lab_central" "$lab_candidate"; do
     if docker container inspect "$name" >/dev/null 2>&1; then echo "Lab resource already exists: $name"; exit 1; fi
 done
 if docker network inspect "$lab_net" >/dev/null 2>&1; then echo 'Lab network already exists'; exit 1; fi
@@ -42,9 +46,14 @@ chmod 644 "$lab_state/tls/ca.crt"
 # TLS certificate public directory; private state parent remains mode 0700.
 chmod 755 "$lab_state/tls"
 DOCKER_CONFIG="$lab_state/docker-config" docker build -f scripts/lab/device-readonly/Dockerfile -t "$lab_image" scripts/lab/device-readonly
-docker network create --internal "$lab_net" >/dev/null
+docker network create --internal --subnet 198.18.77.0/28 "$lab_net" >/dev/null
 cleanup() {
-    docker rm -fv "$lab_ssh" "$lab_pg" >/dev/null 2>&1 || true
+    if [ "${ROUTEROS_TASK_LAB:-0}" = 1 ]; then
+      docker logs "$lab_candidate" > "$lab_state/candidate.log" 2>&1 || true
+      docker logs "$lab_central" > "$lab_state/central.log" 2>&1 || true
+    fi
+    docker rm -fv "$lab_candidate" "$lab_central" "$lab_ssh" "$lab_pg" >/dev/null 2>&1 || true
+    if [ "$lab_private_created" = 1 ]; then docker volume rm "$lab_private" >/dev/null 2>&1 || true; fi
     docker network rm "$lab_net" >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
@@ -67,6 +76,36 @@ test -f "$lab_state/ready"
 docker network inspect "$lab_net" --format '{{.Internal}}' | rg -x true
 docker exec "$lab_ssh" python3 /protocol/check-isolation.py
 docker exec "$lab_ssh" python3 /protocol/check-boundaries.py
+if [ "${ROUTEROS_TASK_LAB:-0}" = 1 ]; then
+    printf 'SIMULATED_ROUTEROS_TASK_ENGINE_V1\n' > "$lab_state/routeros-agent-lab"
+    mkdir -p "$lab_state/agent-private"
+    chmod 700 "$lab_state/agent-private"
+    # Traverse the mount only; credential files and private subdirectory remain restricted.
+    chmod 711 "$lab_state"
+    chmod 644 "$lab_state/routeros-agent-lab"
+    DOCKER_CONFIG="$lab_state/docker-config" docker build -f scripts/lab/routeros-tasks/Dockerfile -t agent-center-routeros-candidate:lab .
+    if docker volume inspect "$lab_private" >/dev/null 2>&1; then echo 'Lab private volume already exists'; exit 1; fi
+    docker volume create "$lab_private" >/dev/null
+    lab_private_created=1
+    docker run --rm --network none --user 0 --mount "type=volume,src=$lab_private,dst=/private" agent-center-routeros-candidate:lab sh -c 'chmod 700 /private && chown 65534:65534 /private'
+    export TEST_AGENT_PRIVATE_VOLUME="$lab_private"
+    export TEST_ROUTEROS_TASK_INTEGRATION=1
+    docker run -d --name "$lab_central" --network "container:$lab_ssh" --env-file "$lab_state/runtime.env" \
+      --mount "type=bind,src=$PWD/app,dst=/var/www/html" --mount "type=bind,src=$lab_state/empty.env,dst=/var/www/html/.env,readonly" \
+      --mount "type=bind,src=$lab_state,dst=/lab" --mount "type=bind,src=$lab_state/tls/ca.crt,dst=/run/pg-tls/ca.crt,readonly" \
+      --mount "type=bind,src=$PWD/scripts/lab/routeros-tasks,dst=/integration,readonly" \
+      "$lab_image" php -S 127.0.0.1:8089 /integration/central.php >/dev/null
+    docker run -d --name "$lab_candidate" --network "container:$lab_ssh" --user 65534:65534 --cap-drop ALL --security-opt no-new-privileges \
+      -e PYTHONPATH=/candidate/src -e PYTHONDONTWRITEBYTECODE=1 \
+      --mount "type=volume,src=$lab_private,dst=/lab/agent-private" \
+      --mount "type=bind,src=$PWD/agent,dst=/candidate,readonly" --mount "type=bind,src=$lab_state,dst=/lab" \
+      --mount "type=bind,src=$PWD/scripts/lab/routeros-tasks,dst=/integration,readonly" \
+      agent-center-routeros-candidate:lab python /integration/launch.py >/dev/null
+fi
 TEST_PG_CONTAINER="$lab_pg" TEST_NETWORK="container:$lab_ssh" TEST_OWNER_ENV="$lab_state/owner.env" TEST_RUNTIME_ENV="$lab_state/runtime.env" TEST_CA_FILE="$lab_state/tls/ca.crt" \
 TEST_IMAGE="$lab_image" TEST_DEVICE_PROTOCOL_STATE="$lab_state" \
     ./scripts/test.sh "$@"
+
+if [ "${ROUTEROS_TASK_LAB:-0}" = 1 ]; then
+    docker exec "$lab_candidate" python /integration/journal-proof.py > "$lab_state/routeros-task-journal.json"
+fi

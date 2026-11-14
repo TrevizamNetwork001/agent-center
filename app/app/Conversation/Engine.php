@@ -20,9 +20,13 @@ use App\Models\ConversationSetting;
 use App\Models\Diagnostic;
 use App\Models\DiagnosticConclusion;
 use App\Models\DiagnosticInterpretation;
+use App\Models\NocDevice;
 use App\Models\Profile;
 use App\Noc\Analysis\ConversationSimulation;
 use App\Noc\IntentInterpreter;
+use App\Noc\ReadOnlyLab\Failure;
+use App\Noc\ReadOnlyLab\RouterOs7\Integration;
+use App\Noc\ReadOnlyLab\RouterOs7\Operation;
 use App\Rag\Answer;
 use App\Services\Audit;
 use App\Telegram\Access;
@@ -267,6 +271,20 @@ class Engine
                 $c->context_json = array_diff_key($c->context_json, array_flip(['pending']));
                 $this->transition($c, State::FollowUp, 'confirmation_consumed');
                 try {
+                    if (isset($p['routeros_input'])) {
+                        if (! preg_match('/^(sim|confirmo|confirmar|pode executar|pode consultar)[.! ]*$/iu', trim($safe)) || now()->timestamp - ($p['issued_at'] ?? 0) > 60) {
+                            $this->reply($c, 'A confirmação de laboratório perdeu a validade ou mudou de escopo. Solicite novamente. Nenhuma tarefa foi criada.');
+                        } else {
+                            $a = Agent::findOrFail($p['routeros_input']['binding']['agent_id']);
+                            $d = app(Integration::class)->enqueue($i->user, $a, $p['routeros_input']);
+                            $c->forceFill(['current_profile_id' => $d->profile_id, 'current_diagnostic_id' => $d->id, 'current_target' => $d->target]);
+                            $this->transition($c, State::Running, 'routeros_lab_confirmed');
+                            $this->reply($c, 'LABORATÓRIO / SIMULADO: consulta confirmada e aguardando o Python Agent. Nenhum equipamento físico será consultado.', ['diagnostic_id' => $d->id, 'simulation' => true]);
+                        }
+                        $c->save();
+
+                        return $c;
+                    }
                     $planner = app(Planner::class);
                     if (! is_string($p['target'] ?? null) || ! $p['target'] || ! is_string($p['profile'] ?? null) || ! $p['profile']) {
                         $this->reply($c, 'Confirmação invalidada: destino ou perfil pendente ausente. Nenhuma tarefa foi criada; solicite um novo diagnóstico.');
@@ -275,6 +293,8 @@ class Engine
                     } else {
                         $this->start($c, $i, $p['profile'], $p['target'], $prefix, ($p['mtr_requested'] ?? false) === true, $p['objective'] ?? []);
                     }
+                } catch (Failure) {
+                    $this->reply($c, 'A autorização de laboratório mudou ou venceu. Nenhuma tarefa foi criada; solicite novamente.');
                 } catch (ValidationException $e) {
                     $this->reply($c, 'Diagnóstico bloqueado: '.implode(' ', $e->validator->errors()->all()).' Nenhuma tarefa foi criada; solicite um novo diagnóstico.');
                 }
@@ -347,6 +367,25 @@ class Engine
         }
         if ($goal?->isDevice()) {
             $plan = app(IntentPlanning::class)->devicePlan($request, $body, $i->user);
+            if (Integration::enabled() && $plan['device_id']) {
+                $op = Operation::tryFrom($plan['analysis_contract_id'] === 'DEVICE_IDENTIFICATION_READ' ? 'DEVICE_IDENTITY_READ' : ($plan['analysis_contract_id'] ?? ''));
+                $agents = Agent::where('status', 'active')->whereNull('revoked_at')->get()->filter(fn ($agent) => in_array(Integration::CAPABILITY, $agent->capabilities ?? [], true));
+                $a = isset($c->context_json['agent_id']) ? $agents->firstWhere('id', $c->context_json['agent_id']) : ($agents->count() === 1 ? $agents->first() : null);
+                if ($op && $a) {
+                    $params = $op === Operation::Route ? ['destination' => $plan['parameters']['destination']] : [];
+                    $decision = app(Preflight::class)->device($i->user, NocDevice::findOrFail($plan['device_id']), $a, $op, $params);
+                    if ($decision['state'] === 'ALLOWED') {
+                        $c->context_json = [...$c->context_json, 'pending' => ['issued_at' => now()->timestamp, 'routeros_input' => $decision['input']]];
+                        $this->transition($c, State::Confirmation, 'routeros_lab_confirmation');
+                        $this->reply($c, 'LABORATÓRIO / SIMULADO: posso executar '.$op->value.' no equipamento fixture pelo Agent selecionado? Confirme com “confirmo”. Nenhum equipamento físico será acessado.', ['simulation' => true, 'preflight' => 'ALLOWED', 'routeros_binding_digest' => $decision['input']['binding_digest'], 'contract_id' => $op->value]);
+
+                        return true;
+                    }
+                    $this->reply($c, 'Esse equipamento está cadastrado, mas o acesso de consulta não está autorizado. Por segurança, não conectei ao roteador.', ['preflight' => $decision['state'], 'simulation' => true]);
+
+                    return true;
+                }
+            }
             $c->context_json = array_diff_key($c->context_json, array_flip(['objective_question', 'requested_objective']));
             $this->reply($c, $plan['reply'], ['noc_planning' => array_diff_key($plan, ['reply' => true])]);
 

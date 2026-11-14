@@ -24,6 +24,7 @@ use App\Models\PromptVersion;
 use App\Models\User;
 use App\Noc\Analysis\Contracts;
 use App\Noc\Analysis\SimulationScope;
+use App\Noc\ReadOnlyLab\RouterOs7\Integration;
 use App\Tenancy\TenantContext;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
@@ -93,6 +94,13 @@ class DiagnosticExperience
         $plan = DiagnosticPlan::where('diagnostic_id', $d->id)->first()?->document ?? [];
         $goal = OperationalIntent::tryFrom($d->context['operational_intent'] ?? $plan['objective']['intent'] ?? '') ?? OperationalIntent::forProfile($d->profile?->key ?? '');
         $coverage = app(ObjectiveCoverage::class)->assess($goal, $official?->evidence ?? [], $plan, $official?->classification, $d->status === 'CANCELLED');
+        if (($d->context['routeros_lab'] ?? false) === true) {
+            $e = ($official?->evidence['routeros_lab']['ok'] ?? false) ? $official->evidence['routeros_lab']['data'] : [];
+            $summary = app(Integration::class)->summary($e);
+            $facts = [['key' => 'routeros_lab', 'label' => 'Consulta de laboratório', 'metrics' => $e !== [], 'text' => $summary, 'plain' => $summary]];
+            $limits = ['LABORATÓRIO / SIMULADO; não são medições reais. Freeze operacional permanece ativo.'];
+            $coverage = ['intent' => $goal?->value, 'label' => 'Consulta de laboratório', 'status' => $e ? 'PARCIAL' : 'NAO_EXECUTADA', 'status_label' => $e ? 'SIMULADO / PARCIAL' : 'NÃO EXECUTADA', 'request_classification' => 'INCONCLUSIVO'];
+        }
 
         return ['target' => Text::clean(mb_substr($d->target, 0, 253)), 'classification' => $official?->classification, 'summary' => $summary,
             'coverage' => $coverage, 'facts' => $facts, 'not_executed' => array_values($notExecuted), 'limitations' => [...$limits, ...($coverage['limitations'] ?? [])],
@@ -234,6 +242,9 @@ class DiagnosticExperience
     {
         abort_unless($c->tenant_id === $identity->tenantId && $c->user_id === $identity->user->id && $c->current_diagnostic_id === $d->id, 403);
         $s = $this->snapshot($d, $identity->user);
+        if (($d->context['routeros_lab'] ?? false) === true) {
+            return ['text' => $s['summary'].' Detalhes no painel do diagnóstico.', 'metadata' => ['diagnostic_id' => $d->id, 'simulation' => true, 'real_evidence' => false, 'device_operations_frozen' => true]];
+        }
         $tone = $this->tone($c);
         if ($s['classification'] !== 'NORMAL') {
             $tone['style'] = 'TECHNICAL';

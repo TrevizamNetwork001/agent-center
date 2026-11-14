@@ -61,6 +61,9 @@ class Session(paramiko.ServerInterface):
 
 def handle(sock, platform):
     global ACTIVE, MAX_ACTIVE
+    with LOCK:
+        with (STATE / 'connections.jsonl').open('a') as trace:
+            trace.write(json.dumps({'platform': platform, 'event': 'connect'}) + '\n')
     scenario = (STATE / 'scenario').read_text().strip()
     router_v1 = platform == 'routeros' and scenario.startswith('ros-')
     if router_v1:
@@ -114,8 +117,17 @@ def handle(sock, platform):
                 elif scenario == 'disconnect' and query_number > 0:
                     transport.close()
                     return
+            with LOCK:
+                with (STATE / 'connections.jsonl').open('a') as trace:
+                    trace.write(json.dumps({'platform': platform, 'event': 'fixed_query', 'command': command}) + '\n')
             query_number += 1
             started_ns = time.monotonic_ns()
+            if scenario == 'hold' and query_number == 2:
+                (STATE / 'query-held').write_text('held')
+                for _ in range(500):
+                    if (STATE / 'query-release').exists() or not transport.is_active():
+                        break
+                    time.sleep(.01)
             if scenario == 'timeout' and query_number > 1:
                 time.sleep(6)
             elif scenario == 'oversize' and query_number > 1:

@@ -3,6 +3,7 @@
 namespace App\Agent;
 
 use App\Models\Agent;
+use App\Noc\ReadOnlyLab\RouterOs7\Integration;
 use Carbon\CarbonImmutable;
 
 class Protocol
@@ -15,6 +16,11 @@ class Protocol
 
     public const CAPABILITIES = ['agent_info', 'icmp_ping:v1', 'dns_lookup:v1', 'tcp_connect:v1', 'traceroute:v1', 'http_probe:v1', 'mtr_path_analysis:v1'];
 
+    public static function allowedCapabilities(): array
+    {
+        return Integration::enabled() ? [...self::CAPABILITIES, Integration::CAPABILITY] : self::CAPABILITIES;
+    }
+
     public static function mtrAvailable(Agent $agent): bool
     {
         return $agent->status === 'active' && ! $agent->revoked_at
@@ -26,7 +32,7 @@ class Protocol
 
     public static function executionCapabilities(Agent $agent): array
     {
-        return array_values(array_filter($agent->capabilities ?? [], fn ($cap) => $cap !== 'mtr_path_analysis:v1' || self::mtrAvailable($agent)));
+        return array_values(array_filter($agent->capabilities ?? [], fn ($cap) => in_array($cap, self::allowedCapabilities(), true) && ($cap !== 'mtr_path_analysis:v1' || self::mtrAvailable($agent))));
     }
 
     public static function supportsDownloads(Agent $agent): bool
@@ -51,6 +57,6 @@ class Protocol
 
     public static function policy(string $id, bool $tasks = false, ?array $settings = null): array
     {
-        return ($settings ? ['agent_settings' => $settings] : []) + ['schema_version' => 1, 'agent_id' => $id, 'device_operations_frozen' => true, 'tasks_enabled' => $tasks, 'task_protocol' => 1, 'allowed_capabilities' => self::CAPABILITIES, 'heartbeat_interval' => 20, 'poll_interval' => 5];
+        return ($settings ? ['agent_settings' => $settings] : []) + ['schema_version' => 1, 'agent_id' => $id, 'device_operations_frozen' => true, 'tasks_enabled' => $tasks, 'task_protocol' => 1, 'allowed_capabilities' => self::allowedCapabilities(), 'heartbeat_interval' => 20, 'poll_interval' => 5];
     }
 }

@@ -13,13 +13,17 @@ use App\Services\Audit;
 use App\Tenancy\TenantContext;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 
 /** Local simulator attestation only. Never authorizes an operational task or real destination. */
 final class Approval
 {
-    public function attest(User $actor, NocDevice $device, Agent $agent, Operation $operation, array $params, array $effectiveRights, string $independentFingerprint): void
+    public function attest(User $actor, NocDevice $device, Agent $agent, Operation $operation, array $params, array $effectiveRights, string $independentFingerprint, string $executor = 'CENTRAL_LOOPBACK_SIMULATOR_ONLY'): void
     {
         Gate::forUser($actor)->authorize('update', $device);
+        if (! in_array($executor, ['CENTRAL_LOOPBACK_SIMULATOR_ONLY', Integration::EXECUTOR], true) || ($executor === Integration::EXECUTOR && ! Integration::enabled())) {
+            throw new Failure('ROUTEROS_LAB_DISABLED');
+        }
         if (config('device_readonly_lab.routeros_protocol') !== true || app(Contracts::class)->platform($device) !== 'ccr-routeros7' || preg_replace('/^RouterOS | \(stable\)$/i', '', $device->os_version) !== Protocol::VERSION) {
             throw new Failure('ROUTEROS_LAB_DISABLED');
         }
@@ -28,24 +32,24 @@ final class Approval
         if ($effectiveRights !== ['read', 'ssh']) {
             throw new Failure('EXCESSIVE_OR_UNKNOWN_RIGHTS');
         }
-        DB::transaction(function () use ($actor, $device, $agent, $operation, $params, $independentFingerprint) {
+        DB::transaction(function () use ($actor, $device, $agent, $operation, $params, $independentFingerprint, $executor) {
             $device = NocDevice::whereKey($device->id)->lockForUpdate()->firstOrFail();
             $row = app(Access::class)->preflight($device, \App\Noc\ReadOnlyLab\Operation::Resources, []);
             $this->agent($agent->id, $device);
             if (! hash_equals($this->fingerprint($row->host_public_key), $independentFingerprint)) {
                 throw new Failure('HOST_IDENTITY_REJECTED');
             }
-            $row->forceFill(['protocol_approval' => ['schema_version' => 1, 'mode' => 'SIMULATED', 'actor_id' => $actor->id,
+            $row->forceFill(['protocol_approval' => ['schema_version' => 1, 'approval_id' => (string) Str::uuid(), 'mode' => 'SIMULATED', 'actor_id' => $actor->id,
                 'agent_id' => $agent->id, 'operation' => $operation->value, 'parameters_digest' => $this->digest($params),
-                'policy_revision' => 1, 'device_revision' => $device->revision, 'access_revision' => $row->revision,
+                'policy_revision' => (int) config('device_readonly_lab.policy_revision', 1), 'device_revision' => $device->revision, 'access_revision' => $row->revision,
                 'host_fingerprint' => $independentFingerprint, 'effective_rights' => ['read', 'ssh'],
                 'approved_at' => now()->toIso8601String(), 'expires_at' => now()->addMinutes(15)->toIso8601String(),
-                'management_ip' => $device->management_ip, 'ssh_port' => 22, 'executor' => 'CENTRAL_LOOPBACK_SIMULATOR_ONLY']])->save();
+                'management_ip' => $device->management_ip, 'ssh_port' => 22, 'executor' => $executor]])->save();
             app(Audit::class)->record('noc.routeros_lab_attested', $actor, $device->tenant_id, 'noc_device', metadata: ['device_id' => $device->id, 'contract_id' => $operation->value, 'agent_id' => $agent->id, 'device_revision' => $device->revision, 'parameters_digest' => $this->digest($params), 'access_revision' => $row->revision]);
         });
     }
 
-    public function check(User $actor, NocDevice $device, Operation $operation, array $params): DeviceLabAccess
+    public function check(User $actor, NocDevice $device, Operation $operation, array $params, string $executor = 'CENTRAL_LOOPBACK_SIMULATOR_ONLY'): DeviceLabAccess
     {
         Gate::forUser($actor)->authorize('simulate', $device);
         if (! app(Access::class)->enabled() || config('device_readonly_lab.routeros_protocol') !== true || app(Contracts::class)->platform($device) !== 'ccr-routeros7') {
@@ -54,12 +58,12 @@ final class Approval
         $row = app(Access::class)->preflight($device, \App\Noc\ReadOnlyLab\Operation::Resources, []);
         $a = $row->protocol_approval;
         if (! is_array($a) || ($a['schema_version'] ?? null) !== 1 || ($a['mode'] ?? '') !== 'SIMULATED'
-            || ($a['actor_id'] ?? null) !== $actor->id || ($a['policy_revision'] ?? null) !== 1
+            || ($a['actor_id'] ?? null) !== $actor->id || ($a['policy_revision'] ?? null) !== (int) config('device_readonly_lab.policy_revision', 1)
             || ($a['device_revision'] ?? null) !== $device->revision || ($a['access_revision'] ?? null) !== $row->revision
             || ($a['operation'] ?? '') !== $operation->value || ($a['parameters_digest'] ?? '') !== $this->digest($params)
             || ($a['effective_rights'] ?? []) !== ['read', 'ssh'] || ($a['host_fingerprint'] ?? '') !== $this->fingerprint($row->host_public_key)
             || ($a['management_ip'] ?? '') !== $device->management_ip || ($a['ssh_port'] ?? null) !== 22
-            || ($a['executor'] ?? '') !== 'CENTRAL_LOOPBACK_SIMULATOR_ONLY'
+            || ($a['executor'] ?? '') !== $executor
             || ! is_string($a['agent_id'] ?? null) || ! $this->window($a)) {
             throw new Failure('ROUTEROS_APPROVAL_UNKNOWN_DENIED_OR_STALE');
         }

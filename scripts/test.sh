@@ -22,6 +22,7 @@ if [ -n "${TEST_DEVICE_PROTOCOL_STATE:-}" ]; then
  mounts+=(--mount "type=bind,src=$TEST_DEVICE_PROTOCOL_STATE/empty.env,dst=/var/www/html/.env,readonly")
  mounts+=(--mount "type=bind,src=$TEST_DEVICE_PROTOCOL_STATE,dst=/lab")
 fi
+if [ -n "${TEST_AGENT_PRIVATE_VOLUME:-}" ]; then mounts+=(--mount "type=volume,src=$TEST_AGENT_PRIVATE_VOLUME,dst=/lab/agent-private"); fi
 if [ -f "$test_ca" ]; then mounts+=(--mount "type=bind,src=$test_ca,dst=/run/pg-tls/ca.crt,readonly"); fi
 docker run --rm "${composer_network[@]}" "${mounts[@]}" "$test_image" composer install --no-interaction --prefer-dist
 docker run --rm --network "$test_network" --env-file "$test_owner_env" -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php artisan migrate --force
@@ -42,7 +43,11 @@ if [ "${TEST_CONVERSATION_IDLE_CONCURRENCY:-0}" = 1 ]; then
  docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/conversation-idle-concurrency.php
  docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/preflight-concurrency.php
 fi
-if [ "${TEST_DEVICE_PROTOCOL_CONCURRENCY:-0}" = 1 ] || [ "${TEST_ROUTEROS_PROTOCOL_CONCURRENCY:-0}" = 1 ]; then
+if [ "${TEST_ROUTEROS_TASK_INTEGRATION:-0}" = 1 ]; then
+ # The real Agent API observes committed fixtures. Reuse the existing populated-data guards.
+ docker run --rm --network "$test_network" --env-file "$test_owner_env" -e APP_ENV=testing -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/mikrotik-protocol-rollback.php
+ docker run --rm --network "$test_network" --env-file "$test_owner_env" -e APP_ENV=testing -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/device-readonly-rollback.php
+elif [ "${TEST_DEVICE_PROTOCOL_CONCURRENCY:-0}" = 1 ] || [ "${TEST_ROUTEROS_PROTOCOL_CONCURRENCY:-0}" = 1 ]; then
  # The contention fixture is committed. Verify refusal to destroy its data.
  docker run --rm --network "$test_network" --env-file "$test_owner_env" -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/device-readonly-rollback.php
 else

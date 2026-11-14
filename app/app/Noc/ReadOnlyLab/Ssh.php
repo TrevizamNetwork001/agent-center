@@ -15,6 +15,9 @@ final class Ssh
     public function collect(Platform $platform, Operation|RouterOs7\Operation $operation, array $parameters, string $hostKey, #[\SensitiveParameter] string $privateKey, ?NocDevice $device = null): array
     {
         abort_unless(app(Access::class)->enabled(), 403);
+        if ($platform === Platform::RouterOs && RouterOs7\Integration::enabled()) {
+            throw new Failure('ROUTEROS_AGENT_REQUIRED');
+        }
         $router = $operation instanceof RouterOs7\Operation;
         if ($router && $platform !== Platform::RouterOs) {
             throw new Failure('PLATFORM_NOT_SUPPORTED');

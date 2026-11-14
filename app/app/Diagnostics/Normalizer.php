@@ -3,11 +3,14 @@
 namespace App\Diagnostics;
 
 use App\Agent\Protocol;
+use App\Noc\Analysis\Schema;
+use App\Noc\ReadOnlyLab\RouterOs7\Integration;
+use App\Noc\ReadOnlyLab\RouterOs7\Operation;
 use Illuminate\Validation\ValidationException;
 
 class Normalizer
 {
-    public const ERRORS = ['timeout', 'dns_failed', 'nodata', 'connection_refused', 'tls_failed', 'unreachable', 'policy_denied', 'action_failed', 'internal_error', 'cancelled', 'lease_lost', 'execution_timeout', 'mtr_not_installed', 'mtr_unsupported', 'mtr_invalid_input', 'mtr_invalid_output', 'mtr_output_limit', 'mtr_permission_denied', 'mtr_execution_failed', 'mtr_rate_limited'];
+    public const ERRORS = ['timeout', 'dns_failed', 'nodata', 'connection_refused', 'tls_failed', 'unreachable', 'policy_denied', 'action_failed', 'internal_error', 'cancelled', 'lease_lost', 'execution_timeout', 'mtr_not_installed', 'mtr_unsupported', 'mtr_invalid_input', 'mtr_invalid_output', 'mtr_output_limit', 'mtr_permission_denied', 'mtr_execution_failed', 'mtr_rate_limited', 'routeros_invalid_input', 'routeros_invalid_output', 'routeros_output_limit', 'routeros_identity_rejected', 'routeros_auth_failed', 'routeros_transport_failed', 'routeros_busy'];
 
     public function normalize(string $cap, array $r): array
     {
@@ -28,6 +31,25 @@ class Normalizer
         $d = $r['data'] ?? null;
         if (! is_array($d)) {
             $fail();
+        }
+        if ($cap === Integration::CAPABILITY) {
+            if (! is_string($d['contract_id'] ?? null) || ! is_string($d['binding_digest'] ?? null)) {
+                $fail();
+            }
+            $op = Operation::tryFrom($d['contract_id'] ?? '');
+            if (! $op || array_diff(array_keys($d), ['schema_version', 'contract_id', 'mode', 'environment', 'identity', 'complete', 'status', 'data', 'binding_digest']) || ($d['schema_version'] ?? null) !== 1 || ($d['mode'] ?? '') !== 'SIMULATED' || ($d['environment'] ?? '') !== 'LAB' || ($d['complete'] ?? null) !== false || ($d['status'] ?? '') !== 'PARTIAL' || ! preg_match('/^[a-f0-9]{64}$/D', $d['binding_digest'] ?? '')) {
+                $fail();
+            }
+            $id = $d['identity'] ?? [];
+            if (! is_array($id)) {
+                $fail();
+            }
+            if (array_diff(array_keys($id), ['manufacturer', 'model', 'platform_family', 'os_version']) || array_diff(['manufacturer', 'model', 'platform_family', 'os_version'], array_keys($id)) || $id['manufacturer'] !== 'mikrotik' || $id['platform_family'] !== 'ROUTEROS7' || $id['os_version'] !== \App\Noc\ReadOnlyLab\RouterOs7\Protocol::VERSION || ! is_string($id['model']) || ! preg_match('/^[A-Za-z0-9_.+\/-]{1,80}$/D', $id['model'])) {
+                $fail();
+            }
+            app(Schema::class)->check($d['data'] ?? null, app(\App\Noc\ReadOnlyLab\RouterOs7\Protocol::class)->contract($op)['output_schema']);
+
+            return ['ok' => true, 'data' => $d];
         }
         if ($cap === 'mtr_path_analysis:v1') {
             return ['ok' => true, 'data' => app(MtrPath::class)->validate($d)];

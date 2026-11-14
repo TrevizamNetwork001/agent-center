@@ -2,12 +2,17 @@
 
 namespace App\Diagnostics;
 
+use App\Noc\ReadOnlyLab\RouterOs7\Integration;
+
 class Classifier
 {
     public const NORMAL = 'Não foram encontradas anormalidades no escopo testado.';
 
     public function classify(string $profile, array $evidence, array $thresholds = [], bool $cancelled = false, ?string $executionError = null): array
     {
+        if ($profile === 'ROUTEROS7_SIMULATED') {
+            return ['classification' => 'INCONCLUSIVO', 'summary' => app(Integration::class)->summary(($evidence['routeros_lab']['ok'] ?? false) ? $evidence['routeros_lab']['data'] : []), 'evidence' => $evidence, 'next_steps' => ['LABORATÓRIO / SIMULADO. Freeze operacional ativo. Não autoriza consultas ao equipamento físico.']];
+        }
         $original = $evidence;
         $web = in_array($profile, ['SITE_LENTO', 'SITE_NAO_ABRE', 'GOOGLE_YOUTUBE', 'CONTEUDO_LENTO'], true);
         $primary = $profile === 'PROBLEMA_DNS' ? ['dns_a', 'dns_aaaa'] : ($profile === 'PERDA_LATENCIA' ? ['ping'] : ($web ? ['tcp', 'https'] : []));

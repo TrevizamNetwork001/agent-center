@@ -9,9 +9,10 @@ import subprocess
 import time
 import urllib.parse
 
-from . import __version__, mtr, mtr_client
+from . import __version__, mtr, mtr_client, routeros7_lab
 from .dns_transport import query as dns_query
 from .policy import authorize
+from .state import StateError
 
 KNOWN = (
     "agent_info",
@@ -26,7 +27,8 @@ KNOWN = (
 
 def capability_available(name):
     return (
-        name in KNOWN
+        (name in KNOWN or name == routeros7_lab.CAPABILITY)
+        and (name != routeros7_lab.CAPABILITY or routeros7_lab.ready())
         and (name != mtr.CAPABILITY or mtr.ready())
         and (
             name not in ("icmp_ping:v1", "traceroute:v1")
@@ -36,13 +38,14 @@ def capability_available(name):
 
 
 def available():
-    return tuple(name for name in KNOWN if capability_available(name))
+    base = tuple(name for name in KNOWN if capability_available(name))
+    return base + ((routeros7_lab.CAPABILITY,) if routeros7_lab.ready() else ())
 
 
 def self_check():
     # Legacy updater validates this six-capability self-check contract.
     # Extension negotiation uses the normal capabilities endpoint.
-    caps = tuple(c for c in available() if c != mtr.CAPABILITY)
+    caps = tuple(c for c in available() if c not in (mtr.CAPABILITY, routeros7_lab.CAPABILITY))
     assert len(caps) == len(set(caps)) and set(caps) <= set(KNOWN)
     assert all(callable(HANDLERS[c]) for c in caps)
     return caps
@@ -314,6 +317,8 @@ def prepare(name, args, policy, networks=(), dns_names=(), auto_public=False):
 def execute(name, args, policy, networks=(), dns_names=(), auto_public=False):
     try:
         networks = prepare(name, args, policy, networks, dns_names, auto_public)
+        if name == routeros7_lab.CAPABILITY:
+            return {"ok": True, "data": routeros7_lab.collect(args)}
         if name == mtr.CAPABILITY:
             return {"ok": True, "data": mtr_client.collect(args, networks, dns_names)}
         if (
@@ -323,6 +328,10 @@ def execute(name, args, policy, networks=(), dns_names=(), auto_public=False):
         ):
             return dns_query(args)
         return {"ok": True, "data": HANDLERS[name](args, networks)}
+    except routeros7_lab.Rejected as error:
+        return {"ok": False, "error": str(error)}
+    except StateError:
+        return {"ok": False, "error": "policy_denied"}
     except mtr.MtrError as error:
         return {"ok": False, "error": str(error)}
     except TargetNotAllowed:

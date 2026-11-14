@@ -3,6 +3,8 @@
     <span class="evidence-status">Bloqueado por política · teste não executado</span>
 @elseif($step->status==='SKIPPED')
     <span class="evidence-status">Verificação dispensada neste diagnóstico</span>
+@elseif($step->capability===\App\Noc\ReadOnlyLab\RouterOs7\Integration::CAPABILITY)
+    <div class="probe-result"><strong>LABORATÓRIO / SIMULADO</strong><span>{{app(\App\Noc\ReadOnlyLab\RouterOs7\Integration::class)->summary($d)}}</span></div>
 @elseif($step->capability==='mtr_path_analysis:v1' && isset($d['hops']))
     @include('diagnostics.mtr-path', ['analysis'=>app(\App\Diagnostics\MtrPath::class)->analyze($d, $plan->document['thresholds']??[])])
 @elseif($step->capability==='dns_lookup:v1')

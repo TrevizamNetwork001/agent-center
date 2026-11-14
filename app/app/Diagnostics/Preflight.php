@@ -7,13 +7,53 @@ use App\Agent\Protocol;
 use App\Conversation\ResolvePreflight;
 use App\Models\Agent;
 use App\Models\Conversation;
+use App\Models\NocDevice;
+use App\Models\User;
+use App\Noc\ReadOnlyLab\Failure;
+use App\Noc\ReadOnlyLab\RouterOs7\Integration;
+use App\Noc\ReadOnlyLab\RouterOs7\Operation;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 /** Agent-authenticated read-only authorization query; never dispatches an AgentTask. */
 class Preflight
 {
+    /** Same approval authority as Device Read-Only; simulator proof cannot authorize production. */
+    public function device(User $actor, NocDevice $device, Agent $agent, Operation $op, array $params): array
+    {
+        try {
+            $input = app(Integration::class)->input($actor, $device, $agent, $op, $params);
+
+            return ['state' => 'ALLOWED', 'reason' => 'simulator_scope_authorized', 'input' => $input];
+        } catch (\Throwable $e) {
+            if (! $e instanceof Failure && ! $e instanceof AuthorizationException && ! $e instanceof ValidationException && ! $e instanceof HttpExceptionInterface) {
+                throw $e;
+            }
+
+            $state = $e instanceof Failure ? match ($e->reason) {
+                'DEVICE_PREFLIGHT_UNKNOWN' => 'UNKNOWN', 'DEVICE_PREFLIGHT_STALE' => 'STALE', default => 'DENIED',
+            } : 'DENIED';
+
+            return ['state' => $state, 'reason' => 'device_scope_not_authorized'];
+        }
+    }
+
+    public function deviceTask(Agent $agent, array $input): ?string
+    {
+        try {
+            app(Integration::class)->revalidate($agent, $input);
+
+            return null;
+        } catch (ValidationException|Failure|AuthorizationException|ModelNotFoundException|\ValueError|HttpExceptionInterface) {
+            return 'policy_denied';
+        }
+    }
+
     public function digest(Agent $agent): string
     {
         return Digest::hash(['policy' => Protocol::policy($agent->id, ($agent->metadata['task_protocol'] ?? null) === 1, ManagedSettings::current($agent)), 'version' => $agent->version, 'capabilities' => Protocol::executionCapabilities($agent)]);

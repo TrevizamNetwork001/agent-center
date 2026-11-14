@@ -13,6 +13,7 @@ use App\Models\DiagnosticPlan;
 use App\Models\DiagnosticStep;
 use App\Models\Profile;
 use App\Models\User;
+use App\Noc\ReadOnlyLab\RouterOs7\Integration;
 use App\Services\Audit;
 use App\Tenancy\TenantContext;
 use Carbon\CarbonImmutable;
@@ -247,6 +248,12 @@ class Engine
 
                     continue;
                 }
+                if ($task->capability === Integration::CAPABILITY && app(Preflight::class)->deviceTask($agent, $task->input)) {
+                    $task->forceFill(['status' => 'FAILED', 'finished_at' => $this->clock()])->save();
+                    DiagnosticStep::whereKey($task->step_id)->update(['status' => 'BLOCKED', 'error_code' => 'policy_denied', 'finished_at' => $this->clock()]);
+
+                    continue;
+                }
                 if ($task->capability === 'mtr_path_analysis:v1' || ($d->context['operational_intent'] ?? null) === OperationalIntent::Route->value && $task->capability === 'traceroute:v1') {
                     $host = app(Planner::class)->target($d->target)['host'];
                     $reason = app(PathReadiness::class)->check($agent, $task->capability, $host, $task->input['protocol'] ?? 'icmp');
@@ -296,6 +303,13 @@ class Engine
             $digest = null;
             if ($action === 'result') {
                 $result = app(Normalizer::class)->normalize($task->capability, $r['result'] ?? []);
+                if ($result['ok'] && $task->capability === Integration::CAPABILITY) {
+                    $deviceWireDigest = Digest::hash($result); // ACK retries of the same validated wire result even when policy invalidates its evidence.
+                    abort_unless(($result['data']['binding_digest'] ?? '') === $task->input['binding_digest'] && $result['data']['contract_id'] === $task->input['operation'] && $result['data']['identity']['model'] === $task->input['binding']['model'], 422, 'device_binding_mismatch');
+                    if (app(Preflight::class)->deviceTask($agent, $task->input)) {
+                        $result = ['ok' => false, 'error' => 'policy_denied'];
+                    }
+                }
                 if ($result['ok'] && $task->capability === 'dns_lookup:v1') {
                     abort_unless(($result['data']['record_type'] ?? null) === ($task->input['record_type'] ?? null), 422, 'record_type_mismatch');
                     foreach (['transport', 'resolver'] as $field) {
@@ -313,7 +327,7 @@ class Engine
                     }
                     abort_unless(@inet_pton($result['data']['resolved_ip']) === @inet_pton($task->input['target']), 422, 'target_mismatch');
                 }
-                $digest = Digest::hash($result);
+                $digest = $deviceWireDigest ?? Digest::hash($result);
                 if (in_array($a->status, ['COMPLETED', 'FAILED']) && $a->result_digest) {
                     abort_unless(hash_equals($a->result_digest, $digest), 409, 'result_conflict');
 
@@ -332,6 +346,13 @@ class Engine
                 }
 
                 return ['status' => 'cancel_requested', 'cancel' => true];
+            }
+            if (in_array($action, ['start', 'renew'], true) && $task->capability === Integration::CAPABILITY && app(Preflight::class)->deviceTask($agent, $task->input)) {
+                $a->forceFill(['status' => 'FAILED', 'finished_at' => $now])->save();
+                $task->forceFill(['status' => 'FAILED', 'finished_at' => $now])->save();
+                DiagnosticStep::whereKey($task->step_id)->update(['status' => 'BLOCKED', 'error_code' => 'policy_denied', 'finished_at' => $now]);
+
+                return ['status' => 'blocked', 'reason' => 'policy_denied', 'cancel' => true];
             }
             if ($action === 'start') {
                 if ($task->capability === 'mtr_path_analysis:v1') {

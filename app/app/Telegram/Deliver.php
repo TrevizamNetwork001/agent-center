@@ -13,6 +13,7 @@ use App\Models\NocSimulation;
 use App\Models\Tenant;
 use App\Noc\Analysis\Contracts;
 use App\Noc\Analysis\SimulationScope;
+use App\Noc\ReadOnlyLab\RouterOs7\Integration;
 use App\Rag\Retrieval;
 use App\Tenancy\TenantContext;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -102,6 +103,20 @@ class Deliver implements ShouldQueue
                                 ResolvePreflight::dispatch($this->tenant, $conversation->id)->afterCommit();
 
                                 return;
+                            }
+                        }
+                        if (($m->metadata['simulation'] ?? false) === true && (isset($m->metadata['routeros_binding_digest']) || isset($m->metadata['diagnostic_id']))) {
+                            $allowed = $allowed && Integration::enabled();
+                            if (isset($m->metadata['routeros_binding_digest'])) {
+                                $input = $conversation->context_json['pending']['routeros_input'] ?? [];
+                                $agent = Agent::find($input['binding']['agent_id'] ?? '');
+                                $allowed = $allowed && $agent && ($input['binding_digest'] ?? '') === $m->metadata['routeros_binding_digest'] && app(Preflight::class)->deviceTask($agent, $input) === null;
+                            } else {
+                                $lab = Diagnostic::find($m->metadata['diagnostic_id']);
+                                $allowed = $allowed && $lab && ($lab->context['routeros_lab'] ?? false) === true && $lab->created_by === $identity->user->id;
+                                if ($allowed) {
+                                    Gate::forUser($identity->user)->authorize('view', $lab);
+                                }
                             }
                         }
                         if (isset($m->metadata['device_simulation_id'])) {
