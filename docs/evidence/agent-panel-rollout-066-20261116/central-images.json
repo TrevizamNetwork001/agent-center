@@ -1,0 +1,30 @@
+{
+  "web": {
+    "tag": "agent-center-central:panel-updater-web-20261116",
+    "image_id": "sha256:b1bc8c0013baa0566767ef0af5659acb98958167b9e486c17f78d8edb9b73c94",
+    "user": "www-data",
+    "health": "healthy",
+    "running": true
+  },
+  "worker": {
+    "tag": "agent-center-central:panel-updater-queue-20261116",
+    "image_id": "sha256:d482780c611af758e8481720d5480c3652c68c8acd28e1ce0c67ae6ad34e1d56",
+    "user": "www-data",
+    "health": "healthy",
+    "running": true
+  },
+  "telegram-scheduler": {
+    "tag": "agent-center-central:panel-updater-queue-20261116",
+    "image_id": "sha256:d482780c611af758e8481720d5480c3652c68c8acd28e1ce0c67ae6ad34e1d56",
+    "user": "www-data",
+    "health": null,
+    "running": true
+  },
+  "diagnostic-worker": {
+    "tag": "agent-center-central:panel-updater-diagnostic-20261116",
+    "image_id": "sha256:6e814bfe8cd5def9e05c74be8c22f8026736b469352c8aa07c9e702d5c1cc367",
+    "user": "www-data",
+    "health": "healthy",
+    "running": true
+  }
+}

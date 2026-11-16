@@ -1,0 +1,15 @@
+{
+  "source_commit": "a6a9bb1",
+  "code_matches_commit": true,
+  "protocol_preserves_operational_static_capabilities": true,
+  "files": {
+    "app/Agent/Operations.php": "68abc2b0ab3cd665e057e29f149ae8287d6f63f58b7f18e667915c5455cec188",
+    "app/Agent/ReleaseAvailability.php": "14492bd3f0aff5700382917b52b7578c4dad2deed60bbe2a84ff7b6e58d46e4b",
+    "app/Agent/Releases.php": "0169830eff7a356ef86186b9863a0d660719253faa4039d4828ed1c5f948f3d9",
+    "app/Agent/ReleaseTransitions.php": "1fb01c9a319cc20e826d8433ffae795e06c86fc9d0a7b07525ad678c5fa10a3c",
+    "app/Http/Controllers/Agent/ReleaseController.php": "b0d7da1ca303bc13492927163a2ecd07ddab5710e0b8ce34f89aaf320aff46f1",
+    "app/Http/Controllers/Agent/UpdateController.php": "52dac91c5bd5964a959cf000aab5b65acbf00c69696c8e5b0b59713ae4c72726",
+    "app/Models/AgentRelease.php": "a8302408c02deadc5fff8d8a8e1d67b90d57144accb6e991b62bda2369f761da",
+    "app/Agent/Protocol.php": "27eedf1867e497234fb2417b629b55e67ef2e166a8e9f3c400e585402708ef8a"
+  }
+}

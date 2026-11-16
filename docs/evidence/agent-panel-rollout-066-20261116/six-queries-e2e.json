@@ -1,0 +1,222 @@
+{
+  "passed": true,
+  "runtime_artifact_sha256": "737338df796262843d087ccd1f49e6861ee631e33e6d7c98910d5fab0dd3dce4",
+  "systemd_real": true,
+  "agent_non_root": true,
+  "six_typed_operations": [
+    "DEVICE_BGP_PEERS_READ",
+    "DEVICE_IDENTITY_READ",
+    "DEVICE_INTERFACES_READ",
+    "DEVICE_INTERFACE_COUNTERS_READ",
+    "DEVICE_RESOURCES_READ",
+    "DEVICE_ROUTE_LOOKUP_READ"
+  ],
+  "queries": [
+    {
+      "operation": "DEVICE_IDENTITY_READ",
+      "scenario": "normal",
+      "task_id": "4feb9bb8-7145-4efc-986e-44a107cff0d9",
+      "ok": true,
+      "data_keys": [
+        "binding_digest",
+        "complete",
+        "contract_id",
+        "data",
+        "environment",
+        "identity",
+        "mode",
+        "schema_version",
+        "status"
+      ],
+      "error": null
+    },
+    {
+      "operation": "DEVICE_BGP_PEERS_READ",
+      "scenario": "normal",
+      "task_id": "244a5d35-0386-4320-b1eb-501be31834c8",
+      "ok": true,
+      "data_keys": [
+        "binding_digest",
+        "complete",
+        "contract_id",
+        "data",
+        "environment",
+        "identity",
+        "mode",
+        "schema_version",
+        "status"
+      ],
+      "error": null
+    },
+    {
+      "operation": "DEVICE_ROUTE_LOOKUP_READ",
+      "scenario": "normal",
+      "task_id": "8cc31b8e-eebe-4163-a8a4-34ca396b8ea1",
+      "ok": true,
+      "data_keys": [
+        "binding_digest",
+        "complete",
+        "contract_id",
+        "data",
+        "environment",
+        "identity",
+        "mode",
+        "schema_version",
+        "status"
+      ],
+      "error": null
+    },
+    {
+      "operation": "DEVICE_INTERFACES_READ",
+      "scenario": "normal",
+      "task_id": "f04dd2a3-ff12-4e3f-b7a7-f00e39ff6a0c",
+      "ok": true,
+      "data_keys": [
+        "binding_digest",
+        "complete",
+        "contract_id",
+        "data",
+        "environment",
+        "identity",
+        "mode",
+        "schema_version",
+        "status"
+      ],
+      "error": null
+    },
+    {
+      "operation": "DEVICE_INTERFACE_COUNTERS_READ",
+      "scenario": "normal",
+      "task_id": "7b97cde8-ffa5-43b1-992c-9ca67400d08c",
+      "ok": true,
+      "data_keys": [
+        "binding_digest",
+        "complete",
+        "contract_id",
+        "data",
+        "environment",
+        "identity",
+        "mode",
+        "schema_version",
+        "status"
+      ],
+      "error": null
+    },
+    {
+      "operation": "DEVICE_RESOURCES_READ",
+      "scenario": "normal",
+      "task_id": "bbf51b07-b2d5-415a-a285-17f5ef140bd7",
+      "ok": true,
+      "data_keys": [
+        "binding_digest",
+        "complete",
+        "contract_id",
+        "data",
+        "environment",
+        "identity",
+        "mode",
+        "schema_version",
+        "status"
+      ],
+      "error": null
+    },
+    {
+      "operation": "DEVICE_BGP_PEERS_READ",
+      "scenario": "auth",
+      "task_id": "87877fb4-5327-431a-8d73-8e042c6d5bc1",
+      "ok": false,
+      "data_keys": [],
+      "error": "routeros_auth_failed"
+    },
+    {
+      "operation": "DEVICE_BGP_PEERS_READ",
+      "scenario": "timeout",
+      "task_id": "bc65f4b2-abe1-4157-af68-8c43b72a7414",
+      "ok": false,
+      "data_keys": [],
+      "error": "timeout"
+    },
+    {
+      "operation": "DEVICE_BGP_PEERS_READ",
+      "scenario": "truncate",
+      "task_id": "d14183f2-5ec6-4bb2-8752-ad9de3d06f77",
+      "ok": false,
+      "data_keys": [],
+      "error": "routeros_invalid_output"
+    },
+    {
+      "operation": "DEVICE_BGP_PEERS_READ",
+      "scenario": "invalid",
+      "task_id": "31badc16-5d95-47dc-9508-c078257a5668",
+      "ok": false,
+      "data_keys": [],
+      "error": "routeros_invalid_output"
+    },
+    {
+      "operation": "DEVICE_BGP_PEERS_READ",
+      "scenario": "sensitive",
+      "task_id": "15a0cff7-8747-4e2d-bdca-80627a315b10",
+      "ok": false,
+      "data_keys": [],
+      "error": "routeros_invalid_output"
+    },
+    {
+      "operation": "DEVICE_BGP_PEERS_READ",
+      "scenario": "rows",
+      "task_id": "0a9a62c3-43a1-4d10-93cb-852106c6573a",
+      "ok": false,
+      "data_keys": [],
+      "error": "routeros_output_limit"
+    },
+    {
+      "operation": "DEVICE_BGP_PEERS_READ",
+      "scenario": "identity",
+      "task_id": "df0e3dc3-9e0c-425e-9c19-eab81c27fa82",
+      "ok": false,
+      "data_keys": [],
+      "error": "routeros_identity_rejected"
+    },
+    {
+      "operation": "DEVICE_BGP_PEERS_READ",
+      "scenario": "oversize",
+      "task_id": "1fd81035-65e2-471a-963d-364a0cb7d0d9",
+      "ok": false,
+      "data_keys": [],
+      "error": "routeros_output_limit"
+    },
+    {
+      "operation": "DEVICE_BGP_PEERS_READ",
+      "scenario": "normal",
+      "task_id": "23d83f10-756d-43df-aa01-0ce9738087f2",
+      "ok": false,
+      "data_keys": [],
+      "error": "routeros_identity_rejected"
+    }
+  ],
+  "task_engine": {
+    "task_protocol": 1,
+    "transport": "Real HTTP over isolated loopback; native Agent API authentication",
+    "execution": "Unmodified Runtime/Executor/action_worker/journal/lease protocol",
+    "tasks": 32,
+    "attempts": 24,
+    "conclusions": 32,
+    "freeze_operational": true,
+    "physical_device_access": false,
+    "preflight_denied_no_connection": true
+  },
+  "web_single_task": true,
+  "telegram": {
+    "native_ingress": true,
+    "native_outbox": true,
+    "external_transport": "HTTP fake; no Telegram API connection",
+    "single_task": true
+  },
+  "phpunit": {
+    "tests": 1,
+    "assertions": 225,
+    "errors": 0,
+    "failures": 0
+  },
+  "database_isolated": true,
+  "physical_device_access": false
+}

@@ -1,0 +1,27 @@
+{
+  "mode": "SIMULATED",
+  "physical_ready": false,
+  "operation": "DEVICE_IDENTITY_READ",
+  "other_five_denied": true,
+  "cases": [
+    "identity",
+    "wrong_host_key",
+    "viewer",
+    "other_equipment",
+    "other_tenant",
+    "other_capabilities",
+    "expired_policy",
+    "duplicate",
+    "timeout",
+    "cancellation"
+  ],
+  "device_freeze": true,
+  "physical_connections": 0,
+  "passed": true,
+  "phpunit": {
+    "tests": 1,
+    "assertions": 41,
+    "errors": 0,
+    "failures": 0
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "passed": true,
+  "active_runtime_sha256": "737338df796262843d087ccd1f49e6861ee631e33e6d7c98910d5fab0dd3dce4",
+  "companion_sha256": "ca99439f17cd2099fd5cb5aab321dc9fbe042c863cc8e46942274f3024344634",
+  "identity_config_policies_helper_systemd_hashes_and_permissions_preserved": true,
+  "preserved_files": {
+    "/etc/agent-center-agent/config.json": {
+      "sha256": "0a3da81148e8b26a255c5c540b15d9f4bc73b9ce00bb5dac5eea9d62923086a2",
+      "uid": 987,
+      "gid": 987,
+      "mode": 33152
+    },
+    "/etc/agent-center-agent/lifecycle-policy.json": {
+      "sha256": "54da18d13ec931f984b3ed4a4cca4aba5c7cb1a50b56c49b500602781669be7b",
+      "uid": 0,
+      "gid": 0,
+      "mode": 33152
+    },
+    "/etc/agent-center-agent/lifecycle-public.pem": {
+      "sha256": "1578a8814ed7d8b6326ff62a8c739e2160177d5bb743d88e27bbdec58fe88402",
+      "uid": 0,
+      "gid": 0,
+      "mode": 33152
+    },
+    "/etc/agent-center-agent/operations.json": {
+      "sha256": "557a9b014e694060f74ae465cb6c7ea30395e528e8d39241663daf93a4ba281d",
+      "uid": 0,
+      "gid": 0,
+      "mode": 33152
+    },
+    "/etc/agent-center-mtr/policy.json": {
+      "sha256": "251e7a3a3d8ec0689be652b2c08c3c27524451384fbe9c41964cd7838aba1daa",
+      "uid": 0,
+      "gid": 0,
+      "mode": 33152
+    },
+    "/var/lib/agent-center-agent/identity.json": {
+      "sha256": "c13d8096197834167066aba87a691b1fc57bd67efe120679f659e459af58b83b",
+      "uid": 987,
+      "gid": 987,
+      "mode": 33152
+    },
+    "/opt/agent-center-mtr/helper.pyz": {
+      "sha256": "7d3dce0658e5d32e8a13c34924ea7912f2cd692f9fbd642d438b072561dbd6f9",
+      "uid": 0,
+      "gid": 0,
+      "mode": 33188
+    },
+    "/opt/agent-center-mtr/mtr-helper.pyz": null,
+    "/etc/systemd/system/agent-center-agent.service": {
+      "sha256": "47b118a21abe3402743c42030fa24f63b7cfe13d8ef8ca43e04e83331083625c",
+      "uid": 0,
+      "gid": 0,
+      "mode": 33188
+    },
+    "/etc/systemd/system/agent-center-updater.service": {
+      "sha256": "801e74dc68bc29ed05483783bcffa5c31423d3e27e6a8ff36b7f085ed25fd90a",
+      "uid": 0,
+      "gid": 0,
+      "mode": 33188
+    },
+    "/etc/systemd/system/agent-center-updater.timer": {
+      "sha256": "fdfc023ffdbab5117eb6143e65550df1ba9630168449088d215bb0b918d99e87",
+      "uid": 0,
+      "gid": 0,
+      "mode": 33188
+    }
+  },
+  "device_operations_frozen": true,
+  "ssh_runtime_materialized": true,
+  "partial_downloads": 0,
+  "staging_directories": 0,
+  "journal_quick_check": "ok",
+  "journal_tables": {
+    "executions": {
+      "count": 103,
+      "sha256": "d7b7c150ba881b68c2fa953a9347393116db4f03a3b0f82811fd1170759fe639",
+      "unchanged": true
+    },
+    "events": {
+      "count": 412,
+      "sha256": "4470d73ddfecabc400868d24976f0aadcab48f4d4f6e02449e6847f5ccc98236",
+      "unchanged": true
+    }
+  },
+  "verification_transport": "SFTP read only for independent file comparison; no exec or put; update transport HTTPS Lifecycle"
+}

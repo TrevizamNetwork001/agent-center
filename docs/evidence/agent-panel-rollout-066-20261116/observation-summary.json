@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "started_utc": "2026-11-16T14:05:11.305641+00:00",
+  "finished_utc": "2026-11-16T14:20:12.211695+00:00",
+  "elapsed_seconds": 900.906,
+  "samples": 31,
+  "critical_errors": 0,
+  "ssh_used_for_observation": false
+}

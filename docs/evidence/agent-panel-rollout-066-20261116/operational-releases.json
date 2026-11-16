@@ -1,0 +1,52 @@
+[
+  {
+    "stage": "bridge",
+    "published": true,
+    "manifest": {
+      "platform": "debian13",
+      "schema_version": 1,
+      "sequence": 9,
+      "sha256": "341259577de5ea8a7db31300df9701cc969d4c74a4c94fb82790b1a138ac3354",
+      "size": 79233,
+      "version": "0.6.6"
+    },
+    "manifest_sha256": "906eae79a94e7f4daa0cb0f65125ae31bd8c0b48a196b15eb64759dceed1ae9d",
+    "signature_base64": "WhV5Qxn8R63uP1eXW3WmxKU2Hg8HTWk8YIlD1AdvgxaBtknxJjYsjCOJjx16II0dUsFhjoFsBsZvDHGXDoMmAw==",
+    "ed25519_verified": true,
+    "public_key_raw_sha256": "5f16350383c280c1b39d4f7257f09ecbe1002b1d59a1721ceb8bf4d5091195e1"
+  },
+  {
+    "stage": "target",
+    "published": true,
+    "manifest": {
+      "bootstrap_sha256": "341259577de5ea8a7db31300df9701cc969d4c74a4c94fb82790b1a138ac3354",
+      "platform": "debian13",
+      "runtime_package_protocol": 3,
+      "schema_version": 1,
+      "sequence": 10,
+      "sha256": "737338df796262843d087ccd1f49e6861ee631e33e6d7c98910d5fab0dd3dce4",
+      "size": 6741383,
+      "version": "0.6.6"
+    },
+    "manifest_sha256": "41d6ef4a3cc2842898b9aebfec763a4bb1b59b13e7b965656f5003aa47f77d47",
+    "signature_base64": "0SJyyVoV3VYwLjSqnGFoXlRdQZzFPKDzHI28VjCO3/Bb+6nAvJBhEhb3nERj+ulZLymg9Y1LeaoI08IW1WKSAA==",
+    "ed25519_verified": true,
+    "public_key_raw_sha256": "5f16350383c280c1b39d4f7257f09ecbe1002b1d59a1721ceb8bf4d5091195e1"
+  },
+  {
+    "stage": "restore",
+    "published": false,
+    "manifest": {
+      "platform": "debian13",
+      "schema_version": 1,
+      "sequence": 11,
+      "sha256": "b1821094e1b2d431ca0e8d68d8b0a1ef2ca0eeda05d49b001ea6a0b96acbeef7",
+      "size": 62807,
+      "version": "0.6.5"
+    },
+    "manifest_sha256": "a0262d06b5e27b058d890b20af7032f7718cf64f3161a208c0a33887621a0f65",
+    "signature_base64": "b06VOWCKldcYHtxYuEdjNbBgDFEo2SycCdX/DY6mpyDAoykbwglHnFJo0C8TWu2E49Fr/kNTwHCVy7rq7st4DQ==",
+    "ed25519_verified": true,
+    "public_key_raw_sha256": "5f16350383c280c1b39d4f7257f09ecbe1002b1d59a1721ceb8bf4d5091195e1"
+  }
+]

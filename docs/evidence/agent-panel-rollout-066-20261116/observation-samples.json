@@ -1,0 +1,1335 @@
+[
+  {
+    "utc": "2026-11-16T14:05:11+00:00",
+    "elapsed_seconds": 0.783,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 4.82866,
+    "poll_age_seconds": 4.828746,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:05:42+00:00",
+    "elapsed_seconds": 31.579,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 16.57571,
+    "poll_age_seconds": 4.575787999999999,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:06:13+00:00",
+    "elapsed_seconds": 62.657,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 6.748093,
+    "poll_age_seconds": 4.748238000000001,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:06:44+00:00",
+    "elapsed_seconds": 93.383,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 17.460502,
+    "poll_age_seconds": 6.460565,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:07:15+00:00",
+    "elapsed_seconds": 124.398,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 6.51724,
+    "poll_age_seconds": 5.517304,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:07:46+00:00",
+    "elapsed_seconds": 155.179,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 18.223588,
+    "poll_age_seconds": 4.223713,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:08:16+00:00",
+    "elapsed_seconds": 185.838,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 9.894245000000002,
+    "poll_age_seconds": 1.894318,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:08:47+00:00",
+    "elapsed_seconds": 216.526,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 20.619799,
+    "poll_age_seconds": 5.619872,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:09:18+00:00",
+    "elapsed_seconds": 247.286,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 12.305066,
+    "poll_age_seconds": 3.305159,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:09:49+00:00",
+    "elapsed_seconds": 278.123,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 2.111882,
+    "poll_age_seconds": 2.111966,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:10:20+00:00",
+    "elapsed_seconds": 308.953,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 12.025094999999999,
+    "poll_age_seconds": 2.025173,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:10:50+00:00",
+    "elapsed_seconds": 339.704,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 3.790165,
+    "poll_age_seconds": 3.7902199999999997,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:11:21+00:00",
+    "elapsed_seconds": 370.344,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 14.420957,
+    "poll_age_seconds": 1.421011,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:11:52+00:00",
+    "elapsed_seconds": 400.954,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 4.065094,
+    "poll_age_seconds": 1.065168,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:12:22+00:00",
+    "elapsed_seconds": 431.618,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 15.694837,
+    "poll_age_seconds": 8.694915000000002,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:12:53+00:00",
+    "elapsed_seconds": 462.2,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 6.3196639999999995,
+    "poll_age_seconds": 6.319732,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:13:23+00:00",
+    "elapsed_seconds": 492.893,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 16.956054,
+    "poll_age_seconds": 0.9561430000000001,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:13:54+00:00",
+    "elapsed_seconds": 523.508,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 8.623296,
+    "poll_age_seconds": 0.623364,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:14:25+00:00",
+    "elapsed_seconds": 554.345,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 17.363338,
+    "poll_age_seconds": 4.363403,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:14:56+00:00",
+    "elapsed_seconds": 584.994,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 10.104773999999999,
+    "poll_age_seconds": 6.104850000000001,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:15:26+00:00",
+    "elapsed_seconds": 615.796,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 19.840332999999998,
+    "poll_age_seconds": 0.840404,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:15:57+00:00",
+    "elapsed_seconds": 646.658,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 11.669278,
+    "poll_age_seconds": 6.669358,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:16:28+00:00",
+    "elapsed_seconds": 677.556,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 0.566234,
+    "poll_age_seconds": 5.5663339999999994,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:16:59+00:00",
+    "elapsed_seconds": 708.166,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 13.2776,
+    "poll_age_seconds": 3.2777339999999997,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:17:30+00:00",
+    "elapsed_seconds": 739.633,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 3.639809,
+    "poll_age_seconds": 1.639876,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:18:01+00:00",
+    "elapsed_seconds": 770.832,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 14.474075000000001,
+    "poll_age_seconds": 0.474159,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:18:32+00:00",
+    "elapsed_seconds": 801.474,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 6.55316,
+    "poll_age_seconds": 5.5532259999999996,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:19:03+00:00",
+    "elapsed_seconds": 832.701,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 17.543909,
+    "poll_age_seconds": 3.5439760000000002,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:19:35+00:00",
+    "elapsed_seconds": 864.465,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 8.575168,
+    "poll_age_seconds": 4.575243,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:20:06+00:00",
+    "elapsed_seconds": 895.952,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 19.832990000000002,
+    "poll_age_seconds": 5.833059,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  },
+  {
+    "utc": "2026-11-16T14:20:11+00:00",
+    "elapsed_seconds": 900.906,
+    "version": "0.6.6",
+    "sequence": 10,
+    "heartbeat_age_seconds": 4.882524999999999,
+    "poll_age_seconds": 5.8825959999999995,
+    "runtime_package_protocol": 3,
+    "unresolved_operations": 0,
+    "active_tasks": 0,
+    "failed_jobs": 0,
+    "freeze": true,
+    "device_authorization_negative": true,
+    "lab_transport_enabled": false,
+    "components": {
+      "agent-center-web-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-telegram-scheduler-1": {
+        "running": true,
+        "health": null
+      },
+      "agent-center-diagnostic-worker-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-postgres-1": {
+        "running": true,
+        "health": "healthy"
+      },
+      "agent-center-nginx-1": {
+        "running": true,
+        "health": "healthy"
+      }
+    },
+    "ready": true,
+    "critical_errors": []
+  }
+]

@@ -1,0 +1,47 @@
+{
+  "utc": "2026-11-16T14:25:32+00:00",
+  "agent_id": "c88457e9-748f-4906-982a-166d0ee0f6d3",
+  "version": "0.6.6",
+  "status": "active",
+  "heartbeat_age_seconds": 5.815224,
+  "poll_age_seconds": 6.815296,
+  "updater": {
+    "version": "0.6.6",
+    "protocol": 1,
+    "last_poll_at": "2026-11-16T15:25:21+01:00",
+    "download_protocol": 1,
+    "component_protocol": 1,
+    "signed_release_protocol": 1,
+    "runtime_package_protocol": 3
+  },
+  "sequence": 10,
+  "capabilities": [
+    "agent_info",
+    "icmp_ping:v1",
+    "dns_lookup:v1",
+    "tcp_connect:v1",
+    "traceroute:v1",
+    "http_probe:v1",
+    "mtr_path_analysis:v1"
+  ],
+  "helper": {
+    "name": "mtr",
+    "healthy": true,
+    "version": "0.6.3",
+    "installed": true,
+    "authenticated": true,
+    "service_active": null,
+    "socket_available": true
+  },
+  "observation_received_at": "2026-11-07T19:51:41+01:00",
+  "observation_last_error": null,
+  "freeze": true,
+  "device_authorization_negative": true,
+  "lab_transport_enabled": false,
+  "unresolved_operations": 0,
+  "mtr_confirmed_at": "2026-11-16T15:05:05+01:00",
+  "mtr_available": true,
+  "active_tasks": 0,
+  "failed_jobs": 0,
+  "central_ready": true
+}

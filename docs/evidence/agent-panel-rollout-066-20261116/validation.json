@@ -1,0 +1,90 @@
+{
+  "laravel": {
+    "tests": 604,
+    "assertions": 5563,
+    "failures": 0,
+    "errors": 0,
+    "conditional_skips": 5
+  },
+  "python": {
+    "tests": 190,
+    "failures": 0,
+    "errors": 0
+  },
+  "candidate_hardening": {
+    "tests": 18,
+    "failures": 0,
+    "errors": 0
+  },
+  "pint": {
+    "files": 383,
+    "passed": true
+  },
+  "ruff_changed_scope": {
+    "passed": true
+  },
+  "ruff_full": {
+    "passed": false,
+    "inherited_findings": [
+      {
+        "file": "agent_center/preflight.py",
+        "rule": "I001"
+      },
+      {
+        "file": "agent_center/managed_settings.py",
+        "rule": "I001"
+      }
+    ],
+    "reason": "Preserved byte-for-byte from verified signed 0.6.5; no suppressions added"
+  },
+  "frontend_build": {
+    "passed": true,
+    "output_isolated": true,
+    "ui_deployed": false
+  },
+  "container_builds": {
+    "passed": true,
+    "runtime_user": "www-data"
+  },
+  "concurrency": {
+    "device_simulated_ssh": true,
+    "mikrotik_simulated_ssh": true,
+    "diagnostic_claims_and_fencing": true,
+    "conversation_idle": true,
+    "preflight_callbacks": true
+  },
+  "postgresql_force_rls": true,
+  "populated_migration_rollback_guards": true,
+  "secret_scan_index": true,
+  "diff_check": true,
+  "production_device_queries": 0,
+  "ssh_install_or_exec_on_agent": false,
+  "sftp_used_for_read_only_independent_snapshots": true,
+  "conditional_coverage": {
+    "native_lifecycle_update": {
+      "tests": 1,
+      "assertions": 269,
+      "passed": true
+    },
+    "native_lifecycle_failure": {
+      "tests": 1,
+      "assertions": 19,
+      "passed": true
+    },
+    "native_lifecycle_restore_065": {
+      "tests": 1,
+      "assertions": 358,
+      "passed": true
+    },
+    "routeros_six_operations": {
+      "tests": 1,
+      "assertions": 225,
+      "passed": true
+    },
+    "routeros_identity_preparation_simulated": {
+      "tests": 1,
+      "assertions": 41,
+      "passed": true
+    }
+  }
+}

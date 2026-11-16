@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "native_timer_and_remote_entrypoint": true,
+  "ssh_connections": 0,
+  "local_bootstrap_invocations": 0,
+  "lifecycle_operations": [
+    "f42db978-591c-4611-ab84-99829f4e6753",
+    "c76379a9-6218-4be1-b212-c552b7964cec"
+  ],
+  "sequence": 7,
+  "injected_failure_rolled_back": true,
+  "version": "0.6.6",
+  "journal": {
+    "executions": 0,
+    "events": 0
+  },
+  "active_artifact_sha256": "341259577de5ea8a7db31300df9701cc969d4c74a4c94fb82790b1a138ac3354",
+  "systemd_pid1": true,
+  "restored_original_065": false,
+  "dependencies_installed": false,
+  "panel": {
+    "passed": true,
+    "panel_requests": 1,
+    "native_operations_completed": 1,
+    "failure_injected": true,
+    "rollback_verified": true,
+    "from_version": "0.6.5",
+    "version": "0.6.6",
+    "sequence": 7,
+    "package_protocol": 3,
+    "identity_preserved": true,
+    "config_preserved": true,
+    "ssh_connections_during_update": 0,
+    "device_tasks": 0,
+    "freeze_preserved": true,
+    "target_sha256": "4ddd7b7d96f5fffd2c8e7b3123c4e7c1cf42b838dd178c366a6f8385fa1778b0"
+  }
+}

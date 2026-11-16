@@ -1,0 +1,134 @@
+{
+  "operations": [
+    {
+      "id": "2a6ee106-1f89-4a63-927f-6b1d00bdbfc3",
+      "sequence": 7,
+      "sha256": "ef30a5300cd701d99e05f9f373236df43f7206860c956851f3fc77ba0efdfb3c",
+      "status": "COMPLETED",
+      "from_version": "0.6.5",
+      "to_version": "0.6.6",
+      "error": null,
+      "approved_at": "2026-11-16T14:39:15+01:00",
+      "claimed_at": "2026-11-16T14:39:41+01:00",
+      "finished_at": "2026-11-16T14:39:46+01:00",
+      "postcheck": true,
+      "freeze_preserved": true,
+      "precheck_only_recovery": false,
+      "original_failure_preserved": false
+    },
+    {
+      "id": "ecb7e54a-86b5-4641-8bd1-f63e58501eb5",
+      "sequence": 8,
+      "sha256": "decad6914b31f9b654c3c8f1b002f929af1f7eae8baba58d7b666f8ddabd2d05",
+      "status": "FAILED",
+      "from_version": "0.6.6",
+      "to_version": "0.6.6",
+      "error": "interrupted",
+      "approved_at": "2026-11-16T14:39:15+01:00",
+      "claimed_at": "2026-11-16T14:40:04+01:00",
+      "finished_at": "2026-11-16T14:44:11+01:00",
+      "postcheck": null,
+      "freeze_preserved": null,
+      "precheck_only_recovery": true,
+      "original_failure_preserved": true
+    },
+    {
+      "id": "14124e00-0179-4250-b7b9-2f8c563959e4",
+      "sequence": 9,
+      "sha256": "341259577de5ea8a7db31300df9701cc969d4c74a4c94fb82790b1a138ac3354",
+      "status": "COMPLETED",
+      "from_version": "0.6.6",
+      "to_version": "0.6.6",
+      "error": null,
+      "approved_at": "2026-11-16T14:59:18+01:00",
+      "claimed_at": "2026-11-16T14:59:50+01:00",
+      "finished_at": "2026-11-16T14:59:58+01:00",
+      "postcheck": true,
+      "freeze_preserved": true,
+      "precheck_only_recovery": false,
+      "original_failure_preserved": false
+    },
+    {
+      "id": "ca9b2dff-e548-4cf6-a017-923e1fb61fe2",
+      "sequence": 10,
+      "sha256": "737338df796262843d087ccd1f49e6861ee631e33e6d7c98910d5fab0dd3dce4",
+      "status": "COMPLETED",
+      "from_version": "0.6.6",
+      "to_version": "0.6.6",
+      "error": null,
+      "approved_at": "2026-11-16T14:59:18+01:00",
+      "claimed_at": "2026-11-16T15:04:57+01:00",
+      "finished_at": "2026-11-16T15:05:08+01:00",
+      "postcheck": true,
+      "freeze_preserved": true,
+      "precheck_only_recovery": false,
+      "original_failure_preserved": false
+    }
+  ],
+  "production_tasks_created": 0,
+  "failed_precheck_apply_grants": 0,
+  "role": {
+    "rolsuper": false,
+    "rolbypassrls": false
+  },
+  "force_rls": [
+    {
+      "relname": "agents",
+      "relrowsecurity": true,
+      "relforcerowsecurity": true
+    },
+    {
+      "relname": "diagnostics",
+      "relrowsecurity": true,
+      "relforcerowsecurity": true
+    },
+    {
+      "relname": "agent_tasks",
+      "relrowsecurity": true,
+      "relforcerowsecurity": true
+    },
+    {
+      "relname": "conversation_messages",
+      "relrowsecurity": true,
+      "relforcerowsecurity": true
+    },
+    {
+      "relname": "agent_releases",
+      "relrowsecurity": true,
+      "relforcerowsecurity": true
+    },
+    {
+      "relname": "agent_operations",
+      "relrowsecurity": true,
+      "relforcerowsecurity": true
+    },
+    {
+      "relname": "rag_documents",
+      "relrowsecurity": true,
+      "relforcerowsecurity": true
+    },
+    {
+      "relname": "noc_devices",
+      "relrowsecurity": true,
+      "relforcerowsecurity": true
+    }
+  ],
+  "policy": {
+    "schema_version": 1,
+    "agent_id": "c88457e9-748f-4906-982a-166d0ee0f6d3",
+    "device_operations_frozen": true,
+    "tasks_enabled": false,
+    "task_protocol": 1,
+    "allowed_capabilities": [
+      "agent_info",
+      "icmp_ping:v1",
+      "dns_lookup:v1",
+      "tcp_connect:v1",
+      "traceroute:v1",
+      "http_probe:v1",
+      "mtr_path_analysis:v1"
+    ],
+    "heartbeat_interval": 20,
+    "poll_interval": 5
+  }
+}
