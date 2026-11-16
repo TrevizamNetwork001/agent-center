@@ -24,6 +24,14 @@ autor, Gate, validade de quinze minutos e quarentena. Não anunciar o protocolo
 em cinco minutos encerra a espera com erro explícito. Campos de transição são
 exclusivamente da Central; o Agent não pode escrevê-los no relatório.
 
+O pacote final tem cerca de 6,4 MiB. Os limites anteriores de PHP/nginx eram
+2 MiB, abaixo dos 8 MiB já previstos no controller de releases. O PHP passa a
+aceitar artefatos de até 8 MiB; nginx aceita o envelope multipart de até 10 MiB
+na rota administrativa de publicação. A ACL existente é herdada, sem `allow all`.
+As demais rotas externas mantêm 2 MiB. O build aplica o ajuste mínimo de versão
+com permissão de construção e volta a `www-data` antes de validar a imagem final;
+falha de escrita ou ausência de 0.6.6 agora encerra o build.
+
 O helper MTR 0.6.5 permanece intacto. Ao receber a resposta legada exata de
 operação desconhecida, a observação consulta somente `ready` pelo socket local.
 Isso permite reportar sua saúde sem inventar visibilidade das políticas: a
