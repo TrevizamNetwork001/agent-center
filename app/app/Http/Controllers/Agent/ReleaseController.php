@@ -36,7 +36,10 @@ class ReleaseController extends Controller
         abort_unless(sodium_crypto_sign_verify_detached($signature, $data['manifest'], $key), 422, 'Assinatura inválida.');
         $manifest = json_decode($data['manifest'], true);
         $fields = ['schema_version', 'sequence', 'version', 'platform', 'sha256', 'size'];
-        abort_unless(is_array($manifest) && in_array(count($manifest), [count($fields), count($fields) + 1], true) && ! array_diff(array_keys($manifest), [...$fields, 'components']) && ! array_diff($fields, array_keys($manifest)), 422);
+        abort_unless(is_array($manifest) && ! array_diff(array_keys($manifest), [...$fields, 'components', 'runtime_package_protocol', 'bootstrap_sha256']) && ! array_diff($fields, array_keys($manifest)), 422);
+        if (array_key_exists('runtime_package_protocol', $manifest) || array_key_exists('bootstrap_sha256', $manifest)) {
+            abort_unless(($manifest['runtime_package_protocol'] ?? null) === 2 && is_string($manifest['bootstrap_sha256'] ?? null) && preg_match('/^[a-f0-9]{64}$/D', $manifest['bootstrap_sha256']) && $manifest['bootstrap_sha256'] !== $manifest['sha256'], 422);
+        }
         abort_unless($manifest['schema_version'] === 1 && is_int($manifest['sequence']) && $manifest['sequence'] > 0 && $manifest['sequence'] <= 2147483647, 422);
         abort_unless(is_string($manifest['version']) && preg_match('/^[0-9]+\.[0-9]+\.[0-9]+$/D', $manifest['version']) && $manifest['platform'] === 'debian13', 422);
         abort_unless(in_array($manifest['version'], Protocol::VERSIONS, true), 422, 'Versão não suportada pela Central.');
@@ -55,6 +58,11 @@ class ReleaseController extends Controller
             // Serialize publications per tenant, including the first release.
             DB::select('SELECT pg_advisory_xact_lock(190621, ?::integer)', [app(TenantContext::class)->tenantId]);
             abort_if(AgentRelease::where('sequence', '>=', $manifest['sequence'])->exists(), 409);
+            if (isset($manifest['runtime_package_protocol'])) {
+                $bridge = AgentRelease::where('sha256', $manifest['bootstrap_sha256'])->first();
+                abort_unless($bridge && $bridge->version === $manifest['version'] && $bridge->platform === $manifest['platform'] && $bridge->sequence < $manifest['sequence'] && ! isset(json_decode($bridge->manifest, true)['runtime_package_protocol']), 422, 'Publique primeiro a transição assinada compatível deste tenant.');
+                app(ReleaseQuarantine::class)->assertAllowed($bridge->descriptor());
+            }
             $release = new AgentRelease;
             $release->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => app(TenantContext::class)->tenantId,
                 'published_by' => $r->user()->id, 'version' => $manifest['version'], 'platform' => $manifest['platform'],

@@ -327,6 +327,7 @@ class Remote:
                 "operations/claim",
                 {
                     "updater_version": __version__,
+                    "runtime_package_protocol": 2,
                     "release_download_protocol": 1,
                     "signed_release_protocol": 1,
                     "component_protocol": 1,

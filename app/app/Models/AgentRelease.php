@@ -24,11 +24,14 @@ class AgentRelease extends Model
 
     public function descriptor(): array
     {
+        $manifest = json_decode($this->manifest, true);
+
         return ['id' => $this->id, 'version' => $this->version, 'sha256' => $this->sha256,
             'components' => json_decode($this->manifest, true)['components'] ?? [],
             'platform' => $this->platform, 'sequence' => (int) $this->sequence,
             'status' => 'available', 'device_operations_frozen' => true,
             'compatibility' => 'Debian 13; signed runtime; state/journal schema 1',
-            'lifecycle' => ['manifest' => base64_encode($this->manifest), 'signature' => $this->signature]];
+            'lifecycle' => ['manifest' => base64_encode($this->manifest), 'signature' => $this->signature],
+            ...(isset($manifest['runtime_package_protocol']) ? ['runtime_package_protocol' => $manifest['runtime_package_protocol'], 'bootstrap_sha256' => $manifest['bootstrap_sha256']] : [])];
     }
 }

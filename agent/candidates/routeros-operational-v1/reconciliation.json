@@ -14,7 +14,9 @@
     "heartbeat.py: additive bounded observation, original diagnostics/preflight path retained",
     "mtr_helper.py: additive observe/check requests; original protocol_version=1 preflight retained",
     "update/engine.py: closed wheel validation and offline staging within the existing runtime rename/rollback transaction",
-    "update/remote.py: signed release staging materializes the closed SSH payload before the existing version-specific self-check; signature and catalog authorization unchanged"
+    "update/remote.py: signed release staging materializes the closed SSH payload before the existing version-specific self-check; signature and catalog authorization unchanged",
+    "lifecycle/releases.py: signed runtime package protocol and bootstrap digest, preserving legacy manifest validation",
+    "update/remote.py: advertise runtime package protocol 2 for panel transition negotiation"
   ],
   "reviewed_source_sha256": {
     "agent_center/heartbeat.py": "556ee36055f1a0002f302ec1aff0f205265e3c03fbb923213897e2f1066e19b0",
@@ -24,7 +26,8 @@
     "agent_center/main.py": "bd71cb4c59630052f5c4f9e140e7954c7832405f79597a67f75ea95ed595e69d",
     "agent_center/__init__.py": "59b6cdb5dd0380c78413143e3642a6db2b5c1a1842a3914e562a5bbff7d9e4a1",
     "agent_center/config.py": "60986a4ec03ec5986be87873bca0e3b040f5193876f716500f2006c2f1f37452",
-    "agent_center/update/remote.py": "b926ffff0a9b850e3278e407fa7b620dea3f921050a9ba878ee57f9674fd262a",
+    "agent_center/lifecycle/releases.py": "f40c6c994182acecf267a1707ec8aff47e30fe5ae21eb32f97141dc78e1bced9",
+    "agent_center/update/remote.py": "3441f06381b2e5ebcab640da7734405d905d81328ad0e0a87288895b251cf170",
     "agent_center/update/engine.py": "e08cc958a0f924dd3f68ab1b2b00d6d820a54f582914475c8f57ecf5fca1d0f0"
   }
 }

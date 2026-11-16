@@ -1,4 +1,6 @@
 """Wait for ephemeral fixture credentials, then run the unmodified Agent entrypoint."""
+import hashlib
+import json
 import os
 import sys
 import time
@@ -9,12 +11,17 @@ for _ in range(4500):
     if config.is_file():
         artifact = Path('/integration-candidate/agent.pyz')
         metadata = artifact.parent
-        installed = Path('/run/routeros066-upgrade/base/runtime/agent.pyz')
+        installed = Path('/opt/agent-center-agent/runtime/agent.pyz')
+        if not installed.is_file():
+            installed = Path('/run/routeros066-upgrade/base/runtime/agent.pyz')
         if installed.is_file():
             artifact = installed
-            metadata = (Path('/integration-baseline') if __import__('hashlib').sha256(artifact.read_bytes()).hexdigest()
-                        == 'a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315'
-                        else Path('/integration-candidate'))
+            digest = hashlib.sha256(artifact.read_bytes()).hexdigest()
+            metadata = next(directory for directory in (
+                Path('/integration-baseline'), Path('/integration-bridge'), Path('/integration-candidate'),
+                Path('/lab/panel-packages/restore'),
+            ) if (directory / 'manifest.json').is_file()
+                and json.loads((directory / 'manifest.json').read_text())['sha256'] == digest)
         if artifact.is_file():
             from agent_center.lifecycle.releases import verify
             bundle = metadata

@@ -6,6 +6,7 @@ use App\Agent\Operations;
 use App\Agent\Protocol;
 use App\Agent\ReleaseQuarantine;
 use App\Agent\Releases;
+use App\Agent\ReleaseTransitions;
 use App\Http\Controllers\Controller;
 use App\Models\Agent;
 use App\Models\AgentOperation;
@@ -25,6 +26,7 @@ class UpdateController extends Controller
         abort_if($r->boolean('install_after_check') && $d['kind'] !== 'update', 422);
         abort_unless($agent->status === 'active' && ! $agent->revoked_at, 409);
         $release = $releases->find($d['release_sha']);
+        abort_if(version_compare($release['version'], '0.6.4', '>=') && version_compare($agent->metadata['updater']['version'] ?? '0.0.0', '0.6.4', '<'), 409, 'Atualizador requer transição assinada pelo Lifecycle.');
         abort_if($d['kind'] === 'rollback' && ! empty($agent->metadata['lifecycle_components']), 409, 'Componentes exigem recuperação conjunta; rollback de runtime isolado bloqueado.');
         abort_if(! empty($release['components']) && ($agent->metadata['updater']['component_protocol'] ?? 0) !== 1, 409, 'Atualizador sem suporte a componentes.');
         abort_if(isset($release['lifecycle']) && ($agent->metadata['updater']['signed_release_protocol'] ?? 0) !== 1, 409, 'Atualizador sem suporte a releases assinadas.');
@@ -38,11 +40,13 @@ class UpdateController extends Controller
             if (AgentOperation::where('agent_id', $agent->id)->whereNotIn('status', ['COMPLETED', 'FAILED'])->exists()) {
                 return false;
             }
+            $target = $release;
+            [$release, $transition] = $d['kind'] === 'update' ? app(ReleaseTransitions::class)->plan($agent, $target) : [$target, null];
             $o = new AgentOperation;
-            $o->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $agent->tenant_id, 'agent_id' => $agent->id, 'requested_by' => $r->user()->id, 'kind' => $d['kind'], 'status' => 'PRECHECK_REQUESTED', 'from_version' => $agent->version, 'release' => $release, 'reason' => $d['reason']])->save();
+            $o->forceFill(['id' => (string) Str::uuid(), 'tenant_id' => $agent->tenant_id, 'agent_id' => $agent->id, 'requested_by' => $r->user()->id, 'kind' => $d['kind'], 'status' => 'PRECHECK_REQUESTED', 'from_version' => $agent->version, 'release' => $release, 'reason' => $d['reason'], 'evidence' => $transition ? ['transition' => $transition] : null])->save();
             if ($r->boolean('install_after_check')) {
                 $o->forceFill(['approved_by' => $r->user()->id, 'approved_at' => now()])->save();
-                $audit->record('agent.update_authorized', $r->user(), $agent->tenant_id, 'agent', null, ['agent_id' => $agent->id, 'operation_id' => $o->id, 'version' => $release['version'], 'sha256' => $release['sha256']]);
+                $audit->record('agent.update_authorized', $r->user(), $agent->tenant_id, 'agent', null, ['agent_id' => $agent->id, 'operation_id' => $o->id, 'version' => $target['version'], 'sha256' => $target['sha256']]);
             }
             $audit->record('agent.'.$d['kind'].'_requested', $r->user(), $agent->tenant_id, 'agent', null, ['agent_id' => $agent->id, 'operation_id' => $o->id]);
 
@@ -73,9 +77,9 @@ class UpdateController extends Controller
 
     public function claim(Request $r, Operations $ops)
     {
-        $data = $r->validate(['updater_version' => ['sometimes', Rule::in(Protocol::VERSIONS)], 'release_download_protocol' => ['sometimes', 'integer', Rule::in([1])], 'signed_release_protocol' => ['sometimes', 'integer', Rule::in([1])], 'component_protocol' => ['sometimes', 'integer', Rule::in([1])], 'recovery_protocol' => ['sometimes', 'integer', Rule::in([1])]]);
+        $data = $r->validate(['runtime_package_protocol' => ['sometimes', 'integer', Rule::in([1, 2])], 'updater_version' => ['sometimes', Rule::in(Protocol::VERSIONS)], 'release_download_protocol' => ['sometimes', 'integer', Rule::in([1])], 'signed_release_protocol' => ['sometimes', 'integer', Rule::in([1])], 'component_protocol' => ['sometimes', 'integer', Rule::in([1])], 'recovery_protocol' => ['sometimes', 'integer', Rule::in([1])]]);
 
-        return response()->json(['operation' => $ops->claim($r->attributes->get('agent'), $data['updater_version'] ?? null, isset($data['release_download_protocol']) ? (int) $data['release_download_protocol'] : null, (int) ($data['signed_release_protocol'] ?? 0), (int) ($data['component_protocol'] ?? 0), (int) ($data['recovery_protocol'] ?? 0))])->header('Cache-Control', 'no-store');
+        return response()->json(['operation' => $ops->claim($r->attributes->get('agent'), $data['updater_version'] ?? null, isset($data['release_download_protocol']) ? (int) $data['release_download_protocol'] : null, (int) ($data['signed_release_protocol'] ?? 0), (int) ($data['component_protocol'] ?? 0), (int) ($data['recovery_protocol'] ?? 0), (int) ($data['runtime_package_protocol'] ?? 1))])->header('Cache-Control', 'no-store');
     }
 
     public function reconcile(Request $r, Agent $agent, AgentOperation $operation, Audit $audit)

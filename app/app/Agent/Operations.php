@@ -16,15 +16,15 @@ class Operations
 {
     public const ERRORS = ['component_environment_unavailable', 'component_install_failed', 'component_files_require_review', 'component_stop_failed', 'component_bootstrap_required', 'component_permission_not_authorized', 'component_dependency_missing', 'component_dependency_incompatible', 'component_busy', 'component_dropins_require_review', 'component_policy_exceeds_base', 'invalid_component_policy', 'empty_component_policy', 'component_hash_mismatch', 'component_requires_lifecycle_service', 'principal_hardening_changed', 'precheck_failed', 'release_download_failed', 'invalid_release', 'release_not_staged', 'sha256_mismatch', 'incompatible', 'update_failed', 'rollback_failed', 'interrupted', 'postcheck_failed', 'backup_failed', 'busy', 'self_check_failed', 'self_check_permission_denied', 'self_check_timeout', 'self_check_exec_failed', 'self_check_privilege_failed', 'self_check_invalid_output', 'service_restart_failed'];
 
-    public function claim(Agent $agent, ?string $updaterVersion = null, ?int $downloadProtocol = null, int $signedProtocol = 0, int $componentProtocol = 0, int $recoveryProtocol = 0): ?array
+    public function claim(Agent $agent, ?string $updaterVersion = null, ?int $downloadProtocol = null, int $signedProtocol = 0, int $componentProtocol = 0, int $recoveryProtocol = 0, int $runtimePackageProtocol = 1): ?array
     {
-        return DB::transaction(function () use ($agent, $updaterVersion, $downloadProtocol, $signedProtocol, $componentProtocol, $recoveryProtocol) {
+        return DB::transaction(function () use ($agent, $updaterVersion, $downloadProtocol, $signedProtocol, $componentProtocol, $recoveryProtocol, $runtimePackageProtocol) {
             app(ReleaseQuarantine::class)->lock();
             $agent = Agent::whereKey($agent->id)->lockForUpdate()->firstOrFail();
             if ($agent->status !== 'active' || $agent->revoked_at) {
                 return null;
             }
-            $agent->forceFill(['metadata' => [...($agent->metadata ?? []), 'updater' => ['protocol' => 1, 'version' => $updaterVersion, 'download_protocol' => $downloadProtocol, 'signed_release_protocol' => $signedProtocol, 'component_protocol' => $componentProtocol, 'last_poll_at' => now()->toIso8601String()]]])->save();
+            $agent->forceFill(['metadata' => [...($agent->metadata ?? []), 'updater' => ['protocol' => 1, 'version' => $updaterVersion, 'download_protocol' => $downloadProtocol, 'signed_release_protocol' => $signedProtocol, 'component_protocol' => $componentProtocol, 'runtime_package_protocol' => $runtimePackageProtocol, 'last_poll_at' => now()->toIso8601String()]]])->save();
             $held = AgentOperation::where('agent_id', $agent->id)->where('status', 'UNCERTAIN')->lockForUpdate()->first();
             if ($held) {
                 $request = $held->evidence['reconciliation'] ?? [];
@@ -45,11 +45,19 @@ class Operations
             if (isset($o->release['lifecycle']) && $signedProtocol !== 1) {
                 return null;
             }
+            if (ReleaseTransitions::requiredProtocol($o->release) > $runtimePackageProtocol) {
+                app(ReleaseTransitions::class)->expireUnsupportedTransition($agent, $o);
+
+                return null;
+            }
             if (! empty($o->release['components']) && $componentProtocol !== 1) {
                 return null;
             }
             // Updates do not race active diagnostic attempts. No cancellation or lease bypass.
             if (AgentTask::where('agent_id', $agent->id)->whereIn('status', ['CLAIMED', 'RUNNING'])->exists()) {
+                return null;
+            }
+            if (version_compare($o->release['version'], '0.6.4', '>=') && version_compare($updaterVersion ?? '0.0.0', '0.6.4', '<')) {
                 return null;
             }
             $precheck = $o->status === 'PRECHECK_REQUESTED';
@@ -74,6 +82,11 @@ class Operations
             app(ReleaseQuarantine::class)->lock();
             $agent = Agent::whereKey($agent->id)->lockForUpdate()->firstOrFail();
             $o = AgentOperation::where('agent_id', $agent->id)->whereKey($data['operation_id'])->lockForUpdate()->firstOrFail();
+            // These keys are server-owned and prohibited in the Agent report schema.
+            $reserved = array_intersect_key($o->evidence ?? [], array_flip(['transition', 'transition_parent_id']));
+            if ($reserved) {
+                $data['evidence'] = [...($data['evidence'] ?? []), ...$reserved];
+            }
             if (($data['evidence']['recovery_verified'] ?? false) === true) {
                 if ($o->status === 'FAILED' && isset($o->evidence['reconciliation']['verified_at'])) {
                     abort_unless(($o->evidence['reconciliation']['report'] ?? null) == $data, 409);
@@ -140,6 +153,9 @@ class Operations
                 }
             }
             if ($terminal) {
+                if ($o->status === 'COMPLETED' && isset($o->evidence['transition'])) {
+                    app(ReleaseTransitions::class)->completeBridge($agent, $o, $o->approved_by ? $this->authorizedApprover($agent, $o->approved_by) : null);
+                }
                 app(Audit::class)->record('agent.'.$o->kind.'_'.($o->status === 'COMPLETED' ? 'completed' : 'failed'), null, $agent->tenant_id, 'agent', null, ['agent_id' => $agent->id, 'operation_id' => $o->id]);
             }
         });

@@ -7,6 +7,16 @@ use PHPUnit\Framework\TestCase;
 
 class ComponentReleaseAvailabilityTest extends TestCase
 {
+    public function test_signed_package_revision_hides_bridge_and_stops_at_installed_sequence(): void
+    {
+        $bridge = ['version' => '0.6.6', 'sequence' => 7, 'sha256' => str_repeat('a', 64)];
+        $target = ['version' => '0.6.6', 'sequence' => 8, 'sha256' => str_repeat('b', 64), 'lifecycle' => ['manifest' => 'signed'], 'runtime_package_protocol' => 2, 'bootstrap_sha256' => $bridge['sha256']];
+        $this->assertSame([$target], ReleaseAvailability::newer([$bridge, $target], '0.6.5', [], 6));
+        $this->assertSame([$target], ReleaseAvailability::newer([$bridge, $target], '0.6.6', [], 7));
+        $this->assertSame([], ReleaseAvailability::newer([$bridge, $target], '0.6.6', [], 8));
+        $this->assertSame([], ReleaseAvailability::newer([array_replace($bridge, ['bootstrap_only' => true])], '0.6.5', [], 6));
+    }
+
     public function test_component_install_and_update_do_not_require_a_core_version_bump(): void
     {
         $release = ['version' => '0.6.2', 'sequence' => 2, 'components' => [['id' => 'mtr', 'version' => '1.1.0']]];

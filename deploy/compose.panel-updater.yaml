@@ -1,0 +1,10 @@
+# Signed panel transitions only; inherit all existing isolation and freeze settings.
+services:
+  web:
+    image: agent-center-central:panel-updater-web-20261116
+  worker:
+    image: agent-center-central:panel-updater-queue-20261116
+  telegram-scheduler:
+    image: agent-center-central:panel-updater-queue-20261116
+  diagnostic-worker:
+    image: agent-center-central:panel-updater-diagnostic-20261116

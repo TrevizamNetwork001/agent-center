@@ -80,9 +80,23 @@ def snapshot(state_dir, policy=None):
             pass
     except (StateError, OSError, ValueError, TypeError):
         report["last_error"] = "POLICY_NOT_APPLIED"
+    legacy_helper = False
     try:
         result = mtr_client.exchange({"op": "observe", "protocol_version": SCHEMA})
-        if (
+        if result == {"ok": False, "error": "mtr_invalid_input"}:
+            # Preserve an installed 0.6.5 helper: readiness is not a probe and
+            # does not claim visibility into its private authorization layers.
+            ready = mtr_client.exchange({"op": "ready", "protocol_version": 1})
+            if ready != {"ok": True, "protocol_version": 1, "capability": mtr.CAPABILITY}:
+                raise mtr.MtrError("mtr_execution_failed")
+            legacy_helper = True
+            report["helper"] = {
+                "name": "mtr", "version": None, "installed": True,
+                "service_active": None, "socket_available": True,
+                "authenticated": True, "healthy": True,
+            }
+            report["last_error"] = "UNSUPPORTED_VERSION"
+        elif (
             result.get("schema_version") == SCHEMA
             and result.get("ok") is True
             and all(isinstance(result.get(key), dict) for key in ("base", "ceiling", "helper"))
@@ -117,7 +131,9 @@ def snapshot(state_dir, policy=None):
         elif parsed.valid and not authorize(name, parsed, KNOWN):
             state, reason = "BLOCKED", "MANAGED_POLICY_DENIED"
         elif name == mtr.CAPABILITY:
-            if report["helper"] is None:
+            if legacy_helper:
+                state, reason = "UNKNOWN", "UNSUPPORTED_VERSION"
+            elif report["helper"] is None:
                 state, reason = "UNKNOWN", report["last_error"] or "HELPER_UNAVAILABLE"
             elif report["helper"].get("authenticated") is not True:
                 state, reason = "UNAVAILABLE", "HELPER_UNAVAILABLE"

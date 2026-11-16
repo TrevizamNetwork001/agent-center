@@ -7,10 +7,12 @@ advance it. Rollback authorization requires a separate protocol, not a bypass.
 
 import base64
 import hashlib
+import io
 import json
 import re
 import subprocess
 import tempfile
+import zipfile
 from pathlib import Path
 
 
@@ -78,7 +80,10 @@ def verify(payload, signature, public_key, artifact, *, minimum_sequence, platfo
     except (ValueError, UnicodeError):
         raise ReleaseError("invalid_manifest") from None
     fields = {"schema_version", "sequence", "version", "platform", "sha256", "size"}
-    if not isinstance(doc, dict) or set(doc) not in (fields, fields | {"components"}):
+    package_fields = {"runtime_package_protocol", "bootstrap_sha256"}
+    allowed = (fields, fields | {"components"}, fields | package_fields,
+               fields | package_fields | {"components"})
+    if not isinstance(doc, dict) or set(doc) not in allowed:
         raise ReleaseError("invalid_manifest")
     if type(doc["schema_version"]) is not int or doc["schema_version"] != 1:
         raise ReleaseError("invalid_manifest")
@@ -94,6 +99,23 @@ def verify(payload, signature, public_key, artifact, *, minimum_sequence, platfo
         raise ReleaseError("invalid_manifest")
     if len(artifact) != doc["size"] or hashlib.sha256(artifact).hexdigest() != doc["sha256"]:
         raise ReleaseError("artifact_mismatch")
+    if package_fields & set(doc):
+        if (
+            type(doc["runtime_package_protocol"]) is not int
+            or doc["runtime_package_protocol"] != 2
+            or not isinstance(doc["bootstrap_sha256"], str)
+            or not re.fullmatch("[a-f0-9]{64}", doc["bootstrap_sha256"])
+            or doc["bootstrap_sha256"] == doc["sha256"]
+        ):
+            raise ReleaseError("invalid_package_protocol")
+        from .ssh_runtime import inventory
+
+        try:
+            with zipfile.ZipFile(io.BytesIO(artifact)) as archive:
+                if not inventory(archive):
+                    raise ValueError("missing_payload")
+        except (ValueError, zipfile.BadZipFile):
+            raise ReleaseError("invalid_package_payload") from None
     if "components" in doc:
         from .components import specification
 

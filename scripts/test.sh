@@ -43,7 +43,9 @@ if [ "${TEST_CONVERSATION_IDLE_CONCURRENCY:-0}" = 1 ]; then
  docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/conversation-idle-concurrency.php
  docker run --rm --network "$test_network" --env-file "$test_runtime_env" -e APP_ENV=testing -e APP_DEBUG=false -e SESSION_DRIVER=array -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/preflight-concurrency.php
 fi
-if [ "${TEST_ROUTEROS_TASK_INTEGRATION:-0}" = 1 ]; then
+if [ "${TEST_PANEL_TRANSITION_LAB:-0}" = 1 ]; then
+ docker exec routeros-task-lab-candidate python3 /operational-lab/panel-native.py verify > "$TEST_DEVICE_PROTOCOL_STATE/native-timer-proof.json"
+elif [ "${TEST_ROUTEROS_TASK_INTEGRATION:-0}" = 1 ]; then
  # The real Agent API observes committed fixtures. Reuse the existing populated-data guards.
  docker run --rm --network "$test_network" --env-file "$test_owner_env" -e APP_ENV=testing -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/mikrotik-protocol-rollback.php
  docker run --rm --network "$test_network" --env-file "$test_owner_env" -e APP_ENV=testing -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php tests/Support/device-readonly-rollback.php
