@@ -13,7 +13,7 @@ Uma solicitação autorizada no painel usa duas operações do Lifecycle existen
 1. Pacote de transição Python 0.6.6, com manifesto legado, aceito pelo companion
    0.6.5. A transação existente instala runtime e companions e preserva backups.
 2. Pacote final 0.6.6, sequência maior, com wheels fixados. O manifesto assinado
-   contém `runtime_package_protocol: 2` e `bootstrap_sha256`. A Central só o
+   contém `runtime_package_protocol: 3` e `bootstrap_sha256`. A Central só o
    entrega após o companion anunciar o protocolo compatível.
 
 Não há novo updater, instalação manual por SSH, pip operacional ou chave recebida
@@ -23,6 +23,22 @@ são oferecidas pela sequência assinada. A aprovação seguinte mantém tenant,
 autor, Gate, validade de quinze minutos e quarentena. Não anunciar o protocolo
 em cinco minutos encerra a espera com erro explícito. Campos de transição são
 exclusivamente da Central; o Agent não pode escrevê-los no relatório.
+
+O protocolo 3 acrescenta transferência retomável ao updater existente. Cada GET
+autenticado é limitado a 512 KiB, vinculado ao mesmo Agent, tenant e operação.
+O companion grava dados parciais privados (0600), faz até duas leituras por timer
+com orçamento de 60 segundos e retoma somente a mesma pré-verificação. A espera
+é limitada a dez minutos/32 tentativas. Não se autoriza instalação parcial: o
+SHA-256 completo, Ed25519, inventário fechado e self-check continuam obrigatórios.
+O limite systemd de 240 segundos é mantido. O protocolo 2 continua compatível.
+
+A transferência operacional inicial levou cerca de 227 segundos e foi
+interrompida pelo limite systemd durante o precheck. Não houve apply nem backup
+da segunda etapa; a 0.6.6 intermediária permaneceu saudável. O painel agora
+reconhece essa condição por revisão autorizada, heartbeat/poll recentes,
+sequência não instalada e ausência da concessão transacional `update_started`.
+Preserva a falha original e registra a reconciliação. Qualquer operação com
+apply concedido mantém a verificação original de recuperação pelo Agent.
 
 O pacote final tem cerca de 6,4 MiB. Os limites anteriores de PHP/nginx eram
 2 MiB, abaixo dos 8 MiB já previstos no controller de releases. O PHP passa a

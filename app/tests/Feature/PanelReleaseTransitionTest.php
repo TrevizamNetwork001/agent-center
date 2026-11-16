@@ -12,6 +12,62 @@ use Tests\IdentityTestCase;
 
 class PanelReleaseTransitionTest extends IdentityTestCase
 {
+    public function test_protocol_two_requires_a_new_signed_bridge_for_resumable_packages(): void
+    {
+        $this->bridge = $this->release(9, 'resumable-python');
+        $this->target = $this->release(10, 'resumable-ssh', ['runtime_package_protocol' => 3, 'bootstrap_sha256' => $this->bridge['sha256']]);
+        $this->agent->forceFill(['version' => '0.6.6', 'metadata' => ['lifecycle_release_sequence' => 7, 'updater' => ['version' => '0.6.6', 'signed_release_protocol' => 1, 'runtime_package_protocol' => 2]]])->save();
+        $this->requestUpdate();
+        $operation = $this->claim(2);
+        $this->assertSame(9, $operation['release']['sequence']);
+        $this->assertSame($this->bridge['sha256'], $operation['release']['sha256']);
+    }
+
+    public function test_interrupted_precheck_closes_only_after_native_review_and_fresh_agent(): void
+    {
+        $this->completeBridge();
+        $operation = $this->claim(2);
+        $this->postJson('/api/v1/agent/operations/report', ['operation_id' => $operation['id'], 'status' => 'UNCERTAIN', 'error' => 'interrupted'], $this->headers)->assertOk();
+        $this->context()->forUser($this->admin);
+        $this->agent->forceFill(['last_heartbeat_at' => now(), 'last_poll_at' => now()])->save();
+        $url = '/agents/'.$this->agent->id.'/operations/'.$operation['id'].'/reconcile';
+        $this->actingAs($this->admin)->post($url, [])->assertSessionHasErrors('recovery_reviewed');
+        $this->post($url, ['recovery_reviewed' => '1'])->assertRedirect();
+        $this->context()->forUser($this->admin);
+        $current = AgentOperation::findOrFail($operation['id']);
+        $this->assertSame('FAILED', $current->status);
+        $this->assertTrue($current->evidence['reconciliation']['precheck_only']);
+        $this->assertSame('UNCERTAIN', $current->evidence['original_failure']['status']);
+    }
+
+    public function test_apply_uncertainty_never_uses_precheck_recovery_even_without_agent_backup_evidence(): void
+    {
+        $this->completeBridge();
+        $operation = $this->claim(2);
+        $this->report($operation, 'PLANNED');
+        $operation = $this->claim(2);
+        $this->assertSame('apply', $operation['phase']);
+        $this->postJson('/api/v1/agent/operations/report', ['operation_id' => $operation['id'], 'status' => 'UNCERTAIN', 'error' => 'interrupted'], $this->headers)->assertOk();
+        $this->context()->forUser($this->admin);
+        $this->agent->forceFill(['last_heartbeat_at' => now(), 'last_poll_at' => now()])->save();
+        $this->actingAs($this->admin)->post('/agents/'.$this->agent->id.'/operations/'.$operation['id'].'/reconcile', ['recovery_reviewed' => '1'])->assertRedirect();
+        $this->context()->forUser($this->admin);
+        $this->assertSame('UNCERTAIN', AgentOperation::findOrFail($operation['id'])->status);
+        $this->assertArrayNotHasKey('precheck_only', AgentOperation::findOrFail($operation['id'])->evidence['reconciliation']);
+    }
+
+    public function test_authenticated_ranges_are_bounded_and_match_the_operation_artifact(): void
+    {
+        $this->completeBridge();
+        $operation = $this->claim(2);
+        $url = '/api/v1/agent/operations/'.$operation['id'].'/artifact';
+        $this->get($url, $this->headers + ['Range' => 'bytes=0-2'])->assertStatus(206)->assertContent('ssh')->assertHeader('Content-Range', 'bytes 0-2/11');
+        foreach (['bytes=0-999', 'bytes=-2', 'bytes=0-2,4-6', 'bytes=3-1'] as $range) {
+            $this->get($url, $this->headers + ['Range' => $range])->assertStatus(416);
+        }
+        $this->get($url, ['Range' => 'bytes=0-2'])->assertUnauthorized();
+    }
+
     private Agent $agent;
 
     private array $bridge;

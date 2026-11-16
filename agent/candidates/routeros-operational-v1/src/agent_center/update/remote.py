@@ -28,7 +28,7 @@ from ..identity import Identity
 from ..lifecycle.releases import ReleaseError, verify
 from ..state import InstanceLock, atomic_write, read_private
 from .engine import Engine, UpdateError, self_check, validate
-from .releases import download, download_operation
+from .releases import DownloadPending, download, download_operation
 
 BASE = Path("/opt/agent-center-agent")
 STATE = Path("/var/lib/agent-center-agent")
@@ -230,7 +230,7 @@ class Remote:
             validate(candidate, sha)
         else:
             data = (
-                download_operation(self.client, operation.get("id"))
+                download_operation(self.client, operation.get("id"), **({"cache": directory, "size": json.loads(base64.b64decode(release["lifecycle"]["manifest"], validate=True))["size"]} if release.get("runtime_package_protocol", 1) >= 3 else {}))
                 if "lifecycle" in release
                 else download(self.client.base, sha)
             )
@@ -254,6 +254,8 @@ class Remote:
             raise UpdateError("invalid_release")
         updated = [entry, *[row for row in current if row.get("sha256") != sha]]
         atomic_write(catalog_path, updated)
+        if release.get("runtime_package_protocol") == 3:
+            (directory / (".partial-" + str(uuid.UUID(operation["id"])))).unlink(missing_ok=True)
         self.catalog[:] = updated
         return entry
 
@@ -307,9 +309,22 @@ class Remote:
         self.control.mkdir(parents=True, mode=0o700, exist_ok=True)
         with_lock = InstanceLock(self.control / "helper.lock")
         try:
+            resume = None
             # Deliver durable reports before claiming anything else.
             for marker in self.control.glob("*.json"):
                 record = read_private(marker)
+                if record.get("status") == "DOWNLOADING":
+                    operation = record.get("operation", {})
+                    if (resume is not None or operation.get("phase") != "precheck"
+                            or operation.get("kind") != "update" or operation.get("id") != record.get("operation_id")
+                            or str(uuid.UUID(operation["id"])) != marker.stem
+                            or operation.get("release", {}).get("runtime_package_protocol") != 3):
+                        raise UpdateError("invalid_release")
+                    if time.time() - record["download_started"] <= 600 and record["attempts"] < 32:
+                        resume = record
+                        continue
+                    record = {"operation_id": record["operation_id"], "status": "FAILED", "error": "release_download_failed"}
+                    atomic_write(marker, record)
                 if record.get("status") == "PROCESSING":
                     record = {
                         "operation_id": record["operation_id"],
@@ -323,22 +338,25 @@ class Remote:
                 marker.unlink()
                 if record.get("status") in ("FAILED", "UNCERTAIN"):
                     return False
-            result = self._call(
-                "operations/claim",
-                {
-                    "updater_version": __version__,
-                    "runtime_package_protocol": 2,
-                    "release_download_protocol": 1,
-                    "signed_release_protocol": 1,
-                    "component_protocol": 1,
-                    "recovery_protocol": 1,
-                },
-            )
-            if not result.ok:
-                return False
-            operation = result.body.get("operation")
-            if operation is None:
-                return True
+            if resume is None:
+                result = self._call(
+                    "operations/claim",
+                    {
+                        "updater_version": __version__,
+                        "runtime_package_protocol": 3,
+                        "release_download_protocol": 1,
+                        "signed_release_protocol": 1,
+                        "component_protocol": 1,
+                        "recovery_protocol": 1,
+                    },
+                )
+                if not result.ok:
+                    return False
+                operation = result.body.get("operation")
+                if operation is None:
+                    return True
+            else:
+                operation = resume["operation"]
             operation_id = str(uuid.UUID(operation["id"]))
             if operation.get("phase") == "reconcile":
                 return self._reconcile_restored(operation, operation_id)
@@ -476,6 +494,11 @@ class Remote:
                         raise UpdateError("postcheck_failed")
                     evidence["postcheck"] = True
                     report.update(status="COMPLETED", evidence=evidence)
+            except DownloadPending:
+                atomic_write(marker, {"operation_id": operation_id, "status": "DOWNLOADING",
+                    "operation": operation, "download_started": resume["download_started"] if resume else time.time(),
+                    "attempts": resume["attempts"] + 1 if resume else 1})
+                return True
             except Exception as exc:
                 error = (
                     str(exc)

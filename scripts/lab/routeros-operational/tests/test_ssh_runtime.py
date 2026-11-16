@@ -28,9 +28,8 @@ class SshRuntimeTests(unittest.TestCase):
     def test_partial_extra_duplicate_and_tampered_payloads_fail(self):
         valid_names = [(ssh_runtime.PREFIX + name, b'corrupted') for name in ssh_runtime.WHEELS]
         for entries in (valid_names[:1], valid_names + [('agent_center/_ssh/other.whl', b'x')], valid_names):
-            with self.subTest(count=len(entries)), self.archive(entries) as archive:
-                with self.assertRaises(ValueError):
-                    ssh_runtime.inventory(archive)
+            with self.subTest(count=len(entries)), self.archive(entries) as archive, self.assertRaises(ValueError):
+                ssh_runtime.inventory(archive)
 
     def test_wheel_paths_scripts_and_symlinks_cannot_escape_staging(self):
         for name in ('../escape', '/escape', 'a/../../escape', 'site.pth', 'x.data/scripts/run'):
@@ -41,12 +40,10 @@ class SshRuntimeTests(unittest.TestCase):
                 ssh_runtime.files({'fixture': stream.getvalue()})
 
     def test_python_architecture_and_os_compatibility_are_required(self):
-        with patch.object(ssh_runtime.platform, 'machine', return_value='aarch64'):
-            with self.assertRaisesRegex(ValueError, 'incompatible'):
-                ssh_runtime.compatible()
-        with patch.object(ssh_runtime.platform, 'freedesktop_os_release', return_value={'ID': 'debian', 'VERSION_ID': '12'}):
-            with self.assertRaisesRegex(ValueError, 'incompatible'):
-                ssh_runtime.compatible()
+        with patch.object(ssh_runtime.platform, 'machine', return_value='aarch64'), self.assertRaisesRegex(ValueError, 'incompatible'):
+            ssh_runtime.compatible()
+        with patch.object(ssh_runtime.platform, 'freedesktop_os_release', return_value={'ID': 'debian', 'VERSION_ID': '12'}), self.assertRaisesRegex(ValueError, 'incompatible'):
+            ssh_runtime.compatible()
 
     def test_restrictive_companion_umask_keeps_nested_libraries_readable(self):
         stream = io.BytesIO()

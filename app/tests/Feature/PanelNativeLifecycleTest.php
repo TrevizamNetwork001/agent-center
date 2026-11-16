@@ -90,7 +90,7 @@ class PanelNativeLifecycleTest extends IdentityTestCase
         $agent->refresh();
         $this->assertSame('0.6.6', $agent->version);
         $this->assertSame($failure ? 7 : 8, $agent->metadata['lifecycle_release_sequence']);
-        $this->assertSame(2, $agent->metadata['updater']['runtime_package_protocol']);
+        $this->assertSame(3, $agent->metadata['updater']['runtime_package_protocol']);
         $this->assertSame(0, AgentTask::count());
         $this->assertSame($identity, hash_file('sha256', '/lab/agent-private/state/identity.json'));
         $this->assertSame($config, hash_file('sha256', '/lab/agent-private/config.json'));
@@ -104,7 +104,7 @@ class PanelNativeLifecycleTest extends IdentityTestCase
             $this->assertTrue($operation->evidence['freeze_preserved']);
             $this->assertSame($operation->id, $operation->evidence['backup']);
         }
-        file_put_contents('/lab/panel-transition-result.json', json_encode(['passed' => true, 'panel_requests' => 1, 'native_operations_completed' => $failure ? 1 : 2, 'failure_injected' => $failure, 'rollback_verified' => $failure, 'from_version' => '0.6.5', 'version' => $agent->version, 'sequence' => $failure ? 7 : 8, 'package_protocol' => 2, 'identity_preserved' => true, 'config_preserved' => true, 'ssh_connections_during_update' => 0, 'device_tasks' => 0, 'freeze_preserved' => true, 'target_sha256' => $target['sha256']], JSON_PRETTY_PRINT));
+        file_put_contents('/lab/panel-transition-result.json', json_encode(['passed' => true, 'panel_requests' => 1, 'native_operations_completed' => $failure ? 1 : 2, 'failure_injected' => $failure, 'rollback_verified' => $failure, 'from_version' => '0.6.5', 'version' => $agent->version, 'sequence' => $failure ? 7 : 8, 'package_protocol' => 3, 'identity_preserved' => true, 'config_preserved' => true, 'ssh_connections_during_update' => 0, 'device_tasks' => 0, 'freeze_preserved' => true, 'target_sha256' => $target['sha256']], JSON_PRETTY_PRINT));
     }
 
     private function privateFile(string $name, array $data): void

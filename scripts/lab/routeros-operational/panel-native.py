@@ -69,7 +69,7 @@ elif sys.argv[1] == 'verify':
         assert ledger['sequence'] == 7 and not (BASE / 'runtime/ssh').exists()
     else:
         assert all(o['state'] == 'COMPLETED' for o in operations), operations
-        assert ledger['sequence'] == 8 and ledger['runtime_package_protocol'] == 2
+        assert ledger['sequence'] == 8 and ledger['runtime_package_protocol'] == 3
         assert (BASE / 'runtime/ssh/paramiko').is_dir()
     assert status['version'] == ('0.6.5' if restored else '0.6.6') and status['heartbeat_successes'] > 0 and status['poll_successes'] > 0
     assert not list(BASE.glob('.staging-*'))

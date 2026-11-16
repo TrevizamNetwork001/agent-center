@@ -31,7 +31,7 @@ class ReleaseTransitions
         if (self::requiredProtocol($target) <= $supported) {
             return [$target, null];
         }
-        abort_unless(self::requiredProtocol($target) === 2 && isset($target['id'], $target['lifecycle'], $target['bootstrap_sha256']), 409, 'Transição assinada indisponível.');
+        abort_unless(in_array(self::requiredProtocol($target), [2, 3], true) && isset($target['id'], $target['lifecycle'], $target['bootstrap_sha256']), 409, 'Transição assinada indisponível.');
         $bridge = AgentRelease::where('sha256', $target['bootstrap_sha256'])->first();
         abort_unless($bridge, 409, 'Publique o pacote de transição assinado antes do pacote final.');
         $release = $bridge->descriptor();

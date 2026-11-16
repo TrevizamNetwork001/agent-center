@@ -38,7 +38,7 @@ class ReleaseController extends Controller
         $fields = ['schema_version', 'sequence', 'version', 'platform', 'sha256', 'size'];
         abort_unless(is_array($manifest) && ! array_diff(array_keys($manifest), [...$fields, 'components', 'runtime_package_protocol', 'bootstrap_sha256']) && ! array_diff($fields, array_keys($manifest)), 422);
         if (array_key_exists('runtime_package_protocol', $manifest) || array_key_exists('bootstrap_sha256', $manifest)) {
-            abort_unless(($manifest['runtime_package_protocol'] ?? null) === 2 && is_string($manifest['bootstrap_sha256'] ?? null) && preg_match('/^[a-f0-9]{64}$/D', $manifest['bootstrap_sha256']) && $manifest['bootstrap_sha256'] !== $manifest['sha256'], 422);
+            abort_unless(in_array($manifest['runtime_package_protocol'] ?? null, [2, 3], true) && is_string($manifest['bootstrap_sha256'] ?? null) && preg_match('/^[a-f0-9]{64}$/D', $manifest['bootstrap_sha256']) && $manifest['bootstrap_sha256'] !== $manifest['sha256'], 422);
         }
         abort_unless($manifest['schema_version'] === 1 && is_int($manifest['sequence']) && $manifest['sequence'] > 0 && $manifest['sequence'] <= 2147483647, 422);
         abort_unless(is_string($manifest['version']) && preg_match('/^[0-9]+\.[0-9]+\.[0-9]+$/D', $manifest['version']) && $manifest['platform'] === 'debian13', 422);
@@ -85,7 +85,18 @@ class ReleaseController extends Controller
             app(ReleaseQuarantine::class)->assertAllowed(['sha256' => $release->sha256]);
             abort_unless(hash_equals($operation->release['sha256'], $release->sha256), 409);
 
-            return response(base64_decode($release->getRawOriginal('artifact_base64'), true))->header('Content-Type', 'application/octet-stream')->header('Cache-Control', 'no-store');
+            $bytes = base64_decode($release->getRawOriginal('artifact_base64'), true);
+            $headers = ['Content-Type' => 'application/octet-stream', 'Cache-Control' => 'no-store', 'Accept-Ranges' => 'bytes'];
+            if ($range = $r->header('Range')) {
+                abort_unless(preg_match('/^bytes=(0|[1-9][0-9]{0,7})-(0|[1-9][0-9]{0,7})$/D', $range, $match), 416);
+                $start = (int) $match[1];
+                $end = (int) $match[2];
+                abort_unless($start <= $end && $end < strlen($bytes) && $end - $start < 524288, 416);
+
+                return response(substr($bytes, $start, $end - $start + 1), 206, $headers + ['Content-Range' => 'bytes '.$start.'-'.$end.'/'.strlen($bytes), 'Content-Length' => $end - $start + 1]);
+            }
+
+            return response($bytes, 200, $headers + ['Content-Length' => strlen($bytes)]);
         });
     }
 }

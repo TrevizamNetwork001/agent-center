@@ -77,7 +77,7 @@ class UpdateController extends Controller
 
     public function claim(Request $r, Operations $ops)
     {
-        $data = $r->validate(['runtime_package_protocol' => ['sometimes', 'integer', Rule::in([1, 2])], 'updater_version' => ['sometimes', Rule::in(Protocol::VERSIONS)], 'release_download_protocol' => ['sometimes', 'integer', Rule::in([1])], 'signed_release_protocol' => ['sometimes', 'integer', Rule::in([1])], 'component_protocol' => ['sometimes', 'integer', Rule::in([1])], 'recovery_protocol' => ['sometimes', 'integer', Rule::in([1])]]);
+        $data = $r->validate(['runtime_package_protocol' => ['sometimes', 'integer', Rule::in([1, 2, 3])], 'updater_version' => ['sometimes', Rule::in(Protocol::VERSIONS)], 'release_download_protocol' => ['sometimes', 'integer', Rule::in([1])], 'signed_release_protocol' => ['sometimes', 'integer', Rule::in([1])], 'component_protocol' => ['sometimes', 'integer', Rule::in([1])], 'recovery_protocol' => ['sometimes', 'integer', Rule::in([1])]]);
 
         return response()->json(['operation' => $ops->claim($r->attributes->get('agent'), $data['updater_version'] ?? null, isset($data['release_download_protocol']) ? (int) $data['release_download_protocol'] : null, (int) ($data['signed_release_protocol'] ?? 0), (int) ($data['component_protocol'] ?? 0), (int) ($data['recovery_protocol'] ?? 0), (int) ($data['runtime_package_protocol'] ?? 1))])->header('Cache-Control', 'no-store');
     }
@@ -87,17 +87,39 @@ class UpdateController extends Controller
         Gate::authorize('revoke', $agent);
         abort_unless($operation->agent_id === $agent->id, 404);
         $r->validate(['recovery_reviewed' => ['accepted']]);
-        DB::transaction(function () use ($r, $agent, $operation, $audit) {
+        $precheckRecovered = DB::transaction(function () use ($r, $agent, $operation, $audit) {
             $current = Agent::whereKey($agent->id)->lockForUpdate()->firstOrFail();
             $o = AgentOperation::whereKey($operation->id)->lockForUpdate()->firstOrFail();
             abort_unless($current->status === 'active' && ! $current->revoked_at && $o->status === 'UNCERTAIN' && isset($o->release['lifecycle']), 409);
             $evidence = $o->evidence ?? [];
+            // The transaction that grants apply always writes update_started.
+            // A fresh Agent and the absence of that grant distinguish an
+            // interrupted download from a possibly interrupted installation.
+            $precheckOnly = $o->kind === 'update' && $o->error === 'interrupted'
+                && ! isset($evidence['backup']) && $o->claimed_at
+                && $current->version === $o->from_version
+                && $current->last_heartbeat_at?->gte($o->claimed_at)
+                && $current->last_heartbeat_at?->gt(now()->subSeconds(60))
+                && $current->last_poll_at?->gt(now()->subSeconds(30))
+                && (int) ($current->metadata['lifecycle_release_sequence'] ?? 0) < (int) $o->release['sequence']
+                && ! DB::table('audit_events')->where('tenant_id', $current->tenant_id)->where('event_type', 'agent.update_started')->where('metadata->operation_id', $o->id)->exists();
             $evidence['reconciliation'] = ['requested_at' => now()->toIso8601String(), 'requested_by' => $r->user()->id];
+            if ($precheckOnly) {
+                $evidence['original_failure'] = ['status' => $o->status, 'error' => $o->error, 'evidence' => $o->evidence];
+                $evidence['reconciliation'] += ['verified_at' => now()->toIso8601String(), 'precheck_only' => true];
+                $o->forceFill(['status' => 'FAILED', 'evidence' => $evidence])->save();
+                $audit->record('agent.recovery_requested', $r->user(), $current->tenant_id, 'agent', null, ['agent_id' => $current->id, 'operation_id' => $o->id]);
+                $audit->record('agent.recovery_verified', $r->user(), $current->tenant_id, 'agent', null, ['agent_id' => $current->id, 'operation_id' => $o->id]);
+
+                return true;
+            }
             $o->forceFill(['evidence' => $evidence])->save();
             $audit->record('agent.recovery_requested', $r->user(), $current->tenant_id, 'agent', null, ['agent_id' => $current->id, 'operation_id' => $o->id]);
+
+            return false;
         });
 
-        return redirect()->route('agents.show', $agent)->with('success', 'Verificação da recuperação solicitada. Novas atualizações seguem bloqueadas até a confirmação do Agent.');
+        return redirect()->route('agents.show', $agent)->with('success', $precheckRecovered ? 'Pré-verificação interrompida encerrada: nenhuma instalação foi autorizada. Você pode solicitar uma nova atualização.' : 'Verificação da recuperação solicitada. Novas atualizações seguem bloqueadas até a confirmação do Agent.');
     }
 
     public function report(Request $r, Operations $ops)

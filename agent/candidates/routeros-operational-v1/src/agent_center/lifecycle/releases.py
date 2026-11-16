@@ -102,7 +102,7 @@ def verify(payload, signature, public_key, artifact, *, minimum_sequence, platfo
     if package_fields & set(doc):
         if (
             type(doc["runtime_package_protocol"]) is not int
-            or doc["runtime_package_protocol"] != 2
+            or doc["runtime_package_protocol"] not in (2, 3)
             or not isinstance(doc["bootstrap_sha256"], str)
             or not re.fullmatch("[a-f0-9]{64}", doc["bootstrap_sha256"])
             or doc["bootstrap_sha256"] == doc["sha256"]

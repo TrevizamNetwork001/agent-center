@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[3]
 CANDIDATE = ROOT / 'agent/candidates/routeros-operational-v1'
 
 
-def prepare(output, wheels, fault=False, baseline=None):
+def prepare(output, wheels, fault=False, baseline=None, initial_sequence=7):
     output.mkdir(mode=0o755, parents=True, exist_ok=False)
     spec = importlib.util.spec_from_file_location('candidate_build', CANDIDATE / 'packaging/build.py')
     builder = importlib.util.module_from_spec(spec)
@@ -26,7 +26,7 @@ def prepare(output, wheels, fault=False, baseline=None):
     public_raw = base64.b64decode(b''.join(public.splitlines()[1:-1]))[-32:]
     (output / 'public-raw.base64').write_text(base64.b64encode(public_raw).decode())
     bridge_sha = None
-    stages = [('bridge', 7), ('target', 8)] + ([('restore', 9)] if baseline else [])
+    stages = [('bridge', initial_sequence), ('target', initial_sequence + 1)] + ([('restore', initial_sequence + 2)] if baseline else [])
     for name, sequence in stages:
         bundle = output / name
         bundle.mkdir(mode=0o755)
@@ -42,7 +42,7 @@ def prepare(output, wheels, fault=False, baseline=None):
                 with zipfile.ZipFile(restored, 'w') as archive:
                     for member in source.infolist():
                         archive.writestr(member, source.read(member))
-                    archive.comment = b'Agent Center signed restoration 0.6.5 sequence 9'
+                    archive.comment = f'Agent Center signed restoration 0.6.5 sequence {sequence}'.encode()
             (bundle / 'agent.pyz').write_bytes(restored.getvalue())
         else:
             builder.build(bundle / 'agent.pyz', wheels=wheels if name == 'target' else None)
@@ -64,7 +64,7 @@ def prepare(output, wheels, fault=False, baseline=None):
         if name == 'bridge':
             bridge_sha = sha
         elif name == 'target':
-            doc.update(runtime_package_protocol=2, bootstrap_sha256=bridge_sha)
+            doc.update(runtime_package_protocol=3, bootstrap_sha256=bridge_sha)
         manifest = json.dumps(doc, sort_keys=True).encode()
         (bundle / 'manifest.json').write_bytes(manifest)
         signature = subprocess.run(['/usr/bin/openssl', 'pkeyutl', '-sign', '-rawin', '-inkey', str(private), '-in', str(bundle / 'manifest.json')], check=True, capture_output=True).stdout
@@ -81,5 +81,6 @@ if __name__ == '__main__':
     parser.add_argument('wheels', type=Path)
     parser.add_argument('--fault', action='store_true')
     parser.add_argument('--baseline', type=Path)
+    parser.add_argument('--sequence', type=int, default=7)
     args = parser.parse_args()
-    prepare(args.output, args.wheels, args.fault, args.baseline)
+    prepare(args.output, args.wheels, args.fault, args.baseline, args.sequence)

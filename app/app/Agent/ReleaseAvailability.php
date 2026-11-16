@@ -10,7 +10,7 @@ class ReleaseAvailability
             return null;
         }
 
-        $bootstrapDigests = array_column(array_filter($releases, fn ($release) => isset($release['lifecycle']) && ($release['runtime_package_protocol'] ?? null) === 2), 'bootstrap_sha256');
+        $bootstrapDigests = array_column(array_filter($releases, fn ($release) => isset($release['lifecycle']) && in_array($release['runtime_package_protocol'] ?? null, [2, 3], true)), 'bootstrap_sha256');
         $newer = array_filter($releases, function ($release) use ($installed, $components, $sequence, $bootstrapDigests) {
             if (($release['bootstrap_only'] ?? false) || in_array($release['sha256'] ?? null, $bootstrapDigests, true)) {
                 return false;
@@ -24,7 +24,7 @@ class ReleaseAvailability
             if ($release['version'] !== $installed || ($release['sequence'] ?? 0) <= $sequence) {
                 return false;
             }
-            if (isset($release['lifecycle'], $release['bootstrap_sha256']) && ($release['runtime_package_protocol'] ?? null) === 2) {
+            if (isset($release['lifecycle'], $release['bootstrap_sha256']) && in_array($release['runtime_package_protocol'] ?? null, [2, 3], true)) {
                 return true;
             }
             foreach ($release['components'] ?? [] as $required) {
