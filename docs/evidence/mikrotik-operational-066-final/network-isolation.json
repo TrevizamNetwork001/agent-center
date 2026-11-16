@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "default_route": false,
+  "external_probes": 0,
+  "transport_destination": "127.0.0.1",
+  "management_address_used": false,
+  "docker_network_internal": true
+}

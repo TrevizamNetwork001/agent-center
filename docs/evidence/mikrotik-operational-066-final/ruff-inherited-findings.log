@@ -1,0 +1,50 @@
+I001 [*] Import block is un-sorted or un-formatted
+ --> agent/candidates/routeros-operational-v1/src/agent_center/managed_settings.py:3:1
+  |
+1 |   """Apply only typed diagnostic data from the authenticated Central, never commands."""
+2 |
+3 | / import ipaddress
+4 | | import logging
+5 | |
+6 | | from .policy import Policy
+7 | | import re
+8 | |
+9 | | from .state import StateError, atomic_write, read_private
+  | |_________________________________________________________^
+  |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> agent/candidates/routeros-operational-v1/src/agent_center/preflight.py:2:1
+   |
+ 1 |   """Bounded read-only preflight. No DNS resolution, execution or authorization cache."""
+ 2 | / import hashlib
+ 3 | | import ipaddress
+ 4 | | import json
+ 5 | | import logging
+ 6 | | import time
+ 7 | |
+ 8 | | from . import __version__, mtr, mtr_client
+ 9 | | from .capabilities import available
+10 | | from .config import Config
+11 | | from .managed_settings import normalize
+12 | | from .policy import Policy, authorize
+13 | | from .state import StateError, read_private
+14 | | from pathlib import Path
+   | |________________________^
+   |
+help: Organize imports
+
+E402 Module level import not at top of file
+  --> scripts/lab/routeros-operational/reconcile.py:15:1
+   |
+13 | ROOT = Path(__file__).resolve().parents[3]
+14 | sys.path.insert(0, str(ROOT / 'agent/src'))
+15 | from agent_center.lifecycle.releases import verify
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+16 |
+17 | EXPECTED = 'a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315'
+   |
+
+Found 3 errors.
+[*] 2 fixable with the `--fix` option.

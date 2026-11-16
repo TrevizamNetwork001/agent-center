@@ -1,0 +1,400 @@
+[
+    {
+        "operation": "DEVICE_IDENTITY_READ",
+        "scenario": "normal",
+        "request": "Verifique a identificação do roteador MikroTik de borda.",
+        "reply": "LABORATÓRIO \/ SIMULADO: Identidade: CCR-LAB; RouterOS 7.16.2. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "103e83b9-f9ca-4792-ad11-86343c3c6e12",
+        "result": {
+            "ok": true,
+            "data": {
+                "data": {
+                    "name": "CCR-LAB",
+                    "version": "7.16.2"
+                },
+                "mode": "SIMULATED",
+                "status": "PARTIAL",
+                "complete": false,
+                "identity": {
+                    "model": "CCR2004-16G-2S+",
+                    "os_version": "7.16.2",
+                    "manufacturer": "mikrotik",
+                    "platform_family": "ROUTEROS7"
+                },
+                "contract_id": "DEVICE_IDENTITY_READ",
+                "environment": "LAB",
+                "binding_digest": "1a44dc220de1b14c11580e500e1b7569bbd95a02cbe882a20a2b97508887bbe6",
+                "schema_version": 1
+            }
+        }
+    },
+    {
+        "operation": "DEVICE_BGP_PEERS_READ",
+        "scenario": "normal",
+        "request": "Verifique os peers BGP do MikroTik de borda.",
+        "reply": "LABORATÓRIO \/ SIMULADO: Peers BGP: 2 observados; 1 estabelecidos. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "fd89bf5c-7bd6-48b9-aa2a-31deb18086c0",
+        "result": {
+            "ok": true,
+            "data": {
+                "data": {
+                    "items": [
+                        {
+                            "peer": "peer-lab",
+                            "state": "ESTABLISHED",
+                            "remote_asn": 64512,
+                            "remote_address": "192.0.2.1",
+                            "uptime_seconds": 93784.03,
+                            "advertised_families": [
+                                "ip",
+                                "ipv6"
+                            ],
+                            "negotiated_families": null
+                        },
+                        {
+                            "peer": "peer-inactive",
+                            "state": "NOT_ESTABLISHED",
+                            "remote_asn": 64513,
+                            "remote_address": "192.0.2.2",
+                            "uptime_seconds": null,
+                            "advertised_families": null,
+                            "negotiated_families": null
+                        }
+                    ],
+                    "availability_reason": null,
+                    "configuration_present": true,
+                    "connections_configured": true
+                },
+                "mode": "SIMULATED",
+                "status": "PARTIAL",
+                "complete": false,
+                "identity": {
+                    "model": "CCR2004-16G-2S+",
+                    "os_version": "7.16.2",
+                    "manufacturer": "mikrotik",
+                    "platform_family": "ROUTEROS7"
+                },
+                "contract_id": "DEVICE_BGP_PEERS_READ",
+                "environment": "LAB",
+                "binding_digest": "e5d7c201c2c6d22550646b036f5eba781821b646889418b9c2ac3ab17de0923d",
+                "schema_version": 1
+            }
+        }
+    },
+    {
+        "operation": "DEVICE_ROUTE_LOOKUP_READ",
+        "scenario": "normal",
+        "request": "Consulte a tabela de rotas do roteador MikroTik de borda para 8.8.8.8.",
+        "reply": "LABORATÓRIO \/ SIMULADO: Prefixo ativo correspondente observado na RIB. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "03ea0fff-0f14-4e8b-bf11-10d79726128c",
+        "result": {
+            "ok": true,
+            "data": {
+                "data": {
+                    "found": true,
+                    "items": [
+                        {
+                            "active": true,
+                            "metric": null,
+                            "prefix": "8.8.8.0\/24",
+                            "dynamic": true,
+                            "protocol": "BGP",
+                            "preference": 20,
+                            "configured_gateway": "192.0.2.1",
+                            "effective_next_hop": null
+                        }
+                    ],
+                    "table": "main",
+                    "destination": "8.8.8.8",
+                    "lookup_semantics": "LONGEST_ACTIVE_OBSERVED_RIB_PREFIX",
+                    "availability_reason": null,
+                    "forwarding_verified": false
+                },
+                "mode": "SIMULATED",
+                "status": "PARTIAL",
+                "complete": false,
+                "identity": {
+                    "model": "CCR2004-16G-2S+",
+                    "os_version": "7.16.2",
+                    "manufacturer": "mikrotik",
+                    "platform_family": "ROUTEROS7"
+                },
+                "contract_id": "DEVICE_ROUTE_LOOKUP_READ",
+                "environment": "LAB",
+                "binding_digest": "f5bc6f1875adaf9a25d772a8f7dcf255065d8667221bcd938914973208fd5352",
+                "schema_version": 1
+            }
+        }
+    },
+    {
+        "operation": "DEVICE_INTERFACES_READ",
+        "scenario": "normal",
+        "request": "Verifique as interfaces do roteador MikroTik de borda.",
+        "reply": "LABORATÓRIO \/ SIMULADO: Interfaces: 2 observadas. Contadores acumulados não comprovam taxas atuais. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "784dfb7c-7fb3-4c41-9128-cc8e42b16f10",
+        "result": {
+            "ok": true,
+            "data": {
+                "data": {
+                    "items": [
+                        {
+                            "rate": null,
+                            "rx_byte": null,
+                            "rx_drop": null,
+                            "tx_byte": null,
+                            "tx_drop": null,
+                            "rx_error": null,
+                            "tx_error": null,
+                            "interface": "ether1",
+                            "rx_packet": null,
+                            "speed_bps": null,
+                            "tx_packet": null,
+                            "link_downs": null,
+                            "oper_state": "UP",
+                            "admin_state": "UP",
+                            "tx_queue_drop": null,
+                            "sample_timestamp": "2026-11-16T12:06:54.584149+00:00"
+                        },
+                        {
+                            "rate": null,
+                            "rx_byte": null,
+                            "rx_drop": null,
+                            "tx_byte": null,
+                            "tx_drop": null,
+                            "rx_error": null,
+                            "tx_error": null,
+                            "interface": "ether2",
+                            "rx_packet": null,
+                            "speed_bps": null,
+                            "tx_packet": null,
+                            "link_downs": null,
+                            "oper_state": "DOWN",
+                            "admin_state": "DOWN",
+                            "tx_queue_drop": null,
+                            "sample_timestamp": "2026-11-16T12:06:54.584204+00:00"
+                        }
+                    ],
+                    "sample_kind": "STATE",
+                    "availability_reason": null
+                },
+                "mode": "SIMULATED",
+                "status": "PARTIAL",
+                "complete": false,
+                "identity": {
+                    "model": "CCR2004-16G-2S+",
+                    "os_version": "7.16.2",
+                    "manufacturer": "mikrotik",
+                    "platform_family": "ROUTEROS7"
+                },
+                "contract_id": "DEVICE_INTERFACES_READ",
+                "environment": "LAB",
+                "binding_digest": "325961e850011ff817046cdc6428211bffc8d1fb6d113633e70d9d1c098f54a3",
+                "schema_version": 1
+            }
+        }
+    },
+    {
+        "operation": "DEVICE_INTERFACE_COUNTERS_READ",
+        "scenario": "normal",
+        "request": "Verifique os contadores do roteador MikroTik de borda.",
+        "reply": "LABORATÓRIO \/ SIMULADO: Interfaces: 2 observadas. Contadores acumulados não comprovam taxas atuais. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "cc0d2592-99a0-41dd-8039-fc10c60c7c9a",
+        "result": {
+            "ok": true,
+            "data": {
+                "data": {
+                    "items": [
+                        {
+                            "rate": null,
+                            "rx_byte": 10000,
+                            "rx_drop": 2,
+                            "tx_byte": 20000,
+                            "tx_drop": 1,
+                            "rx_error": 7,
+                            "tx_error": 0,
+                            "interface": "ether1",
+                            "rx_packet": 100,
+                            "speed_bps": null,
+                            "tx_packet": 200,
+                            "link_downs": null,
+                            "oper_state": "UP",
+                            "admin_state": "UNKNOWN",
+                            "tx_queue_drop": 1,
+                            "sample_timestamp": "2026-11-16T12:06:58.594510+00:00"
+                        },
+                        {
+                            "rate": null,
+                            "rx_byte": 0,
+                            "rx_drop": null,
+                            "tx_byte": 0,
+                            "tx_drop": null,
+                            "rx_error": 0,
+                            "tx_error": 0,
+                            "interface": "ether2",
+                            "rx_packet": null,
+                            "speed_bps": null,
+                            "tx_packet": null,
+                            "link_downs": null,
+                            "oper_state": "UNKNOWN",
+                            "admin_state": "DOWN",
+                            "tx_queue_drop": null,
+                            "sample_timestamp": "2026-11-16T12:06:58.594568+00:00"
+                        }
+                    ],
+                    "sample_kind": "ACCUMULATED_COUNTERS",
+                    "availability_reason": null
+                },
+                "mode": "SIMULATED",
+                "status": "PARTIAL",
+                "complete": false,
+                "identity": {
+                    "model": "CCR2004-16G-2S+",
+                    "os_version": "7.16.2",
+                    "manufacturer": "mikrotik",
+                    "platform_family": "ROUTEROS7"
+                },
+                "contract_id": "DEVICE_INTERFACE_COUNTERS_READ",
+                "environment": "LAB",
+                "binding_digest": "e379778734b19a83228ccede497c0894f8c9c02dfda6c09cefe70dedf2a7b093",
+                "schema_version": 1
+            }
+        }
+    },
+    {
+        "operation": "DEVICE_RESOURCES_READ",
+        "scenario": "normal",
+        "request": "Verifique CPU e memória do roteador MikroTik de borda.",
+        "reply": "LABORATÓRIO \/ SIMULADO: CPU: 12%; memória: 25%. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "0ce46ec9-1a9c-4259-91ee-d1e601157378",
+        "result": {
+            "ok": true,
+            "data": {
+                "data": {
+                    "version": "7.16.2",
+                    "cpu_percent": 12,
+                    "memory_percent": 25,
+                    "uptime_seconds": 93784,
+                    "memory_free_bytes": 805306368,
+                    "memory_total_bytes": 1073741824,
+                    "availability_reason": null
+                },
+                "mode": "SIMULATED",
+                "status": "PARTIAL",
+                "complete": false,
+                "identity": {
+                    "model": "CCR2004-16G-2S+",
+                    "os_version": "7.16.2",
+                    "manufacturer": "mikrotik",
+                    "platform_family": "ROUTEROS7"
+                },
+                "contract_id": "DEVICE_RESOURCES_READ",
+                "environment": "LAB",
+                "binding_digest": "20fd035cf352cbe097fb37793bc383909715fee666ac8873bfe60c9b00dd5e9c",
+                "schema_version": 1
+            }
+        }
+    },
+    {
+        "operation": "DEVICE_BGP_PEERS_READ",
+        "scenario": "auth",
+        "request": "Verifique os peers BGP do MikroTik de borda.",
+        "reply": "LABORATÓRIO \/ SIMULADO: Consulta não produziu evidências válidas. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "3e897663-0e82-44df-8eaa-4d2898e1e8cf",
+        "result": {
+            "ok": false,
+            "error": "routeros_auth_failed"
+        }
+    },
+    {
+        "operation": "DEVICE_BGP_PEERS_READ",
+        "scenario": "timeout",
+        "request": "Verifique os peers BGP do MikroTik de borda.",
+        "reply": "LABORATÓRIO \/ SIMULADO: Consulta não produziu evidências válidas. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "806af26c-8e54-4ea1-9ea2-391829c782d5",
+        "result": {
+            "ok": false,
+            "error": "timeout"
+        }
+    },
+    {
+        "operation": "DEVICE_BGP_PEERS_READ",
+        "scenario": "truncate",
+        "request": "Verifique os peers BGP do MikroTik de borda.",
+        "reply": "LABORATÓRIO \/ SIMULADO: Consulta não produziu evidências válidas. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "52b9f00d-640c-4830-883d-b1040a63b840",
+        "result": {
+            "ok": false,
+            "error": "routeros_invalid_output"
+        }
+    },
+    {
+        "operation": "DEVICE_BGP_PEERS_READ",
+        "scenario": "invalid",
+        "request": "Verifique os peers BGP do MikroTik de borda.",
+        "reply": "LABORATÓRIO \/ SIMULADO: Consulta não produziu evidências válidas. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "1a2a7cf9-8ad5-4d2e-b0db-5da2d13ecfea",
+        "result": {
+            "ok": false,
+            "error": "routeros_invalid_output"
+        }
+    },
+    {
+        "operation": "DEVICE_BGP_PEERS_READ",
+        "scenario": "sensitive",
+        "request": "Verifique os peers BGP do MikroTik de borda.",
+        "reply": "LABORATÓRIO \/ SIMULADO: Consulta não produziu evidências válidas. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "3b0910ea-f1c1-4b81-8414-33d3edf94c2e",
+        "result": {
+            "ok": false,
+            "error": "routeros_invalid_output"
+        }
+    },
+    {
+        "operation": "DEVICE_BGP_PEERS_READ",
+        "scenario": "rows",
+        "request": "Verifique os peers BGP do MikroTik de borda.",
+        "reply": "LABORATÓRIO \/ SIMULADO: Consulta não produziu evidências válidas. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "8f3e7165-d5a7-4d5b-883a-62d54d28d308",
+        "result": {
+            "ok": false,
+            "error": "routeros_output_limit"
+        }
+    },
+    {
+        "operation": "DEVICE_BGP_PEERS_READ",
+        "scenario": "identity",
+        "request": "Verifique os peers BGP do MikroTik de borda.",
+        "reply": "LABORATÓRIO \/ SIMULADO: Consulta não produziu evidências válidas. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "d01e9161-a96b-4780-a53c-ea799df79ed4",
+        "result": {
+            "ok": false,
+            "error": "routeros_identity_rejected"
+        }
+    },
+    {
+        "operation": "DEVICE_BGP_PEERS_READ",
+        "scenario": "oversize",
+        "request": "Verifique os peers BGP do MikroTik de borda.",
+        "reply": "LABORATÓRIO \/ SIMULADO: Consulta não produziu evidências válidas. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "8a89e060-7b88-44cb-892b-f1d276154edc",
+        "result": {
+            "ok": false,
+            "error": "routeros_output_limit"
+        }
+    },
+    {
+        "operation": "DEVICE_BGP_PEERS_READ",
+        "scenario": "normal",
+        "request": "Verifique os peers BGP do MikroTik de borda.",
+        "reply": "LABORATÓRIO \/ SIMULADO: Consulta não produziu evidências válidas. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+        "task_id": "b50ef40a-d2d3-4289-ae95-452349f1e21e",
+        "result": {
+            "ok": false,
+            "error": "routeros_identity_rejected"
+        }
+    },
+    {
+        "security": "wrong host\/client key, eight tampered envelopes, policy changed during SSH, cancellation, approval replay",
+        "status": "PASS"
+    }
+]

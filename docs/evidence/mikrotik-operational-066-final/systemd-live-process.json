@@ -1,0 +1,11 @@
+{
+  "version": "0.6.6",
+  "main_pid": 161,
+  "systemd_pid1": true,
+  "uid": 65534,
+  "effective_capabilities": 0,
+  "permitted_capabilities": 0,
+  "bounding_capabilities": 0,
+  "ambient_capabilities": 0,
+  "no_new_privileges": true
+}

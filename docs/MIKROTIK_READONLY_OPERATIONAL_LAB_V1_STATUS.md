@@ -1,3 +1,6 @@
+> Registro histórico da execução anterior. A conclusão 0.6.6 está em
+> [MIKROTIK_READONLY_066_LAB_COMPLETION.md](MIKROTIK_READONLY_066_LAB_COMPLETION.md).
+
 # MikroTik Read-Only Operational Lab V1
 
 Resultado: **MIKROTIK READ-ONLY OPERATIONAL LAB BLOCKED**.

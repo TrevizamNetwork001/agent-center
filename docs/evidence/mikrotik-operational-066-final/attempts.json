@@ -1,0 +1,86 @@
+[
+  {
+    "attempt": "candidate-initial",
+    "result": "FAIL: 173 tests, 1 failure, 2 import errors",
+    "cause_and_resolution": "0.6.4 builder versus 0.6.6 imports; observability modules absent",
+    "raw_local_log": "/tmp/routeros-066-before.log"
+  },
+  {
+    "attempt": "reconciliation-contracts",
+    "result": "FAIL during incremental reconciliation",
+    "cause_and_resolution": "availability/prepare, managed_snapshot and helper observe/check contracts absent; reconciled additively",
+    "raw_local_log": "/tmp/routeros-066-suite-docker-final.log"
+  },
+  {
+    "attempt": "checker-contract-regression",
+    "result": "FAIL: 4 failures, 2 errors",
+    "cause_and_resolution": "version-check relocation bypassed existing self_check test boundary; retained original checker through Engine staging",
+    "raw_local_log": "/tmp/routeros066-python-validated.log"
+  },
+  {
+    "attempt": "native-noexec",
+    "result": "FAIL",
+    "cause_and_resolution": "native SSH extension could not map from noexec tmpfs; executable tmpfs limited to disposable containers",
+    "raw_local_log": "/tmp/routeros066-lifecycle.log"
+  },
+  {
+    "attempt": "mixed-lab-modes",
+    "result": "FAIL, then memory exhaustion from cascaded errors",
+    "cause_and_resolution": "direct Laravel SSH tests conflict with integrated Agent-required mode; rerun in separate disposable contexts",
+    "raw_local_log": "/tmp/routeros066-e2e2.log"
+  },
+  {
+    "attempt": "systemd-private-tmp",
+    "result": "FAIL",
+    "cause_and_resolution": "ProtectSystem=strict without writable private temporary directory; added PrivateTmp to lab unit",
+    "raw_local_log": "/tmp/routeros066-e2e2.log"
+  },
+  {
+    "attempt": "committed-fixture-reuse",
+    "result": "FAIL: second method unique fixture collision",
+    "cause_and_resolution": "each integration method commits identities and owns one Agent process; run each against fresh DB/state",
+    "raw_local_log": "/tmp/routeros066-e2e-final.log"
+  },
+  {
+    "attempt": "live-runner-edit",
+    "result": "FAIL after 225 assertions",
+    "cause_and_resolution": "editing shell runner during execution invalidated its unread tail; final executions use stable runner",
+    "raw_local_log": "/tmp/routeros066-main-validated.log"
+  },
+  {
+    "attempt": "root-status-reader",
+    "result": "FAIL in fixture supervisor",
+    "cause_and_resolution": "generic read_private correctly rejects a non-root-owned status file for root; supervisor now checks fixed status like native postcheck",
+    "raw_local_log": "/tmp/routeros066-upgrade-e2e-final.log"
+  },
+  {
+    "attempt": "ready-barrier",
+    "result": "FAIL in fixture supervisor",
+    "cause_and_resolution": "queries raced the installation proof; explicit completion barrier gates the test, journal comparison permits legitimate growth",
+    "raw_local_log": "/tmp/routeros066-integrated-installer-retry.log"
+  },
+  {
+    "attempt": "database-lifetime",
+    "result": "FAIL after 225 assertions",
+    "cause_and_resolution": "test EXIT dropped API database before rollback postcheck; fixed laboratory verification runs before database cleanup",
+    "raw_local_log": "/tmp/routeros066-upgrade-accepted.log"
+  },
+  {
+    "attempt": "interrupted-staging",
+    "result": "FAIL in fault-injection proof",
+    "cause_and_resolution": "abrupt exit left uncommitted staging; cleanup constrained to Engine-owned staging under locks",
+    "raw_local_log": "/tmp/routeros066-lifecycle4.log"
+  },
+  {
+    "attempt": "restrictive-umask",
+    "result": "REVIEW FINDING; regression test added",
+    "cause_and_resolution": "mkdir parents under 077 could be unreadable to Agent; explicit 0755 directories, native fault/E2E rerun under 077",
+    "raw_local_log": "/tmp/routeros066-lifecycle-delivery.log"
+  },
+  {
+    "attempt": "final-chain",
+    "result": "PASS, exit 0",
+    "cause_and_resolution": "signed baseline update, actual runtime postcheck, 225 E2E assertions, restart and 0.6.5 rollback in same instance",
+    "raw_local_log": "/tmp/routeros066-final-chain.log"
+  }
+]

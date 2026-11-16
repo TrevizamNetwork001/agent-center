@@ -1,0 +1,11 @@
+{
+    "task_protocol": 1,
+    "transport": "Real HTTP over isolated loopback; native Agent API authentication",
+    "execution": "Unmodified Runtime\/Executor\/action_worker\/journal\/lease protocol",
+    "tasks": 32,
+    "attempts": 24,
+    "conclusions": 32,
+    "freeze_operational": true,
+    "physical_device_access": false,
+    "preflight_denied_no_connection": true
+}

@@ -1,0 +1,1 @@
+{"nonroot_uid": 65534, "isolated_namespace": true, "adapter_ready": true, "executions": 24, "states": {"completed": 24}, "duplicate_reservations_rejected": true, "replayed_start_count": 0, "device_operations_frozen": true}

@@ -1,0 +1,7 @@
+{
+  "debian": "13",
+  "python": "3.13.5",
+  "architecture": "x86_64",
+  "systemd": "systemd 257 (257.13-1~deb13u1)",
+  "systemd_pid1": true
+}

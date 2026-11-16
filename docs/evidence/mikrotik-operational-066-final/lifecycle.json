@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "version": "0.6.6",
+  "systemd_pid1": true,
+  "uid": 65534,
+  "signature_tamper_platform_replay_rejected": true,
+  "offline_install": true,
+  "global_install": false,
+  "native_lifecycle": true,
+  "systemd_restart": true,
+  "legacy_065_signed_bootstrap": true,
+  "companions_restored": true,
+  "native_signed_release_staging": true,
+  "rollback_065": true,
+  "ssh_removed_from_active_runtime": true,
+  "postcheck_failure_hold_and_reconcile": true,
+  "identity_journal_preserved": true,
+  "interrupted_process_tested": true,
+  "six_queries_tested_here": false
+}

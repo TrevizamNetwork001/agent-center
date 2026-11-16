@@ -1,0 +1,6 @@
+{
+    "request": "Verifique os peers BGP do MikroTik de borda.",
+    "confirmation": "DEVICE_BGP_PEERS_READ",
+    "reply": "LABORATÓRIO \/ SIMULADO: Peers BGP: 2 observados; 1 estabelecidos. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+    "single_task": true
+}

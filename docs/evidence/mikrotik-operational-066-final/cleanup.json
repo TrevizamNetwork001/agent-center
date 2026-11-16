@@ -1,0 +1,13 @@
+{
+  "laboratory_containers_removed": [
+    "routeros066-systemd-check",
+    "routeros066-regression-postgres",
+    "routeros-task-lab-candidate",
+    "routeros-task-lab-central",
+    "device-readonly-v1-ssh",
+    "device-readonly-v1-postgres"
+  ],
+  "unrelated_services_touched": false,
+  "temporary_signed_bundle_retained": "/tmp/routeros066-umask-final-release",
+  "operational_deployment": false
+}

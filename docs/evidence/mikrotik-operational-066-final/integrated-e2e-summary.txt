@@ -1,0 +1,4 @@
+Time: 01:58.784, Memory: 60.50 MB
+OK (1 test, 225 assertions)
+Mikrotik populated rollback guard PASS: approval evidence preserved.
+Device Read-Only populated rollback guard PASS: data preserved.

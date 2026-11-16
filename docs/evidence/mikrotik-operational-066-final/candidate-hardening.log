@@ -1,0 +1,20 @@
+test_arbitrary_queries_are_rejected (test_candidate.CandidateTests.test_arbitrary_queries_are_rejected) ... ok
+test_dependency_lock_closes_versions_hashes_and_license_files (test_candidate.CandidateTests.test_dependency_lock_closes_versions_hashes_and_license_files) ... ok
+test_extracted_source_hashes_match_verified_archive (test_candidate.CandidateTests.test_extracted_source_hashes_match_verified_archive) ... ok
+test_freeze_cannot_be_released_by_candidate_import (test_candidate.CandidateTests.test_freeze_cannot_be_released_by_candidate_import) ... ok
+test_legacy_helper_preflight_keeps_both_policy_layers_without_probing (test_candidate.CandidateTests.test_legacy_helper_preflight_keeps_both_policy_layers_without_probing) ... ok
+test_lifecycle_rejects_unimplemented_ssh_component (test_candidate.CandidateTests.test_lifecycle_rejects_unimplemented_ssh_component) ... ok
+test_missing_wheels_are_not_a_valid_bundle (test_candidate.CandidateTests.test_missing_wheels_are_not_a_valid_bundle) ... ok
+test_operational_safety_code_is_preserved_byte_for_byte (test_candidate.CandidateTests.test_operational_safety_code_is_preserved_byte_for_byte) ... ok
+test_original_preflight_and_heartbeat_protocol_are_preserved (test_candidate.CandidateTests.test_original_preflight_and_heartbeat_protocol_are_preserved) ... ok
+test_no_ssh_payload_preserves_legacy_runtime (test_ssh_runtime.SshRuntimeTests.test_no_ssh_payload_preserves_legacy_runtime) ... ok
+test_partial_extra_duplicate_and_tampered_payloads_fail (test_ssh_runtime.SshRuntimeTests.test_partial_extra_duplicate_and_tampered_payloads_fail) ... ok
+test_python_architecture_and_os_compatibility_are_required (test_ssh_runtime.SshRuntimeTests.test_python_architecture_and_os_compatibility_are_required) ... ok
+test_recovery_cleanup_is_closed_to_engine_owned_staging (test_ssh_runtime.SshRuntimeTests.test_recovery_cleanup_is_closed_to_engine_owned_staging) ... ok
+test_restrictive_companion_umask_keeps_nested_libraries_readable (test_ssh_runtime.SshRuntimeTests.test_restrictive_companion_umask_keeps_nested_libraries_readable) ... ok
+test_wheel_paths_scripts_and_symlinks_cannot_escape_staging (test_ssh_runtime.SshRuntimeTests.test_wheel_paths_scripts_and_symlinks_cannot_escape_staging) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.041s
+
+OK

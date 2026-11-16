@@ -1,0 +1,6 @@
+Time: 01:03.434, Memory: 71.00 MB
+OK (19 tests, 287 assertions)
+Device Read-Only SSH concurrency PASS: duplicate requests deduplicated; four distinct actors serialized without overlapping protocol queries; zero operational tasks.
+Mikrotik SSH concurrency PASS: duplicate requests deduplicated; four distinct requests serialized without overlapping protocol queries; zero operational tasks.
+Mikrotik populated rollback guard PASS: approval evidence preserved.
+Device Read-Only populated rollback guard PASS: data preserved.

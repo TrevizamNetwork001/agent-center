@@ -1,0 +1,86 @@
+[
+  {
+    "test": "Tests\\Feature\\DeviceReadOnlyLabTest::test_both_platforms_end_to_end_over_ssh_with_typed_evidence_and_no_agent_task",
+    "reason": "Run scripts/lab/device-readonly/run.sh for isolated SSH protocol tests."
+  },
+  {
+    "test": "Tests\\Feature\\DeviceReadOnlyLabTest::test_protocol_failure_matrix_and_session_cleanup",
+    "reason": "Run scripts/lab/device-readonly/run.sh for isolated SSH protocol tests."
+  },
+  {
+    "test": "Tests\\Feature\\DeviceReadOnlyLabTest::test_host_identity_publickey_auth_allowlist_shell_and_forwarding",
+    "reason": "Run scripts/lab/device-readonly/run.sh for isolated SSH protocol tests."
+  },
+  {
+    "test": "Tests\\Feature\\DeviceReadOnlyLabTest::test_rbac_tenant_force_rls_rotation_revocation_and_inventory_revision",
+    "reason": "Run scripts/lab/device-readonly/run.sh for isolated SSH protocol tests."
+  },
+  {
+    "test": "Tests\\Feature\\DeviceReadOnlyLabTest::test_two_tenants_have_independent_credentials_and_cross_tenant_vault_bindings_fail",
+    "reason": "Run scripts/lab/device-readonly/run.sh for isolated SSH protocol tests."
+  },
+  {
+    "test": "Tests\\Feature\\DeviceReadOnlyLabTest::test_readonly_post_keeps_native_csrf_protection",
+    "reason": "Run scripts/lab/device-readonly/run.sh for isolated SSH protocol tests."
+  },
+  {
+    "test": "Tests\\Feature\\DeviceReadOnlyLabTest::test_web_and_conversation_explicit_lab_only_and_real_intents_stay_frozen",
+    "reason": "Run scripts/lab/device-readonly/run.sh for isolated SSH protocol tests."
+  },
+  {
+    "test": "Tests\\Feature\\MikrotikProtocolLabTest::test_six_typed_operations_over_real_ssh_and_longest_prefix_not_exact_host",
+    "reason": "Use scripts/lab/device-readonly/run.sh."
+  },
+  {
+    "test": "Tests\\Feature\\MikrotikProtocolLabTest::test_routes_other_table_absent_and_duplicate_idempotency",
+    "reason": "Use scripts/lab/device-readonly/run.sh."
+  },
+  {
+    "test": "Tests\\Feature\\MikrotikProtocolLabTest::test_total_route_record_budget_fails_before_collecting_more_prefixes",
+    "reason": "Use scripts/lab/device-readonly/run.sh."
+  },
+  {
+    "test": "Tests\\Feature\\MikrotikProtocolLabTest::test_empty_bgp_partial_resources_and_high_measurements_do_not_invent_faults",
+    "reason": "Use scripts/lab/device-readonly/run.sh."
+  },
+  {
+    "test": "Tests\\Feature\\MikrotikProtocolLabTest::test_protocol_failures_and_sensitive_output_are_not_persisted",
+    "reason": "Use scripts/lab/device-readonly/run.sh."
+  },
+  {
+    "test": "Tests\\Feature\\MikrotikProtocolLabTest::test_approval_requires_minimum_rights_pinned_identity_and_current_policy",
+    "reason": "Use scripts/lab/device-readonly/run.sh."
+  },
+  {
+    "test": "Tests\\Feature\\MikrotikProtocolLabTest::test_changed_host_key_and_invalid_client_key_fail_at_ssh_boundary",
+    "reason": "Use scripts/lab/device-readonly/run.sh."
+  },
+  {
+    "test": "Tests\\Feature\\MikrotikProtocolLabTest::test_rejected_parameters_unauthorized_agent_and_rotated_credential_invalidate_grants",
+    "reason": "Use scripts/lab/device-readonly/run.sh."
+  },
+  {
+    "test": "Tests\\Feature\\MikrotikProtocolLabTest::test_tenant_rls_rbac_and_production_environment_fail_closed",
+    "reason": "Use scripts/lab/device-readonly/run.sh."
+  },
+  {
+    "test": "Tests\\Feature\\MikrotikProtocolLabTest::test_existing_web_and_conversation_flow_is_simulated_and_normal_intents_never_connect",
+    "reason": "Use scripts/lab/device-readonly/run.sh."
+  },
+  {
+    "test": "Tests\\Feature\\RouterOsTaskIntegrationTest::test_complete_runtime_api_ssh_and_conversation_flow_with_security_boundaries",
+    "reason": "Run ROUTEROS_TASK_LAB=1 scripts/lab/device-readonly/run.sh."
+  },
+  {
+    "test": "Tests\\Feature\\RouterOsTaskIntegrationTest::test_identity_only_physical_preparation_stays_simulated_and_blocks_other_capabilities",
+    "reason": "Run ROUTEROS_TASK_LAB=1 scripts/lab/device-readonly/run.sh."
+  },
+  {
+    "test": "Tests\\Feature\\TelegramTest::test_mikrotik_typed_protocol_uses_native_ingress_outbox_and_freeze",
+    "reason": "Isolated SSH protocol lab required."
+  },
+  {
+    "test": "Tests\\Feature\\TelegramTest::test_device_readonly_ssh_lab_uses_native_telegram_ingress_and_outbox",
+    "reason": "Isolated SSH protocol lab required."
+  }
+]

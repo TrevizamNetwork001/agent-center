@@ -1,0 +1,7 @@
+{
+    "native_ingress": true,
+    "native_outbox": true,
+    "external_transport": "HTTP fake; no Telegram API connection",
+    "reply": "LABORATÓRIO \/ SIMULADO: Peers BGP: 2 observados; 1 estabelecidos. Não são medições do equipamento físico; compatibilidade com hardware não verificada. Detalhes no painel do diagnóstico.",
+    "single_task": true
+}

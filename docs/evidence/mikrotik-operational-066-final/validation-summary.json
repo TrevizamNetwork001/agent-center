@@ -1,0 +1,59 @@
+{
+  "result": "MIKROTIK READ-ONLY 0.6.6 OPERATIONAL LAB PASS",
+  "code_commit": "c6935a7",
+  "candidate_version": "0.6.6",
+  "artifact": {
+    "platform": "debian13",
+    "schema_version": 1,
+    "sequence": 2,
+    "sha256": "4f13dfe7e9cc6c073e44bf1461969639bd05f390ad871e39526da7e992622aa8",
+    "size": 6739905,
+    "version": "0.6.6"
+  },
+  "python": {
+    "tests": 190,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "candidate_hardening": {
+    "tests": 15,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "laravel": {
+    "tests": 588,
+    "assertions": 5151,
+    "skips": 21,
+    "failures": 0,
+    "errors": 0,
+    "all_conditional_tests_executed_separately": true
+  },
+  "integrated_e2e": {
+    "tests": 1,
+    "assertions": 225,
+    "same_systemd_instance_update_queries_restart_rollback": true,
+    "companion_umask": "0077"
+  },
+  "legacy_regressions": {
+    "tests": 19,
+    "assertions": 287,
+    "skips": 0
+  },
+  "identity_only_regression": {
+    "tests": 1,
+    "assertions": 41,
+    "skips": 0
+  },
+  "production_deployed": false,
+  "operational_agent_updated": false,
+  "physical_device_access": false,
+  "operational_freeze_preserved": true,
+  "ruff_owned": "PASS",
+  "ruff_entire_tree_inherited_findings": 3,
+  "pint_files_passed": 380,
+  "build": "PASS",
+  "diff_check": "PASS",
+  "secret_scan": "Basic repository index scan PASS; not a specialized audit"
+}

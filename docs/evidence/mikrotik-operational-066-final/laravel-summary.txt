@@ -1,0 +1,6 @@
+Time: 04:42.231, Memory: 95.00 MB
+OK, but some tests were skipped!
+Tests: 588, Assertions: 5151, Skipped: 21.
+PASS: separate-process concurrent claims; worker/result race; exclusive execution lane; expired-claim fencing; duplicate idempotence; DNS prerequisites preserved
+Conversation idle concurrency: PASS (two closers; message versus closer; no tasks)
+Preflight concurrency: PASS (two terminal callbacks; exactly one notice; no confirmation or task)

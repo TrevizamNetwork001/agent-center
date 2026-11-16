@@ -1,0 +1,95 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "port": 2222,
+      "request": "pty",
+      "denied": true
+    },
+    {
+      "port": 2222,
+      "request": "shell",
+      "denied": true
+    },
+    {
+      "port": 2222,
+      "request": "forwarding",
+      "denied": true
+    },
+    {
+      "port": 2222,
+      "request": "outside_catalog",
+      "denied": true
+    },
+    {
+      "port": 2222,
+      "request": "outside_catalog",
+      "denied": true
+    },
+    {
+      "port": 2222,
+      "request": "outside_catalog",
+      "denied": true
+    },
+    {
+      "port": 2222,
+      "request": "outside_catalog",
+      "denied": true
+    },
+    {
+      "port": 2222,
+      "request": "outside_catalog",
+      "denied": true
+    },
+    {
+      "port": 2222,
+      "request": "outside_catalog",
+      "denied": true
+    },
+    {
+      "port": 2223,
+      "request": "pty",
+      "denied": true
+    },
+    {
+      "port": 2223,
+      "request": "shell",
+      "denied": true
+    },
+    {
+      "port": 2223,
+      "request": "forwarding",
+      "denied": true
+    },
+    {
+      "port": 2223,
+      "request": "outside_catalog",
+      "denied": true
+    },
+    {
+      "port": 2223,
+      "request": "outside_catalog",
+      "denied": true
+    },
+    {
+      "port": 2223,
+      "request": "outside_catalog",
+      "denied": true
+    },
+    {
+      "port": 2223,
+      "request": "outside_catalog",
+      "denied": true
+    },
+    {
+      "port": 2223,
+      "request": "outside_catalog",
+      "denied": true
+    },
+    {
+      "port": 2223,
+      "request": "outside_catalog",
+      "denied": true
+    }
+  ]
+}
