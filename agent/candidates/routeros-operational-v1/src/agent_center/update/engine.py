@@ -14,6 +14,7 @@ import zipfile
 from pathlib import Path
 
 from ..capabilities import KNOWN
+from ..lifecycle.ssh_runtime import PREFIX, inventory, materialize
 from ..state import InstanceLock, atomic_write
 
 
@@ -110,6 +111,10 @@ def validate(artifact, expected):
             raise UpdateError("unsafe_archive")
         if "__main__.py" not in names or "agent_center/main.py" not in names:
             raise UpdateError("invalid_archive")
+        try:
+            ssh = inventory(archive)
+        except (ValueError, OSError, zipfile.BadZipFile):
+            raise UpdateError("ssh_bundle_invalid") from None
         for e in entries:
             p = Path(e.filename)
             mode = e.external_attr >> 16
@@ -120,7 +125,9 @@ def validate(artifact, expected):
                 or stat.S_ISLNK(mode)
                 or e.flag_bits & 1
                 or not (e.filename == "__main__.py" or (p.parts and p.parts[0] == "agent_center"))
-                or (not e.is_dir() and p.suffix != ".py")
+                or (not e.is_dir() and p.suffix != ".py" and e.filename not in {
+                    PREFIX + name for name in ssh
+                })
             ):
                 raise UpdateError("unsafe_archive")
     return data
@@ -154,7 +161,21 @@ class Engine:
             return hashlib.sha256(runtime.read_bytes()).hexdigest()
         return None
 
-    def dry_run(self, artifact, expected):
+    def _discard_interrupted_stages(self):
+        # Called only with update + instance locks and the Agent stopped. These
+        # are Engine-owned, uncommitted runtimes, never state or journal paths.
+        for stage in self.base.glob(".staging-*"):
+            info = stage.lstat()
+            if (
+                not re.fullmatch(r"\.staging-[a-z0-9_]{8}", stage.name)
+                or stage.is_symlink() or not stage.is_dir()
+                or info.st_uid != os.geteuid() or info.st_mode & 0o022
+            ):
+                raise UpdateError("unsafe_staging")
+            shutil.rmtree(stage)
+        self._sync()
+
+    def dry_run(self, artifact, expected, checker=None):
         data = validate(Path(artifact), expected)
         with tempfile.TemporaryDirectory(prefix="agent-dry-run-") as directory:
             directory = Path(directory)
@@ -162,7 +183,8 @@ class Engine:
             candidate = directory / "agent.pyz"
             candidate.write_bytes(data)
             candidate.chmod(0o644)
-            self.checker(candidate)
+            materialize(candidate, directory)
+            (checker or self.checker)(candidate)
         return {"valid": True, "sha256": expected, "apply": False}
 
     def apply(self, artifact, expected):
@@ -194,6 +216,7 @@ class Engine:
                 self._move(previous, runtime)
             if not runtime.is_dir() or runtime.is_symlink():
                 raise UpdateError("missing_runtime")
+            self._discard_interrupted_stages()
             stage = Path(tempfile.mkdtemp(prefix=".staging-", dir=self.base))
             stage.chmod(0o755)
             candidate = stage / "agent.pyz"
@@ -201,6 +224,7 @@ class Engine:
             candidate.chmod(0o644)
             with candidate.open("rb") as handle:
                 os.fsync(handle.fileno())
+            materialize(candidate, stage)
             self.checker(candidate)
             atomic_write(self.base / "update.json", {"state": "prepared", "sha256": expected})
             self._archive(".previous")
@@ -280,6 +304,7 @@ class Engine:
             if self.service.active():
                 raise UpdateError("service_still_active")
             lock = InstanceLock(self.state / "instance.lock")
+            self._discard_interrupted_stages()
             self._archive(".failed")
             if (self.base / "runtime").exists():
                 self._move(self.base / "runtime", self.base / ".failed")

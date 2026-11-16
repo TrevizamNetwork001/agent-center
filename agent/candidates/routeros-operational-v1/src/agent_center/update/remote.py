@@ -12,11 +12,11 @@ import os
 import platform
 import pwd
 import re
+import shutil
 import signal
+import stat
 import subprocess
 import sys
-import shutil
-import stat
 import tempfile
 import time
 import uuid
@@ -248,7 +248,7 @@ class Remote:
                 temporary.unlink(missing_ok=True)
         # Do not authorize a durable catalog entry until its declared runtime verifies.
         self._verify_signed_release(release, candidate.read_bytes())
-        self_check(candidate, release["version"])
+        self.engine.dry_run(candidate, sha, checker=lambda staged: self_check(staged, release["version"]))
         entry = {"sha256": sha, "version": release["version"], "device_operations_frozen": True}
         if any(row.get("sha256") == sha and row != entry for row in current):
             raise UpdateError("invalid_release")
@@ -283,7 +283,7 @@ class Remote:
         # No paths or download URLs from the server are honored.
         validate(candidate, sha)
         self._verify_signed_release(release, candidate.read_bytes())
-        self_check(candidate, release["version"])
+        self.engine.dry_run(candidate, sha, checker=lambda staged: self_check(staged, release["version"]))
         return candidate, sha
 
     def _backup(self, operation_id):

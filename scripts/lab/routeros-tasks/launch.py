@@ -5,12 +5,19 @@ import time
 from pathlib import Path
 
 config = Path('/lab/agent-private/config.json')
-for _ in range(600):
+for _ in range(4500):
     if config.is_file():
         artifact = Path('/integration-candidate/agent.pyz')
+        metadata = artifact.parent
+        installed = Path('/run/routeros066-upgrade/base/runtime/agent.pyz')
+        if installed.is_file():
+            artifact = installed
+            metadata = (Path('/integration-baseline') if __import__('hashlib').sha256(artifact.read_bytes()).hexdigest()
+                        == 'a2de84beb6cb519047c6123423fb420d9d410b41b85c6c9b4a49df63b562d315'
+                        else Path('/integration-candidate'))
         if artifact.is_file():
             from agent_center.lifecycle.releases import verify
-            bundle = artifact.parent
+            bundle = metadata
             verify((bundle / 'manifest.json').read_bytes(),
                    (bundle / 'signature.base64').read_text().strip(),
                    (bundle / 'signer-public.pem').read_bytes(), artifact.read_bytes(),

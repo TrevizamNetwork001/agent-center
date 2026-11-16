@@ -8,6 +8,23 @@
   "reviewed_changes": [
     "__init__.py: candidate version only",
     "capabilities.py: additive RouterOS dispatcher and bounded legacy self-check",
-    "api.py: reject recursive JSON as typed errors"
-  ]
+    "api.py: reject recursive JSON as typed errors",
+    "config.py: retain local envelope and managed policy snapshot for observation consistency",
+    "main.py: bounded capability refresh and closed observation worker entrypoint",
+    "heartbeat.py: additive bounded observation, original diagnostics/preflight path retained",
+    "mtr_helper.py: additive observe/check requests; original protocol_version=1 preflight retained",
+    "update/engine.py: closed wheel validation and offline staging within the existing runtime rename/rollback transaction",
+    "update/remote.py: signed release staging materializes the closed SSH payload before the existing version-specific self-check; signature and catalog authorization unchanged"
+  ],
+  "reviewed_source_sha256": {
+    "agent_center/heartbeat.py": "556ee36055f1a0002f302ec1aff0f205265e3c03fbb923213897e2f1066e19b0",
+    "agent_center/capabilities.py": "eeeb2b33256e528ef9c870a732564cf523c77fa095642bf875da1769acaf5209",
+    "agent_center/api.py": "18db196ee5bcb56112da554b00f3f668c12ab9880e11a984440c3c5748260edd",
+    "agent_center/mtr_helper.py": "fd0775cb95adef9955c420cf7f1e0ea0221323342f561fd741e5e64502b44035",
+    "agent_center/main.py": "bd71cb4c59630052f5c4f9e140e7954c7832405f79597a67f75ea95ed595e69d",
+    "agent_center/__init__.py": "59b6cdb5dd0380c78413143e3642a6db2b5c1a1842a3914e562a5bbff7d9e4a1",
+    "agent_center/config.py": "60986a4ec03ec5986be87873bca0e3b040f5193876f716500f2006c2f1f37452",
+    "agent_center/update/remote.py": "b926ffff0a9b850e3278e407fa7b620dea3f921050a9ba878ee57f9674fd262a",
+    "agent_center/update/engine.py": "e08cc958a0f924dd3f68ab1b2b00d6d820a54f582914475c8f57ecf5fca1d0f0"
+  }
 }

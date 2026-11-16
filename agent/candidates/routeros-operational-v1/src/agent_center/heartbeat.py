@@ -3,6 +3,7 @@ import time
 
 from . import __version__
 from .managed_settings import apply
+from .observation_worker import bounded_snapshot
 from .preflight import check
 from .state import StateError
 from .telemetry import snapshot
@@ -18,12 +19,18 @@ class Heartbeat(threading.Thread):
         self.last_success = None
         self.max_gap = 0.0
         self.auth_failed = False
+        self.policy = None
 
     def run(self):
         deadline = time.monotonic()
         while not self.stop_event.is_set():
             result = self.client.call(
-                "heartbeat", {"version": __version__, "telemetry": snapshot(self.state_dir)}
+                "heartbeat", {
+                    "version": __version__, "telemetry": snapshot(self.state_dir),
+                    "observability": bounded_snapshot(
+                        self.state_dir, self.policy, timeout=min(2.0, self.interval / 4)
+                    ),
+                }
             )
             now = time.monotonic()
             if result.ok and result.body.get("status") == "ok":
@@ -33,6 +40,7 @@ class Heartbeat(threading.Thread):
                 self.successes += 1
                 try:
                     policy = result.body.get("policy")
+                    self.policy = policy
                     if apply(self.state_dir, policy, self.agent_id) and self.config_path:
                         pending = self.client.call("diagnostics/preflight", {"schema_version": 1})
                         request = pending.body.get("request") if pending.ok else None

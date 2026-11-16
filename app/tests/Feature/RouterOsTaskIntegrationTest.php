@@ -87,7 +87,8 @@ class RouterOsTaskIntegrationTest extends IdentityTestCase
         $this->privateFile('config.json', ['central_url' => 'http://127.0.0.1:8089', 'allow_http_loopback' => true,
             'state_dir' => '/lab/agent-private/state', 'identity_file' => '/lab/agent-private/state/identity.json', 'log_dir' => '/lab/agent-private/logs',
             'heartbeat_interval' => 2, 'poll_interval' => 1, 'timeout' => 3, 'auto_public_targets' => false, 'allowed_networks' => [], 'allowed_dns_names' => [], 'allow_managed_settings' => false, 'device_operations_frozen' => true]);
-        $this->waitFor(fn () => $this->agent->fresh()->last_poll_at !== null, 'candidate first authenticated poll');
+        $expectedVersion = getenv('ROUTEROS_EXPECTED_VERSION') ?: null;
+        $this->waitFor(fn () => $this->agent->fresh()->last_poll_at !== null && ($expectedVersion === null || ($this->agent->fresh()->version === $expectedVersion && in_array(Integration::CAPABILITY, $this->agent->fresh()->capabilities ?? [], true) && is_file('/lab/agent-private/lifecycle-ready.json'))), 'candidate first authenticated poll after signed update', 60);
     }
 
     private function privateFile(string $name, array $value): void

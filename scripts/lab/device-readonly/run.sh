@@ -83,13 +83,18 @@ if [ "${ROUTEROS_TASK_LAB:-0}" = 1 ]; then
     # Traverse the mount only; credential files and private subdirectory remain restricted.
     chmod 711 "$lab_state"
     chmod 644 "$lab_state/routeros-agent-lab"
-    DOCKER_CONFIG="$lab_state/docker-config" docker build -f scripts/lab/routeros-tasks/Dockerfile -t agent-center-routeros-candidate:lab .
+    if [ "${ROUTEROS_SYSTEMD_LAB:-0}" != 1 ]; then
+      DOCKER_CONFIG="$lab_state/docker-config" docker build -f scripts/lab/routeros-tasks/Dockerfile -t agent-center-routeros-candidate:lab .
+    fi
     if docker volume inspect "$lab_private" >/dev/null 2>&1; then echo 'Lab private volume already exists'; exit 1; fi
     docker volume create "$lab_private" >/dev/null
     lab_private_created=1
     docker run --rm --network none --user 0 --mount "type=volume,src=$lab_private,dst=/private" agent-center-routeros-candidate:lab sh -c 'chmod 700 /private && chown 65534:65534 /private'
     export TEST_AGENT_PRIVATE_VOLUME="$lab_private"
     export TEST_ROUTEROS_TASK_INTEGRATION=1
+    if [ "${ROUTEROS_SYSTEMD_UPGRADE_LAB:-0}" = 1 ]; then
+        export TEST_ROUTEROS_SYSTEMD_LIFECYCLE=1
+    fi
     docker run -d --name "$lab_central" --network "container:$lab_ssh" --env-file "$lab_state/runtime.env" \
       --mount "type=bind,src=$PWD/app,dst=/var/www/html" --mount "type=bind,src=$lab_state/empty.env,dst=/var/www/html/.env,readonly" \
       --mount "type=bind,src=$lab_state,dst=/lab" --mount "type=bind,src=$lab_state/tls/ca.crt,dst=/run/pg-tls/ca.crt,readonly" \
@@ -107,18 +112,85 @@ if [ "${ROUTEROS_TASK_LAB:-0}" = 1 ]; then
             candidate_mount+=(--mount "type=bind,src=$candidate_bundle/$metadata,dst=/integration-candidate/$metadata,readonly")
         done
         candidate_mount+=(--mount "type=bind,src=$ROUTEROS_PACKAGED_CANDIDATE,dst=/integration-candidate/agent.pyz,readonly")
+        if [ -d "$candidate_bundle/ssh" ]; then
+            candidate_mount+=(--mount "type=bind,src=$candidate_bundle/ssh,dst=/integration-candidate/ssh,readonly")
+        fi
     fi
+    if [ "${ROUTEROS_SYSTEMD_LAB:-0}" = 1 ]; then
+      test -n "${ROUTEROS_PACKAGED_CANDIDATE:-}"
+      test -d "$candidate_bundle/ssh"
+      cat > "$lab_state/agent-center-agent.service" <<'UNIT'
+[Unit]
+Description=Isolated RouterOS 0.6.6 laboratory Agent
+[Service]
+User=65534
+Group=65534
+Environment=PYTHONPATH=/candidate/src PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 /integration/launch.py
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ReadWritePaths=/lab/agent-private
+RestrictAddressFamilies=AF_UNIX AF_INET
+UMask=0077
+[Install]
+WantedBy=multi-user.target
+UNIT
+      chmod 644 "$lab_state/agent-center-agent.service"
+      if [ "${ROUTEROS_SYSTEMD_UPGRADE_LAB:-0}" = 1 ]; then
+        test -n "${ROUTEROS_BASELINE_BUNDLE:-}"
+        test -f "$ROUTEROS_BASELINE_BUNDLE/agent.pyz"
+        candidate_mount+=(--mount "type=bind,src=$ROUTEROS_BASELINE_BUNDLE,dst=/integration-baseline,readonly")
+        candidate_mount+=(--mount "type=bind,src=$PWD/scripts/lab/routeros-operational,dst=/operational-lab,readonly")
+        printf 'ROUTEROS_EXPECTED_VERSION=0.6.6\n' >> "$lab_state/runtime.env"
+      fi
+      # Privileges belong only to isolated PID 1; the Agent unit has none.
+      docker run -d --name "$lab_candidate" --network "container:$lab_ssh" \
+        --privileged --cgroupns private --read-only --tmpfs /run:exec,mode=755 --tmpfs /run/lock --tmpfs /tmp:exec,mode=1777 \
+        --mount "type=volume,src=$lab_private,dst=/lab/agent-private" \
+        --mount "type=bind,src=$PWD/agent/candidates/routeros-operational-v1,dst=/candidate,readonly" \
+        --mount "type=bind,src=$lab_state,dst=/lab,readonly" \
+        --mount "type=bind,src=$PWD/scripts/lab/routeros-tasks,dst=/integration,readonly" \
+        --mount "type=bind,src=$lab_state/agent-center-agent.service,dst=/etc/systemd/system/agent-center-agent.service,readonly" \
+        "${candidate_mount[@]}" agent-center-routeros-debian13:lab >/dev/null
+      for attempt in {1..20}; do
+        if docker exec "$lab_candidate" systemctl list-units --no-pager >/dev/null 2>&1; then break; fi
+        sleep 1
+      done
+      if [ "${ROUTEROS_SYSTEMD_UPGRADE_LAB:-0}" = 1 ]; then
+        docker exec "$lab_candidate" python3 /operational-lab/integrated-lifecycle.py prepare
+      fi
+      docker exec "$lab_candidate" systemctl start agent-center-agent.service
+      if [ "${ROUTEROS_SYSTEMD_UPGRADE_LAB:-0}" = 1 ]; then
+        docker exec -d "$lab_candidate" python3 /operational-lab/integrated-lifecycle.py install
+      fi
+    else
     docker run -d --name "$lab_candidate" --network "container:$lab_ssh" --user 65534:65534 --cap-drop ALL --security-opt no-new-privileges \
       -e PYTHONPATH=/candidate/src -e PYTHONDONTWRITEBYTECODE=1 \
       --mount "type=volume,src=$lab_private,dst=/lab/agent-private" \
       --mount "type=bind,src=$PWD/agent,dst=/candidate,readonly" --mount "type=bind,src=$lab_state,dst=/lab" \
       --mount "type=bind,src=$PWD/scripts/lab/routeros-tasks,dst=/integration,readonly" \
       "${candidate_mount[@]}" agent-center-routeros-candidate:lab python /integration/launch.py >/dev/null
+    fi
 fi
 TEST_PG_CONTAINER="$lab_pg" TEST_NETWORK="container:$lab_ssh" TEST_OWNER_ENV="$lab_state/owner.env" TEST_RUNTIME_ENV="$lab_state/runtime.env" TEST_CA_FILE="$lab_state/tls/ca.crt" \
 TEST_IMAGE="$lab_image" TEST_DEVICE_PROTOCOL_STATE="$lab_state" \
     ./scripts/test.sh "$@"
 
-if [ "${ROUTEROS_TASK_LAB:-0}" = 1 ]; then
-    docker exec "$lab_candidate" python /integration/journal-proof.py > "$lab_state/routeros-task-journal.json"
+if [ "${ROUTEROS_TASK_LAB:-0}" = 1 ] && [ "${ROUTEROS_SYSTEMD_UPGRADE_LAB:-0}" != 1 ]; then
+    docker exec --user 65534:65534 -e PYTHONPATH=/candidate/src:/integration-candidate/ssh "$lab_candidate" python3 /integration/journal-proof.py > "$lab_state/routeros-task-journal.json"
+    if [ "${ROUTEROS_SYSTEMD_LAB:-0}" = 1 ]; then
+        docker exec "$lab_candidate" systemctl show agent-center-agent.service \
+          -p ActiveState -p SubState -p MainPID -p User -p Group -p NoNewPrivileges \
+          -p CapabilityBoundingSet -p AmbientCapabilities -p PrivateDevices > "$lab_state/systemd-agent.txt"
+        docker exec "$lab_candidate" cat /proc/1/comm > "$lab_state/systemd-pid1.txt"
+        docker exec "$lab_candidate" systemctl restart agent-center-agent.service
+        docker exec --user 65534:65534 -e PYTHONPATH=/candidate/src:/integration-candidate/ssh "$lab_candidate" python3 /integration/journal-proof.py > "$lab_state/routeros-task-journal-restarted.json"
+        if [ "${ROUTEROS_SYSTEMD_UPGRADE_LAB:-0}" = 1 ]; then
+            docker exec "$lab_candidate" python3 /operational-lab/integrated-lifecycle.py rollback > "$lab_state/integrated-lifecycle.json"
+        fi
+    fi
 fi

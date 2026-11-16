@@ -5,15 +5,17 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[4]
-CANDIDATE = ROOT / 'agent/candidates/routeros-operational-v1'
-sys.path.insert(0, str(CANDIDATE / 'src'))
-sys.path.insert(0, str(ROOT / 'scripts/lab/routeros-operational'))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / 'agent/candidates/routeros-operational-v1/src'))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / 'scripts/lab/routeros-operational'))
 import bundle
 from agent_center import routeros7_lab
 from agent_center.lifecycle.components import specification
 from agent_center.lifecycle.releases import ReleaseError
+
+ROOT = Path(__file__).resolve().parents[4]
+CANDIDATE = ROOT / 'agent/candidates/routeros-operational-v1'
 
 
 class CandidateTests(unittest.TestCase):
@@ -30,11 +32,39 @@ class CandidateTests(unittest.TestCase):
                              expected[path.relative_to(CANDIDATE / 'base').as_posix()])
 
     def test_operational_safety_code_is_preserved_byte_for_byte(self):
-        changed = {'agent_center/__init__.py', 'agent_center/capabilities.py', 'agent_center/api.py'}
+        changed = json.loads((CANDIDATE / 'reconciliation.json').read_text())['reviewed_source_sha256']
         for base in (CANDIDATE / 'base').rglob('*.py'):
             relative = base.relative_to(CANDIDATE / 'base')
-            if relative.as_posix() not in changed:
+            if relative.as_posix() in changed:
+                self.assertEqual(hashlib.sha256((CANDIDATE / 'src' / relative).read_bytes()).hexdigest(),
+                                 changed[relative.as_posix()])
+                self.assertNotEqual(base.read_bytes(), (CANDIDATE / 'src' / relative).read_bytes())
+            else:
                 self.assertEqual(base.read_bytes(), (CANDIDATE / 'src' / relative).read_bytes())
+
+    def test_original_preflight_and_heartbeat_protocol_are_preserved(self):
+        relative = 'agent_center/preflight.py'
+        self.assertEqual((CANDIDATE / 'base' / relative).read_bytes(),
+                         (CANDIDATE / 'src' / relative).read_bytes())
+        from agent_center import heartbeat, mtr_helper
+        from agent_center.preflight import check
+        self.assertIs(heartbeat.check, check)
+        self.assertTrue(callable(mtr_helper.preflight))
+
+    def test_legacy_helper_preflight_keeps_both_policy_layers_without_probing(self):
+        from agent_center import mtr_helper
+        args = {'target': '8.8.8.8', 'destination': '8.8.8.8', 'protocol': 'tcp',
+                'cycles': 5, 'max_hops': 16, 'interval': 1}
+        allowed = {'allowed_networks': ['8.8.8.8/32'], 'allowed_dns_names': []}
+        denied = {'allowed_networks': [], 'allowed_dns_names': []}
+        with patch('agent_center.mtr.collect', side_effect=AssertionError('probe forbidden')):
+            with patch('agent_center.mtr.raw_ready', return_value=True):
+                self.assertTrue(mtr_helper.preflight(args, allowed, allowed)['ok'])
+            for base, ceiling in ((denied, allowed), (allowed, denied)):
+                with patch('agent_center.mtr.raw_ready', side_effect=AssertionError('not authorized')):
+                    result = mtr_helper.preflight(args, base, ceiling)
+                self.assertFalse(result['ok'])
+                self.assertEqual('policy_denied', result['reason'])
 
     def test_lifecycle_rejects_unimplemented_ssh_component(self):
         with self.assertRaisesRegex(ReleaseError, 'unsupported_component'):

@@ -53,3 +53,15 @@ elif [ "${TEST_DEVICE_PROTOCOL_CONCURRENCY:-0}" = 1 ] || [ "${TEST_ROUTEROS_PROT
 else
  docker run --rm --network "$test_network" --env-file "$test_owner_env" -e DB_DATABASE=agent_center_test "${mounts[@]}" "$test_image" php artisan migrate:rollback --force
 fi
+if [ "${TEST_ROUTEROS_SYSTEMD_LIFECYCLE:-0}" = 1 ]; then
+ # Fixed laboratory verification, before EXIT drops the disposable API database.
+ # No configurable command hook: only the known isolated RouterOS runner.
+ test "${TEST_ROUTEROS_TASK_INTEGRATION:-0}" = 1
+ test -f "$TEST_DEVICE_PROTOCOL_STATE/routeros-agent-lab"
+ docker exec --user 65534:65534 -e PYTHONPATH=/candidate/src:/integration-candidate/ssh routeros-task-lab-candidate python3 /integration/journal-proof.py > "$TEST_DEVICE_PROTOCOL_STATE/routeros-task-journal.json"
+ docker exec routeros-task-lab-candidate systemctl show agent-center-agent.service -p ActiveState -p SubState -p MainPID -p User -p Group -p NoNewPrivileges -p CapabilityBoundingSet -p AmbientCapabilities -p PrivateDevices > "$TEST_DEVICE_PROTOCOL_STATE/systemd-agent.txt"
+ docker exec routeros-task-lab-candidate cat /proc/1/comm > "$TEST_DEVICE_PROTOCOL_STATE/systemd-pid1.txt"
+ docker exec routeros-task-lab-candidate systemctl restart agent-center-agent.service
+ docker exec --user 65534:65534 -e PYTHONPATH=/candidate/src:/integration-candidate/ssh routeros-task-lab-candidate python3 /integration/journal-proof.py > "$TEST_DEVICE_PROTOCOL_STATE/routeros-task-journal-restarted.json"
+ docker exec routeros-task-lab-candidate python3 /operational-lab/integrated-lifecycle.py rollback > "$TEST_DEVICE_PROTOCOL_STATE/integrated-lifecycle.json"
+fi

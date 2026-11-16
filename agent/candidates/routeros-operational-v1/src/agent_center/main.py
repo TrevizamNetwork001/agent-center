@@ -48,6 +48,7 @@ class Runtime:
         self.stop = threading.Event()
         self_check()
         self.capabilities = available()
+        self.capabilities_checked = time.monotonic()
         self.capabilities_announced = False
         # Independent clients; never share journal, file locks or a connection with heartbeat.
         self.heartbeat = Heartbeat(
@@ -61,6 +62,19 @@ class Runtime:
         self.client = client_factory(config.central_url, identity.token, config.timeout)
         self.poller = Poller(self.client, identity, self.capabilities)
         self.state = "BOOT"
+
+    def refresh_capabilities(self):
+        now = time.monotonic()
+        if now - self.capabilities_checked < 60:
+            return False
+        updated = available()
+        self.capabilities_checked = time.monotonic()
+        if updated == self.capabilities:
+            return False
+        self.capabilities = updated
+        self.poller.capabilities = updated
+        self.capabilities_announced = False
+        return True
 
     def status(self, state):
         if state not in STATES:
@@ -151,6 +165,8 @@ class Runtime:
                 if self.heartbeat.auth_failed:
                     self.status("QUARANTINED")
                     return 3
+                if self.refresh_capabilities():
+                    announced = False
                 if not announced:
                     result = self.client.call(
                         "capabilities",
@@ -163,7 +179,7 @@ class Runtime:
                 executor.recover()
                 self.status("CLAIM")
                 poll_started = time.monotonic()
-                result = self.poller.poll(0 if executor.busy or journal.pending() else 1)
+                result = self.poller.poll(0 if not announced or executor.busy or journal.pending() else 1)
                 cancellations = result.body.get("cancel_execution_ids", [])
                 if isinstance(cancellations, list) and executor.active_id in cancellations:
                     executor.cancel.set()
@@ -196,6 +212,7 @@ def main():
     parser.add_argument("--self-check", action="store_true")
     parser.add_argument("--enroll", action="store_true")
     parser.add_argument("--action-worker", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--observation-worker", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     os.umask(0o077)
     if sys.version_info < (3, 13):
@@ -220,6 +237,10 @@ def main():
         from .action_worker import main as action_main
 
         return action_main(args.config)
+    if args.observation_worker:
+        from .observation_worker import main as observation_main
+
+        return observation_main()
     logger, listener = configure()
     try:
         config = Config.load(Path(args.config))

@@ -1,58 +1,64 @@
-# Candidato RouterOS operacional V1 — INCOMPLETO / NÃO PUBLICAR
+# Candidata 0.6.6 — somente laboratório RouterOS
 
-Base recuperada do artefato operacional 0.6.5, sequência 6. A ferramenta
-`../../../scripts/lab/routeros-operational/reconcile.py` fixa o SHA-256 publicado
-e o hash da chave pública previamente registrada e usa a verificação nativa do
-Lifecycle antes de extrair qualquer fonte. Sequências 3 e 4 não são usadas.
-`provenance.json` contém os hashes individuais e a comparação com o workspace
-local; `base/` deve permanecer byte a byte igual ao arquivo verificado.
+Derivada da fonte assinada 0.6.5, sequência operacional 6. `base/` e
+`provenance.json` permanecem imutáveis. `reconciliation.json` registra os arquivos
+reconciliados e seus hashes; `preflight.py`, identidade, journal, políticas e
+executor da base não foram substituídos. Nenhuma publicação operacional é feita
+por estas ferramentas.
 
-`src/` preserva todos os arquivos dessa base, exceto a identificação do candidato
-0.6.6 a ligação aditiva do adaptador no dispatcher de capabilities, o self-check sem
-sondar helpers opcionais e a conversão de JSON recursivo em erro tipado da API. O módulo
-RouterOS existente foi copiado sem remover os bloqueios de simulador, escopo,
-identidade, destino, parâmetros, timeout, saída e concorrência. O Agent
-operacional e o runtime local não foram substituídos.
+A reconciliação acrescenta observabilidade e seu worker limitado, o snapshot da
+configuração, inspeção compartilhada com a autorização do executor e pedidos
+`observe/check` do helper. O protocolo original `preflight` e a chamada do
+heartbeat a `diagnostics/preflight` permanecem presentes e testados.
 
-Não é release utilizável: a Central ainda não negocia esta versão e o Lifecycle
-preservado não possui instalação/rollback do componente SSH. Não assinar nem
-publicar este diretório como release completa. Não adicioná-lo ao PYTHONPATH de
-serviços operacionais. O novo nome de versão evita confundir fontes diferentes
-com a release operacional 0.6.5.
+## Pacote fechado e transação existente
 
-## Dependências offline
+`packaging/build.py OUTPUT agent WHEELS` incorpora somente os seis wheels do
+catálogo fechado, com versões e SHA-256 do lock. O manifesto Ed25519 assina o
+zipapp inteiro. Não há comando, caminho de instalação ou pacote selecionável
+pelo manifesto. O schema de componentes MTR permanece fechado; `routeros-ssh`
+não é um novo componente remoto ou um novo updater.
 
-`ssh-dependencies.lock.json` fixa seis wheels para CPython 3.13 / Debian 13 amd64,
-SHA-256, requisitos Python e arquivos de licença presentes nos wheels. A licença
-é preservada integralmente no bundle; seus hashes não substituem revisão jurídica
-nem avaliação de vulnerabilidades. Outras arquiteturas não foram homologadas.
+O precheck de download do companion usa o Engine existente para materializar as
+dependências em um diretório temporário antes do self-check de versão. O Engine
+valida o inventário fechado e extrai os wheels offline dentro de `runtime/ssh`.
+Não usa pip, rede, scripts de instalação, `.pth` ou dependências globais.
 
-Construir a imagem técnica com `scripts/lab/routeros-operational/Dockerfile.systemd`.
-Executar `scripts/lab/routeros-operational/fetch-wheels.sh` para baixar somente os
-wheels com os hashes do lock e gerar um TAR determinístico fora do Git. Esse passo
-é tooling de build, nunca um comando de tarefa. O bundle não é distribuído pelo
-Lifecycle atual e não deve ser instalado manualmente em produção.
+O estágio inteiro, incluindo o Python Agent e suas bibliotecas nativas, participa
+dos renames existentes de runtime/previous/failed. O bootstrap verifica as versões,
+bytes e permissões antes de importar. O rollback recupera o diretório anterior e
+os companions pelo Lifecycle existente, sem restaurar identidade ou journal.
+Estágios interrompidos são removidos somente sob os locks de atualização e
+instância, com serviço parado, nome fechado, dono e permissões verificados.
 
-`bundle.py` recusa inventário incompleto, versão divergente, licença ausente e
-alteração do lock existente. Não instala dependências. O teste offline instalou o
-bundle em um venv temporário de contêiner isolado, com `--no-index --require-hashes
---no-deps`; nenhuma instalação global foi feita no host.
+O destino homologado é Debian 13 / CPython 3.13 / amd64. Outros destinos são
+recusados. O campo histórico `lifecycle_installation_validated: false` do lock
+original não é uma afirmação sobre a execução atual: ele é preservado para não
+alterar o inventário reproduzível inicial. O resultado de homologação está no
+relatório e nas evidências finais, não nesse campo histórico.
 
-## Verificações
+## Ferramentas de laboratório
 
-`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts/lab/routeros-operational/tests -v`
+- `scripts/lab/routeros-operational/suite.sh`: executa todos os testes originais,
+  sem alterações, com o builder e a fonte candidatos no mesmo caminho de pacote.
+- `prepare.py`: construção reproduzível e assinatura descartável de laboratório;
+  chave privada fora do bundle, modo 0600, nunca usada em produção.
+- `lifecycle-proof.py`: Manager/RuntimeAdapter/Engine reais, systemd não-root,
+  instalação offline, staging assinado, falhas, interrupção real, recuperação e
+  rollback de runtime e companions.
+- `integrated-lifecycle.py`: supervisor de fixture em namespace systemd
+  descartável. Usa os mesmos componentes nativos; não é incluído na release nem
+  constitui outro updater. O Agent 0.6.5 autentica na Central de laboratório antes
+  da atualização; a mesma instância executa as consultas e retorna a 0.6.5.
+- `scripts/lab/device-readonly/run.sh`: runner existente, com os modos opcionais
+  `ROUTEROS_SYSTEMD_LAB=1` e `ROUTEROS_SYSTEMD_UPGRADE_LAB=1`. Exige bundle assinado
+  temporário e baseline local verificada. Não aceita destinos operacionais.
 
-O probe systemd inicia somente imports e self-check sem identidade, credencial,
-heartbeat ou tarefas. As evidências em `docs/evidence/mikrotik-operational-v1/`
-comprovam Debian 13, Python 3.13, PID 1 systemd e execução como UID 65534, com
-NoNewPrivileges e conjuntos de capabilities vazios. O contêiner de init exigiu
-modo privilegiado, cgroup privado, rootfs somente leitura, nenhuma montagem do
-host e rede `none`. Isso não homologa o sandbox da VM operacional.
+Os métodos de integração que comprometem fixtures precisam de bancos e processos
+Agent novos, um método por execução. Não combinar o transporte SSH direto legado
+em Laravel com o modo que exige Python Agent; ambos são validados separadamente.
 
-## Rollback
-
-Não houve implantação. Descartar exclusivamente os contêineres e arquivos
-temporários deste laboratório e este candidato restaura o estado anterior;
-identidade, journal, configurações e catálogo operacionais nunca foram alterados.
-Não há ainda evidência de rollback de dependências SSH pelo Lifecycle. Essa
-condição bloqueia a homologação física, mesmo que o bootstrap offline funcione.
+O freeze permanece obrigatório. O adaptador só anuncia sua capability no
+namespace simulado fechado. Não instalar este diretório em serviços operacionais,
+não publicar release e não conectar equipamentos físicos. Consulte
+`docs/MIKROTIK_READONLY_066_LAB_COMPLETION.md` para resultados e limites finais.
