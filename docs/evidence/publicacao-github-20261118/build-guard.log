@@ -1,0 +1,1 @@
+Frontend build missing. Run scripts/lab/routeros-tasks/build.sh and set TEST_FRONTEND_BUILD_DIR to its public/build directory.

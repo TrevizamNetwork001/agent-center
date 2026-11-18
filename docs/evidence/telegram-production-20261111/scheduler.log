@@ -1,3 +1,2 @@
   2026-11-11 21:30:00 Running ['artisan' telegram:drain 1] ..... 591.31ms DONE
-  ⇂ '/usr/local/bin/php' 'artisan' telegram:drain 1 > '/dev/null' 2>&1  
-
+  ⇂ '/usr/local/bin/php' 'artisan' telegram:drain 1 > '/dev/null' 2>&1

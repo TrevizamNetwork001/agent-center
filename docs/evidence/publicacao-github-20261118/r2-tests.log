@@ -1,0 +1,9 @@
+test_redirect_wrong_host_and_http_are_rejected_before_transport (test_r2_native_transport.NativeTransportTests.test_redirect_wrong_host_and_http_are_rejected_before_transport) ... ok
+test_signed_url_stays_in_private_file_and_cleanup_is_guaranteed (test_r2_native_transport.NativeTransportTests.test_signed_url_stays_in_private_file_and_cleanup_is_guaranteed) ... ok
+test_timeout_also_removes_private_signed_configuration (test_r2_native_transport.NativeTransportTests.test_timeout_also_removes_private_signed_configuration) ... ok
+test_transport_failure_is_returned_without_provider_stderr_or_success_claim (test_r2_native_transport.NativeTransportTests.test_transport_failure_is_returned_without_provider_stderr_or_success_claim) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.008s
+
+OK

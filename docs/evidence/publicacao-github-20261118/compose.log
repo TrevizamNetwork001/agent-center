@@ -1,0 +1,1 @@
+docker compose config --quiet: PASS (exit 0; synthetic environment; no services started).

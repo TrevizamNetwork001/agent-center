@@ -8,15 +8,23 @@ test_owner_env=${TEST_OWNER_ENV:-$PWD/.env.migrator}
 test_runtime_env=${TEST_RUNTIME_ENV:-$PWD/.env.runtime}
 test_ca=${TEST_CA_FILE:-$PWD/secrets/postgres/ca.crt}
 test_image=${TEST_IMAGE:-agent-center-tooling:foundation}
+test_frontend=${TEST_FRONTEND_BUILD_DIR:-$PWD/app/public/build}
+if [ ! -f "$test_frontend/manifest.json" ]; then
+ echo 'Frontend build missing. Run scripts/lab/routeros-tasks/build.sh and set TEST_FRONTEND_BUILD_DIR to its public/build directory.' >&2
+ exit 1
+fi
 # Creation fails when the database already exists; never remove preexisting data.
 docker exec "$test_pg_container" sh -c 'createdb -U "$POSTGRES_USER" -O "$APP_DB_USER" agent_center_test'
 cleanup() { docker exec "$test_pg_container" sh -c 'dropdb -U "$POSTGRES_USER" agent_center_test'; }
 trap cleanup EXIT
 composer_network=()
 mounts=(--mount "type=bind,src=$PWD/app,dst=/var/www/html")
+if [ -n "${TEST_FRONTEND_BUILD_DIR:-}" ]; then
+ mounts+=(--mount "type=bind,src=$test_frontend,dst=/var/www/html/public/build,readonly")
+fi
 # Optional ephemeral state for the isolated device protocol laboratory.
 if [ -n "${TEST_DEVICE_PROTOCOL_STATE:-}" ]; then
- composer_network=(--network none)
+ composer_network=(--network none -e COMPOSER_DISABLE_NETWORK=1)
  test -d "$TEST_DEVICE_PROTOCOL_STATE"
  test -f "$TEST_DEVICE_PROTOCOL_STATE/empty.env"
  mounts+=(--mount "type=bind,src=$TEST_DEVICE_PROTOCOL_STATE/empty.env,dst=/var/www/html/.env,readonly")

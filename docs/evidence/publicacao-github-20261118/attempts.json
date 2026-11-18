@@ -1,0 +1,60 @@
+{
+  "initial_python": {
+    "tests": 202,
+    "failures": 2,
+    "errors": 1,
+    "cause": "historical remote tests used obsolete package version and self-check failure contract"
+  },
+  "second_python": {
+    "tests": 202,
+    "failures": 1,
+    "cause": "historical postcheck test expected FAILED instead of unverified rollback UNCERTAIN"
+  },
+  "final_python": {
+    "tests": 202,
+    "failures": 0,
+    "errors": 0
+  },
+  "first_laravel_preparation": {
+    "result": "blocked",
+    "cause": "Composer dependencies absent in isolated checkout; no DNS for download"
+  },
+  "first_laravel_suite": {
+    "tests": 604,
+    "assertions": 5549,
+    "failures": 2,
+    "skips": 5,
+    "cause": "Vite manifest absent when dashboard authentication tests ran"
+  },
+  "focused_after_build": {
+    "tests": 2,
+    "assertions": 30,
+    "result": "PASS"
+  },
+  "snapshot_capture": {
+    "tests": 1,
+    "assertions": 34,
+    "result": "PASS"
+  },
+  "initial_history_scan": {
+    "hits": 1,
+    "forbidden_paths": 1,
+    "cause": "auxiliary local branch contained old Git bundle; absent from both main histories; excluded auxiliary refs from publication"
+  },
+  "final_preparation_interrupted": {
+    "exit_code": 143,
+    "stage": "after Composer autoload message, before PHPUnit",
+    "resolution": "rerun scripts/test.sh in existing disposable lab with explicit frontend build and offline Composer; disposable test database recreated",
+    "cause": "not determined"
+  },
+  "final_laravel": {
+    "exit_code": 0,
+    "tests": 604,
+    "assertions": 5563,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 5,
+    "duration_seconds": 346.801,
+    "migration_rollback": "PASS"
+  }
+}

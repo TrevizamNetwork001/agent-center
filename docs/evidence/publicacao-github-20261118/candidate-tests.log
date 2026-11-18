@@ -1,0 +1,7 @@
+test_signed_candidate_verifies_and_tamper_is_rejected_without_publication (test_agent_candidate.CandidateTests.test_signed_candidate_verifies_and_tamper_is_rejected_without_publication) ... ok
+test_unsigned_candidate_and_invalid_sequence_never_appear_available (test_agent_candidate.CandidateTests.test_unsigned_candidate_and_invalid_sequence_never_appear_available) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 2.003s
+
+OK

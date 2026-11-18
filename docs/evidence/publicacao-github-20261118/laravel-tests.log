@@ -1,0 +1,182 @@
+Installing dependencies from lock file (including require-dev)
+Verifying lock file contents can be installed on current platform.
+Filter list data could not be fetched from some sources (ignored per policy.ignore-unreachable); matches may be incomplete:
+  - Network disabled, request canceled: https://repo.packagist.org/packages.json
+Nothing to install, update or remove
+Generating optimized autoload files
+> Illuminate\Foundation\ComposerScripts::postAutoloadDump
+> @php artisan package:discover --ansi
+
+   INFO  Discovering packages.
+
+  laravel/pail .......................................................... DONE
+  laravel/pao ........................................................... DONE
+  laravel/tinker ........................................................ DONE
+  nesbot/carbon ......................................................... DONE
+  nunomaduro/collision .................................................. DONE
+  nunomaduro/termwind ................................................... DONE
+
+81 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+
+   INFO  Preparing database.
+
+  Creating migration table ...................................... 22.60ms DONE
+
+   INFO  Running migrations.
+
+  0001_01_01_000000_create_users_table .......................... 28.32ms DONE
+  0001_01_01_000001_create_cache_table .......................... 19.70ms DONE
+  0001_01_01_000002_create_jobs_table ........................... 34.03ms DONE
+  2026_11_04_160000_create_identity_and_audit ................... 72.48ms DONE
+  2026_11_04_170000_create_agents_and_enrollments ............... 44.96ms DONE
+  2026_11_04_180000_create_diagnostic_engine ................... 135.77ms DONE
+  2026_11_04_190000_add_operational_read_indexes ................ 14.86ms DONE
+  2026_11_04_200000_create_knowledge_and_llm ................... 185.00ms DONE
+  2026_11_04_210000_agent_operations ............................ 19.09ms DONE
+  2026_11_04_210000_create_conversation_platform ............... 108.46ms DONE
+  2026_11_04_220000_agent_update_intents ........................ 50.32ms DONE
+  2026_11_05_140000_add_agent_deleted_at ......................... 3.01ms DONE
+  2026_11_05_220000_add_diagnostic_performance .................. 29.44ms DONE
+  2026_11_06_000000_allow_mtr_path_analysis ..................... 13.88ms DONE
+  2026_11_06_100000_create_agent_releases ....................... 43.68ms DONE
+  2026_11_06_120000_create_agent_maintenance_accesses ........... 44.08ms DONE
+  2026_11_06_153500_add_password_to_agent_maintenance_accesses ... 7.38ms DONE
+  2026_11_07_150000_create_agent_release_quarantines ............ 28.61ms DONE
+  2026_11_07_180000_add_maintenance_access_lifetime .............. 3.05ms DONE
+  2026_11_07_210000_create_rag_index ............................ 33.10ms DONE
+  2026_11_12_000001_add_telegram_channel ........................ 65.12ms DONE
+  2026_11_12_000002_add_telegram_companies ..................... 101.24ms DONE
+  2026_11_12_000003_add_account_avatar ........................... 7.78ms DONE
+  2026_11_13_000001_create_noc_inventory ....................... 108.35ms DONE
+  2026_11_13_000002_create_device_lab_accesses .................. 21.49ms DONE
+  2026_11_13_000003_add_routeros_lab_approval .................... 6.81ms DONE
+
+SET
+SET
+CREATE ROLE
+ALTER ROLE
+GRANT
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+PHPUnit 12.5.43 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.27
+Configuration: /var/www/html/phpunit.xml
+
+........................................................SSSSS..  63 / 604 ( 10%)
+............................................................... 126 / 604 ( 20%)
+............................................................... 189 / 604 ( 31%)
+............................................................... 252 / 604 ( 41%)
+............................................................... 315 / 604 ( 52%)
+............................................................... 378 / 604 ( 62%)
+............................................................... 441 / 604 ( 73%)
+............................................................... 504 / 604 ( 83%)
+............................................................... 567 / 604 ( 93%)
+.....................................                           604 / 604 (100%)
+
+Time: 05:46.801, Memory: 101.00 MB
+
+There were 5 skipped tests:
+
+1) Tests\Feature\PanelNativeLifecycleTest::test_panel_restores_original_065_with_a_new_signed_sequence_without_ssh
+Run PANEL_TRANSITION_LAB=1 isolated systemd runner.
+
+2) Tests\Feature\PanelNativeLifecycleTest::test_old_065_companion_updates_both_packages_through_panel_without_ssh
+Run PANEL_TRANSITION_LAB=1 isolated systemd runner.
+
+3) Tests\Feature\PanelNativeLifecycleTest::test_failed_final_package_rolls_back_without_ssh
+Run PANEL_TRANSITION_LAB=1 isolated systemd runner.
+
+4) Tests\Feature\RouterOsTaskIntegrationTest::test_complete_runtime_api_ssh_and_conversation_flow_with_security_boundaries
+Run ROUTEROS_TASK_LAB=1 scripts/lab/device-readonly/run.sh.
+
+5) Tests\Feature\RouterOsTaskIntegrationTest::test_identity_only_physical_preparation_stays_simulated_and_blocks_other_capabilities
+Run ROUTEROS_TASK_LAB=1 scripts/lab/device-readonly/run.sh.
+
+OK, but some tests were skipped!
+Tests: 604, Assertions: 5563, Skipped: 5.
+
+   INFO  Rolling back migrations.
+
+  2026_11_13_000003_add_routeros_lab_approval ................... 23.67ms DONE
+  2026_11_13_000002_create_device_lab_accesses .................. 21.74ms DONE
+  2026_11_13_000001_create_noc_inventory ........................ 66.13ms DONE
+  2026_11_12_000003_add_account_avatar .......................... 25.31ms DONE
+  2026_11_12_000002_add_telegram_companies ..................... 104.45ms DONE
+  2026_11_12_000001_add_telegram_channel ........................ 78.78ms DONE
+  2026_11_07_210000_create_rag_index ............................ 33.33ms DONE
+  2026_11_07_180000_add_maintenance_access_lifetime .............. 8.08ms DONE
+  2026_11_07_150000_create_agent_release_quarantines ............ 23.74ms DONE
+  2026_11_06_153500_add_password_to_agent_maintenance_accesses .. 13.29ms DONE
+  2026_11_06_120000_create_agent_maintenance_accesses ........... 21.28ms DONE
+  2026_11_06_100000_create_agent_releases ....................... 23.78ms DONE
+  2026_11_06_000000_allow_mtr_path_analysis ...................... 2.26ms DONE
+  2026_11_05_220000_add_diagnostic_performance .................. 34.28ms DONE
+  2026_11_05_140000_add_agent_deleted_at ......................... 3.62ms DONE
+  2026_11_04_220000_agent_update_intents ........................ 21.39ms DONE
+  2026_11_04_210000_create_conversation_platform ................ 59.02ms DONE
+  2026_11_04_210000_agent_operations ............................ 34.30ms DONE
+  2026_11_04_200000_create_knowledge_and_llm ................... 197.96ms DONE
+  2026_11_04_190000_add_operational_read_indexes ................ 32.00ms DONE
+  2026_11_04_180000_create_diagnostic_engine ................... 190.26ms DONE
+  2026_11_04_170000_create_agents_and_enrollments ............... 50.46ms DONE
+  2026_11_04_160000_create_identity_and_audit .................. 168.88ms DONE
+  0001_01_01_000002_create_jobs_table ........................... 39.01ms DONE
+  0001_01_01_000001_create_cache_table .......................... 14.16ms DONE
+  0001_01_01_000000_create_users_table .......................... 20.49ms DONE
