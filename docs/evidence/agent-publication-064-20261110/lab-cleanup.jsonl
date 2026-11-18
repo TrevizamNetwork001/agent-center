@@ -1,0 +1,10 @@
+{"precheck":"ready_for_review","revision":1}
+{
+    "scope": "agent064-lab",
+    "read_only": false,
+    "lab_shutdown_requested": true,
+    "production_identity_and_binaries_unchanged": true
+}
+{"central":{"version":"0.6.4","last_heartbeat_at":"2026-11-10T18:56:10+01:00","last_poll_at":"2026-11-10T18:56:22+01:00"}}
+{"central_pending_operations":0,"central_active_tasks":0}
+{"source_acl_families":[6,4],"pending_source_family":null}

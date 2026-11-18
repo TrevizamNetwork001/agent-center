@@ -1,0 +1,32 @@
+[
+  {
+    "Service": "diagnostic-worker",
+    "Image": "agent-center-central:agent064-workers-20261110",
+    "Health": "healthy",
+    "State": "running"
+  },
+  {
+    "Service": "nginx",
+    "Image": "nginxinc/nginx-unprivileged:stable-alpine@sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03",
+    "Health": "healthy",
+    "State": "running"
+  },
+  {
+    "Service": "postgres",
+    "Image": "postgres:17-bookworm@sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5",
+    "Health": "healthy",
+    "State": "running"
+  },
+  {
+    "Service": "web",
+    "Image": "agent-center-central:agent064-web-audit-20261110",
+    "Health": "healthy",
+    "State": "running"
+  },
+  {
+    "Service": "worker",
+    "Image": "agent-center-central:agent064-workers-20261110",
+    "Health": "healthy",
+    "State": "running"
+  }
+]

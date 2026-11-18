@@ -1,7 +1,7 @@
 @can('revoke', $agent)
-    <p><a href="{{route('agents.releases.index')}}">Catálogo de releases assinadas</a></p>
+    <p><a href="{{route('agents.releases.index')}}">Catálogo de versões assinadas</a></p>
     @foreach($agent->metadata['lifecycle_components'] ?? [] as $component)
-        <p>Componente {{$component['id']}}: {{$component['version']}} · {{$component['status']}} · {{$component['operational_verified'] ? 'Instalação validada; não substitui o health atual' : 'Validação simulada de laboratório; não homologado'}}.</p>
+        <p>Componente {{$component['id']}}: {{$component['version']}} · {{$component['status']}} · {{$component['operational_verified'] ? 'Instalação validada; não substitui a verificação atual de saúde' : 'Validação simulada de laboratório; não homologado'}}.</p>
     @endforeach
     @if($agent->status === 'active' && !$pendingUpdate)
         @if($availableUpdates)
@@ -16,7 +16,7 @@
                         <option value="{{$release['sha256']}}" @disabled((isset($release['lifecycle']) && ($agent->metadata['updater']['signed_release_protocol'] ?? 0) !== 1) || (!empty($release['components']) && ($agent->metadata['updater']['component_protocol'] ?? 0) !== 1))>{{$release['version']}}@foreach($release['components'] ?? [] as $component) · {{$component['id']}} {{$component['version']}}@endforeach</option>
                     @endforeach
                 </select></label>
-                <details><summary>Revisar compatibilidade das releases</summary>
+                <details><summary>Revisar compatibilidade das versões</summary>
                     @foreach($availableUpdates as $release)
                         <p>{{$release['version']}} · {{$release['compatibility'] ?? 'Compatibilidade não informada'}}
                         @if(isset($release['lifecycle'])) · Exige atualizador com protocolo de assinatura 1. @endif</p>
@@ -33,7 +33,7 @@
             <p role="status">Não há atualização disponível.</p>
         @endif
         <details>
-            <summary>Rollback controlado</summary>
+            <summary>Retorno controlado de versão</summary>
             <form method="post" action="{{route('agents.operations.request', $agent)}}">
                 @csrf
                 <input type="hidden" name="kind" value="rollback">

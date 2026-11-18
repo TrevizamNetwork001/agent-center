@@ -1,4 +1,5 @@
 @extends('layout')
+@section('title','Catálogo de perfis e Skills')
 @section('content')<h1>Profiles / Skills</h1>
 @foreach($profiles as $p)<section class="card"><h2>{{$p->display_name}}</h2><p>{{$p->description}}</p><p>Versão {{$p->version}} · {{$p->enabled?'Habilitado':'Desabilitado'}}</p><p>Composição: {{$p->key==='PROBLEMA_DNS'?'DNS A + AAAA':($p->key==='PERDA_LATENCIA'?'DNS (se necessário), ICMP, rota condicional':'DNS A + AAAA, TCP 443, HTTPS, ICMP opcional, rota condicional')}}</p><details><summary>Condições e thresholds</summary><pre>{{json_encode($p->definition,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE)}}</pre></details>
 <form class="inline" method="post" action="{{route('diagnostic-catalog.profile',$p)}}">@csrf @method('PUT')<input type="hidden" name="enabled" value="{{$p->enabled?0:1}}"><button>{{$p->enabled?'Desabilitar':'Habilitar'}}</button></form>

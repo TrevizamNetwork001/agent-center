@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "checks": {
+    "live_pipeline": true,
+    "four_dns_steps": true,
+    "single_generation": true,
+    "journal_appended": true,
+    "journal_integrity": true,
+    "existing_binaries_preserved": true,
+    "registered_identity": true,
+    "native_permissions": true,
+    "principal_unprivileged": true,
+    "principal_sandbox": true,
+    "helper_separate": true,
+    "freeze_preserved": true,
+    "sequence_preserved": true,
+    "no_pending_operations": true,
+    "temporary_session_removed": true
+  },
+  "before_utc": "2026-11-10T15:27:11.691707+00:00",
+  "after_utc": "2026-11-10T15:46:31.960803+00:00",
+  "journal_before": {
+    "quick_check": true,
+    "executions": 87,
+    "events": 348,
+    "pending": 0
+  },
+  "journal_after": {
+    "quick_check": true,
+    "executions": 91,
+    "events": 364,
+    "pending": 0
+  }
+}

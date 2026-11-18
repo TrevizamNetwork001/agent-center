@@ -1,0 +1,85 @@
+{
+    "state": "ATEN\u00c7\u00c3O",
+    "agents_total": 1,
+    "agents_online": 1,
+    "active": 0,
+    "stale": 0,
+    "checks": [
+        {
+            "component": "laravel_web",
+            "state": "VERDE"
+        },
+        {
+            "component": "postgresql",
+            "state": "VERDE"
+        },
+        {
+            "component": "postgresql_tls",
+            "state": "VERDE"
+        },
+        {
+            "component": "diagnostic_worker",
+            "state": "VERDE"
+        },
+        {
+            "component": "laravel_queue_worker",
+            "state": "VERDE"
+        },
+        {
+            "component": "task_engine",
+            "state": "VERDE"
+        },
+        {
+            "component": "agents",
+            "state": "VERDE"
+        },
+        {
+            "component": "nginx_external",
+            "state": "VERDE"
+        },
+        {
+            "component": "fpm_process",
+            "state": "VERDE"
+        },
+        {
+            "component": "postgresql_container",
+            "state": "VERDE"
+        },
+        {
+            "component": "queue_container",
+            "state": "VERDE"
+        },
+        {
+            "component": "diagnostic_container",
+            "state": "VERDE"
+        },
+        {
+            "component": "web_https",
+            "state": "VERDE"
+        },
+        {
+            "component": "agent_api_external",
+            "state": "VERDE"
+        },
+        {
+            "component": "http_error_rate",
+            "state": "VERDE"
+        },
+        {
+            "component": "backup_local",
+            "state": "VERDE"
+        },
+        {
+            "component": "backup_external",
+            "state": "VERDE"
+        },
+        {
+            "component": "fencing_runtime",
+            "state": "VERDE"
+        },
+        {
+            "component": "agent_maintenance",
+            "state": "VERDE"
+        }
+    ]
+}

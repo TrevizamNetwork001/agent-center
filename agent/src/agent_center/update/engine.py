@@ -26,6 +26,7 @@ class Service:
         result = subprocess.run(
             ["/usr/bin/systemctl", "is-active", "--quiet", "agent-center-agent.service"],
             check=False,
+            timeout=8,
         )
         return result.returncode == 0
 

@@ -1,0 +1,232 @@
+{
+  "0.5.3": {
+    "artifact_sha256": "7f3923e2d3f62fb3593b5a557d3d40540f23c8a6e0fd44a3cbcf86d29788f794",
+    "modules": [
+      {
+        "module": "__main__.py",
+        "lines": 2,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/__init__.py",
+        "lines": 3,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/action_worker.py",
+        "lines": 32,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/actions/__init__.py",
+        "lines": 0,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/api.py",
+        "lines": 90,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/capabilities.py",
+        "lines": 258,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/config.py",
+        "lines": 90,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/execution.py",
+        "lines": 203,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/heartbeat.py",
+        "lines": 36,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/identity.py",
+        "lines": 38,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/journal.py",
+        "lines": 134,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/logging.py",
+        "lines": 37,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/main.py",
+        "lines": 222,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/onboarding.py",
+        "lines": 48,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/policy.py",
+        "lines": 48,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/polling.py",
+        "lines": 34,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/state.py",
+        "lines": 62,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/telemetry.py",
+        "lines": 58,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/update/__init__.py",
+        "lines": 0,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/update/cli.py",
+        "lines": 47,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/update/engine.py",
+        "lines": 246,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/update/remote.py",
+        "lines": 264,
+        "tracked_source_same": false
+      }
+    ]
+  },
+  "0.5.4": {
+    "artifact_sha256": "bb8c0274b9fc2121c283136b2ad66a9b67037c0c7d32e44f79f44b5d33f5cb19",
+    "modules": [
+      {
+        "module": "__main__.py",
+        "lines": 2,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/__init__.py",
+        "lines": 3,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/action_worker.py",
+        "lines": 32,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/actions/__init__.py",
+        "lines": 0,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/api.py",
+        "lines": 90,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/capabilities.py",
+        "lines": 269,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/config.py",
+        "lines": 90,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/execution.py",
+        "lines": 203,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/heartbeat.py",
+        "lines": 36,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/identity.py",
+        "lines": 38,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/journal.py",
+        "lines": 134,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/logging.py",
+        "lines": 37,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/main.py",
+        "lines": 222,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/onboarding.py",
+        "lines": 48,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/policy.py",
+        "lines": 48,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/polling.py",
+        "lines": 34,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/state.py",
+        "lines": 62,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/telemetry.py",
+        "lines": 58,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/update/__init__.py",
+        "lines": 0,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/update/cli.py",
+        "lines": 47,
+        "tracked_source_same": true
+      },
+      {
+        "module": "agent_center/update/engine.py",
+        "lines": 246,
+        "tracked_source_same": false
+      },
+      {
+        "module": "agent_center/update/remote.py",
+        "lines": 264,
+        "tracked_source_same": false
+      }
+    ]
+  }
+}

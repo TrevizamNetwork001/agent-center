@@ -1,0 +1,201 @@
+{
+  "runtime": {
+    "version": "0.6.2",
+    "sha256": "6cd33eaea1fe05111d8343b6023bfab8c7168b4e381adb31df28171ef287f14e",
+    "baseline_commit": "a3b091b667f56ee06751ce5310f2918ab24e8c1e",
+    "modules_different_from_head": [
+      "agent_center/__init__.py",
+      "agent_center/capabilities.py",
+      "agent_center/config.py",
+      "agent_center/heartbeat.py",
+      "agent_center/lifecycle/debian_components.py",
+      "agent_center/lifecycle/runtime.py",
+      "agent_center/main.py",
+      "agent_center/mtr_helper.py"
+    ],
+    "modules_absent_from_installed_package": [
+      "agent_center/observability.py"
+    ],
+    "function_comparison": [
+      {
+        "symbol": "agent_center/capabilities.py:self_check",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/execution.py:accept",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/execution.py:kill",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/execution.py:run",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/api.py:call",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/policy.py:parse",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/state.py:read_private",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/dns_transport.py:parse",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/lifecycle/runtime.py:snapshot",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/update/cli.py:main",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/update/remote.py:main",
+        "same_as_git_head_before_audit": true
+      }
+    ]
+  },
+  "companion": {
+    "version": "0.6.2",
+    "sha256": "bb5628e3a01b5c33b4edfa72605b2a7412db1b0e64989e67eb8f10a5e00c4e04",
+    "baseline_commit": "a3b091b667f56ee06751ce5310f2918ab24e8c1e",
+    "modules_different_from_head": [
+      "agent_center/__init__.py",
+      "agent_center/capabilities.py",
+      "agent_center/config.py",
+      "agent_center/heartbeat.py",
+      "agent_center/lifecycle/debian_components.py",
+      "agent_center/lifecycle/runtime.py",
+      "agent_center/main.py",
+      "agent_center/mtr_helper.py"
+    ],
+    "modules_absent_from_installed_package": [
+      "agent_center/observability.py"
+    ],
+    "function_comparison": [
+      {
+        "symbol": "agent_center/capabilities.py:self_check",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/execution.py:accept",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/execution.py:kill",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/execution.py:run",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/api.py:call",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/policy.py:parse",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/state.py:read_private",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/dns_transport.py:parse",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/lifecycle/runtime.py:snapshot",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/update/cli.py:main",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/update/remote.py:main",
+        "same_as_git_head_before_audit": true
+      }
+    ]
+  },
+  "legacy_cli": {
+    "version": "0.6.2",
+    "sha256": "0331072ca63e5c0453182bb3148016e3e8e1a7dbd84a6d31b2c9ab501e794be4",
+    "baseline_commit": "a3b091b667f56ee06751ce5310f2918ab24e8c1e",
+    "modules_different_from_head": [
+      "agent_center/__init__.py",
+      "agent_center/capabilities.py",
+      "agent_center/config.py",
+      "agent_center/heartbeat.py",
+      "agent_center/lifecycle/debian_components.py",
+      "agent_center/lifecycle/runtime.py",
+      "agent_center/main.py",
+      "agent_center/mtr_helper.py"
+    ],
+    "modules_absent_from_installed_package": [
+      "agent_center/observability.py"
+    ],
+    "function_comparison": [
+      {
+        "symbol": "agent_center/capabilities.py:self_check",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/execution.py:accept",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/execution.py:kill",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/execution.py:run",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/api.py:call",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/policy.py:parse",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/state.py:read_private",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/dns_transport.py:parse",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/lifecycle/runtime.py:snapshot",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/update/cli.py:main",
+        "same_as_git_head_before_audit": true
+      },
+      {
+        "symbol": "agent_center/update/remote.py:main",
+        "same_as_git_head_before_audit": true
+      }
+    ]
+  },
+  "reference": {
+    "repository": "TrevizamNetwork001/painel-para-dns-autoritativo",
+    "commit": "0ba3b7a82a90f2726183ef144e3cba5918e2db3d",
+    "agent_source": "agent/dns-center-agent.py",
+    "declared_version": "0.15.0",
+    "executed": false
+  }
+}

@@ -1,4 +1,7 @@
+import os
+import signal
 import socket
+import subprocess
 import sys
 import tempfile
 import threading
@@ -132,6 +135,28 @@ class ExecutionTests(unittest.TestCase):
             child.assert_not_called()
         self.assertEqual(self.journal.pending()[0]["state"], "uncertain")
 
+    def test_stopping_agent_does_not_reserve_or_start_another_task(self):
+        self.stop.set()
+        self.assertFalse(self.executor.accept(self.task, self.policy))
+        self.assertEqual(self.journal.pending(), [])
+        self.assertEqual(self.calls, [])
+
+    def test_cancel_during_start_ack_does_not_spawn_worker(self):
+        original = self.client.call
+
+        def call(operation, data):
+            if operation == 'start':
+                self.executor.cancel.set()
+            return original(operation, data)
+
+        with (patch.object(self.client, 'call', side_effect=call),
+              patch('agent_center.execution.subprocess.Popen', side_effect=OSError('fixture must not spawn')) as child):
+            self.assertTrue(self.executor.accept(self.task, self.policy))
+            self.wait()
+            child.assert_not_called()
+        self.assertEqual(self.calls[-1][1]['result'], {'ok': False, 'error': 'cancelled'})
+        self.assertEqual(self.journal.pending(), [])
+
     def test_timeout_kills_child_process_group_and_preserves_heartbeat(self):
         self.task["timeout"] = 1
         hb = Heartbeat(self.client, 0.03, self.stop)
@@ -152,6 +177,71 @@ class ExecutionTests(unittest.TestCase):
         finally:
             self.stop.set()
             hb.join()
+
+    def test_valid_large_result_is_drained_before_child_exit(self):
+        code = (
+            "import fcntl,json,sys;sys.stdin.buffer.read();"
+            "fcntl.fcntl(sys.stdout.fileno(),fcntl.F_SETPIPE_SZ,4096);"
+            "print(json.dumps({'ok':True,'data':{'payload':'x'*32768}}))"
+        )
+        with patch.object(self.executor, 'child_command', return_value=[sys.executable, '-c', code]):
+            self.assertTrue(self.executor.accept(self.task, self.policy))
+            self.wait()
+        result = self.calls[-1][1]['result']
+        self.assertTrue(result['ok'], result)
+        self.assertEqual(len(result['data']['payload']), 32768)
+        self.assertEqual(self.journal.pending(), [])
+
+    def test_oversized_result_is_rejected_without_waiting_for_execution_timeout(self):
+        code = (
+            "import fcntl,sys;sys.stdin.buffer.read();"
+            "fcntl.fcntl(sys.stdout.fileno(),fcntl.F_SETPIPE_SZ,4096);"
+            "sys.stdout.write('x'*1048576)"
+        )
+        with patch.object(self.executor, 'child_command', return_value=[sys.executable, '-c', code]):
+            self.assertTrue(self.executor.accept(self.task, self.policy))
+            self.wait()
+        self.assertEqual(self.calls[-1][1]['result'], {'ok': False, 'error': 'internal_error'})
+        self.assertEqual(self.journal.pending(), [])
+
+    def test_timeout_cleans_descendants_after_worker_parent_exits(self):
+        self.task['timeout'] = 1
+        marker = self.path / 'descendant.pid'
+        code = (
+            "import subprocess,sys;sys.stdin.buffer.read();"
+            "p=subprocess.Popen([sys.executable,'-c','import time;time.sleep(10)']);"
+            f"open({str(marker)!r},'w').write(str(p.pid));"
+            "print('{\"ok\":true,\"data\":{}}',flush=True)"
+        )
+        groups = []
+        original_popen = subprocess.Popen
+
+        def start(*args, **kwargs):
+            child = original_popen(*args, **kwargs)
+            groups.append(child.pid)
+            return child
+
+        try:
+            with (patch.object(self.executor, 'child_command', return_value=[sys.executable, '-c', code]),
+                  patch('agent_center.execution.subprocess.Popen', side_effect=start)):
+                self.assertTrue(self.executor.accept(self.task, self.policy))
+                self.wait()
+            pid = int(marker.read_text())
+            deadline = time.monotonic() + 1
+            while time.monotonic() < deadline:
+                status = Path(f'/proc/{pid}/stat')
+                if not status.exists() or status.read_text().rsplit(')', 1)[1].split()[0] == 'Z':
+                    break
+                time.sleep(0.02)
+            else:
+                self.fail('execution descendant survived the deadline')
+            self.assertEqual(self.calls[-1][1]['result']['error'], 'execution_timeout')
+        finally:
+            for group in groups:
+                try:
+                    os.killpg(group, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
 
     def test_cancel_stops_child_and_reports_cancelled(self):
         with patch.object(

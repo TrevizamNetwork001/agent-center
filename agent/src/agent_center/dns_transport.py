@@ -69,10 +69,11 @@ def parse(packet, identifier, hostname, qtype):
         raise InvalidResponse()
     offset += 4
     values = []
+    aliases = {}
     truncated = bool(flags & 0x0200)
     for _ in range(answers):
         try:
-            _, offset = name_at(packet, offset)
+            owner, offset = name_at(packet, offset)
             if offset + 10 > len(packet):
                 raise InvalidResponse()
             kind, klass, _, size = struct.unpack("!2HIH", packet[offset : offset + 10])
@@ -82,13 +83,27 @@ def parse(packet, identifier, hostname, qtype):
             if kind == qtype and klass == 1:
                 if size != (4 if qtype == 1 else 16):
                     raise InvalidResponse()
-                values.append(str(ipaddress.ip_address(packet[offset : offset + size])))
+                values.append((owner, str(ipaddress.ip_address(packet[offset : offset + size]))))
+            elif kind == 5 and klass == 1:
+                alias, end = name_at(packet, offset)
+                if end != offset + size or (owner in aliases and aliases[owner] != alias):
+                    raise InvalidResponse()
+                aliases[owner] = alias
             offset += size
         except InvalidResponse:
             if truncated:
                 break
             raise
-    return sorted(set(values))[:20], flags & 15, truncated
+    # Answer-section records can include unrelated owners. Only the queried
+    # name and its validated CNAME chain provide evidence for this lookup.
+    reachable = {hostname}
+    owner = hostname
+    while owner in aliases:
+        owner = aliases[owner]
+        if owner in reachable:
+            raise InvalidResponse()
+        reachable.add(owner)
+    return sorted({address for owner, address in values if owner in reachable})[:20], flags & 15, truncated
 
 
 def exact(stream, count):

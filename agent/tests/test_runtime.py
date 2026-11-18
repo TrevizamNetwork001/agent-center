@@ -240,6 +240,12 @@ class JournalPolicyTests(Base):
         p = Policy(True, available())
         self.assertFalse(execute("tcp_connect:v1", {"target": "127.0.0.1", "port": 1}, p)["ok"])
 
+    def test_legacy_self_check_does_not_contact_optional_mtr_helper(self):
+        with patch('agent_center.capabilities.mtr.ready', side_effect=AssertionError('optional helper contacted')):
+            capabilities = self_check()
+        self.assertNotIn('mtr_path_analysis:v1', capabilities)
+        self.assertIn('agent_info', capabilities)
+
     def test_logging_never_interpolates_secret_or_exception(self):
         record = logging.LogRecord(
             "agent", 40, "x", 1, "Authorization: Bearer %s", ("secret-token",), None

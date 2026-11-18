@@ -13,7 +13,10 @@ import platform
 import pwd
 import re
 import shutil
+import signal
 import stat
+import subprocess
+import sys
 import tempfile
 import time
 import uuid
@@ -105,6 +108,37 @@ class Remote:
             self.platform = system.get("ID", "") + system.get("VERSION_ID", "")
         except OSError:
             self.platform = "unsupported"
+
+    def _call(self, operation, payload):
+        result = self.client.call(operation, payload)
+        if not result.ok:
+            # Only fixed codes and validated scalar metadata reach the journal.
+            # Never log a response body, exception, URL, identity or payload.
+            allowed = {
+                "invalid_operation", "invalid_payload", "oversized_response",
+                "incomplete_response", "origin_not_allowed", "invalid_response",
+                "network_error",
+            }
+            status = result.status
+            status = status if type(status) is int and 0 <= status <= 599 else 0
+            reason = result.error if type(result.error) is str else ""
+            if reason not in allowed and reason != "http_" + str(status):
+                reason = "unavailable"
+            print(json.dumps({
+                "event": "updater_api_failed", "operation": operation,
+                "reason": reason, "status": status,
+                "retryable": result.retryable is True,
+            }), flush=True)
+        elif operation == "operations/report" and payload.get("status") in ("FAILED", "UNCERTAIN"):
+            reason = payload.get("error")
+            allowed = SAFE_ERRORS | {"interrupted", "precheck_failed", "update_failed", "backup_failed"}
+            if type(reason) is not str or reason not in allowed:
+                reason = "maintenance_failed"
+            print(json.dumps({
+                "event": "updater_operation_failed", "status": payload["status"],
+                "reason": reason,
+            }), flush=True)
+        return result
 
     def _verify_signed_release(self, release, artifact):
         if "lifecycle" not in release:
@@ -283,13 +317,13 @@ class Remote:
                         "error": "interrupted",
                     }
                     atomic_write(marker, record)
-                result = self.client.call("operations/report", record)
+                result = self._call("operations/report", record)
                 if not result.ok:
                     return False
                 marker.unlink()
                 if record.get("status") in ("FAILED", "UNCERTAIN"):
                     return False
-            result = self.client.call(
+            result = self._call(
                 "operations/claim",
                 {
                     "updater_version": __version__,
@@ -362,9 +396,9 @@ class Remote:
                             envelope["signature"],
                             candidate.read_bytes(),
                         )
-                        evidence.update(
-                            backup=operation_id, postcheck=result["state"] == "COMPLETED"
-                        )
+                        evidence["postcheck"] = result["state"] == "COMPLETED"
+                        if result.get("backup") == operation_id:
+                            evidence["backup"] = operation_id
                         if self.signed_release.get("components"):
                             evidence["components"] = [
                                 {
@@ -396,7 +430,7 @@ class Remote:
                                 else result.get("error", "postcheck_failed")
                             )
                         atomic_write(marker, report)
-                        if self.client.call("operations/report", report).ok:
+                        if self._call("operations/report", report).ok:
                             marker.unlink()
                             return result["state"] == "COMPLETED"
                         return False
@@ -467,7 +501,7 @@ class Remote:
                     flush=True,
                 )
             atomic_write(marker, report)
-            if self.client.call("operations/report", report).ok:
+            if self._call("operations/report", report).ok:
                 marker.unlink()
                 return report["status"] in ("PLANNED", "COMPLETED")
             return False
@@ -486,6 +520,7 @@ class Remote:
             ).reconcile_restored(operation_id, hashlib.sha256(payload).hexdigest())
         except Exception:
             # Failed verification leaves both holds unchanged. No update replay.
+            print('{"event":"updater_recovery_refused","reason":"verification_failed"}', flush=True)
             return False
         report = {
             "operation_id": operation_id, "status": "FAILED", "error": "interrupted",
@@ -497,7 +532,7 @@ class Remote:
         }
         marker = self.control / (operation_id + ".json")
         atomic_write(marker, report)
-        if self.client.call("operations/report", report).ok:
+        if self._call("operations/report", report).ok:
             marker.unlink()
             return True
         return False
@@ -509,6 +544,37 @@ def main():
         return 2
     try:
         trusted(BASE / "releases" / "catalog.json")
+        # The root companion's ledger, reports and backups cannot live in an
+        # Agent-writable namespace. Check it before loading any credential.
+        if CONTROL.exists() or CONTROL.is_symlink():
+            trusted(CONTROL)
+            if not CONTROL.is_dir() or CONTROL.stat().st_mode & 0o077:
+                raise UpdateError("untrusted_control")
+        else:
+            trusted(CONTROL.parent)
+        # A missing trust anchor must never select an unsigned legacy path.
+        key = trusted(CONFIG.parent / "lifecycle-public.pem")
+        if not key.is_file() or key.stat().st_size > 4096:
+            raise UpdateError("invalid_release")
+        # Execute from an immutable private copy before replacing installed ZIPs.
+        # Lazy imports must never mix an old process with a newly installed ZIP.
+        entry = Path(sys.argv[0])
+        if entry.suffix == ".pyz" and "--lifecycle-stable" not in sys.argv[1:]:
+            trusted(entry)
+            with tempfile.TemporaryDirectory(prefix=".execution-", dir=CONTROL) as directory:
+                stable = Path(directory) / "remote-updater.pyz"
+                stable.write_bytes(entry.read_bytes())
+                stable.chmod(0o600)
+                child = subprocess.Popen(
+                    [sys.executable, "-I", str(stable), "--lifecycle-stable"],
+                    stdin=subprocess.DEVNULL, start_new_session=True,
+                )
+                try:
+                    return child.wait(timeout=230)
+                except subprocess.TimeoutExpired:
+                    os.killpg(child.pid, signal.SIGKILL)
+                    child.wait(timeout=3)
+                    return 2
         cfg = read_private(trusted(CONFIG))
         # Config validator forbids credentials/query/non-HTTPS; helper has no HTTP lab bypass.
         from urllib.parse import urlsplit
@@ -531,7 +597,8 @@ def main():
         identity = read_identity(STATE / "identity.json")
         remote = Remote(
             Engine(BASE, STATE),
-            Client(url.rstrip("/"), identity.token, retries=0),
+            # Allow bounded TLS/HTTP latency without replaying a claim or report.
+            Client(url.rstrip("/"), identity.token, timeout=10, retries=0),
             catalog,
             CONTROL,
             CONFIG.parent,

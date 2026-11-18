@@ -1,5 +1,6 @@
 import json
 import os
+import selectors
 import signal
 import subprocess
 import sys
@@ -31,7 +32,7 @@ class Executor:
         return self.thread is not None and self.thread.is_alive()
 
     def accept(self, task, policy):
-        if self.busy or not policy.valid or not policy.tasks or not isinstance(task, dict):
+        if self.stop.is_set() or self.busy or not policy.valid or not policy.tasks or not isinstance(task, dict):
             return False
         try:
             for key in ("task_id", "execution_id"):
@@ -91,25 +92,35 @@ class Executor:
 
     @staticmethod
     def kill(child):
-        if child.poll() is None:
-            try:
-                os.killpg(child.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
+        # Descendants can retain the group and stdout after the leader exits.
+        try:
+            os.killpg(child.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
         child.wait(timeout=3)
 
     def run(self, task):
         child = None
+        output_streams = None
         watchdog = None
+        group_closed = False
         expired = threading.Event()
         execution = task["execution_id"]
         try:
+            if self.stop.is_set() or self.cancel.is_set():
+                self.journal.transition(execution, "uncertain")
+                return
             # Unknown START outcome can never authorize replay after a crash.
             self.journal.transition(execution, "executing")
             self.phase = "START"
             start = self.client.call("start", self.envelope(task))
             if not start.ok or start.body.get("status") != "ok":
                 self.journal.transition(execution, "uncertain")
+                return
+            if self.stop.is_set() or self.cancel.is_set():
+                result = {"ok": False, "error": "cancelled"}
+                self.journal.store_result(execution, result)
+                self.deliver(self.envelope(task), result)
                 return
             self.phase = "EXECUTE"
             child = subprocess.Popen(
@@ -119,10 +130,16 @@ class Executor:
                 stderr=subprocess.DEVNULL,
                 start_new_session=True,
             )
+            # Drain stdout while the worker runs. Waiting for exit before
+            # reading can fill the pipe and turn a valid result into a timeout.
+            output_streams = selectors.DefaultSelector()
+            os.set_blocking(child.stdout.fileno(), False)
+            output_streams.register(child.stdout, selectors.EVENT_READ)
+            raw = bytearray()
             deadline = time.monotonic() + task["timeout"]
 
             def enforce_deadline():
-                if child.poll() is None:
+                if not group_closed:
                     expired.set()
                     try:
                         os.killpg(child.pid, signal.SIGKILL)
@@ -138,7 +155,7 @@ class Executor:
             child.stdin.close()
             renew = time.monotonic() + self.RENEW_INTERVAL
             result = None
-            while child.poll() is None:
+            while child.poll() is None or output_streams.get_map():
                 now = time.monotonic()
                 if self.stop.is_set() or self.cancel.is_set():
                     result = {"ok": False, "error": "cancelled"}
@@ -146,7 +163,7 @@ class Executor:
                 if expired.is_set() or now >= deadline:
                     result = {"ok": False, "error": "execution_timeout"}
                     break
-                if now >= renew:
+                if now >= renew and child.poll() is None:
                     self.phase = "RENEW"
                     outcome = self.client.call("renew", self.envelope(task))
                     if expired.is_set() or time.monotonic() >= deadline:
@@ -164,30 +181,40 @@ class Executor:
                         break
                     renew = time.monotonic() + self.RENEW_INTERVAL
                     self.phase = "EXECUTE"
-                self.cancel.wait(0.05)
+                for key, _ in output_streams.select(0.05):
+                    chunk = os.read(key.fileobj.fileno(), min(4096, 65537 - len(raw)))
+                    if not chunk:
+                        output_streams.unregister(key.fileobj)
+                    else:
+                        raw.extend(chunk)
+                if len(raw) > 65536:
+                    result = {"ok": False, "error": "internal_error"}
+                    break
             if expired.is_set() or time.monotonic() >= deadline:
                 result = {"ok": False, "error": "execution_timeout"}
             if result is None:
-                raw = child.stdout.read(65537)
                 if len(raw) > 65536 or child.returncode != 0:
                     result = {"ok": False, "error": "internal_error"}
                 else:
                     result = json.loads(raw)
                     if not isinstance(result, dict) or not isinstance(result.get("ok"), bool):
                         result = {"ok": False, "error": "internal_error"}
-            else:
-                self.kill(child)
+            self.kill(child)
+            group_closed = True
             self.journal.store_result(execution, result)
             self.phase = "RESULT"
             self.deliver(self.envelope(task), result)
-        except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
+        except (OSError, ValueError, KeyError, TypeError, RecursionError, subprocess.SubprocessError):
             self.journal.transition(execution, "uncertain")
         finally:
             if watchdog:
                 watchdog.cancel()
                 watchdog.join(timeout=3)
             if child:
-                self.kill(child)
+                if not group_closed:
+                    self.kill(child)
+                if output_streams:
+                    output_streams.close()
                 if child.stdout:
                     child.stdout.close()
             self.phase = "IDLE"

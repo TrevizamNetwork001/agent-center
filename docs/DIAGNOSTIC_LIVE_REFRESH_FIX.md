@@ -1,0 +1,9 @@
+# Diagnostic live result and waiting feedback
+
+A completed diagnostic remained at 1/2 in the browser until F5. The global live-panel guard paused polling whenever any panel child had focus, including details summaries, or any text remained selected. Polling now pauses for editable controls and the confirmation dialog, while summary/link focus and selected text do not suspend result delivery. A second editing guard before applying an in-flight response preserves forms focused during the request. Open details and summary/link focus are restored after replacing the fragment. Tenant/session/header checks, failure backoff and terminal stopping remain in place.
+
+Pending and running views display an explicit waiting message. Running reads Em execução — aguarde, with a spinner and the existing completed-step count. Reduced-motion users receive a static indicator. The terminal fragment replaces waiting feedback with the actual stored result. No diagnostic data or Agent code changes.
+
+Browser tests cover summary focus, selected text, editing, tenant mismatch, terminal stop, no reload, and reduced motion. Isolated Laravel view rendering checks pending, running and completed output. Existing Agent progress and return-to-page regressions are checked against the changed global script. Asset query versions are bumped so a full page load receives the new script/CSS; an already open tab needs one reload to load the fix.
+
+Deployment backs up changed source and running container files plus compose; builds a persistent image from the current web image, applies files atomically under the directory owner, clears views and verifies public asset hashes and readiness without recreating the web container. Rollback restores the snapshot and previous runtime/compose, then clears compiled views. No database changes or remote Agent maintenance operation.

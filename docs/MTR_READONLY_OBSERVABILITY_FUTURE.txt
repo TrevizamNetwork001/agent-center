@@ -1,0 +1,20 @@
+MTR — melhoria estrutural futura; não implementada nem publicada nesta tarefa
+
+O Agent deverá fornecer à Central um relatório autenticado e somente leitura com:
+- revisão de política aplicada;
+- resumo da ACL efetiva, considerando base, política gerenciada e teto;
+- capability disponível ou bloqueada e motivo determinístico do bloqueio;
+- saúde dos helpers e instante de aferição, distinguindo dado recente de histórico.
+
+O relatório não deve expor tokens, senhas, chaves, identidade privada ou conteúdo
+integral de configurações. Não poderá ampliar permissões, modificar políticas,
+iniciar sondagens ou conceder autoridade operacional ao LLM.
+
+Uma futura implementação depende de escopo próprio e compatibilidade com as
+regras vigentes do AGENTS.md. Deve preservar a separação Central/Agent, Laravel
+Auth/Policies/Gates e isolamento de tenant em dados, cache, jobs e autorização,
+com testes contra acesso cruzado. Dados ausentes ou vencidos devem permanecer
+explicitamente desconhecidos; não inferir autorização a partir de capability
+anunciada ou de sucesso histórico.
+
+Registro documental apenas. Nenhum endpoint, capability ou serviço foi criado.

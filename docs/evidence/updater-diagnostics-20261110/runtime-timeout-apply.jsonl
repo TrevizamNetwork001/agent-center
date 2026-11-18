@@ -1,0 +1,18 @@
+{"precheck":"ready_for_review","revision":1}
+{
+    "status": "applied",
+    "utc": "2026-11-10T14:45:59.686935+00:00",
+    "timeout_before": 5,
+    "timeout_after": 10,
+    "runtime": "0.6.2",
+    "runtime_and_companion_preserved": true,
+    "identity_preserved": true,
+    "journal_before": {
+        "executions": 87,
+        "events": 348
+    },
+    "backup": "\/var\/backups\/agent-center-timeout-20261110"
+}
+{"central":{"version":"0.6.2","last_heartbeat_at":"2026-11-10T15:45:46+01:00","last_poll_at":"2026-11-10T15:45:48+01:00"}}
+{"central_pending_operations":0,"central_active_tasks":0}
+{"source_acl_families":[6,4],"pending_source_family":null}

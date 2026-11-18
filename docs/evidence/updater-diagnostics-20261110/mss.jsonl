@@ -1,0 +1,616 @@
+{"precheck":"ready_for_review","revision":1}
+{
+    "utc": "2026-11-10T14:40:00.197464+00:00",
+    "read_only": true,
+    "units": {
+        "agent-center-agent.service": {
+            "Result": "success",
+            "NRestarts": "0",
+            "ExecMainCode": "0",
+            "ExecMainStatus": "0",
+            "ActiveState": "active",
+            "SubState": "running",
+            "ActiveEnterTimestampMonotonic": "99371310215"
+        },
+        "agent-center-updater.service": {
+            "Result": "success",
+            "NRestarts": "0",
+            "ExecMainCode": "1",
+            "ExecMainStatus": "0",
+            "ActiveState": "inactive",
+            "SubState": "dead",
+            "ActiveEnterTimestampMonotonic": "0"
+        },
+        "agent-center-updater.timer": {
+            "Result": "success",
+            "ActiveState": "active",
+            "SubState": "waiting",
+            "ActiveEnterTimestampMonotonic": "99385332386"
+        },
+        "agent-center-mtr.socket": {
+            "Result": "success",
+            "ActiveState": "active",
+            "SubState": "listening",
+            "ActiveEnterTimestampMonotonic": "99369724151"
+        }
+    },
+    "status": {
+        "heartbeat_successes": 12200,
+        "poll_successes": 35433,
+        "heartbeat_max_gap": 43.07947216901812,
+        "poll_max_gap": 40.013600454025436,
+        "state": "ONLINE",
+        "version": "0.6.2",
+        "age_seconds": 1.33
+    },
+    "hashes": {
+        "\/opt\/agent-center-agent\/remote-updater.pyz": "bb5628e3a01b5c33b4edfa72605b2a7412db1b0e64989e67eb8f10a5e00c4e04",
+        "\/opt\/agent-center-agent\/runtime\/agent.pyz": "6cd33eaea1fe05111d8343b6023bfab8c7168b4e381adb31df28171ef287f14e"
+    },
+    "journals": {
+        "agent-center-agent.service": {
+            "command_exit": 0,
+            "first_utc": "2026-11-09T15:13:16.699771+00:00",
+            "last_utc": "2026-11-10T13:09:59.847612+00:00",
+            "counts": [],
+            "events": {
+                "poll_unavailable": 9
+            },
+            "failure_samples": [],
+            "limit": 4000
+        },
+        "agent-center-updater.service": {
+            "command_exit": 0,
+            "first_utc": "2026-11-10T08:08:22.373849+00:00",
+            "last_utc": "2026-11-10T14:39:56.752528+00:00",
+            "counts": {
+                "exit1": 13
+            },
+            "events": [],
+            "failure_samples": [
+                {
+                    "utc": "2026-11-10T10:19:53.785831+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:17:43.119596+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:18:42.788299+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:19:44.826893+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:30:28.021409+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:58:37.091397+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:07:39.042286+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:23:31.792897+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:38:06.851126+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:48:21.065024+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:49:01.863686+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:54:02.713785+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T14:13:10.025687+00:00",
+                    "category": "exit1"
+                }
+            ],
+            "limit": 4000
+        }
+    },
+    "journal_states": {
+        "completed": 87
+    },
+    "maintenance_markers": 0,
+    "companion_version": "0.6.2",
+    "transport_samples": [
+        {
+            "index": 0,
+            "utc": "2026-11-10T14:40:00.820077+00:00",
+            "dns_ms": 2.22,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": false,
+            "tcp_ms": 205.09,
+            "tls_ms": 210.18,
+            "status": 403,
+            "http_ms": 411.68,
+            "total_ms": 829.33
+        },
+        {
+            "index": 1,
+            "utc": "2026-11-10T14:40:02.149552+00:00",
+            "dns_ms": 0.66,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": true,
+            "tcp_ms": 221.3,
+            "tls_ms": 224.46,
+            "status": 403,
+            "http_ms": 499.01,
+            "total_ms": 945.55
+        },
+        {
+            "index": 2,
+            "utc": "2026-11-10T14:40:03.595281+00:00",
+            "dns_ms": 0.68,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": false,
+            "tcp_ms": 216.3,
+            "tls_ms": 224.97,
+            "status": 403,
+            "http_ms": 887.97,
+            "total_ms": 1330.03
+        },
+        {
+            "index": 3,
+            "utc": "2026-11-10T14:40:05.425498+00:00",
+            "dns_ms": 0.62,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": true,
+            "tcp_ms": 219.19,
+            "tls_ms": 1106.46,
+            "status": 403,
+            "http_ms": 1596.75,
+            "total_ms": 2923.16
+        },
+        {
+            "index": 4,
+            "utc": "2026-11-10T14:40:08.848772+00:00",
+            "dns_ms": 0.72,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": false,
+            "tcp_ms": 1226.93,
+            "tls_ms": 1311.63,
+            "status": 403,
+            "http_ms": 1205.96,
+            "total_ms": 3745.35
+        },
+        {
+            "index": 5,
+            "utc": "2026-11-10T14:40:13.094272+00:00",
+            "dns_ms": 0.67,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": true,
+            "tcp_ms": 226.03,
+            "tls_ms": 224.7,
+            "status": 403,
+            "http_ms": 1117.2,
+            "total_ms": 1568.72
+        },
+        {
+            "index": 6,
+            "utc": "2026-11-10T14:40:15.163217+00:00",
+            "dns_ms": 0.67,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": false,
+            "tcp_ms": 2255.6,
+            "tls_ms": 719.02,
+            "status": 403,
+            "http_ms": 450.14,
+            "total_ms": 3425.55
+        },
+        {
+            "index": 7,
+            "utc": "2026-11-10T14:40:19.088959+00:00",
+            "dns_ms": 1.21,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": true,
+            "tcp_ms": 205.93,
+            "tls_ms": 231.35,
+            "status": 403,
+            "http_ms": 411.38,
+            "total_ms": 849.98
+        },
+        {
+            "index": 8,
+            "utc": "2026-11-10T14:40:20.439040+00:00",
+            "dns_ms": 0.71,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": false,
+            "tcp_ms": 220.24,
+            "tls_ms": 227.54,
+            "status": 403,
+            "http_ms": 440.97,
+            "total_ms": 889.57
+        },
+        {
+            "index": 9,
+            "utc": "2026-11-10T14:40:21.828863+00:00",
+            "dns_ms": 0.89,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": true,
+            "tcp_ms": 226.29,
+            "tls_ms": 226.75,
+            "status": 403,
+            "http_ms": 1363,
+            "total_ms": 1817.04
+        },
+        {
+            "index": 10,
+            "utc": "2026-11-10T14:40:24.146024+00:00",
+            "dns_ms": 0.63,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": false,
+            "tcp_ms": 209.96,
+            "tls_ms": 1073.72,
+            "status": 403,
+            "http_ms": 418.04,
+            "total_ms": 1702.46
+        },
+        {
+            "index": 11,
+            "utc": "2026-11-10T14:40:26.348680+00:00",
+            "dns_ms": 0.71,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": true,
+            "tcp_ms": 1237.87,
+            "tls_ms": 3292.22,
+            "status": 403,
+            "http_ms": 1519.92,
+            "total_ms": 6050.83
+        },
+        {
+            "index": 12,
+            "utc": "2026-11-10T14:40:32.899692+00:00",
+            "dns_ms": 0.75,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": false,
+            "tcp_ms": 220.33,
+            "tls_ms": 224.48,
+            "status": 403,
+            "http_ms": 440.39,
+            "total_ms": 886.06
+        },
+        {
+            "index": 13,
+            "utc": "2026-11-10T14:40:34.285932+00:00",
+            "dns_ms": 0.71,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": true,
+            "tcp_ms": 219.43,
+            "tls_ms": 223.84,
+            "status": 403,
+            "http_ms": 440.17,
+            "total_ms": 884.28
+        },
+        {
+            "index": 14,
+            "utc": "2026-11-10T14:40:35.670393+00:00",
+            "dns_ms": 0.7,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": false,
+            "tcp_ms": 1221.62,
+            "tls_ms": 730.88,
+            "status": 403,
+            "http_ms": 467.52,
+            "total_ms": 2420.87
+        },
+        {
+            "index": 15,
+            "utc": "2026-11-10T14:40:38.591424+00:00",
+            "dns_ms": 0.88,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": true,
+            "tcp_ms": 222.54,
+            "tls_ms": 224.21,
+            "status": 403,
+            "http_ms": 888.3,
+            "total_ms": 1336.08
+        },
+        {
+            "index": 16,
+            "utc": "2026-11-10T14:40:40.427690+00:00",
+            "dns_ms": 0.76,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": false,
+            "tcp_ms": 204.75,
+            "tls_ms": 218.09,
+            "status": 403,
+            "http_ms": 417.1,
+            "total_ms": 840.81
+        },
+        {
+            "index": 17,
+            "utc": "2026-11-10T14:40:41.768688+00:00",
+            "dns_ms": 0.75,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": true,
+            "tcp_ms": 222.3,
+            "tls_ms": 224.87,
+            "status": 403,
+            "http_ms": 506.69,
+            "total_ms": 954.73
+        },
+        {
+            "index": 18,
+            "utc": "2026-11-10T14:40:43.223660+00:00",
+            "dns_ms": 0.67,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 10,
+            "limited_mss": false,
+            "tcp_ms": 208.02,
+            "failed_phase": "tls",
+            "reason": "timeout",
+            "total_ms": 5209.9
+        },
+        {
+            "index": 19,
+            "utc": "2026-11-10T14:40:48.933737+00:00",
+            "dns_ms": 0.7,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 2,
+            "limited_mss": true,
+            "tcp_ms": 1317.6,
+            "tls_ms": 226.13,
+            "status": 200,
+            "http_ms": 1712.29,
+            "total_ms": 3256.84
+        },
+        {
+            "index": 20,
+            "utc": "2026-11-10T14:40:52.690807+00:00",
+            "dns_ms": 1.27,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 2,
+            "limited_mss": false,
+            "tcp_ms": 756.09,
+            "tls_ms": 227.19,
+            "status": 200,
+            "http_ms": 821.18,
+            "total_ms": 1805.85
+        },
+        {
+            "index": 21,
+            "utc": "2026-11-10T14:40:54.996845+00:00",
+            "dns_ms": 0.77,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 2,
+            "limited_mss": true,
+            "tcp_ms": 3059.5,
+            "tls_ms": 665.2,
+            "status": 200,
+            "http_ms": 600.09,
+            "total_ms": 4325.67
+        },
+        {
+            "index": 22,
+            "utc": "2026-11-10T14:40:59.822710+00:00",
+            "dns_ms": 0.63,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 2,
+            "limited_mss": false,
+            "tcp_ms": 1431.2,
+            "tls_ms": 1114.63,
+            "status": 200,
+            "http_ms": 952.18,
+            "total_ms": 3498.74
+        },
+        {
+            "index": 23,
+            "utc": "2026-11-10T14:41:03.821586+00:00",
+            "dns_ms": 0.65,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 2,
+            "limited_mss": true,
+            "tcp_ms": 509.22,
+            "tls_ms": 1423.92,
+            "status": 200,
+            "http_ms": 1507.03,
+            "total_ms": 3440.93
+        },
+        {
+            "index": 24,
+            "utc": "2026-11-10T14:41:07.762657+00:00",
+            "dns_ms": 0.69,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 2,
+            "limited_mss": false,
+            "tcp_ms": 3478.22,
+            "tls_ms": 724.45,
+            "status": 200,
+            "http_ms": 949.89,
+            "total_ms": 5153.36
+        },
+        {
+            "index": 25,
+            "utc": "2026-11-10T14:41:13.416213+00:00",
+            "dns_ms": 0.61,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 2,
+            "limited_mss": true,
+            "tcp_ms": 886.09,
+            "tls_ms": 213.09,
+            "status": 200,
+            "http_ms": 783.5,
+            "total_ms": 1883.41
+        },
+        {
+            "index": 26,
+            "utc": "2026-11-10T14:41:15.799768+00:00",
+            "dns_ms": 0.77,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 2,
+            "limited_mss": false,
+            "tcp_ms": 2061.6,
+            "tls_ms": 225.13,
+            "status": 200,
+            "http_ms": 527.57,
+            "total_ms": 2815.18
+        },
+        {
+            "index": 27,
+            "utc": "2026-11-10T14:41:19.115125+00:00",
+            "dns_ms": 0.61,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 2,
+            "limited_mss": true,
+            "tcp_ms": 4495.6,
+            "tls_ms": 665.3,
+            "status": 200,
+            "http_ms": 529.63,
+            "total_ms": 5691.27
+        },
+        {
+            "index": 28,
+            "utc": "2026-11-10T14:41:25.306583+00:00",
+            "dns_ms": 1.2,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 2,
+            "limited_mss": false,
+            "tcp_ms": 4485.84,
+            "tls_ms": 656.55,
+            "status": 200,
+            "http_ms": 546.42,
+            "total_ms": 5690.15
+        },
+        {
+            "index": 29,
+            "utc": "2026-11-10T14:41:31.496914+00:00",
+            "dns_ms": 0.63,
+            "address_families": [
+                2,
+                10
+            ],
+            "family": 2,
+            "limited_mss": true,
+            "tcp_ms": 3490.03,
+            "tls_ms": 224.27,
+            "status": 200,
+            "http_ms": 553.22,
+            "total_ms": 4268.26
+        }
+    ],
+    "validation_samples": []
+}
+{"central":{"version":"0.6.2","last_heartbeat_at":"2026-11-10T15:39:46+01:00","last_poll_at":"2026-11-10T15:39:45+01:00"}}
+{"central_pending_operations":0,"central_active_tasks":0}

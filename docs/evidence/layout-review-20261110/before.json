@@ -1,0 +1,1875 @@
+{
+  "scope": "offline Chromium; transactional synthetic Laravel HTML; no external requests or operational submissions",
+  "pages": 23,
+  "viewports": [
+    360,
+    768,
+    1366,
+    1920
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "checks": 184,
+  "overflow": 0,
+  "missingLabels": 0,
+  "contrastFindings": 0,
+  "errors": [],
+  "keyboard": [
+    {
+      "name": "mobile_nav_moves_focus_inside",
+      "pass": false
+    },
+    {
+      "name": "mobile_nav_escape_returns_focus",
+      "pass": true
+    },
+    {
+      "name": "skip_link",
+      "pass": true
+    }
+  ],
+  "results": [
+    {
+      "page": "agent-detail.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "UX Agent A · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agents.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agents · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "audit.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Auditoria · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "backups.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Backup externo · R2 · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "conversations.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conversas de diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "dashboard.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Visão geral · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-create.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-result.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnóstico · alpha.example.test · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostics.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnósticos · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "history.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Histórico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge-create.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "llm.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "LLM · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "login.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "operations.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Saúde do sistema · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "password.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profile.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conteúdo lento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profiles.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Perfis · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompt-create.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo prompt · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompts.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Prompts · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "skills.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Skills · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "tenants.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "users.html",
+      "width": 360,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agent-detail.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "UX Agent A · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agents.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agents · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "audit.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Auditoria · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "backups.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Backup externo · R2 · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "conversations.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conversas de diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "dashboard.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Visão geral · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-create.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-result.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnóstico · alpha.example.test · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostics.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnósticos · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "history.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Histórico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge-create.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "llm.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "LLM · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "login.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "operations.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Saúde do sistema · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "password.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profile.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conteúdo lento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profiles.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Perfis · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompt-create.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo prompt · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompts.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Prompts · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "skills.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Skills · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "tenants.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "users.html",
+      "width": 360,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agent-detail.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "UX Agent A · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agents.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agents · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "audit.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Auditoria · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "backups.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Backup externo · R2 · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "conversations.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conversas de diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "dashboard.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Visão geral · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-create.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-result.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnóstico · alpha.example.test · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostics.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnósticos · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "history.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Histórico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge-create.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "llm.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "LLM · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "login.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "operations.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Saúde do sistema · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "password.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profile.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conteúdo lento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profiles.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Perfis · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompt-create.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo prompt · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompts.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Prompts · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "skills.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Skills · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "tenants.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "users.html",
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agent-detail.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "UX Agent A · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agents.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agents · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "audit.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Auditoria · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "backups.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Backup externo · R2 · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "conversations.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conversas de diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "dashboard.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Visão geral · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-create.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-result.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnóstico · alpha.example.test · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostics.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnósticos · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "history.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Histórico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge-create.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "llm.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "LLM · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "login.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "operations.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Saúde do sistema · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "password.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profile.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conteúdo lento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profiles.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Perfis · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompt-create.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo prompt · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompts.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Prompts · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "skills.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Skills · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "tenants.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "users.html",
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agent-detail.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "UX Agent A · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agents.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agents · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "audit.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Auditoria · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "backups.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Backup externo · R2 · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "conversations.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conversas de diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "dashboard.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Visão geral · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-create.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-result.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnóstico · alpha.example.test · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostics.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnósticos · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "history.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Histórico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge-create.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "llm.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "LLM · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "login.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "operations.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Saúde do sistema · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "password.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profile.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conteúdo lento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profiles.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Perfis · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompt-create.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo prompt · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompts.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Prompts · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "skills.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Skills · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "tenants.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "users.html",
+      "width": 1366,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agent-detail.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "UX Agent A · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agents.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agents · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "audit.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Auditoria · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "backups.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Backup externo · R2 · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "conversations.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conversas de diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "dashboard.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Visão geral · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-create.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-result.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnóstico · alpha.example.test · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostics.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnósticos · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "history.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Histórico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge-create.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "llm.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "LLM · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "login.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "operations.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Saúde do sistema · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "password.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profile.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conteúdo lento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profiles.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Perfis · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompt-create.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo prompt · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompts.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Prompts · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "skills.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Skills · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "tenants.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "users.html",
+      "width": 1366,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agent-detail.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "UX Agent A · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agents.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agents · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "audit.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Auditoria · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "backups.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Backup externo · R2 · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "conversations.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conversas de diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "dashboard.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Visão geral · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-create.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-result.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnóstico · alpha.example.test · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostics.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnósticos · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "history.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Histórico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge-create.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "llm.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "LLM · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "login.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "operations.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Saúde do sistema · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "password.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profile.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conteúdo lento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profiles.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Perfis · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompt-create.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo prompt · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompts.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Prompts · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "skills.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Skills · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "tenants.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "users.html",
+      "width": 1920,
+      "theme": "light",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agent-detail.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "UX Agent A · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "agents.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agents · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "audit.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Auditoria · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "backups.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Backup externo · R2 · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "conversations.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conversas de diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "dashboard.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Visão geral · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-create.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo diagnóstico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostic-result.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnóstico · alpha.example.test · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "diagnostics.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Diagnósticos · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "history.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Histórico · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge-create.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "knowledge.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conhecimento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "llm.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "LLM · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "login.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "operations.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Saúde do sistema · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "password.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profile.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Conteúdo lento · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "profiles.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Perfis · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompt-create.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Novo prompt · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "prompts.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Prompts · avançado · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "skills.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Skills · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "tenants.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    },
+    {
+      "page": "users.html",
+      "width": 1920,
+      "theme": "dark",
+      "overflow": false,
+      "h1": 1,
+      "title": "Agent Center · Agent Center",
+      "unnamedFields": [],
+      "contrast": []
+    }
+  ]
+}

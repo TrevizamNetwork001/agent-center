@@ -1,0 +1,319 @@
+{
+    "diagnostic_id": "ae4335fa-e0ac-4d5a-a8f7-cf3410b725e1",
+    "status": "COMPLETED",
+    "target": "google.com",
+    "profile": "PROBLEMA_DNS",
+    "started_at": "2026-11-05T15:37:58+01:00",
+    "finished_at": "2026-11-05T15:38:17+01:00",
+    "duration": "19s",
+    "display_started_at": "05/11/2026 11:37:58 -03:00",
+    "steps": [
+        {
+            "key": "dns_a",
+            "capability": "dns_lookup:v1",
+            "status": "FAILED",
+            "display_status": "Bloqueado por política",
+            "result": {
+                "ok": false,
+                "error": "policy_denied"
+            },
+            "error_code": "policy_denied",
+            "started_at": "2026-11-05T14:38:03.000000Z",
+            "finished_at": "2026-11-05T14:38:04.000000Z"
+        },
+        {
+            "key": "dns_aaaa",
+            "capability": "dns_lookup:v1",
+            "status": "FAILED",
+            "display_status": "Bloqueado por política",
+            "result": {
+                "ok": false,
+                "error": "policy_denied"
+            },
+            "error_code": "policy_denied",
+            "started_at": "2026-11-05T14:38:12.000000Z",
+            "finished_at": "2026-11-05T14:38:15.000000Z"
+        }
+    ],
+    "tasks": [
+        {
+            "capability": "dns_lookup:v1",
+            "input": {
+                "target": "google.com",
+                "record_type": "A"
+            },
+            "status": "FAILED"
+        },
+        {
+            "capability": "dns_lookup:v1",
+            "input": {
+                "target": "google.com",
+                "record_type": "AAAA"
+            },
+            "status": "FAILED"
+        }
+    ],
+    "conclusion": {
+        "classification": "INCONCLUSIVO",
+        "summary": "Verificações bloqueadas pela política do Agent; evidências insuficientes para concluir no escopo testado.",
+        "evidence": {
+            "dns_a": {
+                "ok": false,
+                "error": "policy_denied"
+            },
+            "dns_aaaa": {
+                "ok": false,
+                "error": "policy_denied"
+            }
+        },
+        "next_steps": [
+            "Confira a autorização da capability e a lista local de alvos permitidos no Agent. Após a autorização, repita o diagnóstico."
+        ]
+    },
+    "original_classification_preserved": "INDICIO_DE_FALHA",
+    "original_display_classification": "INCONCLUSIVO",
+    "agent": {
+        "version": "0.5.3",
+        "display_status": "ONLINE",
+        "freeze": true,
+        "heartbeat": "2026-11-05T14:38:28.000000Z",
+        "poll": "2026-11-05T14:38:29.000000Z"
+    },
+    "health_after": {
+        "database": true,
+        "worker": true,
+        "agents_total": 1,
+        "agents_online": 1,
+        "heartbeat_age": 4,
+        "poll_age": 3,
+        "missing_heartbeat": 0,
+        "missing_poll": 0,
+        "today": 2,
+        "indications": 1,
+        "active": 0,
+        "stale": 0,
+        "failed": 4,
+        "state": "ATENÇÃO",
+        "checks": [
+            {
+                "component": "laravel_web",
+                "state": "VERDE",
+                "reason": "authenticated_request_completed",
+                "timestamp": "2026-11-05T15:38:32+01:00",
+                "values": {
+                    "request": true
+                },
+                "limit": null
+            },
+            {
+                "component": "postgresql",
+                "state": "VERDE",
+                "reason": "select_1_succeeded",
+                "timestamp": "2026-11-05T15:38:32+01:00",
+                "values": {
+                    "select_1": true
+                },
+                "limit": 1
+            },
+            {
+                "component": "postgresql_tls",
+                "state": "VERDE",
+                "reason": "connection_tls_and_client_verification",
+                "timestamp": "2026-11-05T15:38:32+01:00",
+                "values": {
+                    "tls": true,
+                    "verify_full": true
+                },
+                "limit": true
+            },
+            {
+                "component": "diagnostic_worker",
+                "state": "VERDE",
+                "reason": "functional_loop_recent",
+                "timestamp": "2026-11-05T15:38:32+01:00",
+                "values": {
+                    "loop_age_seconds": 1.091067579,
+                    "iterations": 400,
+                    "progress": 10,
+                    "same_boot": true
+                },
+                "limit": 15
+            },
+            {
+                "component": "laravel_queue_worker",
+                "state": "VERDE",
+                "reason": "health_job_completed",
+                "timestamp": "2026-11-05T15:38:32+01:00",
+                "values": {
+                    "completed_job_age_seconds": 17.00098185
+                },
+                "limit": 90
+            },
+            {
+                "component": "task_engine",
+                "state": "VERDE",
+                "reason": "active_expired_leases",
+                "timestamp": "2026-11-05T15:38:32+01:00",
+                "values": {
+                    "active": 0,
+                    "expired": 0,
+                    "failures_today": 4
+                },
+                "limit": 0
+            },
+            {
+                "component": "agents",
+                "state": "VERDE",
+                "reason": "heartbeat_and_poll_coverage",
+                "timestamp": "2026-11-05T15:38:32+01:00",
+                "values": {
+                    "total": 1,
+                    "online": 1,
+                    "oldest_heartbeat_seconds": 4,
+                    "oldest_poll_seconds": 3,
+                    "missing_heartbeat": 0,
+                    "missing_poll": 0
+                },
+                "limit": {
+                    "heartbeat_seconds": 60,
+                    "poll_seconds": 30
+                }
+            },
+            {
+                "component": "nginx_external",
+                "state": "VERDE",
+                "reason": "container_functional_health",
+                "timestamp": "2026-11-05T14:38:19.023384+00:00",
+                "values": {
+                    "healthy": true
+                },
+                "limit": true
+            },
+            {
+                "component": "fpm_process",
+                "state": "VERDE",
+                "reason": "container_functional_health",
+                "timestamp": "2026-11-05T14:38:19.023384+00:00",
+                "values": {
+                    "healthy": true
+                },
+                "limit": true
+            },
+            {
+                "component": "postgresql_container",
+                "state": "VERDE",
+                "reason": "container_functional_health",
+                "timestamp": "2026-11-05T14:38:19.023384+00:00",
+                "values": {
+                    "healthy": true
+                },
+                "limit": true
+            },
+            {
+                "component": "queue_container",
+                "state": "VERDE",
+                "reason": "container_functional_health",
+                "timestamp": "2026-11-05T14:38:19.023384+00:00",
+                "values": {
+                    "healthy": true
+                },
+                "limit": true
+            },
+            {
+                "component": "diagnostic_container",
+                "state": "VERDE",
+                "reason": "container_functional_health",
+                "timestamp": "2026-11-05T14:38:19.023384+00:00",
+                "values": {
+                    "healthy": true
+                },
+                "limit": true
+            },
+            {
+                "component": "web_https",
+                "state": "VERDE",
+                "reason": "https_status_probe",
+                "timestamp": "2026-11-05T14:38:19.023384+00:00",
+                "values": {
+                    "http_status": 200
+                },
+                "limit": {
+                    "expected_status": 200
+                }
+            },
+            {
+                "component": "agent_api_external",
+                "state": "VERDE",
+                "reason": "https_status_probe",
+                "timestamp": "2026-11-05T14:38:19.023384+00:00",
+                "values": {
+                    "http_status": 422
+                },
+                "limit": {
+                    "expected_status": 422
+                }
+            },
+            {
+                "component": "http_error_rate",
+                "state": "VERDE",
+                "reason": "sanitized_status_log_5m",
+                "timestamp": "2026-11-05T14:38:19.023384+00:00",
+                "values": {
+                    "requests": 84,
+                    "http_5xx": 0,
+                    "rate": 0
+                },
+                "limit": {
+                    "max_rate": 0.05,
+                    "window_seconds": 300,
+                    "max_samples": 10000
+                }
+            },
+            {
+                "component": "backup_local",
+                "state": "VERDE",
+                "reason": "generation_integrity_verified",
+                "timestamp": "2026-11-05T14:38:19.023384+00:00",
+                "values": {
+                    "age_seconds": 3468.782027244568
+                },
+                "limit": {
+                    "max_age_seconds": 93600
+                }
+            },
+            {
+                "component": "backup_external",
+                "state": "VERDE",
+                "reason": "r2_encrypted_upload_download_verified",
+                "timestamp": "2026-11-05T14:38:19.023384+00:00",
+                "values": {
+                    "age_seconds": 9971.782349824905
+                },
+                "limit": {
+                    "max_age_seconds": 93600
+                }
+            },
+            {
+                "component": "fencing_runtime",
+                "state": "VERDE",
+                "reason": "active_attempt_generation_mismatch",
+                "timestamp": "2026-11-05T15:38:32+01:00",
+                "values": {
+                    "mismatches": 0
+                },
+                "limit": 0
+            },
+            {
+                "component": "agent_maintenance",
+                "state": "VERDE",
+                "reason": "interrupted_or_stalled_operations",
+                "timestamp": "2026-11-05T15:38:32+01:00",
+                "values": {
+                    "uncertain": 0,
+                    "stalled": 0
+                },
+                "limit": 300
+            }
+        ]
+    }
+}

@@ -91,6 +91,26 @@ class AgentApiTest extends IdentityTestCase
         $this->assertNotNull($a->last_poll_at);
     }
 
+    public function test_candidate_064_timeout_report_preserves_freeze_and_tenant_isolation(): void
+    {
+        $identity = $this->enrolled();
+        $headers = ['Authorization' => 'Bearer '.$identity['token']];
+        $payload = ['version' => '0.6.4', 'observability' => [
+            'schema_version' => 1, 'collected_at' => now()->format('Y-m-d\TH:i:s.uP'),
+            'last_error' => 'STATUS_UNKNOWN',
+        ]];
+        $this->postJson('/api/v1/agent/heartbeat', $payload, $headers)
+            ->assertOk()->assertJsonPath('policy.device_operations_frozen', true);
+        $this->postJson('/api/v1/agent/heartbeat', $payload + ['tenant_id' => $this->b->id], $headers)
+            ->assertUnprocessable();
+        $this->context()->forUser($this->other);
+        $this->assertNull(Agent::find($identity['agent_id']));
+        $this->context()->forUser($this->admin);
+        $agent = Agent::findOrFail($identity['agent_id']);
+        $this->assertSame('0.6.4', $agent->version);
+        $this->assertSame('STATUS_UNKNOWN', $agent->metadata['observability']['last_error']);
+    }
+
     public function test_agent_auth_rejects_invalid_token_revocation_and_tenant_injection(): void
     {
         $i = $this->enrolled();

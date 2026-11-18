@@ -1,0 +1,84 @@
+LIFECYCLE CENTRAL — DEPLOY PREPARADO, NÃO EXECUTADO
+Verificação: 2026-11-07 14:17:52 UTC. VM teste não acessada nem alterada.
+
+Bloqueio confirmado na Central publicada
+- Imagem web: agent-center-central:maintenance-password-20261106.
+- Image ID: sha256:c4f87aef84337e7e64db17404f0932ac75f1cdf17b405ba8c3af519dec96f28a.
+- agent_releases, AgentRelease e ReleaseController ausentes.
+- Rotas existentes são do updater legado. Catálogo assinado, endpoint privado
+  de artefatos e reconciliação Lifecycle não estão publicados.
+- Agent operacional c88457e9-748f-4906-982a-166d0ee0f6d3, tenant 1,
+  versão 0.6.1; heartbeat/poll recentes; sem capability MTR.
+
+Candidato concreto
+- Imagem: agent-center-central:lifecycle-reconcile-20261106.
+- Image ID: sha256:1143bed5e0323b6e55ef2087a2efde296c96fae887b8997229bef1eb2e59e98c.
+- Base: imagem atual de manutenção/dashboard.
+- Manifesto dos 19 arquivos:
+  /root/agent-center-lifecycle-homologacao/central-layer/files.json.
+- Migration Laravel: 2026_11_06_100000_create_agent_releases.php.
+- Adiciona catálogo/publicação sob Auth, Gate e CSRF, modelo tenant-scoped,
+  verificação Ed25519 e SHA-256, API autenticada de artefatos privados,
+  integração de operações, progresso e reconciliação verificada.
+- PostgreSQL: tabela com RLS forçado, política por tenant, unicidade de
+  sequência/digest por tenant e trigger que recusa UPDATE/DELETE.
+- Role runtime recebe SELECT/INSERT na tabela; sem grants globais novos.
+
+Validações realizadas nesta preparação
+- 19 arquivos da imagem idênticos ao candidato e ao fonte usado nos testes.
+- Sintaxe PHP dos 19 arquivos verificada em container isolado sem rede.
+- sodium disponível; assinatura Ed25519 do manifesto operacional válida.
+- SHA-256 de todos os arquivos do pacote, runtime, helper e tamanho válidos.
+- Chave operacional diferente da chave pública descartável do laboratório.
+- git diff --check aprovado.
+- Evidências anteriores, sem reexecução nesta preparação: 251 testes Laravel,
+  1.945 assertions; 140 testes Python, aprovados.
+- Testes e observação anteriores são de homologação, não de implantação operacional.
+
+Release operacional pronta, ainda não publicada
+- Plataforma debian13; sequência 1; runtime 0.6.2; componente MTR 0.6.2.
+- Runtime SHA-256:
+  f84ce35817faf37604910403813961b44155d02168f28c8dd568a565d3888fd2.
+- Fingerprint SHA-256 da chave Ed25519 pública raw de 32 bytes:
+  5f16350383c280c1b39d4f7257f09ecbe1002b1d59a1721ceb8bf4d5091195e1.
+- SHA-256 do arquivo PEM público:
+  1578a8814ed7d8b6326ff62a8c739e2160177d5bb743d88e27bbdec58fe88402.
+- Fonte: /root/agent-center-lifecycle-homologacao/operational-release.
+- A chave privada não será instalada na Central nem na VM.
+
+Deploy sujeito a autorização específica da Central compartilhada
+1. Revalidar imagem atual e hashes dos arquivos afetados; interromper se houver
+   mudanças concorrentes. Preservar alterações locais existentes.
+2. Criar backup privado de PostgreSQL, compose, roles e arquivos anteriores,
+   registrando também arquivos novos, modos e owners. Validar pg_restore --list
+   e checksums. Nenhum backup operacional foi criado nesta preparação.
+3. Aplicar somente a migration Laravel indicada; conceder SELECT/INSERT.
+4. Configurar somente a chave pública revisada no web; usar a imagem exata.
+   Recriar somente web do projeto e recarregar nginx do projeto para resolver
+   o upstream. Não reiniciar workers ou serviços de outros projetos.
+5. Conferir readiness, dashboard React, manutenção, catálogo, API privada,
+   autenticação e isolamento entre tenants; sem criar operação no Agent.
+6. Publicar pelo painel somente a release sequência 1 para tenant 1, caso essa
+   publicação esteja incluída na autorização. Registrar ID, autor e digest.
+7. Somente após comprovar a compatibilidade da Central iniciar o precheck SSH
+   autorizado da VM teste. Não usar estado histórico como substituto.
+
+Rollback da Central
+- Antes de qualquer operação de Agent: restaurar imagem web anterior, compose,
+  roles e arquivos anteriores; remover somente arquivos novos do manifesto;
+  recriar somente web e recarregar nginx do projeto; conferir readiness.
+- Preservar tabela aditiva agent_releases, registros e auditoria. Não executar
+  migrate:rollback nem restaurar dump antigo sobre dados posteriores.
+- Se já existir operação Lifecycle em curso, concluir recuperação verificada
+  antes de retirar a Central compatível; preservar ledger e resultados.
+- Referência detalhada: /root/agent-center-lifecycle-homologacao/ROLLBACK.txt.
+
+Limites e pendências posteriores
+- Sem autorização de deploy da Central, nenhuma alteração na VM pode começar.
+- Segunda release assinada/compatível e cenário de falha controlada ainda devem
+  ser selecionados e revisados antes do bootstrap operacional e do teste decisivo.
+- Este documento não autoriza sondagem de destino externo. MTR exige ACL-base,
+  teto administrativo revisado e autorização específica do destino para probes.
+- Após bootstrap, encerrar intervenção SSH antes da segunda atualização;
+  registrar aprovação, claim, instalação, postcheck e resultado pelo painel.
+- Observação operacional de 15 minutos e testes operacionais ainda não executados.

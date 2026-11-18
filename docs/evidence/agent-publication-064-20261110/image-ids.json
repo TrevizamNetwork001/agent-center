@@ -1,0 +1,5 @@
+{
+  "web": "sha256:7d00bfbe1a852f6b2823fec4ae2adcd8ced8fadf51f8973f805b2aa169df4dc3",
+  "worker": "sha256:f2d4c1e60312c4a68c3ef5dd9412ab52da2fc0b66d7ae22f6c399b8a88d07b1b",
+  "diagnostic-worker": "sha256:f2d4c1e60312c4a68c3ef5dd9412ab52da2fc0b66d7ae22f6c399b8a88d07b1b"
+}

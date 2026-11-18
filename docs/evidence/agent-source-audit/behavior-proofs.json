@@ -1,0 +1,41 @@
+{
+  "actual_companion_precheck": {
+    "status": "PLANNED",
+    "runtime_preserved": true
+  },
+  "A02_failure_masked_and_exit_success": {
+    "operation_status": "FAILED",
+    "error": "precheck_failed",
+    "run_return": true,
+    "main_exit_implied": 0,
+    "exception_details_discarded": true
+  },
+  "A03_no_rollback_on_failed_postcheck": {
+    "operation_status": "FAILED",
+    "new_runtime_still_installed": true,
+    "new_service_still_active": true,
+    "previous_runtime_preserved": true,
+    "backup_exists": true,
+    "backup_reference_in_failed_report": false
+  },
+  "A04_postcheck_ignores_expected_version": {
+    "reported_version": "0.5.3",
+    "desired_version": "0.5.4",
+    "accepted": true
+  },
+  "A05_direct_apply_stops_service_before_lock_failure": {
+    "exception": "StateError",
+    "service_left_stopped": true,
+    "runtime_preserved": true
+  },
+  "A06_renew_can_exceed_execution_deadline": {
+    "timeout_seconds": 20,
+    "kill_virtual_second": 36.0,
+    "real_network_or_process_executed": false
+  },
+  "A07_malformed_reconcile_entry_crashes_recovery": {
+    "exception": "AttributeError",
+    "reexecuted": false
+  }
+}
+

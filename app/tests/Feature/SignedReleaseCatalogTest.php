@@ -37,6 +37,27 @@ class SignedReleaseCatalogTest extends IdentityTestCase
         $this->assertSame(0, AgentRelease::count());
     }
 
+    public function test_064_refuses_legacy_companion_at_request_and_claim(): void
+    {
+        $this->actingAs($this->admin)->post('/agents/releases', $this->publication('0.6.4'))->assertRedirect();
+        $this->context()->forUser($this->admin);
+        $release = AgentRelease::sole();
+        $id = (string) Str::uuid();
+        $token = $id.'.'.bin2hex(random_bytes(32));
+        $agent = new Agent;
+        $agent->forceFill(['id' => $id, 'tenant_id' => $this->a->id, 'capabilities' => [], 'name' => 'Transition', 'hostname' => 'lab', 'version' => '0.6.2', 'status' => 'active', 'last_seen_ip' => '127.0.0.1', 'token_hash' => hash('sha256', $token), 'metadata' => ['updater' => ['version' => '0.6.2', 'signed_release_protocol' => 1]]])->save();
+        $request = ['kind' => 'update', 'reason' => 'maintenance', 'release_sha' => $release->sha256, 'install_after_check' => '1'];
+        $this->post('/agents/'.$id.'/operations', $request)->assertStatus(409);
+        $this->context()->forUser($this->admin);
+        $agent->forceFill(['metadata' => ['updater' => ['version' => '0.6.4', 'signed_release_protocol' => 1]]])->save();
+        $this->post('/agents/'.$id.'/operations', $request)->assertRedirect();
+        $headers = ['Authorization' => 'Bearer '.$token];
+        $claim = ['updater_version' => '0.6.2', 'signed_release_protocol' => 1];
+        $this->postJson('/api/v1/agent/operations/claim', $claim, $headers)->assertOk()->assertJsonPath('operation', null);
+        $claim['updater_version'] = '0.6.4';
+        $this->postJson('/api/v1/agent/operations/claim', $claim, $headers)->assertOk()->assertJsonPath('operation.phase', 'precheck');
+    }
+
     public function test_component_protocol_and_simulation_are_gated(): void
     {
         $components = [['id' => 'mtr', 'version' => '0.6.2', 'profile' => 'network-raw-helper', 'dependencies' => ['python3.13', 'mtr0.95'], 'helper_sha256' => str_repeat('a', 64)]];

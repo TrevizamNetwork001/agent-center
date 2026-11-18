@@ -17,7 +17,7 @@ class DashboardData
             'schema_version' => 1,
             'tenant_id' => $tenantId,
             'tenant' => $tenant ? ['name' => $tenant->name] : null,
-            'user' => ['name' => $user->name, 'role' => $user->role->value],
+            'user' => ['name' => $user->name, 'role' => $user->role->value, 'role_label' => Presentation::label($user->role->value)],
             'active_users' => $tenant ? $data['activeUsers'] : null,
             'health' => $tenant ? array_intersect_key($data['health'], array_flip($healthKeys)) : null,
             'recent' => $tenant ? $data['recent']->map(function ($d) {

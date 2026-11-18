@@ -42,7 +42,7 @@ def read_private(path: Path):
         if not isinstance(value, dict):
             raise StateError("invalid_state")
         return value
-    except (ValueError, UnicodeError) as exc:
+    except (ValueError, UnicodeError, RecursionError) as exc:
         raise StateError("invalid_state") from exc
 
 

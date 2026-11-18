@@ -1,0 +1,10 @@
+{
+    "passed": true,
+    "duplicate_requests": 4,
+    "duplicate_results": 1,
+    "distinct_requests": 4,
+    "serialized_protocol_queries": 5,
+    "overlap": false,
+    "busy_rejections": 1,
+    "agent_tasks": 0
+}

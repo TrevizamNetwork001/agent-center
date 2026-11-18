@@ -1,3 +1,4 @@
+import base64
 import contextlib
 import io
 import json
@@ -86,6 +87,24 @@ class UpdateRegressions(unittest.TestCase):
                     self_check(self.artifact)
                 self.assertEqual(str(caught.exception), code)
                 self.assertNotIn("PRIVATE", str(caught.exception))
+
+    def test_signed_snapshot_failure_does_not_claim_a_complete_backup(self):
+        self.client.operation['phase'] = 'apply'
+        self.client.operation['release']['lifecycle'] = {
+            'manifest': base64.b64encode(b'fixture manifest').decode(), 'signature': 'fixture',
+        }
+        self.remote.signed_release = {'version': '0.5.5', 'sha256': self.sha}
+        key = self.root / 'public.pem'
+        key.write_bytes(b'fixture public key')
+        with (patch.object(self.remote, '_candidate', return_value=(self.artifact, self.sha)),
+              patch('agent_center.update.remote.trusted', return_value=key),
+              patch('agent_center.lifecycle.manager.Manager') as manager,
+              contextlib.redirect_stdout(io.StringIO())):
+            manager.return_value.apply.return_value = {'state': 'FAILED', 'error': 'backup_failed'}
+            self.assertFalse(self.remote.run())
+        self.assertEqual(self.client.report['error'], 'backup_failed')
+        self.assertNotIn('backup', self.client.report['evidence'])
+        self.assertEqual((self.state / 'preserve').read_bytes(), b'PRESERVE')
 
     def test_self_check_uses_native_subprocess_credentials_without_python_preexec(self):
         metadata = {"version": "0.5.6", "state_schema": 1, "journal_schema": 1,

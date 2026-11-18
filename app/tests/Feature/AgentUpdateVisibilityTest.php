@@ -82,7 +82,7 @@ class AgentUpdateVisibilityTest extends IdentityTestCase
         foreach (['0.5.10', '0.6.0'] as $version) {
             $this->context()->forUser($this->admin);
             $agent->forceFill(['version' => $version])->save();
-            $this->get('/agents/'.$agent->id)->assertOk()->assertSee('Não há atualização disponível.')->assertDontSee('>Atualizar Agent</', false)->assertSee('Rollback controlado');
+            $this->get('/agents/'.$agent->id)->assertOk()->assertSee('Não há atualização disponível.')->assertDontSee('>Atualizar Agent</', false)->assertSee('Retorno controlado de versão');
             $this->get('/agents')->assertOk()->assertSee('Não há atualização disponível.')->assertDontSee('>Atualizar Agent</', false);
         }
         $this->context()->forUser($this->admin);

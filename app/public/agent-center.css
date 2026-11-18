@@ -60,7 +60,7 @@ th{color:#5c6d80}
 
 /* Agent update: percentages reflect confirmed stages, never elapsed time. */
 .agent-update-progress{margin:18px 0}.agent-update-progress-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px;margin-bottom:10px}.agent-update-progress-heading [data-update-percent]{font-variant-numeric:tabular-nums;color:var(--blue);font-weight:700}.agent-update-progress-track{height:10px;border-radius:999px;background:var(--line);overflow:hidden}.agent-update-progress-track>[data-update-fill]{display:block;height:100%;border-radius:inherit;background:var(--blue);transition:width .8s ease;position:relative;overflow:hidden}.agent-update-progress:not([data-state=COMPLETED]) [data-update-fill]::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:translateX(-100%);animation:agent-update-shimmer 1.8s linear infinite}.agent-update-progress[data-state=COMPLETED] [data-update-fill]{background:var(--green)}.agent-update-progress small{display:block;margin-top:8px;color:var(--muted)}@keyframes agent-update-shimmer{to{transform:translateX(100%)}}
-.sidebar{scrollbar-width:none;-ms-overflow-style:none}.sidebar::-webkit-scrollbar{display:none;width:0;height:0}
+.sidebar{scrollbar-width:thin;scrollbar-color:#69798a #111e34}
 @media(prefers-reduced-motion:reduce){.agent-update-progress [data-update-fill]::after{animation:none}}
 
 .diagnostic-wait{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--muted);margin:12px 0}.diagnostic-spinner{display:inline-block;width:14px;height:14px;flex:0 0 14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:diagnostic-spin .9s linear infinite}@keyframes diagnostic-spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.diagnostic-spinner{animation:none}}
@@ -73,3 +73,44 @@ th{color:#5c6d80}
 
 /* Numeric MTR evidence scrolls within the diagnostic card on narrow screens. */
 .mtr-path{min-width:0;width:100%;max-width:100%}.mtr-path .table-scroll{max-width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:8px;margin:14px 0}.mtr-path table{width:100%;min-width:960px;border-collapse:collapse}.mtr-path td,.mtr-path th{padding:10px;text-align:left;border-bottom:1px solid var(--line);font-size:11px;vertical-align:top}.mtr-path code{overflow-wrap:anywhere}.mtr-path p{line-height:1.7}
+
+/* Shared layout review: readable administration and keyboard/mobile navigation. */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.page-header>div,.section-head>div,.mini-list li>div,.user-menu>div{min-width:0}
+.page-header h1,.section-head h2,.mini-list strong,.user-menu strong{overflow-wrap:anywhere}
+.topbar{height:auto;min-height:72px;padding-block:12px}
+.user-menu>div{max-width:180px}.user-menu strong{max-width:100%}
+textarea{max-width:100%;resize:vertical}
+@media(max-width:760px){
+ .topbar{min-height:64px}
+ body.nav-open{overflow:hidden}
+ .nav-open .topbar{z-index:auto}
+ .nav-group>a{min-height:44px}
+ button,.button,.small-button{min-height:44px}
+ .user-menu [data-theme-toggle]{width:44px;height:44px;min-height:44px}
+ .account-menu summary{min-width:36px;min-height:44px;display:grid;place-items:center}
+ .account-menu a{min-height:44px;display:flex;align-items:center}
+ input,select,textarea,.filters input,.filters select{font-size:16px}
+ .table-responsive td{font-size:12px}
+ .table-responsive td::before{font-size:11px}
+ .table-responsive td .actions{align-items:flex-start}
+ .react-dashboard .dashboard-pills button{min-height:44px;font-size:11px}
+}
+
+/* Long tenant names and translated account roles must fit intermediate widths. */
+.topbar-context{min-width:0;flex-wrap:wrap}.topbar-context>.tenant-context{overflow-wrap:anywhere;min-width:0}.user-menu{flex-shrink:0}.user-menu small{overflow-wrap:anywhere}.operational-grid strong{overflow-wrap:anywhere}
+@media(min-width:761px) and (max-width:1100px){.topbar{flex-wrap:wrap}.topbar-context{flex:1 1 260px}.user-menu{margin-left:auto}}
+@media(prefers-reduced-motion:reduce){.sidebar,.agent-update-progress-track>[data-update-fill]{transition:none}}
+
+@media(max-width:760px){.sidebar .nav-group>a{min-height:44px}.account-menu summary{min-width:44px}}
+
+/* Keep complete status words readable when tablet tables need horizontal scrolling. */
+.table .badge{overflow-wrap:normal;word-break:normal;flex-shrink:0}
+@media(min-width:761px) and (max-width:1100px){.table-responsive table{min-width:640px}}
+
+.table-responsive{position:relative}
+
+/* Task navigation for the selected agent. */
+.agent-action-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.agent-action{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:18px;border:1px solid var(--line);border-radius:10px;color:var(--ink);min-width:0;overflow-wrap:anywhere}.agent-action:hover{background:var(--blue-soft);border-color:var(--blue);text-decoration:none}.agent-action svg{width:22px;height:22px;color:var(--blue)}.agent-action strong{font-size:14px}.agent-action>span{font-size:12px;line-height:1.6;color:var(--muted)}.agent-technical>summary{font-size:14px;color:var(--ink)}.agent-technical>summary .muted,[data-detail-key=agent-maintenance]>summary .muted{display:block;margin:8px 0;font-size:12px;line-height:1.6}.agent-technical-body{padding-top:20px}.agent-technical-body:focus{outline:none}#agent-network,#agent-update,#agent-technical{scroll-margin-top:24px}
+@media(max-width:1100px){.agent-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.agent-action-grid{grid-template-columns:minmax(0,1fr)}.agent-action{padding:16px}}

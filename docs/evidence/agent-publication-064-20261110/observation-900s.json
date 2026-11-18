@@ -1,0 +1,953 @@
+{
+  "read_only": true,
+  "complete": true,
+  "passed": true,
+  "checks": {
+    "duration_900s": true,
+    "all_samples_expected_version": true,
+    "no_degraded_samples": true,
+    "preservation": true,
+    "journal_stable": true,
+    "heartbeat_progress": true,
+    "poll_progress": true,
+    "status_fresh": true,
+    "service_hardened": true,
+    "same_principal_process": true,
+    "no_logged_failures": true
+  },
+  "samples": [
+    {
+      "index": 0,
+      "elapsed": 0,
+      "utc": "2026-11-10T17:40:20.939824+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 13,
+      "poll_successes": 37,
+      "heartbeat_max_gap": 22.96492846100591,
+      "poll_max_gap": 10.609533552953508,
+      "status_age": 3.076,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 1,
+      "elapsed": 30.001,
+      "utc": "2026-11-10T17:40:50.940249+00:00",
+      "state": "CLAIM",
+      "version": "0.6.4",
+      "heartbeat_successes": 14,
+      "poll_successes": 41,
+      "heartbeat_max_gap": 22.96492846100591,
+      "poll_max_gap": 10.609533552953508,
+      "status_age": 1.748,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 2,
+      "elapsed": 60.001,
+      "utc": "2026-11-10T17:41:20.940616+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 16,
+      "poll_successes": 46,
+      "heartbeat_max_gap": 22.96492846100591,
+      "poll_max_gap": 10.609533552953508,
+      "status_age": 2.416,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 3,
+      "elapsed": 90.001,
+      "utc": "2026-11-10T17:41:50.940194+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 17,
+      "poll_successes": 51,
+      "heartbeat_max_gap": 22.96492846100591,
+      "poll_max_gap": 10.609533552953508,
+      "status_age": 2.027,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 4,
+      "elapsed": 120,
+      "utc": "2026-11-10T17:42:20.940100+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 19,
+      "poll_successes": 55,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 10.609533552953508,
+      "status_age": 4.315,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 5,
+      "elapsed": 150.001,
+      "utc": "2026-11-10T17:42:50.940307+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 20,
+      "poll_successes": 59,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 10.609533552953508,
+      "status_age": 4.243,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 6,
+      "elapsed": 180,
+      "utc": "2026-11-10T17:43:20.940072+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 22,
+      "poll_successes": 64,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 10.609533552953508,
+      "status_age": 0.746,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 7,
+      "elapsed": 210,
+      "utc": "2026-11-10T17:43:50.940110+00:00",
+      "state": "CLAIM",
+      "version": "0.6.4",
+      "heartbeat_successes": 23,
+      "poll_successes": 68,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 10.609533552953508,
+      "status_age": 0.974,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 8,
+      "elapsed": 240,
+      "utc": "2026-11-10T17:44:20.940120+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 25,
+      "poll_successes": 73,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 10.609533552953508,
+      "status_age": 0.645,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 9,
+      "elapsed": 270.001,
+      "utc": "2026-11-10T17:44:50.940433+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 26,
+      "poll_successes": 77,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 10.609533552953508,
+      "status_age": 2.625,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 10,
+      "elapsed": 300.001,
+      "utc": "2026-11-10T17:45:20.940279+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 28,
+      "poll_successes": 81,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 0.637,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 11,
+      "elapsed": 330,
+      "utc": "2026-11-10T17:45:50.940093+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 29,
+      "poll_successes": 85,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 1.78,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 12,
+      "elapsed": 360,
+      "utc": "2026-11-10T17:46:20.940070+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 31,
+      "poll_successes": 89,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 4.848,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 13,
+      "elapsed": 390,
+      "utc": "2026-11-10T17:46:50.940086+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 32,
+      "poll_successes": 94,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 2.156,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 14,
+      "elapsed": 420,
+      "utc": "2026-11-10T17:47:20.940109+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 34,
+      "poll_successes": 99,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 0.539,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 15,
+      "elapsed": 450.001,
+      "utc": "2026-11-10T17:47:50.940211+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 35,
+      "poll_successes": 103,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 1.307,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 16,
+      "elapsed": 480,
+      "utc": "2026-11-10T17:48:20.940059+00:00",
+      "state": "CLAIM",
+      "version": "0.6.4",
+      "heartbeat_successes": 37,
+      "poll_successes": 106,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 1.683,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 17,
+      "elapsed": 510.001,
+      "utc": "2026-11-10T17:48:50.940252+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 38,
+      "poll_successes": 111,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 5.122,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 18,
+      "elapsed": 540.001,
+      "utc": "2026-11-10T17:49:20.940595+00:00",
+      "state": "CLAIM",
+      "version": "0.6.4",
+      "heartbeat_successes": 40,
+      "poll_successes": 115,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 1.498,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 19,
+      "elapsed": 570,
+      "utc": "2026-11-10T17:49:50.940077+00:00",
+      "state": "CLAIM",
+      "version": "0.6.4",
+      "heartbeat_successes": 41,
+      "poll_successes": 119,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 2.725,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 20,
+      "elapsed": 600,
+      "utc": "2026-11-10T17:50:20.940176+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 43,
+      "poll_successes": 124,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 3.645,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 21,
+      "elapsed": 630,
+      "utc": "2026-11-10T17:50:50.940075+00:00",
+      "state": "CLAIM",
+      "version": "0.6.4",
+      "heartbeat_successes": 44,
+      "poll_successes": 128,
+      "heartbeat_max_gap": 24.357830635039136,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 1.653,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 22,
+      "elapsed": 660,
+      "utc": "2026-11-10T17:51:20.940180+00:00",
+      "state": "CLAIM",
+      "version": "0.6.4",
+      "heartbeat_successes": 46,
+      "poll_successes": 132,
+      "heartbeat_max_gap": 27.66030571499141,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 1.084,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 23,
+      "elapsed": 690.001,
+      "utc": "2026-11-10T17:51:50.940431+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 47,
+      "poll_successes": 137,
+      "heartbeat_max_gap": 27.66030571499141,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 2.732,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 24,
+      "elapsed": 720,
+      "utc": "2026-11-10T17:52:20.940114+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 49,
+      "poll_successes": 141,
+      "heartbeat_max_gap": 27.66030571499141,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 1.468,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 25,
+      "elapsed": 750,
+      "utc": "2026-11-10T17:52:50.940171+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 50,
+      "poll_successes": 144,
+      "heartbeat_max_gap": 27.66030571499141,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 1.015,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 26,
+      "elapsed": 780.001,
+      "utc": "2026-11-10T17:53:20.940473+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 52,
+      "poll_successes": 148,
+      "heartbeat_max_gap": 27.66030571499141,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 1.283,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 27,
+      "elapsed": 810.001,
+      "utc": "2026-11-10T17:53:50.940241+00:00",
+      "state": "CLAIM",
+      "version": "0.6.4",
+      "heartbeat_successes": 53,
+      "poll_successes": 152,
+      "heartbeat_max_gap": 27.66030571499141,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 1.719,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 28,
+      "elapsed": 840,
+      "utc": "2026-11-10T17:54:20.940160+00:00",
+      "state": "CLAIM",
+      "version": "0.6.4",
+      "heartbeat_successes": 55,
+      "poll_successes": 156,
+      "heartbeat_max_gap": 27.66030571499141,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 0.502,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 29,
+      "elapsed": 870.001,
+      "utc": "2026-11-10T17:54:50.940199+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 56,
+      "poll_successes": 161,
+      "heartbeat_max_gap": 27.66030571499141,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 1.45,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    },
+    {
+      "index": 30,
+      "elapsed": 900,
+      "utc": "2026-11-10T17:55:20.940120+00:00",
+      "state": "ONLINE",
+      "version": "0.6.4",
+      "heartbeat_successes": 58,
+      "poll_successes": 165,
+      "heartbeat_max_gap": 27.66030571499141,
+      "poll_max_gap": 12.905151445011143,
+      "status_age": 3.465,
+      "device_freeze": true,
+      "identity_preserved": true,
+      "base_config_preserved": true,
+      "binaries_match_release": true,
+      "service": {
+        "MainPID": "287261",
+        "NRestarts": "0",
+        "CapabilityBoundingSet": "",
+        "User": "agent-center-agent",
+        "NoNewPrivileges": "yes",
+        "ActiveState": "active"
+      },
+      "journal": {
+        "executions": 95,
+        "events": 380,
+        "pending": 0,
+        "quick_check": true
+      }
+    }
+  ],
+  "logged_failure_counts": [],
+  "log_query_exit": 0,
+  "duration_seconds": 900
+}

@@ -1,0 +1,185 @@
+{"precheck":"ready_for_review","revision":1}
+{
+    "utc": "2026-11-10T14:42:33.346634+00:00",
+    "read_only": true,
+    "units": {
+        "agent-center-agent.service": {
+            "Result": "success",
+            "NRestarts": "0",
+            "ExecMainCode": "0",
+            "ExecMainStatus": "0",
+            "ActiveState": "active",
+            "SubState": "running",
+            "ActiveEnterTimestampMonotonic": "99371310215"
+        },
+        "agent-center-updater.service": {
+            "Result": "exit-code",
+            "NRestarts": "0",
+            "ExecMainCode": "1",
+            "ExecMainStatus": "1",
+            "ActiveState": "failed",
+            "SubState": "failed",
+            "ActiveEnterTimestampMonotonic": "0"
+        },
+        "agent-center-updater.timer": {
+            "Result": "success",
+            "ActiveState": "active",
+            "SubState": "waiting",
+            "ActiveEnterTimestampMonotonic": "99385332386"
+        },
+        "agent-center-mtr.socket": {
+            "Result": "success",
+            "ActiveState": "active",
+            "SubState": "listening",
+            "ActiveEnterTimestampMonotonic": "99369724151"
+        }
+    },
+    "status": {
+        "heartbeat_successes": 12208,
+        "poll_successes": 35454,
+        "heartbeat_max_gap": 43.07947216901812,
+        "poll_max_gap": 40.013600454025436,
+        "state": "ONLINE",
+        "version": "0.6.2",
+        "age_seconds": 0.25
+    },
+    "hashes": {
+        "\/opt\/agent-center-agent\/remote-updater.pyz": "bb5628e3a01b5c33b4edfa72605b2a7412db1b0e64989e67eb8f10a5e00c4e04",
+        "\/opt\/agent-center-agent\/runtime\/agent.pyz": "6cd33eaea1fe05111d8343b6023bfab8c7168b4e381adb31df28171ef287f14e"
+    },
+    "journals": {
+        "agent-center-agent.service": {
+            "command_exit": 0,
+            "first_utc": "2026-11-09T15:13:16.699771+00:00",
+            "last_utc": "2026-11-10T13:09:59.847612+00:00",
+            "counts": [],
+            "events": {
+                "poll_unavailable": 9
+            },
+            "failure_samples": [],
+            "limit": 4000
+        },
+        "agent-center-updater.service": {
+            "command_exit": 0,
+            "first_utc": "2026-11-10T08:10:35.438643+00:00",
+            "last_utc": "2026-11-10T14:42:27.000033+00:00",
+            "counts": {
+                "exit1": 14
+            },
+            "events": [],
+            "failure_samples": [
+                {
+                    "utc": "2026-11-10T10:19:53.785831+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:17:43.119596+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:18:42.788299+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:19:44.826893+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:30:28.021409+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:58:37.091397+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:07:39.042286+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:23:31.792897+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:38:06.851126+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:48:21.065024+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:49:01.863686+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:54:02.713785+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T14:13:10.025687+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T14:42:26.999300+00:00",
+                    "category": "exit1"
+                }
+            ],
+            "limit": 4000
+        }
+    },
+    "journal_states": {
+        "completed": 87
+    },
+    "maintenance_markers": 0,
+    "companion_version": "0.6.2",
+    "transport_samples": [],
+    "validation_samples": [],
+    "family_validation_samples": [
+        {
+            "family": 2,
+            "utc": "2026-11-10T14:42:33.800536+00:00",
+            "status": 422,
+            "origin_not_allowed": false,
+            "elapsed_ms": 5560.85
+        },
+        {
+            "family": 2,
+            "utc": "2026-11-10T14:42:39.361414+00:00",
+            "status": 422,
+            "origin_not_allowed": false,
+            "elapsed_ms": 1030.78
+        },
+        {
+            "family": 2,
+            "utc": "2026-11-10T14:42:40.392226+00:00",
+            "status": 422,
+            "origin_not_allowed": false,
+            "elapsed_ms": 5658.35
+        },
+        {
+            "family": 10,
+            "utc": "2026-11-10T14:42:46.050935+00:00",
+            "status": 422,
+            "origin_not_allowed": false,
+            "elapsed_ms": 1049.33
+        },
+        {
+            "family": 10,
+            "utc": "2026-11-10T14:42:47.100305+00:00",
+            "status": 422,
+            "origin_not_allowed": false,
+            "elapsed_ms": 1052.47
+        },
+        {
+            "family": 10,
+            "utc": "2026-11-10T14:42:48.152808+00:00",
+            "status": 422,
+            "origin_not_allowed": false,
+            "elapsed_ms": 2485.71
+        }
+    ]
+}
+{"central":{"version":"0.6.2","last_heartbeat_at":"2026-11-10T15:42:06+01:00","last_poll_at":"2026-11-10T15:42:16+01:00"}}
+{"central_pending_operations":0,"central_active_tasks":0}
+{"source_acl_families":[6,4],"pending_source_family":null}

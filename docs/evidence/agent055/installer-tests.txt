@@ -1,0 +1,12 @@
+test_hidden_credential_reaches_getpass_without_echo_or_command_argument (test_agent_bootstrap_installer.TerminalHandoffTests.test_hidden_credential_reaches_getpass_without_echo_or_command_argument) ... ok
+test_split_prompt_is_detected_and_failure_status_preserved (test_agent_bootstrap_installer.TerminalHandoffTests.test_split_prompt_is_detected_and_failure_status_preserved) ... ok
+test_failed_activation_restores_catalog_and_never_changes_identity (test_agent_bootstrap_installer.UpdaterRepairTests.test_failed_activation_restores_catalog_and_never_changes_identity) ... ok
+test_repair_dispatch_does_not_request_enrollment_or_bootstrap_credentials (test_agent_bootstrap_installer.UpdaterRepairTests.test_repair_dispatch_does_not_request_enrollment_or_bootstrap_credentials) ... ok
+test_repair_stages_pinned_release_without_reenrollment_or_policy_changes_and_is_repeatable (test_agent_bootstrap_installer.UpdaterRepairTests.test_repair_stages_pinned_release_without_reenrollment_or_policy_changes_and_is_repeatable) ... ok
+test_symlink_catalog_is_rejected_without_following_it (test_agent_bootstrap_installer.UpdaterRepairTests.test_symlink_catalog_is_rejected_without_following_it) ... ok
+test_tampered_installed_updater_is_rejected_before_activation (test_agent_bootstrap_installer.UpdaterRepairTests.test_tampered_installed_updater_is_rejected_before_activation) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.323s
+
+OK

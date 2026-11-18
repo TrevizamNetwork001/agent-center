@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "checks": {
+    "full_window": true,
+    "runtime_window": true,
+    "companion_window": true,
+    "heartbeat_monotonic": true,
+    "heartbeat_progress": true,
+    "poll_progress": true,
+    "central_heartbeat_fresh": true,
+    "central_poll_fresh": true,
+    "identity": true,
+    "journal": true,
+    "timeout": true,
+    "runtime_bytes": true,
+    "companion_bytes": true
+  },
+  "started_at": "2026-11-10T14:49:06.919812+00:00",
+  "ended_at": "2026-11-10T15:04:06.949066+00:00",
+  "duration_seconds": 900.029,
+  "samples": 31,
+  "heartbeat_delta": 45,
+  "poll_delta": 124,
+  "max_status_age": 12.627
+}

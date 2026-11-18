@@ -1,0 +1,11 @@
+{
+    "version": "0.6.1",
+    "runtime_sha256": "5adb4d7bc1884ed7fe7d469543bbf1f07f557aa21662b31071eb6aa93eb4ae99",
+    "updater_sha256": "5e78f70130cf4368215f4af86123888695d0dc29db71e3a95572d4720bf2264d",
+    "companion_sha256": "805bf6a1e74ffb6d95c151c40aed877865b5b1355bb942ea83b240a23424a6d7",
+    "manifest_sha256": "eb2d98ab911ebb8a808d3462dce1b30a1d90ef8694c8b48baec1031ea027ed30",
+    "bundle_sha256": "f9746b9c719de47f154de5b1ca682081691bdf6af7dea627faae261fe53efc4e",
+    "source_sha256": "03654f99b6f8150e747542444a51520fc8d99dd65f8ba8a59e38bde7bb76dd7c",
+    "bootstrap_sha256": "812099ffbf22aee90bca8c35a617d9cbfe1752c7f352d1d15df996834aa1d909",
+    "script_sha256": "c8f7d7a8ccb9341a09878a2d9192f9aa0c023f340b2fb04e0c2e83983d5f966e"
+}

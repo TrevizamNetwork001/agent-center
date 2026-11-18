@@ -1,0 +1,23 @@
+{
+    "stored_classification": "INDICIO_DE_FALHA",
+    "display_classification": "INCONCLUSIVO",
+    "display_summary": "Verificações bloqueadas pela política do Agent; evidências insuficientes para concluir no escopo testado.",
+    "display_start": "05\/11\/2026 10:47:33 -03:00",
+    "blocked_test_messages": 2,
+    "step_results": [
+        {
+            "key": "dns_a",
+            "result": {
+                "ok": false,
+                "error": "policy_denied"
+            }
+        },
+        {
+            "key": "dns_aaaa",
+            "result": {
+                "ok": false,
+                "error": "policy_denied"
+            }
+        }
+    ]
+}

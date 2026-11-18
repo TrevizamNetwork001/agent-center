@@ -1,6 +1,5 @@
 import argparse
 import json
-import os
 from pathlib import Path
 
 from .engine import Engine
@@ -17,25 +16,19 @@ def main():
     p.add_argument("--base", type=Path, default=Path("/opt/agent-center-agent"))
     p.add_argument("--state", type=Path, default=Path("/var/lib/agent-center-agent"))
     a = p.parse_args()
-    if a.apply and (
-        os.geteuid() != 0
-        or a.base != Path("/opt/agent-center-agent")
-        or a.state != Path("/var/lib/agent-center-agent")
-    ):
-        print('{"error":"apply_requires_root_and_fixed_paths"}')
+    if a.apply:
+        # A local checksum is not release authorization. Installation and
+        # rollback must use the authenticated, signed Lifecycle operation.
+        print('{"error":"apply_requires_lifecycle"}')
         return 2
     try:
         engine = Engine(a.base, a.state)
         if a.operation == "update":
             if not a.artifact or not a.sha256:
                 raise ValueError()
-            result = (
-                engine.apply(a.artifact, a.sha256)
-                if a.apply
-                else engine.dry_run(a.artifact, a.sha256)
-            )
+            result = engine.dry_run(a.artifact, a.sha256)
         else:
-            result = engine.rollback(not a.apply)
+            result = engine.rollback(True)
         print(json.dumps(result))
         return 0
     except Exception:

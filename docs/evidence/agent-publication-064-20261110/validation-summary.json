@@ -1,0 +1,73 @@
+{
+  "tests": {
+    "python": 185,
+    "candidate_signatures": 2,
+    "laravel": 51,
+    "laravel_assertions": 459
+  },
+  "native_debian_systemd": {
+    "full_update": true,
+    "legacy_companion_transition": true,
+    "postcheck_failure_rollback": true,
+    "interruption_hold": true,
+    "verified_recovery_preserved_new_journal_entry": true,
+    "hardened_companion_service_exit": 0
+  },
+  "real_update": {
+    "release_id": "f00ec265-6230-4eb8-8651-a5a8343c353a",
+    "operation_id": "6122b074-c512-478b-a9de-237f72c837b2",
+    "status": "COMPLETED",
+    "sequence": 5,
+    "installed_versions": [
+      "runtime:0.6.4",
+      "companion:0.6.4",
+      "cli:0.6.4",
+      "mtr:0.6.4"
+    ],
+    "identity_config_preserved": true,
+    "old_journal_rows_preserved": true,
+    "device_freeze_preserved": true,
+    "runtime_unprivileged": true,
+    "dns_after_update": "COMPLETED/NORMAL, four tasks",
+    "journal_before": {
+      "executions": 91,
+      "events": 364
+    },
+    "journal_after_dns": {
+      "executions": 95,
+      "events": 380
+    }
+  },
+  "observation_900s": {
+    "complete": true,
+    "passed": true,
+    "duration_seconds": 900,
+    "samples": 31,
+    "start_utc": "2026-11-10T17:40:20.939824+00:00",
+    "end_utc": "2026-11-10T17:55:20.940120+00:00",
+    "heartbeat_progress": 45,
+    "poll_progress": 128,
+    "logged_failure_counts": [],
+    "same_principal_process": true
+  },
+  "production_private_key_transferred": false,
+  "production_migrations": false,
+  "unrelated_services_changed": false,
+  "security": {
+    "postgres_runtime_not_superuser_or_bypassrls": true,
+    "postgres_tls": "TLSv1.3",
+    "domain_rls_forced": true,
+    "previous_quarantines_preserved": true,
+    "private_artifact_unauthenticated_status": 401,
+    "ready_status": 200,
+    "temporary_sessions_removed": true
+  },
+  "publication_completed": true,
+  "production_trust_verified": true,
+  "signed_with_existing_operational_key": true,
+  "cleanup": {
+    "temporary_sessions_destroyed": true,
+    "temporary_web_tools_removed": true,
+    "isolated_native_lab_shutdown_requested": true
+  }
+}

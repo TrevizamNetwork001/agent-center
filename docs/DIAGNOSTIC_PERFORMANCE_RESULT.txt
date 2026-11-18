@@ -1,0 +1,78 @@
+DIAGNOSTIC PERFORMANCE PASS
+Agent Center — relatório final, 05/11/2026
+
+Causa raiz comprovada
+O registro original de Site não abre usou 103 s entre início e conclusão e 105 s desde a solicitação. As sondagens somaram 4,42193 s. Entre o último DNS necessário e o início do TCP houve 48 s: o TCP já estava pronto, mas o FIFO global colocou seis tarefas DNS de outros diagnósticos à frente dele. O Agent possui uma única faixa de execução; o polling fixo de cinco segundos continuava esperando após uma tarefa terminar. O worker também era necessário para liberar a etapa seguinte, em ciclos de aproximadamente dois segundos.
+
+Os timestamps antigos têm resolução de um segundo. Não é possível decompor retroativamente transporte, inicialização Python e processamento de cada requisição com exatidão. A instrumentação nova evita atribuir todo o resíduo à rede ou à fila.
+
+Correções aplicadas
+1. Alternância de tarefas entre diagnósticos prontos, preservando dependências e uma única execução ativa.
+2. Avanço do plano/conclusão na própria transação que aceita o resultado normalizado e cercado por geração/lease. Duplicatas não refazem transições nem instrumentação.
+3. A primeira correção somente na Central reduziu a espera da barreira DNS para TCP a 23,614 s, mas o total ficou em 116,535 s nessa amostra. Isso foi registrado, sem apresentar a intervenção parcial como sucesso.
+4. Com causa demonstrada por timestamps e pelo código, o Agent recebeu uma alteração mínima na versão 0.6.1: sinalizar conclusão do executor ao laço de busca. O laço aguarda a saída da faixa antes de anunciar capacidade, respeita o backoff de falhas, recuperação do journal, polling ocioso configurado e piso de despacho de dois segundos na configuração padrão. Não adiciona execução paralela nem novas ferramentas/capabilities.
+
+Comparação real — três diagnósticos concorrentes, mesmo Agent e destino
+                            Antes total     Depois total
+Site não abre               105,00 s         70.74 s
+DNS                          41,00 s         54.82 s
+Perda/Latência               95,00 s         59.10 s
+Conclusão do lote           105,00 s         70.74 s
+
+Site não abre, contagem antiga após início: 103 s → 70 s.
+Site não abre, execução técnica reportada: 4,42193 s → 4.41950 s.
+Site não abre, último resultado DNS necessário → início TCP: 48 s → 16.79761 s.
+Site não abre, enqueue TCP → claim TCP: 47 s → 13.86058 s.
+Site não abre, barreira DNS → enqueue TCP: cerca de 1 s no registro antigo → 23.534 ms.
+Redução observada do total de Site não abre e do lote: 32.62%.
+
+O DNS deste lote ficou mais lento com a nova alternância, enquanto Site não abre, Perda/Latência e a conclusão do lote ficaram mais rápidos. Isso é um tradeoff da distribuição justa, não uma alegação de que todo perfil ficou mais rápido. As medidas são amostras reais, não SLA; condições de rede e ordem inicial das tarefas podem variar. O tempo residual contém trabalho de outros diagnósticos, comunicação, inicialização e coordenação.
+
+Instrumentação entregue
+- Solicitação, planejamento inicial/final, enqueue, claim recebido/lock/atribuição, start aceito, result recebido/registrado, predecessor → próxima etapa e conclusão.
+- PostgreSQL com microsegundos nos registros de desempenho; gerações de tentativa e snapshots de polling preservados.
+- Worker: início/fim, contagem de ciclos e duração do trabalho, sem alterar seu intervalo ou liveness.
+- API: relógio monotônico para handling e horários de recebimento/resposta preparada. Canal JSON dedicado, arquivos 0600, retenção de sete dias, sem corpos, headers, tokens ou valores de lease. Horário de resposta preparada não é uma medição de chegada ao cliente.
+- Todos os eventos registrados na janela final responderam HTTP 200.
+  agent.claim: 15 requisições, mediana 189.844 ms, máximo 295.515 ms de handling na Central.
+  agent.result: 13 requisições, mediana 270.494 ms, máximo 674.001 ms de handling na Central.
+  agent.start: 13 requisições, mediana 176.664 ms, máximo 241.583 ms de handling na Central.
+
+Apresentação
+Endereços e duração em linhas distintas, resultados específicos por tipo, JSON bruto em detalhes técnicos. Duração total desde a solicitação e soma efetiva reportada separadas; medidas parciais/ausentes identificadas. A soma de esperas por etapa é uma métrica acumulada, pode ter períodos sobrepostos e não deve ser somada ao total global. HTTP 301 mantém o aviso de destino do redirecionamento não testado. Concluído, dispensado e bloqueado continuam distintos. Registros antigos não receberam timestamps inventados.
+
+Segurança e integridade
+Fencing, leases de 45 s, renew, idempotência, journal e dependências preservados. Nenhum acesso a equipamentos, MTR remoto, varredura Nmap, captura tcpdump ou RAG foi executado. Arquivos de configuração, política de alvos, managed settings e units systemd do Agent não foram alterados. A configuração gerenciada continua na revisão 2, confirmada pelo Agent. A mudança 0.6.1 foi aplicada pelo fluxo nativo com precheck, backup e postcheck; artefato fixado por SHA-256.
+
+Skills solicitadas durante o trabalho
+MTR, tcpdump e Nmap foram cadastradas como preparadas e desabilitadas para execução remota; a API bloqueia habilitação sem executor compatível. As páginas explicam limites, parâmetros, interpretação e referências. A análise determinística de JSON MTR existente está operacional na Central: rejeita entrada inválida, não executa comandos e não armazena relatório. Interpreta perda intermediária com cautela, confirma o destino numérico, distingue ausência de resposta e amostra curta e não confunde desvio de RTT com jitter universal. Não foram embutidos comandos de exploração, brute force ou NSE da referência de pentest enviada.
+
+Instalação
+/instalar/ reorganizada em requisitos, comandos, aprovação, operação pelo painel e reparo recolhido. Temas claro/escuro/automático persistentes e cópia dos comandos. Kit e instalador 0.6.1 publicados com hashes verificados. O script público de tema tem liberação exata; ACL administrativa não foi ampliada.
+
+Testes executados
+- Central: 219 testes / 1729 asserções, incluindo regressões de permissões, isolamento, planner, leases, fencing e idempotência.
+- Concorrência em processos separados: exclusão de claims, corrida worker/result, tentativa expirada e resultado duplicado; migração e rollback no PostgreSQL descartável.
+- Agent: 81 testes, incluindo wakeup, piso de despacho, backoff de falhas, parada responsiva, heartbeat e preservação do journal.
+- Instalador/reparo: 13 testes; download público e checksums verificados.
+- Leitor MTR: suíte focada final e validação de metadados malformados.
+- 18 verificações visuais iniciais e mais 6 do diagnóstico real instrumentado; 375/768/1440 px, temas claro/escuro, tabelas técnicas abertas sem overflow de página, JSON recolhido e aviso 301.
+- Live refresh, retorno após atualização, cópia de comando, navegação e temas verificados. Pint, Ruff e git diff --check passaram.
+
+Health final
+HTTPS /health/ready: ready.
+Web, worker e diagnostic-worker: healthy; comandos de health próprios passaram.
+Nginx: active; nginx -t válido.
+Agent teste: 0.6.1, ativo, pós-verificação confirmada, revisão gerenciada 2 recebida.
+Os três diagnósticos finais concluíram NORMAL no escopo testado.
+
+Evidências e rollback
+measurements.json; final-attempt-timings.json; api-timing-evidence.json; final-verification.json; logs de testes e screenshots no mesmo diretório desta entrega.
+Backups em /opt/agent-center/backups/diagnostic-performance-20261105T215721Z e /opt/agent-center/backups/performance-agent-061-20261105T221030Z, com correções finais em seus subdiretórios.
+Imagem persistente final: agent-center-central:diagnostic-performance-061-final-20261105.
+Rollback de aplicação preserva schema aditivo e timings em produção. Não executar down destrutivo sobre evidências. Artefato anterior e backup do runtime disponíveis no fluxo de manutenção.
+
+Diagnóstico final Site não abre:
+https://agente.trevizamnetwork.com.br/diagnostics/2816039a-b18e-49d1-9dc2-420e4bb0e7fe
+
+DIAGNOSTIC PERFORMANCE PASS

@@ -1,0 +1,90 @@
+{
+  "sequence": 5,
+  "version": "0.6.4",
+  "sha256": "a4d87d91c7592ddb59218e670e2c839d57fea7ca67dee5ae571004eacf607bff",
+  "events": [
+    {
+      "path": "/agents/releases",
+      "status": 302,
+      "utc": "2026-11-10T17:35:41Z"
+    },
+    {
+      "path": "/agents/c88457e9-748f-4906-982a-166d0ee0f6d3/operations",
+      "status": 302,
+      "utc": "2026-11-10T17:35:41Z"
+    },
+    {
+      "operation_status": "PRECHECK_REQUESTED",
+      "utc": "2026-11-10T17:35:42Z"
+    },
+    {
+      "operation_status": "PRECHECKING",
+      "utc": "2026-11-10T17:35:46Z"
+    },
+    {
+      "operation_status": "APPROVED",
+      "utc": "2026-11-10T17:35:53Z"
+    },
+    {
+      "operation_status": "RUNNING",
+      "utc": "2026-11-10T17:36:07Z"
+    },
+    {
+      "operation_status": "COMPLETED",
+      "utc": "2026-11-10T17:36:15Z"
+    }
+  ],
+  "ssh_during_autonomous_update": false,
+  "release": {
+    "id": "f00ec265-6230-4eb8-8651-a5a8343c353a",
+    "version": "0.6.4",
+    "sequence": 5,
+    "sha256": "a4d87d91c7592ddb59218e670e2c839d57fea7ca67dee5ae571004eacf607bff"
+  },
+  "final": {
+    "version": "0.6.4",
+    "last_heartbeat_at": "2026-11-10T18:36:10+01:00",
+    "last_poll_at": "2026-11-10T18:36:11+01:00",
+    "updater": {
+      "version": "0.6.4",
+      "protocol": 1,
+      "last_poll_at": "2026-11-10T18:36:06+01:00",
+      "download_protocol": 1,
+      "component_protocol": 1,
+      "signed_release_protocol": 1
+    },
+    "release": {
+      "id": "f00ec265-6230-4eb8-8651-a5a8343c353a",
+      "version": "0.6.4",
+      "sequence": 5,
+      "sha256": "a4d87d91c7592ddb59218e670e2c839d57fea7ca67dee5ae571004eacf607bff"
+    },
+    "operation": {
+      "id": "6122b074-c512-478b-a9de-237f72c837b2",
+      "status": "COMPLETED",
+      "error": null,
+      "evidence": {
+        "backup": "6122b074-c512-478b-a9de-237f72c837b2",
+        "sha256": "a4d87d91c7592ddb59218e670e2c839d57fea7ca67dee5ae571004eacf607bff",
+        "version": "0.6.4",
+        "postcheck": true,
+        "components": [
+          {
+            "id": "mtr",
+            "status": "installed",
+            "profile": "network-raw-helper",
+            "version": "0.6.4",
+            "operational_verified": true
+          }
+        ],
+        "freeze_preserved": true
+      },
+      "created_at": "2026-11-10T17:35:41.000000Z",
+      "finished_at": "2026-11-10T17:36:12.000000Z"
+    },
+    "active_tasks": 0,
+    "pending_operations": 0
+  },
+  "publication_completed": true,
+  "session_removed": true
+}

@@ -18,6 +18,7 @@ class RuntimeAdapter:
         self.candidate = Path(candidate)
         self.operation = operation
         self.components = None
+        self.updaters = None
 
     def restored_health(self, operation_id):
         from .components import Components, ceiling
@@ -89,6 +90,11 @@ class RuntimeAdapter:
             ceiling(base, policy)
         if not Components(system).rollback_health(backup):
             return False
+        if (backup / "updaters").exists():
+            from .updaters import Updaters
+
+            if not Updaters(self.remote.engine.base, self.remote.config_dir).rollback_health(backup):
+                return False
         self.remote.expected_version = self.operation["from_version"]
         self.remote.started_at = time.time()
         return self.remote.postcheck()
@@ -108,23 +114,39 @@ class RuntimeAdapter:
             system = getattr(self.remote, "component_system", None) or DebianComponents()
             self.components = Components(system)
             self.components.precheck(release, artifact)
+        if tuple(map(int, release["version"].split("."))) >= (0, 6, 4):
+            from .updaters import Updaters
+
+            self.updaters = Updaters(self.remote.engine.base, self.remote.config_dir)
+            self.updaters.precheck(artifact)
         return release
 
     def snapshot(self, operation_id, plan):
-        self.remote.engine.service.stop()
-        if self.remote.engine.service.active():
-            raise UpdateError("busy")
-        lock = InstanceLock(self.remote.engine.state / "instance.lock")
+        was_active = self.remote.engine.service.active()
+        lock = None
         try:
+            self.remote.engine.service.stop()
+            if self.remote.engine.service.active():
+                raise UpdateError("busy")
+            lock = InstanceLock(self.remote.engine.state / "instance.lock")
             backup = self.remote._backup(operation_id)
             if self.components:
                 self.components.snapshot(self.remote.control / "backups" / backup)
+            if self.updaters:
+                self.updaters.snapshot(self.remote.control / "backups" / backup)
             return backup
         except Exception:
-            self.remote.engine.service.start()
+            # A restarted Agent must be able to acquire its own instance lock.
+            # Lock/stop failures can happen before a backup exists for rollback.
+            if lock:
+                lock.close()
+                lock = None
+            if was_active and not self.remote.engine.service.active():
+                self.remote.engine.service.start()
             raise
         finally:
-            lock.close()
+            if lock:
+                lock.close()
 
     def install(self, plan, artifact):
         if self.components:
@@ -132,6 +154,10 @@ class RuntimeAdapter:
         self.remote.engine.apply(self.candidate, plan["sha256"])
         self.remote.started_at = time.time()
         self.remote.engine.service.start()
+
+    def finalize(self, plan):
+        if self.updaters:
+            self.updaters.install()
 
     def health(self, plan):
         self.remote.expected_version = plan["version"]
@@ -144,6 +170,8 @@ class RuntimeAdapter:
         backup_path = self.remote.control / "backups" / backup
         if self.components:
             self.components.rollback(backup_path)
+        if self.updaters:
+            self.updaters.rollback(backup_path)
         old = (backup_path / "runtime" / "agent.pyz").read_bytes()
         current = self.remote.engine.base / "runtime" / "agent.pyz"
         if not current.exists() or current.read_bytes() != old:
@@ -161,4 +189,4 @@ class RuntimeAdapter:
         self.remote.required_capabilities = ()
         return (
             not self.components or self.components.rollback_health(self.rollback_backup)
-        ) and self.remote.postcheck()
+        ) and (not self.updaters or self.updaters.rollback_health(self.rollback_backup)) and self.remote.postcheck()

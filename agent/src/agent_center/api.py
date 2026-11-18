@@ -48,7 +48,7 @@ class Client:
             return Outcome(False, 0, {}, "invalid_operation")
         try:
             payload = json.dumps(data or {}).encode()
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, RecursionError):
             return Outcome(False, 0, {}, "invalid_payload")
         attempts = 1 if operation in {"enroll", "enrollment-status"} else self.retries + 1
         for attempt in range(attempts):
@@ -83,12 +83,12 @@ class Client:
                                 "origin_not_allowed",
                                 False,
                             )
-                    except (ValueError, OSError):
+                    except (ValueError, OSError, RecursionError):
                         pass
                 error.close()
                 retryable = status == 429 or status >= 500
                 reason = "http_" + str(status)
-            except (json.JSONDecodeError, UnicodeError, http.client.IncompleteRead):
+            except (json.JSONDecodeError, UnicodeError, http.client.IncompleteRead, RecursionError):
                 reason = "invalid_response"
             except (
                 OSError,

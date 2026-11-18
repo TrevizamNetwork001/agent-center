@@ -45,7 +45,9 @@ def available():
 def self_check():
     # Legacy updater validates this six-capability self-check contract.
     # Extension negotiation uses the normal capabilities endpoint.
-    caps = tuple(c for c in available() if c not in (mtr.CAPABILITY, routeros7_lab.CAPABILITY))
+    # Exclude the optional helper before checking availability: its socket can
+    # wait longer than the legacy updater's self-check deadline.
+    caps = tuple(c for c in KNOWN if c != mtr.CAPABILITY and capability_available(c))
     assert len(caps) == len(set(caps)) and set(caps) <= set(KNOWN)
     assert all(callable(HANDLERS[c]) for c in caps)
     return caps

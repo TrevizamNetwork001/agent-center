@@ -1,0 +1,51 @@
+{
+  "runtime_database_role": {
+    "rolsuper": false,
+    "rolbypassrls": false
+  },
+  "database_tls": {
+    "ssl": true,
+    "version": "TLSv1.3"
+  },
+  "rls": [
+    {
+      "relname": "agent_operations",
+      "relrowsecurity": true,
+      "relforcerowsecurity": true
+    },
+    {
+      "relname": "agent_releases",
+      "relrowsecurity": true,
+      "relforcerowsecurity": true
+    },
+    {
+      "relname": "agent_tasks",
+      "relrowsecurity": true,
+      "relforcerowsecurity": true
+    },
+    {
+      "relname": "agents",
+      "relrowsecurity": true,
+      "relforcerowsecurity": true
+    },
+    {
+      "relname": "audit_events",
+      "relrowsecurity": true,
+      "relforcerowsecurity": true
+    }
+  ],
+  "bootstrap_audit_events": [
+    "agent.lifecycle_bootstrap_authorized",
+    "agent.lifecycle_bootstrap_completed"
+  ],
+  "quarantined_releases": [
+    {
+      "sha256": "08a81eab118e8f10ab5e57444aa4357ba9fe384deed4436a256eb797084cb480"
+    },
+    {
+      "sha256": "2d7a360a54968f98f4f434419a3d3170bc7e88fd2af95909ceaf2936acd453ce"
+    }
+  ],
+  "active_tasks": 0,
+  "pending_operations": 0
+}

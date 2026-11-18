@@ -84,6 +84,9 @@ class Presentation
     public static function label(?string $s): string
     {
         return match ($s) {
+            'platform_admin' => 'Administrador da plataforma', 'tenant_admin' => 'Administrador do tenant', 'operator' => 'Operador', 'viewer' => 'Somente leitura',
+            'NORMAL' => 'Normal', 'INDICIO_DE_FALHA' => 'Indício de falha', 'INCONCLUSIVO' => 'Inconclusivo', 'ERRO_DE_EXECUCAO' => 'Erro de execução',
+            'VERDE' => 'Operacional', 'ATENÇÃO' => 'Atenção', 'NO-GO' => 'Indisponível', 'HEALTHY' => 'Operacional', 'ONLINE' => 'Online', 'OFFLINE' => 'Offline',
             'active' => 'Habilitado','disabled' => 'Desabilitado','REVOKED' => 'Revogado','COMPLETED' => 'Concluído','RUNNING' => 'Em execução','CLAIMED' => 'Reservado','PENDING' => 'Pendente','QUEUED' => 'Na fila','EXECUTION_ERROR' => 'Erro de execução','TECHNICAL_FAILURE' => 'Teste executado com falha','LIMITED' => 'Verificação limitada','POLICY_BLOCKED' => 'Bloqueado por política','SKIPPED' => 'Dispensado','BLOCKED' => 'Bloqueado','CANCELLED' => 'Cancelado','FAILED' => 'Falhou','EXPIRED' => 'Expirado',null => 'Aguardando conclusão',default => $s
         };
     }
@@ -141,6 +144,55 @@ class Presentation
         return $steps->every(fn ($s) => $s->status === 'SKIPPED') ? 'SKIPPED' : 'COMPLETED';
     }
 
+    public static function capabilityLabel(string $capability): string
+    {
+        return match ($capability) {
+            'agent_info' => 'Informações do agente',
+            'icmp_ping:v1' => 'Conectividade por ping',
+            'dns_lookup:v1' => 'Consulta DNS',
+            'tcp_connect:v1' => 'Conexão TCP',
+            'traceroute:v1' => 'Rastreamento de rota',
+            'http_probe:v1' => 'Verificação HTTP e HTTPS',
+            'mtr_path_analysis:v1' => 'Qualidade da rota MTR',
+            default => $capability,
+        };
+    }
+
+    public static function agentValue($value): string
+    {
+        if ($value === null) {
+            return 'Indisponível';
+        }
+        if (is_bool($value)) {
+            return $value ? 'Sim' : 'Não';
+        }
+
+        return match ((string) $value) {
+            'AVAILABLE' => 'Disponível',
+            'UNAVAILABLE' => 'Indisponível',
+            'BLOCKED' => 'Bloqueado',
+            'UNKNOWN' => 'Não confirmado',
+            'ALLOWED' => 'Permitido',
+            'DENIED' => 'Não permitido',
+            'STATUS_UNKNOWN' => 'Situação não confirmada',
+            'POLICY_BASE_DENIED' => 'Bloqueado pela política local',
+            'ADMIN_CEILING_DENIED' => 'Bloqueado pelo limite administrativo',
+            'MANAGED_POLICY_DENIED' => 'Bloqueado pela política gerenciada',
+            'CAPABILITY_UNAVAILABLE' => 'Recurso indisponível',
+            'HELPER_UNAVAILABLE' => 'Componente auxiliar indisponível',
+            'HELPER_UNHEALTHY' => 'Componente auxiliar com falha',
+            'DEPENDENCY_MISSING' => 'Dependência ausente',
+            'PERMISSION_MISSING' => 'Permissão ausente',
+            'UNSUPPORTED_VERSION' => 'Versão não compatível',
+            'DEVICE_OPERATIONS_FROZEN' => 'Alterações em equipamentos bloqueadas',
+            'POLICY_NOT_APPLIED' => 'Política ainda não aplicada',
+            'base' => 'Política local',
+            'ceiling' => 'Limite administrativo',
+            'managed' => 'Política gerenciada',
+            default => self::capabilityLabel((string) $value),
+        };
+    }
+
     public static function auditSummary($e): string
     {
         $m = $e->metadata ?? [];
@@ -152,12 +204,12 @@ class Presentation
             $parts[] = $m['status'] === 'active' ? 'Conta ativa' : 'Conta desabilitada';
         }
         if (in_array($m['role'] ?? '', ['platform_admin', 'tenant_admin', 'operator', 'viewer'], true)) {
-            $parts[] = 'Papel: '.$m['role'];
+            $parts[] = 'Papel: '.self::label($m['role']);
         }
         if (is_array($m['fields'] ?? null)) {
             $fields = array_intersect($m['fields'], ['name', 'email', 'slug', 'role', 'status']);
             if ($fields) {
-                $parts[] = 'Campos: '.implode(', ', $fields);
+                $parts[] = 'Campos: '.implode(', ', array_map(fn ($field) => ['name' => 'Nome', 'email' => 'E-mail', 'slug' => 'Identificador', 'role' => 'Papel', 'status' => 'Situação'][$field], $fields));
             }
         }
 

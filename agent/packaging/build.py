@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 def build(output, mode="agent"):
-    modules = {"mtr-helper": "agent_center.mtr_helper", "agent": "agent_center.main", "updater": "agent_center.update.cli", "remote-updater": "agent_center.update.remote"}
+    modules = {"updater-bootstrap": "agent_center.lifecycle.updater_bootstrap", "mtr-helper": "agent_center.mtr_helper", "agent": "agent_center.main", "updater": "agent_center.update.cli", "remote-updater": "agent_center.update.remote"}
     if mode not in modules:
         raise ValueError("invalid_build_mode")
     root = Path(__file__).resolve().parents[1] / "src"

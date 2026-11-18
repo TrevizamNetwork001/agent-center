@@ -22,3 +22,10 @@
 - Novos módulos ou integrações dependem do escopo explicitamente autorizado; a arquitetura existente não autoriza automaticamente Telegram, WhatsApp, RAG ou operações em equipamentos.
 - Secrets em arquivos fora do Git com permissões restritas. Não expor PostgreSQL/FPM/worker publicamente.
 - Ler este arquivo antes de alterar o projeto; executar validações pertinentes e git diff --check.
+
+## Skill de layout e interface — allowlist de desenvolvimento
+
+- `web-development-design-ops` está explicitamente permitida para desenvolvimento de interfaces neste repositório, em [skills/web-development-design-ops/SKILL.md](skills/web-development-design-ops/SKILL.md).
+- Ler e seguir essa skill ao criar, revisar ou alterar layouts, páginas, dashboards, componentes visuais, CSS e responsividade do Agent Center.
+- Esta permissão é restrita à orientação de desenvolvimento; não registra uma Skill operacional no Agent, não libera dependências relacionadas e não autoriza deploy, acesso a equipamentos ou novas integrações.
+- As regras obrigatórias acima prevalecem sobre a skill. Manter a Central em Laravel e preservar a stack e os controles existentes.

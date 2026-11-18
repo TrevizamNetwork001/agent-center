@@ -1,0 +1,286 @@
+{"precheck":"ready_for_review","revision":1}
+{
+    "read_only": true,
+    "started_at": "2026-11-10T14:49:06.919812+00:00",
+    "ended_at": "2026-11-10T15:04:06.949066+00:00",
+    "duration_seconds": 900.029,
+    "samples": [
+        {
+            "utc": "2026-11-10T14:49:06.920577+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 0.937,
+            "heartbeat_successes": 10,
+            "poll_successes": 26
+        },
+        {
+            "utc": "2026-11-10T14:49:36.921025+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 1.637,
+            "heartbeat_successes": 11,
+            "poll_successes": 29
+        },
+        {
+            "utc": "2026-11-10T14:50:06.921649+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 4.877,
+            "heartbeat_successes": 13,
+            "poll_successes": 33
+        },
+        {
+            "utc": "2026-11-10T14:50:36.922468+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 2.385,
+            "heartbeat_successes": 14,
+            "poll_successes": 38
+        },
+        {
+            "utc": "2026-11-10T14:51:06.923001+00:00",
+            "state": "CLAIM",
+            "version": "0.6.2",
+            "status_age": 0.782,
+            "heartbeat_successes": 16,
+            "poll_successes": 41
+        },
+        {
+            "utc": "2026-11-10T14:51:36.923616+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 1.966,
+            "heartbeat_successes": 17,
+            "poll_successes": 45
+        },
+        {
+            "utc": "2026-11-10T14:52:06.924105+00:00",
+            "state": "CLAIM",
+            "version": "0.6.2",
+            "status_age": 0.686,
+            "heartbeat_successes": 19,
+            "poll_successes": 49
+        },
+        {
+            "utc": "2026-11-10T14:52:36.924664+00:00",
+            "state": "CLAIM",
+            "version": "0.6.2",
+            "status_age": 2.738,
+            "heartbeat_successes": 20,
+            "poll_successes": 53
+        },
+        {
+            "utc": "2026-11-10T14:53:06.925510+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 2.771,
+            "heartbeat_successes": 22,
+            "poll_successes": 58
+        },
+        {
+            "utc": "2026-11-10T14:53:36.926103+00:00",
+            "state": "CLAIM",
+            "version": "0.6.2",
+            "status_age": 12.627,
+            "heartbeat_successes": 23,
+            "poll_successes": 60
+        },
+        {
+            "utc": "2026-11-10T14:54:06.926613+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 4.211,
+            "heartbeat_successes": 25,
+            "poll_successes": 65
+        },
+        {
+            "utc": "2026-11-10T14:54:36.927097+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 0.651,
+            "heartbeat_successes": 26,
+            "poll_successes": 70
+        },
+        {
+            "utc": "2026-11-10T14:55:06.927713+00:00",
+            "state": "CLAIM",
+            "version": "0.6.2",
+            "status_age": 5.567,
+            "heartbeat_successes": 28,
+            "poll_successes": 73
+        },
+        {
+            "utc": "2026-11-10T14:55:36.928393+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 3.916,
+            "heartbeat_successes": 29,
+            "poll_successes": 77
+        },
+        {
+            "utc": "2026-11-10T14:56:06.928885+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 1.216,
+            "heartbeat_successes": 31,
+            "poll_successes": 82
+        },
+        {
+            "utc": "2026-11-10T14:56:36.929381+00:00",
+            "state": "CLAIM",
+            "version": "0.6.2",
+            "status_age": 1.488,
+            "heartbeat_successes": 32,
+            "poll_successes": 86
+        },
+        {
+            "utc": "2026-11-10T14:57:06.929850+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 3.292,
+            "heartbeat_successes": 34,
+            "poll_successes": 91
+        },
+        {
+            "utc": "2026-11-10T14:57:36.930660+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 0.968,
+            "heartbeat_successes": 35,
+            "poll_successes": 96
+        },
+        {
+            "utc": "2026-11-10T14:58:06.931357+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 4.269,
+            "heartbeat_successes": 37,
+            "poll_successes": 100
+        },
+        {
+            "utc": "2026-11-10T14:58:36.931834+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 2.325,
+            "heartbeat_successes": 38,
+            "poll_successes": 105
+        },
+        {
+            "utc": "2026-11-10T14:59:06.932511+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 4.561,
+            "heartbeat_successes": 40,
+            "poll_successes": 109
+        },
+        {
+            "utc": "2026-11-10T14:59:36.933159+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 2.269,
+            "heartbeat_successes": 41,
+            "poll_successes": 114
+        },
+        {
+            "utc": "2026-11-10T15:00:06.933812+00:00",
+            "state": "CLAIM",
+            "version": "0.6.2",
+            "status_age": 1.834,
+            "heartbeat_successes": 43,
+            "poll_successes": 117
+        },
+        {
+            "utc": "2026-11-10T15:00:36.934297+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 0.97,
+            "heartbeat_successes": 44,
+            "poll_successes": 121
+        },
+        {
+            "utc": "2026-11-10T15:01:06.934788+00:00",
+            "state": "CLAIM",
+            "version": "0.6.2",
+            "status_age": 1.838,
+            "heartbeat_successes": 46,
+            "poll_successes": 124
+        },
+        {
+            "utc": "2026-11-10T15:01:36.935371+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 1.866,
+            "heartbeat_successes": 47,
+            "poll_successes": 129
+        },
+        {
+            "utc": "2026-11-10T15:02:06.935836+00:00",
+            "state": "CLAIM",
+            "version": "0.6.2",
+            "status_age": 0.486,
+            "heartbeat_successes": 49,
+            "poll_successes": 133
+        },
+        {
+            "utc": "2026-11-10T15:02:36.936343+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 4.846,
+            "heartbeat_successes": 50,
+            "poll_successes": 137
+        },
+        {
+            "utc": "2026-11-10T15:03:06.936918+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 0.322,
+            "heartbeat_successes": 52,
+            "poll_successes": 141
+        },
+        {
+            "utc": "2026-11-10T15:03:36.937381+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 0.418,
+            "heartbeat_successes": 53,
+            "poll_successes": 146
+        },
+        {
+            "utc": "2026-11-10T15:04:06.920285+00:00",
+            "state": "ONLINE",
+            "version": "0.6.2",
+            "status_age": 4.753,
+            "heartbeat_successes": 55,
+            "poll_successes": 150
+        }
+    ],
+    "errors": {
+        "agent-center-agent.service": {
+            "counts": [],
+            "events": []
+        },
+        "agent-center-updater.service": {
+            "counts": [],
+            "events": []
+        }
+    },
+    "runtime_window_passed": true,
+    "companion_window_passed": true,
+    "identity_preserved": true,
+    "journal_before": {
+        "executions": 87,
+        "events": 348
+    },
+    "journal_after": {
+        "executions": 87,
+        "events": 348
+    },
+    "timeout": 10,
+    "hashes": {
+        "\/opt\/agent-center-agent\/runtime\/agent.pyz": "6cd33eaea1fe05111d8343b6023bfab8c7168b4e381adb31df28171ef287f14e",
+        "\/opt\/agent-center-agent\/remote-updater.pyz": "bb5628e3a01b5c33b4edfa72605b2a7412db1b0e64989e67eb8f10a5e00c4e04"
+    }
+}
+{"central":{"version":"0.6.2","last_heartbeat_at":"2026-11-10T16:03:56+01:00","last_poll_at":"2026-11-10T16:04:02+01:00"}}
+{"central_pending_operations":0,"central_active_tasks":0}
+{"source_acl_families":[6,4],"pending_source_family":null}

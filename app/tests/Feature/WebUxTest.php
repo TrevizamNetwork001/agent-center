@@ -141,8 +141,8 @@ class WebUxTest extends IdentityTestCase
 
     public function test_agents_and_detail_never_expose_hash_or_token(): void
     {
-        $this->actingAs($this->admin)->get('/agents')->assertOk()->assertSee('UX Agent A')->assertSee('Capabilities')->assertSee('ONLINE')->assertDontSee($this->agent->token_hash);
-        $this->get('/agents/'.$this->agent->id)->assertOk()->assertSee('Device freeze')->assertDontSee($this->agent->token_hash);
+        $this->actingAs($this->admin)->get('/agents')->assertOk()->assertSee('UX Agent A')->assertSee('Recursos')->assertSee('Abrir agente')->assertSee('ONLINE')->assertDontSee($this->agent->token_hash);
+        $this->get('/agents/'.$this->agent->id)->assertOk()->assertSee('Bloqueio de alterações em equipamentos')->assertSee('O que você deseja fazer?')->assertSee('Conexão e IPs')->assertDontSee($this->agent->token_hash);
         $this->get('/agents?fragment=1')->assertOk()->assertHeader('X-AC-Fragment', 'agents-panel')->assertDontSee('Criar código de cadastro');
     }
 
@@ -200,7 +200,7 @@ class WebUxTest extends IdentityTestCase
     public function test_audit_filters_and_unknown_metadata_not_rendered(): void
     {
         app(Audit::class)->record('user.updated', $this->admin, $this->a->id, 'user', $this->operator->id, ['fields' => ['name']]);
-        $this->actingAs($this->admin)->get('/audit?event=user.updated')->assertOk()->assertSee('user.updated')->assertSee('Campos: name')->assertViewHas('events', fn ($events) => $events->count() === 1 && $events->first()->event_type === 'user.updated');
+        $this->actingAs($this->admin)->get('/audit?event=user.updated')->assertOk()->assertSee('user.updated')->assertSee('Campos: Nome')->assertSee('Usuário atualizado')->assertSee('value="user.updated"', false)->assertViewHas('events', fn ($events) => $events->count() === 1 && $events->first()->event_type === 'user.updated');
         $this->getJson('/audit?from=invalid')->assertUnprocessable();
     }
 
@@ -245,11 +245,22 @@ class WebUxTest extends IdentityTestCase
         app(Engine::class)->create(Profile::where('key', 'SITE_LENTO')->sole(), $other, 'private-other.example.test', $this->other);
         $response = $this->actingAs($this->admin)->getJson('/dashboard?format=json&tenant_id='.$this->b->id);
         $response->assertOk()->assertHeader('Cache-Control', 'no-store, private')->assertHeader('X-AC-Tenant', (string) $this->a->id)
-            ->assertJsonPath('schema_version', 1)->assertJsonPath('tenant_id', $this->a->id)->assertJsonPath('health.agents_online', 1)
+            ->assertJsonPath('user.role', 'tenant_admin')->assertJsonPath('user.role_label', 'Administrador do tenant')->assertJsonPath('schema_version', 1)->assertJsonPath('tenant_id', $this->a->id)->assertJsonPath('health.agents_online', 1)
             ->assertJsonMissingPath('user.email')->assertJsonMissingPath('recent.0.result')->assertJsonMissingPath('events.0.metadata')
             ->assertSee('alpha.example.test')->assertDontSee('private-other.example.test')->assertDontSee('PRIVATE OTHER AGENT')->assertDontSee('token_hash');
         $this->flushSession();
         $this->actingAs($this->viewer)->getJson('/dashboard?format=json')->assertOk()->assertJsonPath('links.audit', null)->assertJsonPath('links.create', null);
+    }
+
+    public function test_agent_shortcut_preselects_the_requested_agent_and_respects_permissions(): void
+    {
+        $second = $this->agent->replicate();
+        $second->forceFill(['id' => (string) Str::uuid(), 'name' => 'Segundo agente'])->save();
+        $response = $this->actingAs($this->admin)->get('/diagnostics/create?agent_id='.$second->id)->assertOk();
+        $this->assertMatchesRegularExpression('/<option[^>]*value="'.preg_quote($second->id, '/').'"[^>]*selected/', $response->getContent());
+        $this->get('/agents/'.$second->id)->assertOk()->assertSee(route('diagnostics.create', ['agent_id' => $second->id]), false);
+        $this->flushSession();
+        $this->actingAs($this->viewer)->get('/agents/'.$second->id)->assertOk()->assertDontSee(route('diagnostics.create', ['agent_id' => $second->id]), false)->assertSee('Ver diagnósticos');
     }
 
     public function test_dashboard_json_without_tenant_never_serializes_tenant_records(): void

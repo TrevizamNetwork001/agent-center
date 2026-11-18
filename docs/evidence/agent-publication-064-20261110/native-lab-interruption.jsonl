@@ -1,0 +1,31 @@
+{"precheck":"ready_for_review","revision":1}
+{
+    "read_only": true,
+    "native_result": {
+        "passed": true,
+        "native_systemd": true,
+        "stable_companion_service_exit": 0,
+        "interrupted_checking_hold_enforced": true,
+        "verified_recovery": true,
+        "new_journal_entries_preserved": true,
+        "journal_before": {
+            "executions": 0,
+            "events": 0
+        },
+        "journal_after": {
+            "executions": 1,
+            "events": 3
+        },
+        "identity_preserved": true,
+        "external_probes": false,
+        "production_agent_touched": false
+    },
+    "unit": {
+        "exit": 4,
+        "out": "",
+        "err": "Unit agent-publish064-interruption.service could not be found.\n"
+    }
+}
+{"central":{"version":"0.6.2","last_heartbeat_at":"2026-11-10T18:28:36+01:00","last_poll_at":"2026-11-10T18:29:01+01:00"}}
+{"central_pending_operations":0,"central_active_tasks":0}
+{"source_acl_families":[6,4],"pending_source_family":null}

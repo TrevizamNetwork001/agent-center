@@ -3,8 +3,9 @@ import time
 
 from . import __version__
 from .managed_settings import apply
-from .observability import check, record_applied
-from .observability import snapshot as operational_snapshot
+from .observability import record_applied
+from .observation_worker import bounded_check as check
+from .observation_worker import bounded_snapshot as operational_snapshot
 from .state import StateError
 from .telemetry import snapshot
 
@@ -25,7 +26,8 @@ class Heartbeat(threading.Thread):
     def run(self):
         deadline = time.monotonic()
         while not self.stop_event.is_set():
-            report = operational_snapshot(self.state_dir, self.policy)
+            budget = min(2.0, self.interval / 4)
+            report = operational_snapshot(self.state_dir, self.policy, timeout=budget)
             payload = {
                 "version": __version__,
                 "telemetry": snapshot(self.state_dir),
@@ -47,7 +49,7 @@ class Heartbeat(threading.Thread):
                     request = result.body.get("permission_request")
                     if isinstance(request, dict):
                         self.permission_result = check(
-                            request, self.config_path, self.policy, self.agent_id
+                            request, self.config_path, self.policy, self.agent_id, timeout=budget
                         )
                 except (StateError, OSError, ValueError, TypeError):
                     pass

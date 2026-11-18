@@ -11,10 +11,33 @@ applyTheme();systemTheme.addEventListener('change',applyTheme);
 themeButton?.addEventListener('click',()=>{theme=({system:'light',light:'dark',dark:'system'}[theme]);try{localStorage.setItem(themeKey,theme);}catch{}applyTheme();});
 
 const toggle=document.querySelector('[data-nav-toggle]');
-function closeNav(){if(document.body.classList.contains('nav-open')&&document.querySelector('#sidebar')?.contains(document.activeElement))toggle?.focus();document.body.classList.remove('nav-open');toggle?.setAttribute('aria-expanded','false');}
-toggle?.addEventListener('click',()=>{const open=document.body.classList.toggle('nav-open');toggle.setAttribute('aria-expanded',String(open));});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNav();});
-document.querySelector('main')?.addEventListener('click',closeNav);
+const sidebar=document.querySelector('#sidebar');
+const mobileNav=window.matchMedia('(max-width: 760px)');
+const inertBackground=new Map();
+function closeNav(){
+ const returnFocus=mobileNav.matches&&document.body.classList.contains('nav-open')&&sidebar?.contains(document.activeElement);
+ document.body.classList.remove('nav-open');toggle?.setAttribute('aria-expanded','false');toggle?.setAttribute('aria-label','Abrir navegação');
+ inertBackground.forEach((previous,element)=>{element.inert=previous;});inertBackground.clear();
+ if(returnFocus)toggle?.focus();
+}
+toggle?.addEventListener('click',()=>{
+ if(document.body.classList.contains('nav-open')){closeNav();return;}
+ if(!mobileNav.matches||!sidebar)return;
+ document.body.classList.add('nav-open');toggle.setAttribute('aria-expanded','true');toggle.setAttribute('aria-label','Fechar navegação');
+ document.querySelectorAll('main,.page-footer,.user-menu,.topbar-context > :not([data-nav-toggle])').forEach(element=>{inertBackground.set(element,element.inert);element.inert=true;});
+ (sidebar.querySelector('[aria-current="page"]')||sidebar.querySelector('a[href]'))?.focus();
+});
+document.addEventListener('keydown',e=>{
+ if(!document.body.classList.contains('nav-open'))return;
+ if(e.key==='Escape'){e.preventDefault();closeNav();return;}
+ if(e.key!=='Tab')return;
+ const controls=[...sidebar.querySelectorAll('a[href],button:not(:disabled),[tabindex="0"]'),toggle].filter(element=>element.getClientRects().length);
+ const index=controls.indexOf(document.activeElement);
+ if(e.shiftKey&&(index<=0)){e.preventDefault();controls.at(-1)?.focus();}
+ else if(!e.shiftKey&&(index===-1||index===controls.length-1)){e.preventDefault();controls[0]?.focus();}
+});
+document.addEventListener('click',e=>{if(document.body.classList.contains('nav-open')&&!sidebar?.contains(e.target)&&!toggle?.contains(e.target))closeNav();});
+mobileNav.addEventListener('change',closeNav);
 document.addEventListener('input',e=>{const form=e.target.closest?.('form[data-preserve-edits]');if(form)form.dataset.dirty='1';});
 const dialog=document.querySelector('#confirm-dialog');let pendingForm=null;
 document.addEventListener('submit',e=>{

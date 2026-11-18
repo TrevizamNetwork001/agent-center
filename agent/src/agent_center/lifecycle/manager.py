@@ -1,7 +1,7 @@
 """Transactional orchestration independent of the operating-system adapter.
 
-Adapters are provisioned locally, never selected by release metadata. This module
-is not wired to the legacy updater until a production adapter is validated.
+Adapters are provisioned locally, never selected by release metadata. The remote
+companion uses RuntimeAdapter only after signed release and compatibility checks.
 """
 
 import hashlib
@@ -75,6 +75,9 @@ class Manager:
                 atomic_write(marker, record)
                 if self.adapter.health(plan) is not True:
                     raise ReleaseError("postcheck_failed")
+                finalize = getattr(self.adapter, "finalize", None)
+                if finalize is not None:
+                    finalize(plan)
                 # Never restore Agent identity or journal during component rollback.
                 installed_state = dict(release)
                 if previous_components or release.get("components"):

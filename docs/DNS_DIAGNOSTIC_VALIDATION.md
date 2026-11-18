@@ -1,0 +1,63 @@
+# Primeiro diagnóstico DNS real — investigação e correção
+
+Estado atual: **DNS DIAGNOSTIC BLOCKED**. Classificação e apresentação corrigidas e publicadas em `dns-policy-fix`. Uma nova execução real, explicitamente autorizada pelo operador em 2026-11-05, terminou com A/AAAA bloqueados por política e conclusão persistida **INCONCLUSIVO**, sem falso indício de falha. A configuração local atual do host `teste` ainda não foi lida/corrigida: não há acesso administrativo seguro disponível ao host nesta sessão. Nenhum destino foi liberado e não houve resolução DNS comprovada. Evidências da repetição estão no fechamento abaixo.
+
+## Evidência real
+
+Agent teste 0.5.3 ativo, DNS anunciado, heartbeat/poll recentes e freeze=true. Diagnóstico 0de0e9b6-bf21-4786-a58a-4c2c8e66ee3e, tenant 1, Profile PROBLEMA_DNS, alvo google.com, iniciado 2026-11-05T14:47:33+01:00 e encerrado 14:47:55+01:00. Etapas dns_a e dns_aaaa receberam inputs exatos target=google.com e record_type=A/AAAA, com capability dns_lookup:v1. Ambas retornaram {ok:false,error:policy_denied}. Conclusão armazenada INDICIO_DE_FALHA. Sem respostas, duration_ms ou RCODE DNS. Tarefas começaram 14:47:42/52 e encerraram 14:47:44/54. Os 22 segundos são do fluxo completo e não comprovam timeout DNS.
+
+## Causa localizada
+
+No código aprovado 0.5.3, action_worker cria Policy válida com capabilities disponíveis; dns_lookup está sempre disponível, independentemente de binários ICMP/traceroute. Para DNS com record_type, execute verifica se target normalizado está em Config.allowed_dns_names e retorna policy_denied antes de chamar o resolver quando ausente. Não há outro retorno policy_denied no caminho DNS desse worker após autorização da capability. A Central permitiu planejamento, lease, start e resultado; Profile e parâmetros estão corretos. O instalador aprovado inicializa allowed_dns_names=[] e allowed_networks=[]. Portanto o bloqueio observado corresponde ao gate local de nomes, não a falha DNS. A configuração atual ainda exige conferência remota, sem presumir que permaneceu inalterada.
+
+Há um segundo gate: as respostas IP também são validadas contra allowed_networks. Adicionar somente o nome sem conferir essa lista pode causar action_failed posterior. Não alterar policy, criar bypass, liberar CIDR abrangente ou destinos arbitrários. A correção operacional deve conferir a configuração real, autorizar somente google.com e, se necessário, IPs públicos individuais desse alvo, com snapshot privado, rollback e validação do serviço. Nada foi escrito no host teste nesta execução.
+
+## Correção da Central
+
+O Classifier inferia falha sempre que A/AAAA existiam sem respostas, inclusive policy_denied. Removida essa inferência. Bloqueio e ausência de medições produzem INCONCLUSIVO; erro do executor produz ERRO_DE_EXECUCAO; timeout real do resolver/dns_failed permanecem INDICIO_DE_FALHA. Sucesso DNS exige respostas de pelo menos uma família e cobertura das etapas primárias sem bloqueio. NODATA em uma família com a outra resolvendo é normal; duas NODATA sem RCODE não comprovam falha técnica.
+
+Apresentação distingue bloqueio por política/teste não executado, erro de execução e teste executado com falha. A exibição da conclusão antiga composta exclusivamente por policy_denied é recalculada sem UPDATE da conclusão append-only, dos resultados ou da auditoria. O registro original permanece preservado e contadores históricos/critério de Operations não são relaxados.
+
+Presentation.time converte cópias/instantes imutáveis para America/Sao_Paulo; tabelas/telas operacionais e horário de atualização do navegador usam esse fuso, com offset -03:00. datetime ISO de máquina, TZ de runtime, banco, timestamp persistido e relógios do Engine não foram modificados. Teste: 05/11 14:44:51+01:00 aparece 10:44:51-03:00, mesmo instante e objeto original intacto.
+
+## NXDOMAIN e limite do contrato
+
+O runtime 0.5.3 usa socket.getaddrinfo. EAI_NONAME/EAI_NODATA são normalizados para nodata e não transportam RCODE. Não é possível afirmar NXDOMAIN verdadeiro a partir desse contrato. Regressões comprovam que esse resultado não é convertido em NXDOMAIN inventado nem em INDICIO_DE_FALHA sem evidência adicional. Validação de NXDOMAIN/RCODE real não está concluída; nenhum mock é apresentado como execução real. Não foi alterado runtime/binário do Agent para inventar ou ampliar o contrato nesta correção.
+
+## Validação
+
+- Laravel/PostgreSQL completo: 160 testes / 1.286 assertions PASS, incluindo contrato Agent API e deadline do Agent indisponível. Após ajustes finais de apresentação, 39 testes / 375 assertions PASS (DNS regressions, Web UX e Agent API).
+- Python fonte local 0.5.2 + regressões: 44 PASS. Fonte aprovada 0.5.3 + regressões: 56 PASS, ambos sob UID65532 sem capabilities. Mock do resolver confirma A/AAAA negados sem qualquer chamada DNS; nomes autorizados não contornam validação da rede de respostas; consultas permitidas com /32 e /128 e TimeoutError real do resolver são diferenciados de execution_timeout.
+- Primeira tentativa Python como root sem capabilities falhou no teste preexistente de drop_privileges, porque setuid não estava disponível; repetida corretamente sob UID sem privilégio. Primeiras montagens do laboratório 0.5.3 omitiram packaging ou tentaram criar arquivo sob mount readonly; corrigidas com cópia isolada completa. Sem mudança na segurança de produção ou relaxamento dos testes.
+- Pint e diff check. Secret scan do índice Git obrigatório antes da publicação.
+- Baseline Operations em evidence/dns-policy/health-before.json: estado ATENÇÃO já existente, Agent 1/1 online, tarefas ativas=0, leases vencidas=0; componentes/probes VERDE. Não forçar VERDE ou reclassificar auditoria histórica para alterar health.
+
+## Implantação e rollback
+
+Imagem derivada diagnostic-policy-20261105 com somente Classifier, Presentation e views; agent-center.js no mount público existente. Sem migrations, alteração em banco, grants, RLS, secrets, rede, firewall, kit ou runtime do Agent. Snapshot privado dns-policy-fix-<timestamp> guarda código e compose anteriores. Rollback restaura arquivos/compose e recria somente web/worker/diagnostic-worker; view:clear. Sem migrations down, prune, restauração global de banco ou ação em equipamento.
+
+A nova execução deve ocorrer apenas após a conferência/correção autorizada da política local, usando o mesmo Agent e somente google.com/PROBLEMA_DNS, sem trace, TCP, HTTP ou outros alvos. Sem a leitura remota, esse gate permanece bloqueado. Depois da emissão do estado final, parar.
+
+Reconciliação: antes de publicar, a revisão de segurança local detectou que a imagem operacional havia mudado para diagnostic-policy-20261105 durante esta execução. Nenhum arquivo foi alterado pela tentativa interrompida. Preservados classificador, oito testes e documentação dessa publicação; a correção de classificação concorrente foi incorporada à fonte, e a imagem candidata foi rebaseada sobre ela. Os testes dessa versão foram incluídos na validação final.
+
+Publicação concluída: imagem dns-policy-fix; snapshot /opt/agent-center/backups/dns-policy-fix-20261105T141708Z/. Após reconciliação, 66 testes / 590 assertions PASS. Secret scan do índice PASS e diff check PASS. Verificação real somente de leitura confirmou duas mensagens teste não executado, classificação exibida INCONCLUSIVO, registro original INDICIO_DE_FALHA preservado e início 10:47:33-03:00. Readiness HTTPS200; web, worker e diagnostic-worker healthy. Agent 1/1 ONLINE, ativas=0, leases vencidas=0; nenhuma regressão dos componentes de saúde em relação ao baseline, estado global ATENÇÃO preservado. Logs da Central inspecionados somente por contagens sanitizadas; logs/configuração do host Agent indisponíveis. Nova consulta real não executada. DNS DIAGNOSTIC BLOCKED: falta leitura e correção autorizada da política local de teste; contrato 0.5.3 não fornece RCODE para provar NXDOMAIN real.
+
+## Repetição real autorizada — 2026-11-05, 11:37:58 -03:00
+
+Após o operador autorizar explicitamente “pode executar esse teste ai”, foi criado exatamente um diagnóstico adicional, `ae4335fa-e0ac-4d5a-a8f7-cf3410b725e1`, tenant1, mesmo Agent `teste` e Profile `PROBLEMA_DNS`, somente `google.com`. A política vigente foi preservada: esta execução verifica o retorno real do gate, não afirma que a configuração local tenha sido corrigida. Nenhum outro destino, HTTP, TCP, ping, traceroute, update ou device foi acionado.
+
+A execução de manutenção usou o serviço Laravel existente, o mesmo autor do diagnóstico original e Gate nativo de criação, contexto explícito de tenant e RLS. Antes da criação foram conferidos status ONLINE, versão0.5.3, freeze=true, ausência de tarefas pendentes e plano com exatamente DNS A e AAAA, ambos `dns_lookup:v1`. As primeiras tentativas de leitura do autor pararam no guard por ausência do contexto de usuário; nenhuma criou diagnóstico. O contexto do mesmo autor foi aplicado e a única criação foi auditada pelo Engine existente. Nenhuma conta, senha, sessão ou token foi criado/alterado.
+
+Retorno real: início persistido `2026-11-05T15:37:58+01:00`, fim `15:38:17+01:00`, duração19s. A e AAAA foram entregues ao Agent, iniciadas e responderam `{ok:false,error:policy_denied}`. Não há answers, duration_ms de resolver nem RCODE; os19s são do fluxo completo. O registro novo está COMPLETED com conclusão persistida **INCONCLUSIVO**, resumo de bloqueio por política e evidências originais preservadas. A interface renderizada da imagem operacional mostra duas mensagens “Bloqueado por política · teste não executado”, sem INDICIO_DE_FALHA, e início `11:37:58` em America/Sao_Paulo. O diagnóstico antigo conserva INDICIO_DE_FALHA no banco e exibe INCONCLUSIVO pela apresentação corrigida.
+
+Causa comprovada no caminho do runtime aprovado0.5.3: `action_worker` monta Policy válida com as capabilities disponíveis; `dns_lookup:v1` está disponível, e `execute` retorna `policy_denied` antes do resolver quando o nome não pertence a `Config.allowed_dns_names`. Parâmetros, Profile e aceitação/execução do contrato pela Central foram confirmados na repetição. A leitura/hash da configuração/runtime atualmente instalados ainda falta; portanto não se afirma o conteúdo exato do arquivo remoto nem que a allowlist foi alterada. A validação de redes das respostas continua obrigatória, sem CIDRs genéricos ou bypass.
+
+Regressões nesta rodada: Laravel/PostgreSQL separado **169 testes / 1.323 assertions PASS**, incluindo contrato Agent API, bloqueio A/AAAA, consulta válida, timeout do resolver versus timeout de execução, Agent indisponível, classificação, apresentação e preservação do instante no fuso. Python sob UID65532, sem capabilities e sem rede externa: **56 testes PASS na fonte aprovada0.5.3 e 44 PASS na fonte0.5.2**. Pint de cinco arquivos PASS; `git diff --check` PASS. O teste de EAI_NONAME confirma a ausência de RCODE e impede afirmar NXDOMAIN verdadeiro; a regressão de NXDOMAIN real permanece bloqueada pelo contrato, sem apresentar mock como evidência real.
+
+Scans: índice Git PASS; histórico completo com comparação privada dos secrets atuais:29 commits/825 blobs, zero correspondências e zero caminhos históricos proibidos. A primeira execução sem elevação parou por falta de leitura da chave LLM protegida; repetida com autorização de execução elevada, sem emitir valores. Scanner adicional da fonte/views/testes/evidências DNS passou. Logs da Central foram lidos somente para contagens sanitizadas; logs do host Agent seguem indisponíveis.
+
+Saúde antes/depois: Agent1/1 ONLINE, freeze=true, tarefas ativas0, leases vencidas0, nenhum componente mudou de estado, estado global ATENÇÃO preservado. Tentativas falhas do dia aumentaram de2 para4 pelos dois bloqueios reais; esses contadores não foram apagados ou relaxados. Readiness HTTPS200. SHA-256 de Classifier e Presentation na imagem operacional coincide com a fonte. Nesta rodada não houve publicação, migration, reclassificação do histórico, alteração de política local, secrets, firewall, Nginx ou serviços de outros projetos.
+
+Evidências sanitizadas: `evidence/dns-policy/retest-20261105-request.json`, `retest-20261105-result.json`, `retest-20261105-display.json`, `retest-20261105-health-comparison.json` e `retest-20261105-central-log-counts.json`.
+
+**DNS DIAGNOSTIC BLOCKED: A/AAAA continuam negados pelo gate local de DNS do Agent; acesso administrativo à configuração atual não está disponível para conferência/correção restrita, e o contrato0.5.3 não fornece RCODE para validar NXDOMAIN verdadeiro. Classificação e apresentação do bloqueio foram comprovadas na nova execução real. Trabalho encerrado nesta condição, sem novos testes externos.**

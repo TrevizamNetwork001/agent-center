@@ -1,0 +1,44 @@
+Agent Center 0.6.0 — managed operation and network diagnostics
+
+Scope: the operator authorized initial registration, origin IP ACL management, diagnostic configuration, runtime update/restart and non-destructive network tests through the Central. Existing per-tenant authorization, native session/CSRF, token hashes, artifact digest validation, journal, backup and device-operation freeze remain enforced.
+
+Origin ACL:
+- Per Agent, exact canonical IPv4/IPv6 addresses, maximum 16; token authentication is also required.
+- Seed only the observed enrollment source address. Version 0.6.0 enforces the stored ACL; legacy clients retain compatibility until an administrator explicitly saves/enforces settings.
+- Denied contact with a valid credential records only one bounded pending_source_ip for review. It does not enroll or authorize that IP automatically.
+- No UFW or admin-web ACL is widened. Local interface addresses are inventory, not substitutes for the actual NAT/egress source.
+- A 403 origin_not_allowed does not quarantine the 0.6.0 runtime, allowing recovery when an administrator corrects its source ACL. Invalid tokens/revocation retain existing stop semantics.
+
+Managed configuration:
+- PUT /agents/{agent}/settings, native web auth/session, CSRF and AgentPolicy administrator permission. Tenant-scoped model binding and PostgreSQL RLS apply.
+- Input: revision (optimistic concurrency), source_ips (lines of exact IPs), auto_public_targets (boolean), allowed_networks (up to 32 CIDRs), allowed_dns_names (up to 100 domains).
+- 302 on save, 422 on validation, 403 unauthorized role, 404 other tenant, 409 stale revision/unavailable Agent.
+- Data sent as an additive policy.agent_settings field by authenticated heartbeat and claim. Exact revision/schema/Agent identity validated; private atomic persistence; older revisions rejected, equal revision conflict rejected.
+- Telemetry reports settings_revision, local_addresses and dns_resolvers. UI distinguishes desired revision from actual receipt. Local false auto-public setting can cap remote settings; local allowlists remain effective and are not overwritten.
+- New child task workers reload settings without a service restart. Unsaved form edits stop auto-refresh replacement.
+
+Network scope:
+- Automatic requested public targets are authorized as an exact /32 or /128 only for that task, never a broad public/private network wildcard. Private, loopback, link-local, reserved and multicast destinations require explicit local/managed destination policy.
+- TCP probe is a bounded connect to 443, HTTPS is pinned to task address with hostname/TLS checks and no redirects. ICMP remains bounded; traceroute up to 5 hops under existing deadlines.
+- DNS A/AAAA uses the host resolver. DNS profile on 0.6.0 additionally performs wire-format UDP and TCP A queries to the locally configured resolver on port 53 only. Valid transaction, question/type, response and compression bounds required. Sending a UDP packet alone never counts as success. No generic UDP port-open assertion.
+- Extra DNS input/output fields extend the existing dns_lookup:v1 capability, keeping old download helpers' capability allowlists compatible. Immutable old plans/evidence are unchanged.
+
+Restart:
+- Explicit administrator action through the existing allowlisted update workflow, using the exact currently installed published runtime version, precheck, initial approval, backup and postcheck. No remote shell payload.
+- The 0.6.0 companion starts the runtime after authorized maintenance even when it was inactive. Earlier companions can restart an active runtime by controlled reapplication, but may not recover a previously stopped service. Failed postcheck cannot be labeled as completed restart.
+- No connectivity to the machine means no remote action can execute: show pending until its companion reconnects, not a fabricated success.
+
+Installer/UI:
+- Latest pinned complete 0.6.0 kit includes corrected systemd AmbientCapabilities=CAP_SETUID and unchanged sandbox.
+- Add Agent in the provider is collapsed by default; manual one-use code is a nested advanced option. Explain Linux execution point, initial review and panel operation. Show actual selected code lifetime.
+- Six legacy capability identifiers retained. Old clients and digest-pinned download protocol remain compatible.
+
+Publication/rollback:
+- Snapshot modified source, live web files, compose and Nginx allowlist. Build persistent image from diagnostics-059, verify tests, artifact checksums and readiness before rollout.
+- Apply live PHP files atomically, clear route/view caches, gracefully recreate only project workers. Preserve unrelated services and stored diagnostic evidence. No production migration in this release.
+- Roll back via snapshot runtime/source and previous compose/vhost, reload Nginx after validation, clear compiled views/routes and restore workers. Runtime rollback uses verified prior artifact through normal operation authorization.
+
+Skill review:
+- Reviewed api-design, laravel-patterns/security/tdd/verification, web-development-design-ops plus relevant course skill summaries. Preserve Laravel 13/PostgreSQL architecture; examples using other stacks are not copied into this app.
+- Baseline production configuration verified: debug off; Secure/HttpOnly/SameSite=lax cookies; 28 forced-RLS tables; Composer lock audit had no advisories/abandoned packages at review time. No claim of complete penetration testing.
+- Remaining engineering improvements beyond this feature: versioned CI, static analysis rollout, broader API contract documentation, release provenance/consolidation, continuous restore monitoring. Existing queue timeout 60 < retry_after 90; diagnostic scheduling runs in dedicated worker, not Laravel schedule, so empty schedule:list is not itself a defect.

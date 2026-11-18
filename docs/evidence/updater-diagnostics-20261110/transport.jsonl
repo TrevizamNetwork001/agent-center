@@ -1,0 +1,415 @@
+{"precheck":"ready_for_review","revision":1}
+{
+    "utc": "2026-11-10T14:36:48.664073+00:00",
+    "read_only": true,
+    "units": {
+        "agent-center-agent.service": {
+            "Result": "success",
+            "NRestarts": "0",
+            "ExecMainCode": "0",
+            "ExecMainStatus": "0",
+            "ActiveState": "active",
+            "SubState": "running",
+            "ActiveEnterTimestampMonotonic": "99371310215"
+        },
+        "agent-center-updater.service": {
+            "Result": "success",
+            "NRestarts": "0",
+            "ExecMainCode": "1",
+            "ExecMainStatus": "0",
+            "ActiveState": "inactive",
+            "SubState": "dead",
+            "ActiveEnterTimestampMonotonic": "0"
+        },
+        "agent-center-updater.timer": {
+            "Result": "success",
+            "ActiveState": "active",
+            "SubState": "waiting",
+            "ActiveEnterTimestampMonotonic": "99385332386"
+        },
+        "agent-center-mtr.socket": {
+            "Result": "success",
+            "ActiveState": "active",
+            "SubState": "listening",
+            "ActiveEnterTimestampMonotonic": "99369724151"
+        }
+    },
+    "status": {
+        "heartbeat_successes": 12191,
+        "poll_successes": 35404,
+        "heartbeat_max_gap": 43.07947216901812,
+        "poll_max_gap": 40.013600454025436,
+        "state": "ONLINE",
+        "version": "0.6.2",
+        "age_seconds": 2.41
+    },
+    "hashes": {
+        "\/opt\/agent-center-agent\/remote-updater.pyz": "bb5628e3a01b5c33b4edfa72605b2a7412db1b0e64989e67eb8f10a5e00c4e04",
+        "\/opt\/agent-center-agent\/runtime\/agent.pyz": "6cd33eaea1fe05111d8343b6023bfab8c7168b4e381adb31df28171ef287f14e"
+    },
+    "journals": {
+        "agent-center-agent.service": {
+            "command_exit": 0,
+            "first_utc": "2026-11-09T15:13:16.699771+00:00",
+            "last_utc": "2026-11-10T13:09:59.847612+00:00",
+            "counts": [],
+            "events": {
+                "poll_unavailable": 9
+            },
+            "failure_samples": [],
+            "limit": 4000
+        },
+        "agent-center-updater.service": {
+            "command_exit": 0,
+            "first_utc": "2026-11-10T08:05:15.374529+00:00",
+            "last_utc": "2026-11-10T14:36:48.355840+00:00",
+            "counts": {
+                "exit1": 13
+            },
+            "events": [],
+            "failure_samples": [
+                {
+                    "utc": "2026-11-10T10:19:53.785831+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:17:43.119596+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:18:42.788299+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:19:44.826893+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:30:28.021409+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T12:58:37.091397+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:07:39.042286+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:23:31.792897+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:38:06.851126+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:48:21.065024+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:49:01.863686+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T13:54:02.713785+00:00",
+                    "category": "exit1"
+                },
+                {
+                    "utc": "2026-11-10T14:13:10.025687+00:00",
+                    "category": "exit1"
+                }
+            ],
+            "limit": 4000
+        }
+    },
+    "journal_states": {
+        "completed": 87
+    },
+    "maintenance_markers": 0,
+    "companion_version": "0.6.2",
+    "transport_samples": [
+        {
+            "index": 0,
+            "utc": "2026-11-10T14:36:49.279589+00:00",
+            "dns_ms": 2.12,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 207.59,
+            "tls_ms": 213.05,
+            "status": 403,
+            "http_ms": 418.01,
+            "total_ms": 840.87
+        },
+        {
+            "index": 1,
+            "utc": "2026-11-10T14:36:50.620619+00:00",
+            "dns_ms": 0.7,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 220.17,
+            "tls_ms": 222.76,
+            "status": 403,
+            "http_ms": 503.09,
+            "total_ms": 946.82
+        },
+        {
+            "index": 2,
+            "utc": "2026-11-10T14:36:52.067620+00:00",
+            "dns_ms": 0.62,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 221.34,
+            "tls_ms": 227.34,
+            "status": 403,
+            "http_ms": 440.94,
+            "total_ms": 890.34
+        },
+        {
+            "index": 3,
+            "utc": "2026-11-10T14:36:53.458099+00:00",
+            "dns_ms": 0.7,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 220.31,
+            "tls_ms": 224.98,
+            "status": 403,
+            "http_ms": 439.12,
+            "total_ms": 885.2
+        },
+        {
+            "index": 4,
+            "utc": "2026-11-10T14:36:54.843430+00:00",
+            "dns_ms": 0.63,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 204.91,
+            "tls_ms": 479.56,
+            "status": 403,
+            "http_ms": 414.02,
+            "total_ms": 1099.23
+        },
+        {
+            "index": 5,
+            "utc": "2026-11-10T14:36:56.442801+00:00",
+            "dns_ms": 0.63,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 1215.41,
+            "tls_ms": 213.44,
+            "status": 403,
+            "http_ms": 1094.57,
+            "total_ms": 2524.15
+        },
+        {
+            "index": 6,
+            "utc": "2026-11-10T14:36:59.467265+00:00",
+            "dns_ms": 1.19,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 220.98,
+            "tls_ms": 226.42,
+            "status": 403,
+            "http_ms": 663.45,
+            "total_ms": 1112.13
+        },
+        {
+            "index": 7,
+            "utc": "2026-11-10T14:37:01.079502+00:00",
+            "dns_ms": 0.67,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 220.41,
+            "tls_ms": 230.19,
+            "status": 403,
+            "http_ms": 448.94,
+            "total_ms": 900.33
+        },
+        {
+            "index": 8,
+            "utc": "2026-11-10T14:37:02.479975+00:00",
+            "dns_ms": 0.82,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 205.57,
+            "failed_phase": "tls",
+            "reason": "timeout",
+            "total_ms": 5207.7
+        },
+        {
+            "index": 9,
+            "utc": "2026-11-10T14:37:08.187814+00:00",
+            "dns_ms": 0.58,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 218.28,
+            "tls_ms": 224.01,
+            "status": 403,
+            "http_ms": 506.15,
+            "total_ms": 949.13
+        },
+        {
+            "index": 10,
+            "utc": "2026-11-10T14:37:09.637139+00:00",
+            "dns_ms": 0.65,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 220.6,
+            "tls_ms": 1787.5,
+            "status": 403,
+            "http_ms": 724.38,
+            "total_ms": 2733.24
+        },
+        {
+            "index": 11,
+            "utc": "2026-11-10T14:37:12.870561+00:00",
+            "dns_ms": 0.97,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 220.9,
+            "tls_ms": 224.02,
+            "status": 403,
+            "http_ms": 441.29,
+            "total_ms": 887.29
+        },
+        {
+            "index": 12,
+            "utc": "2026-11-10T14:37:14.258035+00:00",
+            "dns_ms": 1.22,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 219.8,
+            "tls_ms": 1126.83,
+            "status": 403,
+            "http_ms": 501.51,
+            "total_ms": 1849.47
+        },
+        {
+            "index": 13,
+            "utc": "2026-11-10T14:37:16.607648+00:00",
+            "dns_ms": 0.78,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 220.31,
+            "tls_ms": 1787.23,
+            "status": 403,
+            "http_ms": 437.58,
+            "total_ms": 2446
+        },
+        {
+            "index": 14,
+            "utc": "2026-11-10T14:37:19.553838+00:00",
+            "dns_ms": 0.61,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 207.62,
+            "tls_ms": 208.63,
+            "status": 403,
+            "http_ms": 413.46,
+            "total_ms": 830.42
+        },
+        {
+            "index": 15,
+            "utc": "2026-11-10T14:37:20.884401+00:00",
+            "dns_ms": 0.69,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 207.3,
+            "tls_ms": 1033.57,
+            "status": 403,
+            "http_ms": 414.05,
+            "total_ms": 1655.74
+        },
+        {
+            "index": 16,
+            "utc": "2026-11-10T14:37:23.040295+00:00",
+            "dns_ms": 0.67,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 1224.65,
+            "tls_ms": 225.99,
+            "status": 403,
+            "http_ms": 443.94,
+            "total_ms": 1895.35
+        },
+        {
+            "index": 17,
+            "utc": "2026-11-10T14:37:25.435836+00:00",
+            "dns_ms": 0.65,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 1230.16,
+            "tls_ms": 224.67,
+            "status": 403,
+            "http_ms": 440.21,
+            "total_ms": 1895.78
+        },
+        {
+            "index": 18,
+            "utc": "2026-11-10T14:37:27.831754+00:00",
+            "dns_ms": 0.71,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 209.05,
+            "tls_ms": 212.2,
+            "status": 403,
+            "http_ms": 416.71,
+            "total_ms": 838.77
+        },
+        {
+            "index": 19,
+            "utc": "2026-11-10T14:37:29.170690+00:00",
+            "dns_ms": 0.72,
+            "address_families": [
+                2,
+                10
+            ],
+            "tcp_ms": 219.67,
+            "tls_ms": 1130.2,
+            "status": 403,
+            "http_ms": 440.34,
+            "total_ms": 1791.02
+        }
+    ]
+}
+{"central":{"version":"0.6.2","last_heartbeat_at":"2026-11-10T15:36:24+01:00","last_poll_at":"2026-11-10T15:36:40+01:00"}}
+{"central_pending_operations":0,"central_active_tasks":0}

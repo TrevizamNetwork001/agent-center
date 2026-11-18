@@ -14,7 +14,7 @@ LIMIT = 65536
 _READINESS = (0.0, False)
 
 
-def exchange(request, path=SOCKET):
+def exchange(request, path=SOCKET, *, timeout=19):
     try:
         # The socket owner can connect, but cannot replace it in a root-owned parent.
         parent = path.parent.stat()
@@ -31,11 +31,12 @@ def exchange(request, path=SOCKET):
         if len(raw) > 4096:
             raise mtr.MtrError("mtr_invalid_input")
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
-            client.settimeout(19)
+            deadline = time.monotonic() + timeout
+            client.settimeout(timeout)
             client.connect(str(path))
+            client.settimeout(max(0.01, deadline - time.monotonic()))
             client.sendall(raw)
             output = bytearray()
-            deadline = time.monotonic() + 19
             while not output.endswith(b"\n"):
                 client.settimeout(max(0.01, deadline - time.monotonic()))
                 chunk = client.recv(min(4096, LIMIT + 1 - len(output)))
@@ -60,7 +61,7 @@ def ready():
     if now - _READINESS[0] < 1:
         return _READINESS[1]
     try:
-        value = exchange({"op": "ready", "protocol_version": 1}) == {
+        value = exchange({"op": "ready", "protocol_version": 1}, timeout=1) == {
             "ok": True,
             "protocol_version": 1,
             "capability": mtr.CAPABILITY,

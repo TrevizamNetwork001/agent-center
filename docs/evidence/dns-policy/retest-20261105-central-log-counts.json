@@ -1,0 +1,17 @@
+{
+  "sanitization": "counts only; no log bodies or secrets emitted",
+  "counts": {
+    "agent-center-web-1": {
+      "policy_denied": 0,
+      "dns_failed": 0,
+      "QueryException": 0,
+      "SQLSTATE": 0
+    },
+    "agent-center-diagnostic-worker-1": {
+      "policy_denied": 0,
+      "dns_failed": 0,
+      "QueryException": 0,
+      "SQLSTATE": 0
+    }
+  }
+}

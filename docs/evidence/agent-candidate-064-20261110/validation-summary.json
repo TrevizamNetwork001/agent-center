@@ -1,0 +1,26 @@
+{
+  "python": {
+    "tests": 182,
+    "passed": true,
+    "principal": "nobody"
+  },
+  "candidate_signatures": {
+    "tests": 2,
+    "passed": true,
+    "key": "ephemeral_lab_only"
+  },
+  "laravel": {
+    "tests": 37,
+    "assertions": 340,
+    "passed": true,
+    "database": "isolated_postgresql"
+  },
+  "packaged_workers": {
+    "action": true,
+    "observation": true,
+    "production_debian_systemd_homologated": false
+  },
+  "production_deployment": false,
+  "production_signature": false,
+  "updater_distribution_supported": false
+}

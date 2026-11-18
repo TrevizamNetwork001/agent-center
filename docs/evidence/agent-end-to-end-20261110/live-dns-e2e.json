@@ -1,0 +1,103 @@
+{
+  "target": "agente.trevizamnetwork.com.br",
+  "profile": "PROBLEMA_DNS",
+  "only_dns_steps": true,
+  "creation_http_status": 302,
+  "diagnostic_id": "1545628a-bc11-4fe4-8988-2ad1534b3770",
+  "expected_steps": 4,
+  "final": {
+    "diagnostic_id": "1545628a-bc11-4fe4-8988-2ad1534b3770",
+    "status": "COMPLETED",
+    "classification": "NORMAL",
+    "tasks": [
+      {
+        "id": "11e6aa19-a18c-47ca-988b-53f97483905a",
+        "capability": "dns_lookup:v1",
+        "status": "COMPLETED",
+        "generation": 1
+      },
+      {
+        "id": "64f40499-3dbc-478b-ae1e-4d95c3aec5c7",
+        "capability": "dns_lookup:v1",
+        "status": "COMPLETED",
+        "generation": 1
+      },
+      {
+        "id": "7e542658-a390-4c22-ba13-bbd81fe3a4c7",
+        "capability": "dns_lookup:v1",
+        "status": "COMPLETED",
+        "generation": 1
+      },
+      {
+        "id": "9b82cef3-2d9a-45a7-be1f-169b029d6bd4",
+        "capability": "dns_lookup:v1",
+        "status": "COMPLETED",
+        "generation": 1
+      }
+    ],
+    "attempts": [
+      {
+        "status": "COMPLETED",
+        "generation": 1,
+        "has_result_digest": true
+      },
+      {
+        "status": "COMPLETED",
+        "generation": 1,
+        "has_result_digest": true
+      },
+      {
+        "status": "COMPLETED",
+        "generation": 1,
+        "has_result_digest": true
+      },
+      {
+        "status": "COMPLETED",
+        "generation": 1,
+        "has_result_digest": true
+      }
+    ],
+    "steps": [
+      {
+        "key": "dns_a",
+        "status": "COMPLETED",
+        "error_code": null,
+        "result_ok": true,
+        "record_type": "A",
+        "transport": null,
+        "answer_count": 1
+      },
+      {
+        "key": "dns_aaaa",
+        "status": "COMPLETED",
+        "error_code": null,
+        "result_ok": true,
+        "record_type": "AAAA",
+        "transport": null,
+        "answer_count": 1
+      },
+      {
+        "key": "dns_tcp",
+        "status": "COMPLETED",
+        "error_code": null,
+        "result_ok": true,
+        "record_type": "A",
+        "transport": "tcp",
+        "answer_count": 1
+      },
+      {
+        "key": "dns_udp",
+        "status": "COMPLETED",
+        "error_code": null,
+        "result_ok": true,
+        "record_type": "A",
+        "transport": "udp",
+        "answer_count": 1
+      }
+    ],
+    "pending_operations": 0,
+    "active_tasks": 0
+  },
+  "pipeline_passed": true,
+  "session_removed": true
+}

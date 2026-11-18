@@ -1,0 +1,141 @@
+IMPLANTAÇÃO REAL LIFECYCLE — 2026-11-07
+AGENT LIFECYCLE PRODUCTION BLOCKED
+Implantação, segunda atualização autônoma e rollback comprovados. Homologação
+final bloqueada pelo risco de catálogo descrito abaixo e pela coleta MTR pendente.
+
+AUTORIZAÇÃO
+Operador autorizou publicação na Central e exceção pontual à Fase 1 do AGENTS.md,
+bootstrap e testes exclusivamente no host teste. Demais restrições preservadas.
+
+CENTRAL
+Imagem: agent-center-central:lifecycle-reconcile-20261106.
+Image ID: sha256:1143bed5e0323b6e55ef2087a2efde296c96fae887b8997229bef1eb2e59e98c.
+Anterior: agent-center-central:maintenance-password-20261106.
+Migration Laravel aplicada: 2026_11_06_100000_create_agent_releases.php.
+Backup privado: /root/agent-center-lifecycle-homologacao/central-backup.
+pg_dump custom verificado com pg_restore --list antes da migration.
+Tabela agent_releases: ENABLE/FORCE RLS, política de tenant, imutabilidade.
+Role runtime: sem superusuário/bypass RLS; catálogo SELECT/INSERT, sem UPDATE/DELETE.
+Teste SQL sob tenant diferente: zero releases visíveis.
+TLS/readiness 200; API de artefatos sem token: 401.
+Deploy incluiu 19 arquivos funcionais e seis arquivos de testes existentes no
+diretório candidato. Manifesto exato: central-published.json na pasta de evidências.
+
+PUBLICAÇÃO DA ROTA PRIVADA
+A primeira operação 8b5a5e3c-95a7-4795-98c5-eaa31fcaaf36 falhou no precheck:
+release_download_failed, antes de instalar runtime. HTTPS da VM recebeu 403 HTML.
+Adicionada somente rota GET /api/v1/agent/operations/<uuid>/artifact no vhost
+dedicado da Central, mantendo autenticação, tenant, rate limit e vínculo à operação
+no Laravel. Nenhuma liberação do painel ou alteração de firewall.
+Backup/config test/rollback: backups/lifecycle-production-20261107/proxy-backup.
+nginx -t aprovado; reload gracioso, sem reiniciar outros projetos.
+A operação falha foi preservada e uma nova solicitação pelo painel concluiu.
+
+VM TESTE
+Agent ID: c88457e9-748f-4906-982a-166d0ee0f6d3; tenant 1.
+Precheck atual: hostname teste, Debian 13, systemd, Python 3.13.5, mtr 0.95.
+Versão inicial 0.6.1; journal ok, 68 execuções e 272 eventos; zero leases.
+Backup consistente verificado:
+/var/backups/agent-center-lifecycle-migration-20261106/operational.tar.
+Arquivo contém runtime, companions, config, credenciais, state, journal,
+políticas e units/drop-ins, com ACLs/xattrs/owners/modos preservados.
+Tar comparado e SHA-256 registrado; não restaurado journal antigo.
+Bootstrap preservou identidade/token/config/runtime inicial até operação pelo painel.
+Agent principal: UID 987, NoNewPrivileges/PrivateDevices ativos, capabilities vazias.
+Helper: conta distinta UID 986; CAP_NET_RAW exclusivamente no executor aprovado.
+Config/identidade/journal: 0600. Políticas administrativas: root-owned 0600.
+Socket /run/agent-center-mtr.sock: 0600, proprietário do Agent.
+ACL-base e teto MTR: allowed_dns_names=[google.com], allowed_networks=[].
+Nenhuma ampliação de ACL, device operation, tcpdump, Nmap ou R2.
+
+ARQUIVOS E UNITS DO BOOTSTRAP
+Companions atualizados: /opt/agent-center-agent/updater.pyz e remote-updater.pyz.
+Arquivos novos: /etc/agent-center-agent/lifecycle-public.pem,
+/etc/agent-center-agent/lifecycle-policy.json, /etc/agent-center-mtr/policy.json,
+/etc/systemd/system/agent-center-updater.service.d/30-mtr-components.conf.
+Aliases fixos: /etc/systemd/system/agent-center-mtr.socket e agent-center-mtr@.service.
+Release instalou os quatro arquivos aprovados em /opt/agent-center-mtr:
+helper.pyz, check-helper.py, agent-center-mtr.socket, agent-center-mtr@.service.
+Unit principal preservada. Updater.service e timer mantidos com drop-in restrito.
+Coletor técnico temporário: agent-center-lifecycle-operational-observation.service.
+
+RELEASES E CONFIANÇA
+Ed25519 validado. Chave operacional diferente da chave descartável do laboratório.
+SHA-256 da chave pública raw:
+5f16350383c280c1b39d4f7257f09ecbe1002b1d59a1721ceb8bf4d5091195e1.
+Nenhuma chave privada transferida para a VM ou Central.
+Sequência 1, runtime/componente 0.6.2:
+f84ce35817faf37604910403813961b44155d02168f28c8dd568a565d3888fd2.
+Sequência 2, runtime/componente 0.6.2, revisão apenas de empacotamento ZIP:
+6cd33eaea1fe05111d8343b6023bfab8c7168b4e381adb31df28171ef287f14e.
+Todos os arquivos executáveis são idênticos entre sequências 1 e 2.
+Sequência 3: fixture de falha de postcheck previamente homologada, reassinada
+com a chave operacional para testar rollback; não é release para uso normal.
+2d7a360a54968f98f4f434419a3d3170bc7e88fd2af95909ceaf2936acd453ce.
+
+OPERAÇÕES OPERACIONAIS
+Primeira concluída: 8a845b61-f874-4814-8103-e6722c7472a4.
+Solicitação/aprovação: 14:28:38 UTC; COMPLETED: 14:29:27 UTC.
+Runtime 0.6.1 -> 0.6.2; componente MTR instalado e verificado.
+Última conexão SSH de preparação encerrada: 14:30:33 UTC.
+Segunda: f947ebc2-9d46-40b2-9261-5a20e3ed6bcd.
+Solicitação/aprovação: 14:30:38 UTC; COMPLETED: 14:31:24 UTC.
+Nenhuma intervenção SSH entre solicitação e conclusão; fluxo HTTP/painel,
+Agent API, timer/companion, instalação, postcheck e resultado persistido.
+Falha controlada: a67c9c5f-353c-4220-aa39-0794f7a2fb67.
+Solicitação/aprovação: 14:31:56 UTC; FAILED: 14:33:19 UTC.
+Erro postcheck_failed; rollback=true; freeze_preserved=true; sequência 2 mantida.
+Ensaio e recuperação automática ocorreram sem SSH manual.
+
+ROLLBACK DISPONÍVEL
+Rollback conjunto automático foi comprovado na operação de falha acima.
+Retorno administrativo a 0.6.1 exige revisão do backup inicial e zero tarefas,
+novo backup do estado atual, suspensão coordenada apenas do Agent/timer teste,
+restauração conjunta dos arquivos compatíveis e validação de heartbeat/poll.
+Nunca restaurar identidade/journal/WAL/leases antigos sobre estado atual.
+Rollback isolado de runtime com componentes é recusado pelo painel por segurança.
+Rollback da Central restaura imagem/config/vhost, preservando tabela aditiva e
+histórico; não executar migrate:rollback nem restaurar dump antigo em banco vivo.
+Não retirar a Central compatível durante uma operação de Agent em andamento.
+
+EVIDÊNCIAS
+Pasta privada: /opt/agent-center/backups/lifecycle-production-20261107.
+Inclui manifests/assinaturas, publicação/aprovação HTTP e operações persistidas,
+precheck, bootstrap, corte de SSH e amostras da observação.
+Logs anteriores: 251 testes Laravel / 1.945 assertions e 140 testes Python PASS.
+Esses testes anteriores não substituem os resultados operacionais desta implantação.
+
+OBSERVAÇÃO FINAL
+VM: 14:33:19.952278 -> 14:48:20.376652 UTC; 900,423 segundos; 31 amostras,
+zero violações. Mesmo processo do Agent; FDs 8..9; RSS 32.240..32.612 KiB;
+CPU 1,992 s; heartbeat +45; polling +129. Journal antes/depois: 68/272.
+Identidade e configuração-base preservadas em todas as amostras; socket,
+privilégios, runtime exato, helper e timer saudáveis. Nenhuma sonda externa.
+Central: 14:33:28 -> 14:48:29.542331 UTC; 901,561 segundos; 31 amostras,
+zero violações. Readiness sempre 200; Operations Health VERDE; web, nginx,
+PostgreSQL, worker e diagnostic-worker saudáveis. Zero leases, divergências de
+fencing ou operações pendentes. Maior idade heartbeat 14,833 s; polling 8,901 s.
+Evidências recolhidas após conclusão por SFTP de leitura, sem comandos na VM.
+Ledger real confirma sequência 2, runtime exato e rollback=true da operação 3.
+
+BLOQUEIOS E RISCOS RESIDUAIS
+1. O ensaio deixou a release de falha sequência 3 publicada no catálogo imutável.
+   A leitura final de ReleaseAvailability confirmou que ela ainda é ofertada
+   como atualização para o Agent teste. Ela não é adequada ao uso normal.
+   Não apagar registros nem contornar a imutabilidade. Antes do uso normal,
+   revisar uma promoção segura que a torne não instalável no Agent, usando
+   os mecanismos existentes de assinatura e sequência; ou revisar solução
+   de retirada com autorização própria, sem criar funcionalidade nesta entrega.
+   Nenhuma promoção adicional ou alteração de schema foi aplicada após identificar
+   este risco; obedecido o requisito de parar antes de mudança não contemplada.
+2. Sondagens MTR externas dependem de autorização específica do destino.
+   A pergunta sobre ICMP/TCP-443 limitados a google.com foi apresentada e não
+   recebeu resposta nesta execução. Nenhuma sonda foi enviada. Saúde autenticada
+   do helper e anúncio de capability estão confirmados; coleta real de caminho
+   no Agent operacional permanece sem comprovação. Não reutilizar a prova do
+   laboratório como se tivesse ocorrido no Agent operacional.
+
+ESTADO PRESERVADO AO PARAR
+Agent teste ONLINE, versão 0.6.2, revisão de empacotamento sequência 2.
+Central compatível publicada e saudável. Sem operações pendentes. Nenhuma ação
+em outras VMs, equipamentos, R2, tcpdump ou Nmap. Não emitido PASS global.

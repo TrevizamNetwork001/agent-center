@@ -19,9 +19,9 @@ class Policy:
             return cls(False)
         if (
             raw.get("device_operations_frozen", True) is not True
-            or raw.get("tasks_enabled", False) not in (True, False)
+            or type(raw.get("tasks_enabled", False)) is not bool
             or raw.get("tasks_enabled", False) is True
-            and raw.get("task_protocol") != 1
+            and (type(raw.get("task_protocol")) is not int or raw.get("task_protocol") != 1)
         ):
             return cls(False)
         allowed = raw.get("allowed_capabilities", [])

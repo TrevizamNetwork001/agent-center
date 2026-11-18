@@ -1,0 +1,943 @@
+--- a/agent/src/agent_center/api.py
++++ b/agent/src/agent_center/api.py
+@@ -48,7 +48,7 @@
+             return Outcome(False, 0, {}, "invalid_operation")
+         try:
+             payload = json.dumps(data or {}).encode()
+-        except (ValueError, TypeError):
++        except (ValueError, TypeError, RecursionError):
+             return Outcome(False, 0, {}, "invalid_payload")
+         attempts = 1 if operation in {"enroll", "enrollment-status"} else self.retries + 1
+         for attempt in range(attempts):
+@@ -83,12 +83,12 @@
+                                 "origin_not_allowed",
+                                 False,
+                             )
+-                    except (ValueError, OSError):
++                    except (ValueError, OSError, RecursionError):
+                         pass
+                 error.close()
+                 retryable = status == 429 or status >= 500
+                 reason = "http_" + str(status)
+-            except (json.JSONDecodeError, UnicodeError, http.client.IncompleteRead):
++            except (json.JSONDecodeError, UnicodeError, http.client.IncompleteRead, RecursionError):
+                 reason = "invalid_response"
+             except (
+                 OSError,
+--- a/agent/src/agent_center/capabilities.py
++++ b/agent/src/agent_center/capabilities.py
+@@ -42,7 +42,9 @@
+ def self_check():
+     # Legacy updater validates this six-capability self-check contract.
+     # Extension negotiation uses the normal capabilities endpoint.
+-    caps = tuple(c for c in available() if c != mtr.CAPABILITY)
++    # Exclude the optional helper before checking availability: its socket can
++    # wait longer than the legacy updater's self-check deadline.
++    caps = tuple(c for c in KNOWN if c != mtr.CAPABILITY and capability_available(c))
+     assert len(caps) == len(set(caps)) and set(caps) <= set(KNOWN)
+     assert all(callable(HANDLERS[c]) for c in caps)
+     return caps
+--- a/agent/src/agent_center/dns_transport.py
++++ b/agent/src/agent_center/dns_transport.py
+@@ -69,10 +69,11 @@
+         raise InvalidResponse()
+     offset += 4
+     values = []
++    aliases = {}
+     truncated = bool(flags & 0x0200)
+     for _ in range(answers):
+         try:
+-            _, offset = name_at(packet, offset)
++            owner, offset = name_at(packet, offset)
+             if offset + 10 > len(packet):
+                 raise InvalidResponse()
+             kind, klass, _, size = struct.unpack("!2HIH", packet[offset : offset + 10])
+@@ -82,13 +83,27 @@
+             if kind == qtype and klass == 1:
+                 if size != (4 if qtype == 1 else 16):
+                     raise InvalidResponse()
+-                values.append(str(ipaddress.ip_address(packet[offset : offset + size])))
++                values.append((owner, str(ipaddress.ip_address(packet[offset : offset + size]))))
++            elif kind == 5 and klass == 1:
++                alias, end = name_at(packet, offset)
++                if end != offset + size or (owner in aliases and aliases[owner] != alias):
++                    raise InvalidResponse()
++                aliases[owner] = alias
+             offset += size
+         except InvalidResponse:
+             if truncated:
+                 break
+             raise
+-    return sorted(set(values))[:20], flags & 15, truncated
++    # Answer-section records can include unrelated owners. Only the queried
++    # name and its validated CNAME chain provide evidence for this lookup.
++    reachable = {hostname}
++    owner = hostname
++    while owner in aliases:
++        owner = aliases[owner]
++        if owner in reachable:
++            raise InvalidResponse()
++        reachable.add(owner)
++    return sorted({address for owner, address in values if owner in reachable})[:20], flags & 15, truncated
+ 
+ 
+ def exact(stream, count):
+--- a/agent/src/agent_center/execution.py
++++ b/agent/src/agent_center/execution.py
+@@ -1,5 +1,6 @@
+ import json
+ import os
++import selectors
+ import signal
+ import subprocess
+ import sys
+@@ -31,7 +32,7 @@
+         return self.thread is not None and self.thread.is_alive()
+ 
+     def accept(self, task, policy):
+-        if self.busy or not policy.valid or not policy.tasks or not isinstance(task, dict):
++        if self.stop.is_set() or self.busy or not policy.valid or not policy.tasks or not isinstance(task, dict):
+             return False
+         try:
+             for key in ("task_id", "execution_id"):
+@@ -91,25 +92,35 @@
+ 
+     @staticmethod
+     def kill(child):
+-        if child.poll() is None:
+-            try:
+-                os.killpg(child.pid, signal.SIGKILL)
+-            except ProcessLookupError:
+-                pass
++        # Descendants can retain the group and stdout after the leader exits.
++        try:
++            os.killpg(child.pid, signal.SIGKILL)
++        except ProcessLookupError:
++            pass
+         child.wait(timeout=3)
+ 
+     def run(self, task):
+         child = None
++        output_streams = None
+         watchdog = None
++        group_closed = False
+         expired = threading.Event()
+         execution = task["execution_id"]
+         try:
++            if self.stop.is_set() or self.cancel.is_set():
++                self.journal.transition(execution, "uncertain")
++                return
+             # Unknown START outcome can never authorize replay after a crash.
+             self.journal.transition(execution, "executing")
+             self.phase = "START"
+             start = self.client.call("start", self.envelope(task))
+             if not start.ok or start.body.get("status") != "ok":
+                 self.journal.transition(execution, "uncertain")
++                return
++            if self.stop.is_set() or self.cancel.is_set():
++                result = {"ok": False, "error": "cancelled"}
++                self.journal.store_result(execution, result)
++                self.deliver(self.envelope(task), result)
+                 return
+             self.phase = "EXECUTE"
+             child = subprocess.Popen(
+@@ -119,10 +130,16 @@
+                 stderr=subprocess.DEVNULL,
+                 start_new_session=True,
+             )
++            # Drain stdout while the worker runs. Waiting for exit before
++            # reading can fill the pipe and turn a valid result into a timeout.
++            output_streams = selectors.DefaultSelector()
++            os.set_blocking(child.stdout.fileno(), False)
++            output_streams.register(child.stdout, selectors.EVENT_READ)
++            raw = bytearray()
+             deadline = time.monotonic() + task["timeout"]
+ 
+             def enforce_deadline():
+-                if child.poll() is None:
++                if not group_closed:
+                     expired.set()
+                     try:
+                         os.killpg(child.pid, signal.SIGKILL)
+@@ -138,7 +155,7 @@
+             child.stdin.close()
+             renew = time.monotonic() + self.RENEW_INTERVAL
+             result = None
+-            while child.poll() is None:
++            while child.poll() is None or output_streams.get_map():
+                 now = time.monotonic()
+                 if self.stop.is_set() or self.cancel.is_set():
+                     result = {"ok": False, "error": "cancelled"}
+@@ -146,7 +163,7 @@
+                 if expired.is_set() or now >= deadline:
+                     result = {"ok": False, "error": "execution_timeout"}
+                     break
+-                if now >= renew:
++                if now >= renew and child.poll() is None:
+                     self.phase = "RENEW"
+                     outcome = self.client.call("renew", self.envelope(task))
+                     if expired.is_set() or time.monotonic() >= deadline:
+@@ -164,30 +181,40 @@
+                         break
+                     renew = time.monotonic() + self.RENEW_INTERVAL
+                     self.phase = "EXECUTE"
+-                self.cancel.wait(0.05)
++                for key, _ in output_streams.select(0.05):
++                    chunk = os.read(key.fileobj.fileno(), min(4096, 65537 - len(raw)))
++                    if not chunk:
++                        output_streams.unregister(key.fileobj)
++                    else:
++                        raw.extend(chunk)
++                if len(raw) > 65536:
++                    result = {"ok": False, "error": "internal_error"}
++                    break
+             if expired.is_set() or time.monotonic() >= deadline:
+                 result = {"ok": False, "error": "execution_timeout"}
+             if result is None:
+-                raw = child.stdout.read(65537)
+                 if len(raw) > 65536 or child.returncode != 0:
+                     result = {"ok": False, "error": "internal_error"}
+                 else:
+                     result = json.loads(raw)
+                     if not isinstance(result, dict) or not isinstance(result.get("ok"), bool):
+                         result = {"ok": False, "error": "internal_error"}
+-            else:
+-                self.kill(child)
++            self.kill(child)
++            group_closed = True
+             self.journal.store_result(execution, result)
+             self.phase = "RESULT"
+             self.deliver(self.envelope(task), result)
+-        except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
++        except (OSError, ValueError, KeyError, TypeError, RecursionError, subprocess.SubprocessError):
+             self.journal.transition(execution, "uncertain")
+         finally:
+             if watchdog:
+                 watchdog.cancel()
+                 watchdog.join(timeout=3)
+             if child:
+-                self.kill(child)
++                if not group_closed:
++                    self.kill(child)
++                if output_streams:
++                    output_streams.close()
+                 if child.stdout:
+                     child.stdout.close()
+             self.phase = "IDLE"
+--- a/agent/src/agent_center/lifecycle/manager.py
++++ b/agent/src/agent_center/lifecycle/manager.py
+@@ -1,7 +1,7 @@
+ """Transactional orchestration independent of the operating-system adapter.
+ 
+-Adapters are provisioned locally, never selected by release metadata. This module
+-is not wired to the legacy updater until a production adapter is validated.
++Adapters are provisioned locally, never selected by release metadata. The remote
++companion uses RuntimeAdapter only after signed release and compatibility checks.
+ """
+ 
+ import hashlib
+--- a/agent/src/agent_center/lifecycle/runtime.py
++++ b/agent/src/agent_center/lifecycle/runtime.py
+@@ -111,20 +111,29 @@
+         return release
+ 
+     def snapshot(self, operation_id, plan):
+-        self.remote.engine.service.stop()
+-        if self.remote.engine.service.active():
+-            raise UpdateError("busy")
+-        lock = InstanceLock(self.remote.engine.state / "instance.lock")
++        was_active = self.remote.engine.service.active()
++        lock = None
+         try:
++            self.remote.engine.service.stop()
++            if self.remote.engine.service.active():
++                raise UpdateError("busy")
++            lock = InstanceLock(self.remote.engine.state / "instance.lock")
+             backup = self.remote._backup(operation_id)
+             if self.components:
+                 self.components.snapshot(self.remote.control / "backups" / backup)
+             return backup
+         except Exception:
+-            self.remote.engine.service.start()
++            # A restarted Agent must be able to acquire its own instance lock.
++            # Lock/stop failures can happen before a backup exists for rollback.
++            if lock:
++                lock.close()
++                lock = None
++            if was_active and not self.remote.engine.service.active():
++                self.remote.engine.service.start()
+             raise
+         finally:
+-            lock.close()
++            if lock:
++                lock.close()
+ 
+     def install(self, plan, artifact):
+         if self.components:
+--- a/agent/src/agent_center/policy.py
++++ b/agent/src/agent_center/policy.py
+@@ -19,9 +19,9 @@
+             return cls(False)
+         if (
+             raw.get("device_operations_frozen", True) is not True
+-            or raw.get("tasks_enabled", False) not in (True, False)
++            or type(raw.get("tasks_enabled", False)) is not bool
+             or raw.get("tasks_enabled", False) is True
+-            and raw.get("task_protocol") != 1
++            and (type(raw.get("task_protocol")) is not int or raw.get("task_protocol") != 1)
+         ):
+             return cls(False)
+         allowed = raw.get("allowed_capabilities", [])
+--- a/agent/src/agent_center/state.py
++++ b/agent/src/agent_center/state.py
+@@ -42,7 +42,7 @@
+         if not isinstance(value, dict):
+             raise StateError("invalid_state")
+         return value
+-    except (ValueError, UnicodeError) as exc:
++    except (ValueError, UnicodeError, RecursionError) as exc:
+         raise StateError("invalid_state") from exc
+ 
+ 
+--- a/agent/src/agent_center/update/cli.py
++++ b/agent/src/agent_center/update/cli.py
+@@ -1,6 +1,5 @@
+ import argparse
+ import json
+-import os
+ from pathlib import Path
+ 
+ from .engine import Engine
+@@ -17,25 +16,19 @@
+     p.add_argument("--base", type=Path, default=Path("/opt/agent-center-agent"))
+     p.add_argument("--state", type=Path, default=Path("/var/lib/agent-center-agent"))
+     a = p.parse_args()
+-    if a.apply and (
+-        os.geteuid() != 0
+-        or a.base != Path("/opt/agent-center-agent")
+-        or a.state != Path("/var/lib/agent-center-agent")
+-    ):
+-        print('{"error":"apply_requires_root_and_fixed_paths"}')
++    if a.apply:
++        # A local checksum is not release authorization. Installation and
++        # rollback must use the authenticated, signed Lifecycle operation.
++        print('{"error":"apply_requires_lifecycle"}')
+         return 2
+     try:
+         engine = Engine(a.base, a.state)
+         if a.operation == "update":
+             if not a.artifact or not a.sha256:
+                 raise ValueError()
+-            result = (
+-                engine.apply(a.artifact, a.sha256)
+-                if a.apply
+-                else engine.dry_run(a.artifact, a.sha256)
+-            )
++            result = engine.dry_run(a.artifact, a.sha256)
+         else:
+-            result = engine.rollback(not a.apply)
++            result = engine.rollback(True)
+         print(json.dumps(result))
+         return 0
+     except Exception:
+--- a/agent/src/agent_center/update/engine.py
++++ b/agent/src/agent_center/update/engine.py
+@@ -26,6 +26,7 @@
+         result = subprocess.run(
+             ["/usr/bin/systemctl", "is-active", "--quiet", "agent-center-agent.service"],
+             check=False,
++            timeout=8,
+         )
+         return result.returncode == 0
+ 
+--- a/agent/src/agent_center/update/remote.py
++++ b/agent/src/agent_center/update/remote.py
+@@ -393,9 +393,9 @@
+                             envelope["signature"],
+                             candidate.read_bytes(),
+                         )
+-                        evidence.update(
+-                            backup=operation_id, postcheck=result["state"] == "COMPLETED"
+-                        )
++                        evidence["postcheck"] = result["state"] == "COMPLETED"
++                        if result.get("backup") == operation_id:
++                            evidence["backup"] = operation_id
+                         if self.signed_release.get("components"):
+                             evidence["components"] = [
+                                 {
+@@ -541,6 +541,18 @@
+         return 2
+     try:
+         trusted(BASE / "releases" / "catalog.json")
++        # The root companion's ledger, reports and backups cannot live in an
++        # Agent-writable namespace. Check it before loading any credential.
++        if CONTROL.exists() or CONTROL.is_symlink():
++            trusted(CONTROL)
++            if not CONTROL.is_dir() or CONTROL.stat().st_mode & 0o077:
++                raise UpdateError("untrusted_control")
++        else:
++            trusted(CONTROL.parent)
++        # A missing trust anchor must never select an unsigned legacy path.
++        key = trusted(CONFIG.parent / "lifecycle-public.pem")
++        if not key.is_file() or key.stat().st_size > 4096:
++            raise UpdateError("invalid_release")
+         cfg = read_private(trusted(CONFIG))
+         # Config validator forbids credentials/query/non-HTTPS; helper has no HTTP lab bypass.
+         from urllib.parse import urlsplit
+--- a/agent/tests/test_audit_regressions.py
++++ b/agent/tests/test_audit_regressions.py
+@@ -1,3 +1,4 @@
++import base64
+ import contextlib
+ import io
+ import json
+@@ -87,6 +88,24 @@
+                 self.assertEqual(str(caught.exception), code)
+                 self.assertNotIn("PRIVATE", str(caught.exception))
+ 
++    def test_signed_snapshot_failure_does_not_claim_a_complete_backup(self):
++        self.client.operation['phase'] = 'apply'
++        self.client.operation['release']['lifecycle'] = {
++            'manifest': base64.b64encode(b'fixture manifest').decode(), 'signature': 'fixture',
++        }
++        self.remote.signed_release = {'version': '0.5.5', 'sha256': self.sha}
++        key = self.root / 'public.pem'
++        key.write_bytes(b'fixture public key')
++        with (patch.object(self.remote, '_candidate', return_value=(self.artifact, self.sha)),
++              patch('agent_center.update.remote.trusted', return_value=key),
++              patch('agent_center.lifecycle.manager.Manager') as manager,
++              contextlib.redirect_stdout(io.StringIO())):
++            manager.return_value.apply.return_value = {'state': 'FAILED', 'error': 'backup_failed'}
++            self.assertFalse(self.remote.run())
++        self.assertEqual(self.client.report['error'], 'backup_failed')
++        self.assertNotIn('backup', self.client.report['evidence'])
++        self.assertEqual((self.state / 'preserve').read_bytes(), b'PRESERVE')
++
+     def test_self_check_uses_native_subprocess_credentials_without_python_preexec(self):
+         metadata = {"version": "0.5.6", "state_schema": 1, "journal_schema": 1,
+                     "device_operations_frozen": True, "capabilities": ["agent_info"]}
+--- /dev/null
++++ b/agent/tests/test_dns_answer_binding.py
+@@ -0,0 +1,42 @@
++import ipaddress
++import struct
++import unittest
++
++from agent_center.dns_transport import InvalidResponse, parse
++
++
++def name(value):
++    return b''.join(bytes([len(label)]) + label.encode('ascii') for label in value.split('.')) + b'\0'
++
++
++def answer(owner, kind, data):
++    return name(owner) + struct.pack('!HHIH', kind, 1, 60, len(data)) + data
++
++
++def packet(records):
++    question = name('example.test') + struct.pack('!HH', 1, 1)
++    return struct.pack('!6H', 7, 0x8180, 1, len(records), 0, 0) + question + b''.join(records)
++
++
++class DnsAnswerBinding(unittest.TestCase):
++    def test_unrelated_address_is_not_an_answer_to_the_question(self):
++        raw = packet([answer('other.test', 1, ipaddress.ip_address('203.0.113.99').packed)])
++        self.assertEqual(parse(raw, 7, 'example.test', 1)[0], [])
++
++    def test_cname_chain_only_returns_addresses_bound_to_the_question(self):
++        records = [answer('other.test', 1, ipaddress.ip_address('203.0.113.99').packed),
++                   answer('alias.test', 1, ipaddress.ip_address('203.0.113.7').packed),
++                   answer('example.test', 5, name('alias.test'))]
++        self.assertEqual(parse(packet(records), 7, 'example.test', 1)[0], ['203.0.113.7'])
++
++    def test_cname_loop_is_rejected(self):
++        records = [answer('example.test', 5, name('alias.test')),
++                   answer('alias.test', 5, name('example.test'))]
++        with self.assertRaises(InvalidResponse):
++            parse(packet(records), 7, 'example.test', 1)
++
++    def test_conflicting_aliases_are_rejected(self):
++        records = [answer('example.test', 5, name('alias.test')),
++                   answer('example.test', 5, name('other.test'))]
++        with self.assertRaises(InvalidResponse):
++            parse(packet(records), 7, 'example.test', 1)
+--- a/agent/tests/test_execution.py
++++ b/agent/tests/test_execution.py
+@@ -1,4 +1,7 @@
++import os
++import signal
+ import socket
++import subprocess
+ import sys
+ import tempfile
+ import threading
+@@ -132,6 +135,28 @@
+             child.assert_not_called()
+         self.assertEqual(self.journal.pending()[0]["state"], "uncertain")
+ 
++    def test_stopping_agent_does_not_reserve_or_start_another_task(self):
++        self.stop.set()
++        self.assertFalse(self.executor.accept(self.task, self.policy))
++        self.assertEqual(self.journal.pending(), [])
++        self.assertEqual(self.calls, [])
++
++    def test_cancel_during_start_ack_does_not_spawn_worker(self):
++        original = self.client.call
++
++        def call(operation, data):
++            if operation == 'start':
++                self.executor.cancel.set()
++            return original(operation, data)
++
++        with (patch.object(self.client, 'call', side_effect=call),
++              patch('agent_center.execution.subprocess.Popen', side_effect=OSError('fixture must not spawn')) as child):
++            self.assertTrue(self.executor.accept(self.task, self.policy))
++            self.wait()
++            child.assert_not_called()
++        self.assertEqual(self.calls[-1][1]['result'], {'ok': False, 'error': 'cancelled'})
++        self.assertEqual(self.journal.pending(), [])
++
+     def test_timeout_kills_child_process_group_and_preserves_heartbeat(self):
+         self.task["timeout"] = 1
+         hb = Heartbeat(self.client, 0.03, self.stop)
+@@ -152,6 +177,71 @@
+         finally:
+             self.stop.set()
+             hb.join()
++
++    def test_valid_large_result_is_drained_before_child_exit(self):
++        code = (
++            "import fcntl,json,sys;sys.stdin.buffer.read();"
++            "fcntl.fcntl(sys.stdout.fileno(),fcntl.F_SETPIPE_SZ,4096);"
++            "print(json.dumps({'ok':True,'data':{'payload':'x'*32768}}))"
++        )
++        with patch.object(self.executor, 'child_command', return_value=[sys.executable, '-c', code]):
++            self.assertTrue(self.executor.accept(self.task, self.policy))
++            self.wait()
++        result = self.calls[-1][1]['result']
++        self.assertTrue(result['ok'], result)
++        self.assertEqual(len(result['data']['payload']), 32768)
++        self.assertEqual(self.journal.pending(), [])
++
++    def test_oversized_result_is_rejected_without_waiting_for_execution_timeout(self):
++        code = (
++            "import fcntl,sys;sys.stdin.buffer.read();"
++            "fcntl.fcntl(sys.stdout.fileno(),fcntl.F_SETPIPE_SZ,4096);"
++            "sys.stdout.write('x'*1048576)"
++        )
++        with patch.object(self.executor, 'child_command', return_value=[sys.executable, '-c', code]):
++            self.assertTrue(self.executor.accept(self.task, self.policy))
++            self.wait()
++        self.assertEqual(self.calls[-1][1]['result'], {'ok': False, 'error': 'internal_error'})
++        self.assertEqual(self.journal.pending(), [])
++
++    def test_timeout_cleans_descendants_after_worker_parent_exits(self):
++        self.task['timeout'] = 1
++        marker = self.path / 'descendant.pid'
++        code = (
++            "import subprocess,sys;sys.stdin.buffer.read();"
++            "p=subprocess.Popen([sys.executable,'-c','import time;time.sleep(10)']);"
++            f"open({str(marker)!r},'w').write(str(p.pid));"
++            "print('{\"ok\":true,\"data\":{}}',flush=True)"
++        )
++        groups = []
++        original_popen = subprocess.Popen
++
++        def start(*args, **kwargs):
++            child = original_popen(*args, **kwargs)
++            groups.append(child.pid)
++            return child
++
++        try:
++            with (patch.object(self.executor, 'child_command', return_value=[sys.executable, '-c', code]),
++                  patch('agent_center.execution.subprocess.Popen', side_effect=start)):
++                self.assertTrue(self.executor.accept(self.task, self.policy))
++                self.wait()
++            pid = int(marker.read_text())
++            deadline = time.monotonic() + 1
++            while time.monotonic() < deadline:
++                status = Path(f'/proc/{pid}/stat')
++                if not status.exists() or status.read_text().rsplit(')', 1)[1].split()[0] == 'Z':
++                    break
++                time.sleep(0.02)
++            else:
++                self.fail('execution descendant survived the deadline')
++            self.assertEqual(self.calls[-1][1]['result']['error'], 'execution_timeout')
++        finally:
++            for group in groups:
++                try:
++                    os.killpg(group, signal.SIGKILL)
++                except ProcessLookupError:
++                    pass
+ 
+     def test_cancel_stops_child_and_reports_cancelled(self):
+         with patch.object(
+--- /dev/null
++++ b/agent/tests/test_lifecycle_cli_boundary.py
+@@ -0,0 +1,31 @@
++import contextlib
++import io
++import unittest
++from unittest.mock import patch
++
++from agent_center.update import cli
++
++
++class LifecycleCliBoundary(unittest.TestCase):
++    def test_manual_apply_never_bypasses_lifecycle_even_as_root(self):
++        for operation in ('update', 'rollback'):
++            for uid in (0, 65534):
++                args = ['updater', operation, '--apply', '--artifact', '/tmp/fixture.pyz', '--sha256', 'a' * 64]
++                with (self.subTest(operation=operation, uid=uid),
++                      patch('sys.argv', args), patch('os.geteuid', return_value=uid),
++                      patch.object(cli, 'Engine') as engine,
++                      contextlib.redirect_stdout(io.StringIO()) as output):
++                    engine.return_value.apply.return_value = {'applied': True}
++                    engine.return_value.rollback.return_value = {'rolled_back': True}
++                    self.assertEqual(cli.main(), 2)
++                    engine.assert_not_called()
++                    self.assertIn('apply_requires_lifecycle', output.getvalue())
++
++    def test_read_only_dry_run_remains_available(self):
++        args = ['updater', 'update', '--dry-run', '--artifact', '/tmp/fixture.pyz', '--sha256', 'a' * 64]
++        with (patch('sys.argv', args), patch.object(cli, 'Engine') as engine,
++              contextlib.redirect_stdout(io.StringIO())):
++            engine.return_value.dry_run.return_value = {'valid': True, 'apply': False}
++            self.assertEqual(cli.main(), 0)
++            engine.return_value.dry_run.assert_called_once()
++            engine.return_value.apply.assert_not_called()
+--- a/agent/tests/test_lifecycle_recovery.py
++++ b/agent/tests/test_lifecycle_recovery.py
+@@ -9,7 +9,62 @@
+ from uuid import uuid4
+ 
+ from agent_center.lifecycle.runtime import RuntimeAdapter
+-from agent_center.state import atomic_write
++from agent_center.state import InstanceLock, StateError, atomic_write
++
++
++class SnapshotFailureRecovery(unittest.TestCase):
++    def setUp(self):
++        temporary = tempfile.TemporaryDirectory()
++        self.addCleanup(temporary.cleanup)
++        self.state = Path(temporary.name)
++        self.remote = Mock()
++        self.remote.engine.state = self.state
++        self.running = True
++        self.remote.engine.service.active.side_effect = lambda: self.running
++        self.remote.engine.service.stop.side_effect = lambda: setattr(self, 'running', False)
++        self.remote.engine.service.start.side_effect = lambda: setattr(self, 'running', True)
++        self.adapter = RuntimeAdapter(self.remote, self.state, {})
++
++    def test_failed_instance_lock_restores_previously_running_service(self):
++        held = InstanceLock(self.state / 'instance.lock')
++        try:
++            with self.assertRaises(StateError):
++                self.adapter.snapshot(str(uuid4()), {})
++        finally:
++            held.close()
++        self.assertTrue(self.running)
++        self.remote._backup.assert_not_called()
++
++    def test_failed_backup_releases_instance_lock_before_restarting(self):
++        self.remote._backup.side_effect = OSError('fixture backup failure')
++
++        def restart():
++            lock = InstanceLock(self.state / 'instance.lock')
++            lock.close()
++            self.running = True
++
++        self.remote.engine.service.start.side_effect = restart
++        with self.assertRaises(OSError):
++            self.adapter.snapshot(str(uuid4()), {})
++        self.assertTrue(self.running)
++
++    def test_failed_backup_does_not_start_previously_inactive_service(self):
++        self.running = False
++        self.remote._backup.side_effect = OSError('fixture backup failure')
++        with self.assertRaises(OSError):
++            self.adapter.snapshot(str(uuid4()), {})
++        self.assertFalse(self.running)
++        self.remote.engine.service.start.assert_not_called()
++
++    def test_stop_error_after_service_stops_restores_previous_service(self):
++        def failed_stop():
++            self.running = False
++            raise OSError('fixture stop failure')
++
++        self.remote.engine.service.stop.side_effect = failed_stop
++        with self.assertRaises(OSError):
++            self.adapter.snapshot(str(uuid4()), {})
++        self.assertTrue(self.running)
+ 
+ 
+ class RestoredHostVerification(unittest.TestCase):
+--- /dev/null
++++ b/agent/tests/test_protocol_boundaries.py
+@@ -0,0 +1,51 @@
++import tempfile
++import unittest
++from pathlib import Path
++from unittest.mock import MagicMock
++
++from agent_center.api import Client
++from agent_center.policy import Policy
++from agent_center.state import StateError, read_private
++
++
++class ProtocolBoundaries(unittest.TestCase):
++    def test_deep_response_is_a_typed_failure_and_does_not_escape_client(self):
++        client = Client('https://central.example.test', retries=0)
++        response = MagicMock()
++        response.status = 200
++        response.read.return_value = b'{"nested":' + b'[' * 50000 + b'0' + b']' * 50000 + b'}'
++        client.opener = MagicMock()
++        client.opener.open.return_value.__enter__.return_value = response
++        outcome = client.call('heartbeat')
++        self.assertFalse(outcome.ok)
++        self.assertEqual(outcome.error, 'invalid_response')
++        self.assertEqual(outcome.body, {})
++        client.opener.open.assert_called_once()
++
++    def test_deep_payload_is_refused_before_transport(self):
++        payload = current = {}
++        for _ in range(50000):
++            current['nested'] = {}
++            current = current['nested']
++        client = Client('https://central.example.test', retries=0)
++        client.opener = MagicMock()
++        outcome = client.call('result', payload)
++        self.assertEqual(outcome.error, 'invalid_payload')
++        client.opener.open.assert_not_called()
++
++    def test_deep_private_json_is_a_state_error(self):
++        with tempfile.TemporaryDirectory() as directory:
++            path = Path(directory) / 'state.json'
++            path.write_bytes(b'{"nested":' + b'[' * 50000 + b'0' + b']' * 50000 + b'}')
++            path.chmod(0o600)
++            with self.assertRaises(StateError):
++                read_private(path)
++
++    def test_policy_rejects_boolean_protocol_and_non_boolean_enable_flags(self):
++        base = {'schema_version': 1, 'agent_id': 'fixture', 'device_operations_frozen': True,
++                'tasks_enabled': True, 'task_protocol': 1, 'allowed_capabilities': ['agent_info']}
++        self.assertTrue(Policy.parse(base, 'fixture', ('agent_info',)).tasks)
++        for change in ({'task_protocol': True}, {'task_protocol': 1.0},
++                       {'tasks_enabled': 1}, {'tasks_enabled': 0}):
++            with self.subTest(change=change):
++                self.assertFalse(Policy.parse(base | change, 'fixture', ('agent_info',)).valid)
+--- a/agent/tests/test_runtime.py
++++ b/agent/tests/test_runtime.py
+@@ -239,6 +239,12 @@
+         self.assertEqual(self_check(), available())
+         p = Policy(True, available())
+         self.assertFalse(execute("tcp_connect:v1", {"target": "127.0.0.1", "port": 1}, p)["ok"])
++
++    def test_legacy_self_check_does_not_contact_optional_mtr_helper(self):
++        with patch('agent_center.capabilities.mtr.ready', side_effect=AssertionError('optional helper contacted')):
++            capabilities = self_check()
++        self.assertNotIn('mtr_path_analysis:v1', capabilities)
++        self.assertIn('agent_info', capabilities)
+ 
+     def test_logging_never_interpolates_secret_or_exception(self):
+         record = logging.LogRecord(
+--- a/agent/tests/test_updater_diagnostics.py
++++ b/agent/tests/test_updater_diagnostics.py
+@@ -116,3 +116,43 @@
+         constructor.assert_called_once_with('https://central.example.test', 'PRIVATE_TOKEN', timeout=10, retries=0)
+         self.assertEqual(client.call.call_count, 1)
+         self.assertNotIn('PRIVATE_TOKEN', output.getvalue())
++
++    def test_unsafe_control_directory_is_refused_before_loading_credentials(self):
++        control = self.control / 'unsafe-control'
++        control.mkdir()
++        control.chmod(0o755)
++        with (
++            patch.object(remote.os, 'geteuid', return_value=0),
++            patch.object(remote.os, 'umask'),
++            patch.object(remote, 'CONTROL', control),
++            patch.object(remote, 'trusted'),
++            patch.object(remote, 'read_private') as configuration,
++            patch.object(remote, 'read_identity') as identity,
++            patch.object(remote, 'Client') as client,
++            contextlib.redirect_stdout(io.StringIO()),
++        ):
++            self.assertEqual(remote.main(), 2)
++        configuration.assert_not_called()
++        identity.assert_not_called()
++        client.assert_not_called()
++
++    def test_missing_lifecycle_key_cannot_enable_unsigned_operation_polling(self):
++        def trust(path):
++            if path.name == 'lifecycle-public.pem':
++                raise FileNotFoundError()
++            return path
++
++        with (
++            patch.object(remote.os, 'geteuid', return_value=0),
++            patch.object(remote.os, 'umask'),
++            patch.object(remote, 'CONTROL', self.control),
++            patch.object(remote, 'trusted', side_effect=trust),
++            patch.object(remote, 'read_private') as configuration,
++            patch.object(remote, 'read_identity') as identity,
++            patch.object(remote, 'Client') as client,
++            contextlib.redirect_stdout(io.StringIO()),
++        ):
++            self.assertEqual(remote.main(), 2)
++        configuration.assert_not_called()
++        identity.assert_not_called()
++        client.assert_not_called()
+--- /dev/null
++++ b/scripts/lab/agent-runtime-e2e.py
+@@ -0,0 +1,151 @@
++"""Run the built Agent and its real action worker against a loopback-only fixture.
++
++No production credential, enrollment, device operation or external probe is used.
++Run as an unprivileged user; every generated file lives in a disposable directory.
++"""
++
++import http.server
++import importlib.util
++import json
++import os
++import sqlite3
++import subprocess
++import sys
++import tempfile
++import threading
++import time
++import uuid
++from pathlib import Path
++
++
++def main():
++    if os.geteuid() == 0:
++        print('{"error":"unprivileged_user_required"}')
++        return 2
++    root = Path(__file__).resolve().parents[2]
++    spec = importlib.util.spec_from_file_location('agent_build', root / 'agent/packaging/build.py')
++    builder = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(builder)
++    identity = str(uuid.uuid4())
++    token = identity + '.' + 'a' * 64
++    task = {'task_id': str(uuid.uuid4()), 'execution_id': str(uuid.uuid4()),
++            'generation': 1, 'lease_token': 'b' * 64, 'timeout': 3,
++            'capability': 'agent_info', 'input': {}}
++    policy = {'schema_version': 1, 'agent_id': identity, 'device_operations_frozen': True,
++              'tasks_enabled': True, 'task_protocol': 1, 'allowed_capabilities': ['agent_info']}
++    accepted = threading.Event()
++    guard = threading.Lock()
++    observed = {'claimed': False, 'starts': 0, 'results': []}
++
++    class Handler(http.server.BaseHTTPRequestHandler):
++        def log_message(self, *args):
++            pass
++
++        def do_POST(self):
++            length = int(self.headers.get('Content-Length', '0'))
++            if not 0 < length <= 1_048_576 or self.headers.get('Authorization') != 'Bearer ' + token:
++                self.send_error(400)
++                return
++            data = json.loads(self.rfile.read(length))
++            operation = self.path.removeprefix('/api/v1/agent/')
++            body = {'status': 'ok', 'policy': policy}
++            with guard:
++                if operation == 'capabilities':
++                    body = {'capabilities': data['capabilities']}
++                elif operation == 'claim':
++                    body = {'task': None if observed['claimed'] else task, 'policy': policy}
++                    observed['claimed'] = True
++                elif operation in ('start', 'result', 'renew'):
++                    if any(data.get(key) != task[key] for key in ('task_id', 'execution_id', 'generation', 'lease_token')):
++                        self.send_error(409)
++                        return
++                    if operation == 'start':
++                        observed['starts'] += 1
++                    elif operation == 'result':
++                        observed['results'].append(data['result'])
++                        accepted.set()
++                elif operation == 'reconcile':
++                    body = {'executions': []}
++                elif operation != 'heartbeat':
++                    self.send_error(404)
++                    return
++            raw = json.dumps(body).encode()
++            self.send_response(200)
++            self.send_header('Content-Type', 'application/json')
++            self.send_header('Content-Length', str(len(raw)))
++            self.end_headers()
++            self.wfile.write(raw)
++
++    os.umask(0o077)
++    with tempfile.TemporaryDirectory(prefix='agent-runtime-e2e-') as directory:
++        lab = Path(directory)
++        artifact = lab / 'agent.pyz'
++        artifact_hash, source_hash = builder.build(artifact)
++        repeated = lab / 'repeated.pyz'
++        builder.build(repeated)
++        assert artifact.read_bytes() == repeated.read_bytes(), 'non_deterministic_build'
++        checked = subprocess.run([sys.executable, '-I', str(artifact), '--self-check'],
++                                 capture_output=True, check=True, timeout=16)
++        version = json.loads(checked.stdout)['version']
++        state = lab / 'state'
++        state.mkdir(mode=0o700)
++        (state / 'identity.json').write_text(json.dumps({'agent_id': identity, 'token': token}))
++        server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), Handler)
++        listener = threading.Thread(target=server.serve_forever, daemon=True)
++        listener.start()
++        config = lab / 'config.json'
++        config.write_text(json.dumps({'central_url': f'http://127.0.0.1:{server.server_port}',
++            'allow_http_loopback': True, 'state_dir': str(state), 'log_dir': str(lab / 'logs'),
++            'identity_file': str(state / 'identity.json'), 'heartbeat_interval': 1,
++            'poll_interval': 1, 'timeout': 1, 'device_operations_frozen': True,
++            'allowed_networks': [], 'allowed_dns_names': []}))
++        process = None
++        try:
++            process = subprocess.Popen([sys.executable, '-I', str(artifact), '--config', str(config)],
++                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
++            assert accepted.wait(15), 'packaged_result_not_received'
++            # Receiving RESULT precedes its HTTP acknowledgement. Wait for the
++            # Agent's durable completion and heartbeat before testing shutdown.
++            settled = time.monotonic() + 5
++            while time.monotonic() < settled:
++                status = json.loads((state / 'status.json').read_text())
++                with sqlite3.connect(state / 'journal.sqlite3') as journal:
++                    pending = journal.execute("SELECT count(*) FROM executions WHERE state!='completed'").fetchone()[0]
++                if not pending and status['heartbeat_successes'] > 0 and status['poll_successes'] > 0:
++                    break
++                time.sleep(0.05)
++            else:
++                raise AssertionError('packaged_protocol_did_not_settle')
++            process.terminate()
++            stdout, stderr = process.communicate(timeout=12)
++            assert process.returncode == 0, 'packaged_runtime_shutdown_failed'
++            assert token.encode() not in stdout + stderr and task['lease_token'].encode() not in stdout + stderr, 'credential_in_output'
++            assert observed['starts'] == 1 and len(observed['results']) == 1, 'duplicate_execution'
++            result = observed['results'][0]
++            assert result['ok'] is True and result['data']['version'] == version, 'wrong_packaged_result'
++            assert result['data']['device_operations_frozen'] is True, 'freeze_not_preserved'
++            with sqlite3.connect(state / 'journal.sqlite3') as journal:
++                assert journal.execute('PRAGMA quick_check').fetchone()[0] == 'ok', 'invalid_journal'
++                assert journal.execute('SELECT state FROM executions').fetchall() == [('completed',)], 'result_not_acknowledged'
++                events = journal.execute('SELECT count(*) FROM events').fetchone()[0]
++            assert events == 4 and not list((state / 'leases').iterdir()), 'lease_or_journal_not_finalized'
++            status = json.loads((state / 'status.json').read_text())
++            assert status['state'] == 'STOPPED' and status['heartbeat_successes'] > 0 and status['poll_successes'] > 0, 'invalid_final_status'
++            print(json.dumps({'passed': True, 'version': version, 'unprivileged': True,
++                'deterministic_build': True, 'artifact_sha256': artifact_hash,
++                'source_sha256': source_hash, 'real_packaged_action_worker': True,
++                'starts': observed['starts'], 'results': len(observed['results']),
++                'journal_events': events, 'lease_removed': True, 'freeze': True,
++                'credential_in_output': False, 'transport': 'loopback_fixture_only'}))
++        finally:
++            if process and process.poll() is None:
++                process.kill()
++                process.communicate(timeout=5)
++            server.shutdown()
++            server.server_close()
++            listener.join(timeout=2)
++    return 0
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())

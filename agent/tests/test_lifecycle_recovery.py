@@ -9,7 +9,62 @@ from unittest.mock import Mock, patch
 from uuid import uuid4
 
 from agent_center.lifecycle.runtime import RuntimeAdapter
-from agent_center.state import atomic_write
+from agent_center.state import InstanceLock, StateError, atomic_write
+
+
+class SnapshotFailureRecovery(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.state = Path(temporary.name)
+        self.remote = Mock()
+        self.remote.engine.state = self.state
+        self.running = True
+        self.remote.engine.service.active.side_effect = lambda: self.running
+        self.remote.engine.service.stop.side_effect = lambda: setattr(self, 'running', False)
+        self.remote.engine.service.start.side_effect = lambda: setattr(self, 'running', True)
+        self.adapter = RuntimeAdapter(self.remote, self.state, {})
+
+    def test_failed_instance_lock_restores_previously_running_service(self):
+        held = InstanceLock(self.state / 'instance.lock')
+        try:
+            with self.assertRaises(StateError):
+                self.adapter.snapshot(str(uuid4()), {})
+        finally:
+            held.close()
+        self.assertTrue(self.running)
+        self.remote._backup.assert_not_called()
+
+    def test_failed_backup_releases_instance_lock_before_restarting(self):
+        self.remote._backup.side_effect = OSError('fixture backup failure')
+
+        def restart():
+            lock = InstanceLock(self.state / 'instance.lock')
+            lock.close()
+            self.running = True
+
+        self.remote.engine.service.start.side_effect = restart
+        with self.assertRaises(OSError):
+            self.adapter.snapshot(str(uuid4()), {})
+        self.assertTrue(self.running)
+
+    def test_failed_backup_does_not_start_previously_inactive_service(self):
+        self.running = False
+        self.remote._backup.side_effect = OSError('fixture backup failure')
+        with self.assertRaises(OSError):
+            self.adapter.snapshot(str(uuid4()), {})
+        self.assertFalse(self.running)
+        self.remote.engine.service.start.assert_not_called()
+
+    def test_stop_error_after_service_stops_restores_previous_service(self):
+        def failed_stop():
+            self.running = False
+            raise OSError('fixture stop failure')
+
+        self.remote.engine.service.stop.side_effect = failed_stop
+        with self.assertRaises(OSError):
+            self.adapter.snapshot(str(uuid4()), {})
+        self.assertTrue(self.running)
 
 
 class RestoredHostVerification(unittest.TestCase):

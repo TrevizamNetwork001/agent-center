@@ -109,6 +109,6 @@ class AgentManagedSettingsTest extends IdentityTestCase
 
     public function test_add_agent_flow_starts_collapsed_and_explains_provider_execution(): void
     {
-        $this->actingAs($this->admin)->get('/agents')->assertOk()->assertSee('Adicionar Agent no provedor')->assertSee('Máquinas Linux')->assertSee('<details class="card agent-enrollment" id="enrollment">', false)->assertDontSee('Novo enrollment');
+        $this->actingAs($this->admin)->get('/agents')->assertOk()->assertSee('Adicionar agente no provedor')->assertSee('Escolha um agente')->assertSee('<details class="card agent-enrollment" id="enrollment">', false)->assertDontSee('Novo enrollment');
     }
 }

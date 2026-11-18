@@ -1,0 +1,2 @@
+{"precheck":"ready_for_review","revision":1}
+{"scope":"agent064-publication","bootstrap_state":"COMPLETED","bootstrap_operation_id":"762a3311-5f39-4f87-b42d-a24f925c5a3a","runtime_version_preserved":"0.6.2","runtime_identity_config_and_sequence_preserved":true,"updater_version":"0.6.4","signed_source_sha256":"a4d87d91c7592ddb59218e670e2c839d57fea7ca67dee5ae571004eacf607bff","credentials_exported":false}

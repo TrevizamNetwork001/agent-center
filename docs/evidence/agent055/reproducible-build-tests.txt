@@ -1,0 +1,12 @@
+test_active_process_lock_prevents_swap_even_after_service_stop (test_update.UpdateTests.test_active_process_lock_prevents_swap_even_after_service_stop) ... ok
+test_archive_path_traversal_is_rejected (test_update.UpdateTests.test_archive_path_traversal_is_rejected) ... ok
+test_crash_between_renames_recovers_old_runtime (test_update.UpdateTests.test_crash_between_renames_recovers_old_runtime) ... ok
+test_dry_run_checks_hash_and_does_not_stop_or_swap (test_update.UpdateTests.test_dry_run_checks_hash_and_does_not_stop_or_swap) ... ok
+test_failed_new_self_check_restores_previous_without_old_state_restore (test_update.UpdateTests.test_failed_new_self_check_restores_previous_without_old_state_restore) ... ok
+test_real_packaged_dry_run_and_exit_codes (test_update.UpdateTests.test_real_packaged_dry_run_and_exit_codes) ... ok
+test_update_preserves_journal_and_old_runtime_then_rollback (test_update.UpdateTests.test_update_preserves_journal_and_old_runtime_then_rollback) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.025s
+
+OK

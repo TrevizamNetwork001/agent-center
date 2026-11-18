@@ -1,0 +1,24 @@
+{
+  "python": {
+    "tests": 178,
+    "passed": true
+  },
+  "laravel_agent_security": {
+    "tests": 172,
+    "assertions": 1361,
+    "passed": true
+  },
+  "laravel_concurrency_support": {
+    "api_tests": 8,
+    "assertions": 203,
+    "separate_process_fixture_passed": true,
+    "migrations_up_down": true
+  },
+  "broad_feature_baseline": {
+    "tests": 260,
+    "assertions": 2011,
+    "failures": 1,
+    "failure": "AuditTimezoneTest::test_sao_paulo_display_and_day_filter_preserve_original_instants",
+    "detail": "Existing UI rendering does not include the exact text America/Sao_Paulo expected by the unchanged test; source Agent changes do not touch that view."
+  }
+}

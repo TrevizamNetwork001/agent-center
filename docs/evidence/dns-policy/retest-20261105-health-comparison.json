@@ -1,0 +1,12 @@
+{
+  "state_before": "ATENÇÃO",
+  "state_after": "ATENÇÃO",
+  "agents_online_before": 1,
+  "agents_online_after": 1,
+  "active_after": 0,
+  "stale_after": 0,
+  "failed_attempts_before": 2,
+  "failed_attempts_after": 4,
+  "expected_new_policy_denials": 2,
+  "component_state_changes": {}
+}

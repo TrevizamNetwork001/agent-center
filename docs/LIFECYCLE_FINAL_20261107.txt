@@ -1,0 +1,148 @@
+AGENT LIFECYCLE FINAL BLOCKED
+Fechamento de 2026-11-07. Nenhum runtime do Agent foi atualizado nesta etapa.
+
+RESULTADO CONCRETO
+A quarentena foi concluída e verificada. As duas únicas tentativas MTR autorizadas
+foram recusadas por policy_denied. A política efetiva não contém google.com,
+apesar de a ACL-base e o teto administrativo conterem esse domínio.
+Não foram alteradas políticas nem executadas novas tentativas para contornar a recusa.
+
+PRECHECK
+Readiness 200; Agent teste ONLINE 0.6.2, ID
+c88457e9-748f-4906-982a-166d0ee0f6d3, tenant 1. Heartbeat/poll recentes,
+helper saudável, freeze ativo, journal íntegro e nenhuma operação incompatível.
+O precheck inicial confirmou a base e o teto, mas não conferiu a interseção
+com a política gerenciada. Essa lacuna foi identificada após as recusas e é
+registrada explicitamente: saúde do helper não prova autorização efetiva da coleta.
+
+RELEASE EM QUARENTENA
+Release ID: cf6cefdf-fd47-4bb2-910e-7b2515d8da73.
+Versão: 0.6.2; plataforma debian13; sequência 3.
+SHA-256: 2d7a360a54968f98f4f434419a3d3170bc7e88fd2af95909ceaf2936acd453ce.
+Manifesto, assinatura Ed25519 e hash do artefato conferidos antes da ação.
+Operação histórica: a67c9c5f-353c-4220-aa39-0794f7a2fb67,
+FAILED/postcheck_failed, rollback=true; histórico preservado.
+Estado equivalente QUARANTINED por registro imutável vinculado à release.
+Quarantine ID: 5dfd2acb-41c6-4a83-8cda-17dd54b7d62f.
+Autor: usuário 1; registrado em 2026-11-07T15:06:58.332989Z.
+Razão: controlled_failure_test. Um evento nativo agent.release_quarantined.
+Nenhum artefato apagado, manifesto alterado ou sequência reutilizada.
+Hashes das três linhas originais de agent_releases permaneceram idênticos.
+Sequências válidas 1 e 2 continuam disponíveis; sequência 3 não é mais ofertada.
+
+ENFORCEMENT E TESTES NEGATIVOS
+Checagem por tenant em ofertas, criação/aprovação de operação, claim, download
+privado e novo relatório de sucesso. Eventos terminais históricos preservados.
+Lock transacional por tenant serializa quarentena com autorização/claim.
+Quarentena é recusada se a release tiver operação em andamento.
+Teste HTTPS real de solicitação da sequência 3: 422, zero operações criadas.
+Painel Laravel mostra QUARANTINED, preservando a linha e o digest.
+PostgreSQL isolado: 25 testes / 182 assertions PASS, incluindo chamadas API
+com operações obsoletas, claim nulo, download recusado, aprovação/sucesso recusados,
+release válida ainda baixável/claimável, RBAC, acesso cruzado e imutabilidade.
+Migration up/down validada no laboratório. FORCE RLS confirmado na produção;
+runtime recebe apenas SELECT/INSERT; outro tenant vê zero quarentenas.
+Nenhuma tentativa de instalar runtime foi usada para o teste negativo operacional.
+
+IMPLEMENTAÇÃO E PUBLICAÇÃO RESTRITA
+Migration: 2026_11_07_150000_create_agent_release_quarantines.php.
+Tabela aditiva agent_release_quarantines, sem modificar agent_releases.
+Imagem: agent-center-central:lifecycle-quarantine-20261107.
+Base anterior: agent-center-central:lifecycle-reconcile-20261106.
+Backup PostgreSQL pg_dump custom verificado por pg_restore --list e SHA-256,
+compose e arquivos anteriores em backups/lifecycle-final-20261107/central-backup.
+A primeira imagem teve erro de permissões no bootstrap PHP, antes de executar
+migration. Diretórios do contexto de código foram corrigidos; nova imagem passou
+no bootstrap sem rede antes da migration. Backups privados permaneceram restritos.
+Somente web recriado e nginx do projeto recarregado; nenhum restart na VM.
+
+MTR ICMP — UMA TENTATIVA
+Diagnostic ID: a1a7334d-5668-4ff3-8d26-00f66149723d.
+Task ID: 9d213d50-75bd-482b-bfe8-378bf2c3b877.
+Execution ID: de833703-6349-4866-adb4-33d89ad659ad; geração 1.
+Destino: google.com; IP fixado pela resolução A: 172.217.30.142.
+IPv6 retornado pelo DNS: 2800:3f0:4001:807::200e; não escolhido para MTR.
+Protocolo icmp; 5 ciclos planejados; máximo 16 hops; intervalo 1 s; teto 20 s.
+Início da tentativa: 15:07:47 UTC; resultado registrado: 15:07:49 UTC.
+Task FAILED/policy_denied. Diagnóstico COMPLETED com classificação INCONCLUSIVO.
+Não houve coleta de hops, perda, RTT ou comprovação de destino alcançado.
+Esses horários são da tentativa, não uma duração medida de sondagem MTR.
+
+MTR TCP/443 — UMA TENTATIVA
+Diagnostic ID: 4adb0a42-f83a-4276-8911-b5d4c7a90501.
+Task ID: 3a9135f2-594b-45a4-8a27-21dd409a0269.
+Execution ID: 468ac834-bdec-4632-8296-7bd38207cc95; geração 1.
+Destino: google.com; IP fixado: 172.217.30.142.
+Protocolo tcp/443; mesmos limites. Solicitação posterior à tentativa ICMP.
+Início da tentativa: 15:08:25 UTC; resultado registrado: 15:08:26 UTC.
+Task FAILED/policy_denied. Diagnóstico COMPLETED com classificação INCONCLUSIVO.
+Não houve dados para comparar caminhos, perda ou RTT entre protocolos.
+Não foi atribuída falha de rede nem forçada classificação NORMAL.
+
+CAUSA DA RECUSA
+Leitura como UID do Agent, sem nova resolução DNS ou coleta:
+- ACL-base: allowed_dns_names=[google.com], allowed_networks=[].
+- Teto administrativo MTR: allowed_dns_names=[google.com], allowed_networks=[].
+- managed-settings.json, revisão 3: allowed_dns_names=[], allowed_networks=[].
+- Política efetiva de Config.load: allowed_dns_names=[], allowed_networks=[].
+O runtime faz a interseção da base com as configurações gerenciadas. A autorização
+MTR recusa destino nominal fora dessa lista antes de solicitar coleta ao helper.
+O payload target=IP/destination=hostname está correto para o contrato. A hipótese
+inicial de inversão de campos foi descartada após conferir os bytes do runtime.
+Não modificar a base/teto para mascarar a recusa. Ajuste de política gerenciada e
+novas tentativas exigem novo escopo, pois esta autorização veda outras alterações
+operacionais e repetição dos dois testes.
+
+INTEGRAÇÃO REAL E EVIDÊNCIAS
+Uma task MTR e uma tentativa geração 1 por protocolo, sem repetição.
+Cada Profile também efetuou as consultas DNS A/AAAA necessárias ao IP fixado.
+Requests criados pelo painel Laravel, claims/starts/results pela Agent API.
+Resultados persistidos, classificação determinística e páginas renderizadas HTTP 200.
+Journal local contém ambos os Execution IDs com eventos claimed -> executing ->
+result_pending -> completed, resultado ok=false/error=policy_denied. O estado
+completed do journal significa entrega do resultado, não sucesso da coleta.
+Helper disponível, porém execução de MTR por ele não está comprovada nessas tentativas:
+a autorização local impediu a coleta. Não afirmar MTR END-TO-END PASS.
+
+SEGURANÇA E HEALTH FINAL
+Agent ONLINE 0.6.2; runtime SHA-256 permanece
+6cd33eaea1fe05111d8343b6023bfab8c7168b4e381adb31df28171ef287f14e.
+Identidade/token/configuração-base preservados; journal integrity_check=ok.
+Principal UID 987; NoNewPrivileges=yes; PrivateDevices=yes; CapEff/Prm/Bnd/Amb=0.
+Helper UID separado agent-center-mtr; NoNewPrivileges=yes; PrivateDevices=yes;
+bounding/ambient exclusivamente CAP_NET_RAW. Socket 0600, proprietário do Agent.
+Helper ready=true; timer/socket/Agent ativos; sem instâncias MTR órfãs.
+Central/readiness 200; web/nginx/PostgreSQL/worker/diagnostic-worker saudáveis.
+Zero tasks ativas, zero leases, zero divergências de fencing, zero operações pendentes.
+Operations Health ATENÇÃO devido às tentativas MTR FAILED; não foi manipulado para VERDE.
+Observação anterior de 15 minutos permanece histórica, sem substituir estes resultados.
+
+ARQUIVOS ALTERADOS NESTA ENTREGA
+app/app/Agent/ReleaseQuarantine.php (novo)
+app/app/Models/AgentReleaseQuarantine.php (novo)
+app/database/migrations/2026_11_07_150000_create_agent_release_quarantines.php (novo)
+app/app/Agent/Releases.php
+app/app/Agent/Operations.php
+app/app/Http/Controllers/Agent/ReleaseController.php
+app/app/Http/Controllers/Agent/UpdateController.php
+app/app/Services/Audit.php
+app/resources/views/agents/releases.blade.php
+app/tests/Feature/ReleaseQuarantineTest.php (novo)
+deploy/database-roles.sql
+deploy/compose.yaml
+docs/LIFECYCLE_FINAL_20261107.txt (novo)
+Nenhum commit criado. Alterações preexistentes do diretório de trabalho preservadas.
+
+ROLLBACK E RISCOS RESIDUAIS
+Antes do registro de quarentena, o código anterior podia ser restaurado com a
+tabela aditiva vazia. Após o registro, NÃO voltar a uma imagem que ignore o bloqueio,
+nem excluir o registro/tabela ou restaurar dump antigo sobre dados novos. Recuperação
+de aplicação deve preservar o enforcement da quarentena; plano privado ROLLBACK.txt.
+O bloqueio MTR permanece pendente. Não houve atualização do Agent, alteração de
+ACLs/permissões na VM, novas Skills, dispositivos, R2, tcpdump, Nmap ou novas fases.
+
+EVIDÊNCIAS SANITIZADAS
+/opt/agent-center/backups/lifecycle-final-20261107
+quarantine-result.json; quarantine-final-verification.json; quarantine-http-negative.json;
+MTR_ICMP-result.json; MTR_TCP-result.json; respectivas páginas HTML sanitizadas;
+final-vm-readonly.log; central-final-health.json; tests.log; deployment.json.

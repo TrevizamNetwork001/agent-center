@@ -1,0 +1,13 @@
+# DNS domain authorization — Agent 0.5.7
+
+Requested scope: forward DNS A/AAAA queries to explicitly allowed names must work with allowed_networks empty. DNS response addresses are data; they do not authorize active probes. This intentionally supersedes the previous answer network gate for forward lookups only. Exact name authorization and capability policy remain mandatory. Reverse DNS and TCP, ping, traceroute, and HTTP retain their network checks. HTTP remains pinned to a separately authorized target. Malformed address answers fail closed; resolver nodata, timeout and execution errors remain distinct.
+
+Observed production diagnostic 4eaa3722-ba75-45d1-b1a3-08d6a455ed1b on google.com had both A and AAAA blocked. Operator reported allowed_dns_names=[google.com] and allowed_networks=[]. Its stored evidence and conclusion are preserved. Re-run as a new diagnostic after updating the remote agent.
+
+Version 0.5.7 is reproducibly built from source. The installer includes the CAP_SETUID ambient service fix. Repair supports verified 0.5.6 updater components, stages 0.5.7, and preserves running runtime, identity and config. Central accepts both 0.5.6 and 0.5.7, and advertises the current installer/updater version. Only the exact new public kit and checksum paths are added to the existing Nginx artifact allowlist.
+
+Validation: 59 Python agent tests; 13 installer/repair tests including preparation from 0.5.6; 45 Laravel tests / 504 assertions against the separate PostgreSQL test database with migration up/down; deterministic rebuild; actual A and AAAA lookup from packaged 0.5.7 with empty networks in the isolated lab. This does not certify the remote machine until its updated runtime reports results.
+
+Deployment backs up the source, artifacts, compose reference, current web runtime files, and Agent Center Nginx vhost. No real maintenance operation is created. Files are applied atomically under their directory owner without recreating the web container. A persistent image contains the same runtime changes. Rollback restores the snapshot, the previous web runtime and compose reference, and Nginx vhost, validates/reloads Nginx and clears compiled views. No production database migration or historical diagnostic rewrite occurs.
+
+Remote rollout: download a fresh instalar-agent.sh and run it on the existing agent host; repair stages the pinned package without re-enrollment. In the panel, select 0.5.7 and confirm once; verify completion, heartbeat version and a fresh DNS diagnostic. Backups and the previous runtime remain available through the existing updater rollback flow.

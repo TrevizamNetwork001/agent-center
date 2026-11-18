@@ -1,4 +1,5 @@
 @extends('layout')
+@section('title','Entrar')
 @section('content')
 <section class="card"><h1>Entrar</h1><p class="muted">Use sua conta do Agent Center.</p>
 @if($throttled ?? false)<p class="error">Muitas tentativas. Aguarde um minuto.</p>@endif

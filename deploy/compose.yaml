@@ -1,6 +1,6 @@
 name: agent-center
 x-app: &app
-  image: agent-center-central:mtr-contract-062-final-20261106
+  image: agent-center-central:agent064-workers-20261110
   build:
     context: ..
     dockerfile: deploy/php/Dockerfile
@@ -10,8 +10,10 @@ x-app: &app
     APP_ENV: ${APP_ENV:-production}
     APP_KEY: ${APP_KEY:?required}
     APP_DEBUG: 'false'
+    DEVICE_ANALYSIS_ADMIN_DEMO_ENABLED: 'true'
+    DEVICE_ANALYSIS_ADMIN_DEMO_TENANTS: '1'
     LLM_MASTER_KEY_FILE: /run/secrets/llm-master.key
-    LLM_ALLOWED_HOSTS: ${LLM_ALLOWED_HOSTS:-}
+    LLM_ALLOWED_HOSTS: ${LLM_ALLOWED_HOSTS:-api.openai.com}
     LLM_PREVIOUS_KEY_FILES: ${LLM_PREVIOUS_KEY_FILES:-}
     TRUSTED_PROXY_CIDRS: ${TRUSTED_PROXY_CIDRS:-}
     APP_URL: ${APP_URL:-http://127.0.0.1:18083}
@@ -32,6 +34,8 @@ x-app: &app
     SESSION_SECURE_COOKIE: ${SESSION_SECURE_COOKIE:-false}
     CACHE_STORE: database
     QUEUE_CONNECTION: database
+    TELEGRAM_ENABLED: 'true'
+    TELEGRAM_TENANTS: '1'
   restart: unless-stopped
   init: true
   security_opt: [no-new-privileges:true]
@@ -79,6 +83,7 @@ services:
       options: {max-size: '10m', max-file: '3'}
   migrator:
     <<: *app
+    image: agent-center-central:preflight-v1-web-20261112
     profiles: [operations]
     restart: 'no'
     environment:
@@ -97,9 +102,12 @@ services:
     command: [php, artisan, migrate, '--force']
   web:
     <<: *app
-    image: agent-center-central:natural-conversation-v1-20261111
+    image: agent-center-central:device-analysis-web-20261113
     environment:
       <<: *app-env
+      CONVERSATION_IDLE_ENABLED: 'true'
+      CONVERSATION_IDLE_TENANTS: '1'
+      TELEGRAM_ADMIN_ASSOCIATION_ENABLED: 'true'
       AGENT_MAINTENANCE_TARGETS: ${AGENT_MAINTENANCE_TARGETS:-}
       AGENT_MAINTENANCE_HOST_FINGERPRINTS: ${AGENT_MAINTENANCE_HOST_FINGERPRINTS:-}
       AGENT_RELEASE_PUBLIC_KEY: "sKp8xFy6GcBquLjRRXt8cafE/mIWn1iUueHGop2XK8g="
@@ -115,6 +123,16 @@ services:
       retries: 5
   worker:
     <<: *app
+    image: agent-center-central:device-analysis-queue-20261113
+    environment:
+      <<: *app-env
+      CONVERSATION_IDLE_ENABLED: 'true'
+      CONVERSATION_IDLE_TENANTS: '1'
+    networks: [backend, maintenance_egress]
+    volumes:
+      - app_storage:/var/www/html/storage
+      - ../secrets/postgres/ca.crt:/run/pg-tls/ca.crt:ro
+      - ../secrets/llm-master.key:/run/secrets/llm-master.key:ro
     command: [php, artisan, queue:work, '--sleep=3', '--tries=3', '--timeout=60', '--max-time=3600']
     stop_grace_period: 75s
     healthcheck:
@@ -123,7 +141,17 @@ services:
       timeout: 5s
       start_period: 30s
       retries: 5
+  telegram-scheduler:
+    <<: *app
+    image: agent-center-central:device-analysis-queue-20261113
+    environment:
+      <<: *app-env
+      CONVERSATION_IDLE_ENABLED: 'true'
+      CONVERSATION_IDLE_TENANTS: '1'
+    command: [php, artisan, 'schedule:work']
+    stop_grace_period: 30s
   diagnostic-worker:
+    image: agent-center-central:device-analysis-diagnostic-20261113
     <<: *app
     command: [php, artisan, 'agent-center:diagnostic-worker']
     stop_grace_period: 30s

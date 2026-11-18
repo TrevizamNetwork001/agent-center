@@ -1,4 +1,5 @@
 @extends('layout')
+@section('title','Alterar senha')
 @section('content')
 <section class="card"><h1>Alterar senha</h1>
 @if(auth()->user()->must_change_password)<p class="error">Troque a senha temporária para continuar.</p>@endif
