@@ -58,6 +58,9 @@ class ConversationToneDetector
 
     public function prefix(string $body, array $tone): string
     {
+        if (preg_match('/^(bom dia|boa tarde|boa noite)\b/iu', trim($body), $greeting)) {
+            return ucfirst(mb_strtolower($greeting[1])).'. ';
+        }
         if (($tone['severity'] ?? '') === 'SERIOUS' || ($tone['style'] ?? '') === 'TECHNICAL') {
             return '';
         }

@@ -41,6 +41,9 @@ class IntentDetector
         }
         // Recognize replies before diagnostic keywords, including outside the pending
         // state so a late/repeated affirmative cannot become a new request.
+        if (preg_match('/^(?:(?:isso|sim)[,! ]+)?pode fazer[.!? ]*$/', $s)) {
+            return Intent::Confirm;
+        }
         if (preg_match('/^(nao|negativo|nao quero)(?:[,.! ]+(?:confirmo|pode executar|o diagnostico))?[.! ]*$/', $s)) {
             return Intent::Deny;
         }

@@ -54,6 +54,7 @@ class IntentParser
 
         return ['intent' => $goal?->value, 'ambiguous' => $ambiguous, 'protocol' => $protocol, 'port' => $number,
             'method' => preg_match('/\b(?:traceroute|tracert)\b/', $s) ? 'traceroute' : null,
+            'strict_method' => (bool) preg_match('/\b(?:(?:somente|apenas|exclusivamente|so)\s+(?:(?:o|um)\s+)?(?:traceroute|tracert)|nao\s+(?:use|usar|quero)\s+(?:o\s+)?mtr)\b/', $s),
             'service' => preg_match('/\b(?:youtube|google)\b/', $s) ? 'google_youtube' : null,
             'content_slow' => (bool) preg_match('/\bconteudo lento\b/', $s),
             'path_metrics' => $goal === OperationalIntent::Route && (bool) preg_match('/\b(?:perda|latencia|rtt)\b/', $s)];

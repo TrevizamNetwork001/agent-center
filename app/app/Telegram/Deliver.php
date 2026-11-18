@@ -96,7 +96,15 @@ class Deliver implements ShouldQueue
                             $watch = $conversation->context_json['preflight_watch'] ?? [];
                             $agent = Agent::find($watch['agent_id'] ?? null);
                             $proof = $agent ? app(Preflight::class)->observation($agent, $watch['request'] ?? []) : [];
-                            $current = ($proof['state'] ?? null) === 'ALLOWED' && ($watch['request']['id'] ?? null) === ($m->metadata['diagnostic_planning']['request_id'] ?? null)
+                            $proposal = $conversation->context_json['pending'] ?? [];
+                            $current = $agent && ($proof['state'] ?? null) !== 'DENIED'
+                                && $agent->status === 'active' && ! $agent->revoked_at && $agent->last_heartbeat_at?->gt(now()->subSeconds(60))
+                                && ($proposal['proposal_id'] ?? null) !== null && ($proposal['proposal_id'] ?? null) === ($m->metadata['diagnostic_planning']['proposal_id'] ?? null)
+                                && ($proposal['agent_id'] ?? null) === $agent->id && ($proposal['target'] ?? null) === ($m->metadata['diagnostic_planning']['target'] ?? null)
+                                && ($proposal['profile'] ?? null) === ($m->metadata['diagnostic_planning']['profile'] ?? null)
+                                && now()->timestamp < ($proposal['issued_at'] ?? 0) + 300
+                                && ($proposal['policy_digest'] ?? null) === app(Preflight::class)->digest($agent)
+                                && ($watch['request']['id'] ?? null) === ($m->metadata['diagnostic_planning']['request_id'] ?? null)
                                 && $conversation->state === 'WAITING_FOR_CONFIRMATION' && ($group ? $context->conversation_id : $link->conversation_id) === $conversation->id;
                             if (! $current) {
                                 $o->forceFill(['status' => 'SUPPRESSED', 'body_cipher' => null, 'last_error' => 'PREFLIGHT_NO_LONGER_VALID'])->save();
@@ -207,7 +215,7 @@ class Deliver implements ShouldQueue
                     $r = $client->call($bot, 'sendMessage', [...$data, 'protect_content' => true, ...($group && $group->reply_mode === 'group' && $o->thread_id > 0 ? ['message_thread_id' => $o->thread_id] : [])]);
                 }
                 $status = match ($r['status']) {
-                    'OK' => 'SENT', 'RATE_LIMITED' => $o->attempts < 5 ? 'PENDING' : 'FAILED', 'DELIVERY_UNKNOWN' => $editId && $o->attempts < 5 ? 'PENDING' : 'UNKNOWN', default => 'FAILED'
+                    'OK' => 'SENT', 'RATE_LIMITED', 'TRANSPORT_UNAVAILABLE' => $o->attempts < 5 ? 'PENDING' : 'FAILED', 'DELIVERY_UNKNOWN' => $editId && $o->attempts < 5 ? 'PENDING' : 'UNKNOWN', default => 'FAILED'
                 };
                 $o->forceFill(['status' => $status, 'telegram_message_id' => $editId ?? $r['result']['message_id'] ?? null, 'last_error' => $r['status'] === 'OK' ? null : $r['status'], 'next_attempt_at' => now()->addSeconds($r['retry_after'] ?? 60), 'body_cipher' => $status === 'SENT' ? null : $o->body_cipher])->save();
                 if ($status !== 'SENT') {

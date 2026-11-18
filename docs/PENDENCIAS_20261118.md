@@ -1,5 +1,7 @@
 # Pendências verificadas — 18/11/2026
 
+**Atualização posterior:** correções autorizadas de Telegram, rota, confirmação, saudação e latência publicadas na Central. Estado final, testes, imagens, backups, rollback e limites no [fechamento desta manutenção](TELEGRAM_MTR_FECHAMENTO_20261118.md). Os parágrafos de inspeção inicial abaixo são históricos; as imagens atuais constam no fechamento. Backup externo e demais pendências não foram encerrados por essa correção.
+
 Inspeção inicial somente de leitura do runtime, após a publicação de fonte `2530cca`, seguida de correção autorizada exclusivamente no laboratório `backup-ui`. Não houve deploy da Central, migration ou acesso a Agent/equipamento.
 
 ## Central e diferença de implantação
@@ -53,6 +55,14 @@ Manutenção futura: renovar a PKI de laboratório antes da data acima ou encerr
 - Outros fabricantes e WhatsApp: escopo futuro, não correções autorizadas nesta solicitação.
 
 ## Autorização e validação da próxima mudança
+
+Continuação autorizada: [confirmação, saudação e métricas do Telegram](CONVERSATION_CONFIRMATION_REFRESH_20261118.md). Corrige confirmação após expirar a prova curta com nova validação do mesmo plano; responde à saudação e apresenta 3.115 ms como 3,1 ms, preservando a evidência. Publicação limitada à Central, com backup e rollback; sem atualização do Agent ou alteração de ACL.
+
+**MTR 8.8.8.8 resolvido:** políticas e compatibilidade concluídas na continuação autorizada. Agent/helper 0.6.6, Lifecycle sequência 11 COMPLETED e preflight real ALLOWED para 8.8.8.8/ICMP/revisão 5. Nenhum MTR executado; cada pedido ainda exige prova fresca e confirmação. Ver [alinhamento e limites do rollback](MTR_HELPER_ALIGNMENT_066_20261118.md).
+
+Continuação autorizada posterior: [análise de rota simplificada publicada](ROUTE_SIMPLE_PRODUCTION_20261118.md). Pedido coloquial de tracert agora pode selecionar MTR no Agent compatível e informa esse método antes da confirmação; exigência de somente traceroute é preservada. Preflight/ACL/tenant/confirmação continuam obrigatórios. O aviso anterior também confundia método sem contrato com versão incompatível. Não houve atualização do Agent nem teste de rota real nesta publicação.
+
+Correção posterior publicada para o silêncio no Telegram: [relatório de produção](TELEGRAM_REPAIR_PRODUCTION_20261118.md). O usuário autorizou backup, rollback e publicação limitada; foram corrigidas a compatibilidade do preflight 0.6.6 e a recuperação segura de falhas anteriores à conexão. A instabilidade de saída ainda existe, com recuperação limitada a cinco tentativas; entregas ambíguas UNKNOWN continuam preservadas, sem reenvio. Ver relatório para imagens, testes, restore isolado e limites. Não há prova de execução de tracert nem eliminação da causa externa/DNS.
 
 Deploy da Central e intervenção no laboratório backup-ui são ações distintas. Cada uma exige escopo operacional específico conforme [AGENTS.md](../AGENTS.md), backup, validação e rollback preservando dados. Não atualizar Agents nem acessar equipamentos como parte dessas ações.
 

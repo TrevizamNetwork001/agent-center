@@ -49,7 +49,7 @@ class OperationalCapabilities
         if (($decision['state'] ?? '') !== 'ALLOWED') {
             $reason = $decision['reason'] ?? '';
 
-            return in_array($reason, ['preflight_pending', 'preflight_stale', 'preflight_timeout', 'preflight_busy', 'preflight_incompatible'], true) ? $reason : 'effective_policy_unverified';
+            return in_array($reason, ['preflight_pending', 'preflight_stale', 'preflight_timeout', 'preflight_busy', 'preflight_incompatible', 'preflight_method_unsupported'], true) ? $reason : 'effective_policy_unverified';
         }
         if ($capability === 'mtr_path_analysis:v1' && ($decision['helper_healthy'] ?? null) !== true) {
             return ($decision['helper_healthy'] ?? null) === false ? 'helper_unavailable' : 'helper_unverified';

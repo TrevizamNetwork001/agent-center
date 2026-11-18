@@ -18,6 +18,15 @@ class IntentPlanning
             throw ValidationException::withMessages(['profile_id' => Planning::UNAVAILABLE]);
         }
 
+        // A route is the objective; select a supported method, then disclose it
+        // before confirmation. This is capability selection, never authorization.
+        if ($intent === OperationalIntent::Route && ($request['method'] ?? null) === 'traceroute'
+            && ! ($request['strict_method'] ?? false) && ($request['protocol'] ?? 'icmp') !== 'tcp'
+            && $agent && in_array($agent->version, Preflight::VERSIONS, true)
+            && in_array('mtr_path_analysis:v1', Protocol::executionCapabilities($agent), true)) {
+            return 'MTR_ICMP';
+        }
+
         return match ($intent) {
             OperationalIntent::Route => ($request['method'] ?? null) === 'traceroute' ? 'CAMINHO_TRACEROUTE' : (($request['protocol'] ?? null) === 'tcp' ? 'MTR_TCP' : 'MTR_ICMP'),
             OperationalIntent::Connectivity => 'CONECTIVIDADE_BASICA', OperationalIntent::Web => 'SITE_NAO_ABRE',

@@ -111,7 +111,13 @@ class Engine
             }
             $c = Conversation::whereKey($conversation->id)->lockForUpdate()->firstOrFail();
             // A new user turn supersedes an in-flight question; never notify an old target.
-            $c->context_json = array_diff_key($c->context_json, ['preflight_watch' => true]);
+            $det = app(IntentDetector::class);
+            $refresh = $c->context_json['confirmed_route'] ?? null;
+            $sameConfirmation = $refresh && $det->detect($body, State::from($c->state)) === Intent::Confirm
+                && (($mentioned = $det->confirmationTarget($body)) === null || $mentioned === $refresh['target']);
+            if (! $sameConfirmation) {
+                $c->context_json = array_diff_key($c->context_json, ['preflight_watch' => true, 'confirmed_route' => true]);
+            }
             $this->synchronize($c, $i);
             $det = app(IntentDetector::class);
             $intent = $det->detect($body, State::from($c->state));
@@ -236,6 +242,8 @@ class Engine
                 }
             } elseif ($intent === Intent::Confirm && ($c->context_json['confirm_cancel'] ?? false)) {
                 $this->cancel($c, $i);
+            } elseif ($intent === Intent::Confirm && isset($c->context_json['confirmed_route'])) {
+                $this->reply($c, 'Sua confirmação já foi recebida. Estou aguardando a autorização atualizada do Agent para esse mesmo teste.');
             } elseif ($intent === Intent::Deny) {
                 $c->context_json = array_diff_key($c->context_json, array_flip(['pending', 'confirm_cancel', 'objective_question', 'requested_objective', 'preflight_watch']));
                 if ($state === State::Confirmation) {
@@ -291,7 +299,7 @@ class Engine
                     } elseif (($mentioned = $det->confirmationTarget($safe)) !== null && $planner->target($mentioned) !== $planner->target($p['target'])) {
                         $this->reply($c, 'Confirmação invalidada: o destino informado difere do destino pendente. Nenhuma tarefa foi criada; solicite um novo diagnóstico para o destino desejado.');
                     } else {
-                        $this->start($c, $i, $p['profile'], $p['target'], $prefix, ($p['mtr_requested'] ?? false) === true, $p['objective'] ?? []);
+                        $this->start($c, $i, $p['profile'], $p['target'], $prefix, ($p['mtr_requested'] ?? false) === true, $p['objective'] ?? [], $p);
                     }
                 } catch (Failure) {
                     $this->reply($c, 'A autorização de laboratório mudou ou venceu. Nenhuma tarefa foi criada; solicite novamente.');
@@ -471,18 +479,19 @@ class Engine
                 $body = 'A consulta de autorização para analisar a rota até '.$target.' está pendente. Avisarei aqui quando terminar. Nenhum teste foi executado.';
                 ResolvePreflight::dispatch($c->tenant_id, $c->id)->delay(now()->setTimestamp($query['expires_at']))->afterCommit();
             }
-            $this->reply($c, $body, $planningMeta);
+            $this->reply($c, ($c->channel === 'telegram' && $goal === OperationalIntent::Route ? $prefix : '').$body, $planningMeta);
 
             return true;
         }
         $c->context_json = [...array_diff_key($c->context_json, array_flip(['objective_question', 'requested_objective'])), 'agent_id' => $agent->id,
-            'pending' => ['issued_at' => now()->timestamp, 'profile' => $key, 'target' => $target, 'objective' => [...$objective, 'plan_digest' => Digest::hash($plan)]]];
+            'pending' => ['issued_at' => now()->timestamp, 'proposal_id' => (string) Str::uuid(), 'agent_id' => $agent->id, 'policy_digest' => app(Preflight::class)->digest($agent->fresh()), 'profile' => $key, 'target' => $target, 'objective' => [...$objective, 'plan_digest' => Digest::hash($plan)]]];
+        $planningMeta['diagnostic_planning']['proposal_id'] = $c->context_json['pending']['proposal_id'];
         if ($goal === OperationalIntent::Route && $matching) {
             $c->context_json = [...$c->context_json, 'preflight_watch' => ['agent_id' => $agent->id, 'request' => $query, 'phase' => 'ALLOWED']];
-            ResolvePreflight::dispatch($c->tenant_id, $c->id)->delay(now()->setTimestamp(min($query['expires_at'], $slot['dispatched_at'] + 10, $slot['received_at'] + 10)))->afterCommit();
+            ResolvePreflight::dispatch($c->tenant_id, $c->id)->delay(now()->addSeconds(300))->afterCommit();
         }
         $this->transition($c, State::Confirmation, 'execution_confirmation');
-        $confirmation = $c->channel === 'telegram' && $goal === OperationalIntent::Route ? app(PlanningReply::class)->confirmation($target) : $prefix.$planning->confirmation($plan);
+        $confirmation = $c->channel === 'telegram' && $goal === OperationalIntent::Route ? $prefix.app(PlanningReply::class)->confirmation($target, $plan['objective']['path_method']) : $prefix.$planning->confirmation($plan);
         $this->reply($c, $confirmation, $planningMeta);
 
         return true;
@@ -500,7 +509,7 @@ class Engine
         return ! collect($plan['steps'])->contains(fn ($s) => ! $s['optional'] && ! $s['available']);
     }
 
-    private function start(Conversation $c, Identity $i, string $profile, string $target, string $prefix, bool $mtr = false, array $objective = []): void
+    private function start(Conversation $c, Identity $i, string $profile, string $target, string $prefix, bool $mtr = false, array $objective = [], ?array $confirmation = null): void
     {
         Gate::forUser($i->user)->authorize('create', Diagnostic::class);
         app(Catalog::class)->ensure();
@@ -513,7 +522,38 @@ class Engine
 
             return;
         }
+        if ($confirmation && in_array($profile, ['MTR_ICMP', 'MTR_TCP'], true)
+            && (now()->timestamp >= ($confirmation['issued_at'] ?? 0) + 300
+                || ($confirmation['agent_id'] ?? null) !== $a->id
+                || ! hash_equals($confirmation['policy_digest'] ?? '', app(Preflight::class)->digest($a)))) {
+            $this->reply($c, 'A confirmação venceu ou a política mudou. Solicite novamente para revisar o plano. Nenhum teste foi iniciado.');
+
+            return;
+        }
         $plan = $objective ? app(IntentPlanning::class)->preview($p, $a, $target, $objective) : app(Planner::class)->plan($p, $target, Protocol::executionCapabilities($a), ['mtr_requested' => $mtr]);
+        $blocked = collect($plan['steps'])->first(fn ($step) => ! $step['optional'] && ! $step['available']);
+        if ($confirmation && in_array($profile, ['MTR_ICMP', 'MTR_TCP'], true) && $blocked
+            && in_array($blocked['blocked_reason'] ?? null, ['preflight_pending', 'preflight_stale', 'preflight_timeout', 'effective_policy_unverified'], true)) {
+            $scope = $plan;
+            foreach ($scope['steps'] as &$step) {
+                if ($step['capability'] === 'mtr_path_analysis:v1') {
+                    $step['available'] = true;
+                    $step['blocked_reason'] = null;
+                }
+            }
+            unset($step);
+            $query = $a->fresh()->metadata['diagnostic_preflight_v1']['request'] ?? [];
+            if (($objective['plan_digest'] ?? '') === Digest::hash($scope)
+                && ($query['destination'] ?? null) === $target && ($query['protocol'] ?? null) === ($objective['protocol'] ?? 'icmp')
+                && ($query['policy_digest'] ?? null) === $confirmation['policy_digest'] && ($query['expires_at'] ?? 0) > now()->timestamp) {
+                $c->context_json = [...$c->context_json, 'confirmed_route' => $confirmation,
+                    'preflight_watch' => ['agent_id' => $a->id, 'request' => $query, 'phase' => 'CONFIRMED']];
+                ResolvePreflight::dispatch($c->tenant_id, $c->id)->delay(now()->setTimestamp(min($query['expires_at'], $confirmation['issued_at'] + 300)))->afterCommit();
+                $this->reply($c, 'Confirmação recebida. Vou atualizar a autorização desse mesmo teste antes de iniciar. Nenhum teste foi executado ainda.');
+
+                return;
+            }
+        }
         if ($objective && ($objective['plan_digest'] ?? '') !== Digest::hash($plan)) {
             $this->reply($c, 'O escopo ou a disponibilidade mudou desde a confirmação. Nenhum teste foi iniciado. Solicite novamente para revisar o plano.');
 
@@ -623,10 +663,48 @@ class Engine
         }
         $agent = Agent::find($watch['agent_id']);
         $decision = $agent ? app(Preflight::class)->observation($agent, $watch['request']) : ['state' => 'UNKNOWN', 'reason' => 'agent_unavailable'];
+        if ($watch['phase'] === 'CONFIRMED') {
+            $consent = $c->context_json['confirmed_route'] ?? [];
+            $valid = $agent && Str::isUuid($consent['proposal_id'] ?? '')
+                && ($consent['agent_id'] ?? null) === $agent->id && ($c->context_json['agent_id'] ?? null) === $agent->id
+                && ($consent['target'] ?? null) === $watch['request']['destination']
+                && ($consent['objective']['protocol'] ?? 'icmp') === $watch['request']['protocol']
+                && now()->timestamp < ($consent['issued_at'] ?? 0) + 300
+                && ($consent['policy_digest'] ?? null) === app(Preflight::class)->digest($agent)
+                && ($watch['request']['policy_digest'] ?? null) === ($consent['policy_digest'] ?? null);
+            if (! $valid) {
+                $c->context_json = array_diff_key($c->context_json, ['confirmed_route' => true, 'preflight_watch' => true]);
+                $this->reply($c, 'A confirmação venceu ou o contexto mudou. Nenhum teste foi iniciado; solicite novamente para revisar o plano.');
+
+                return;
+            }
+            if ($decision['reason'] === 'preflight_pending') {
+                return;
+            }
+            $c->context_json = array_diff_key($c->context_json, ['confirmed_route' => true, 'preflight_watch' => true]);
+            if ($decision['state'] === 'ALLOWED') {
+                $this->start($c, $identity, $consent['profile'], $consent['target'], '', ($consent['mtr_requested'] ?? false) === true, $consent['objective']);
+            } else {
+                $this->reply($c, app(PlanningReply::class)->blocked($consent['target'], $decision['reason']));
+            }
+
+            return;
+        }
+        if ($watch['phase'] === 'ALLOWED' && $c->state === State::Confirmation->value) {
+            $proposal = $c->context_json['pending'] ?? [];
+            // A proposal is not a reusable authorization proof. Keep the human
+            // response window; start() must acquire fresh proof before execution.
+            if ($agent && now()->timestamp < ($proposal['issued_at'] ?? 0) + 300
+                && ($proposal['agent_id'] ?? null) === $agent->id
+                && ($proposal['policy_digest'] ?? null) === app(Preflight::class)->digest($agent)
+                && in_array($decision['reason'], ['authorized', 'preflight_stale', 'preflight_pending'], true)) {
+                return;
+            }
+        }
         if ($decision['reason'] === 'preflight_pending') {
             return;
         }
-        if ($watch['phase'] === 'ALLOWED' && $decision['state'] === 'ALLOWED') {
+        if ($watch['phase'] === 'ALLOWED' && $decision['state'] === 'ALLOWED' && $c->state !== State::Confirmation->value) {
             return;
         }
         $c->context_json = array_diff_key($c->context_json, ['preflight_watch' => true]);

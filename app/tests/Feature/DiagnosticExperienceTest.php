@@ -187,6 +187,21 @@ class DiagnosticExperienceTest extends IntelligenceTestCase
         $this->assertSame('youtube.com', $c->current_target);
     }
 
+    public function test_telegram_rounds_latency_with_decimal_comma_and_preserves_raw_evidence(): void
+    {
+        $evidence = ['ping' => ['ok' => true, 'data' => ['avg_ms' => 3.115, 'loss_percent' => 0, 'received' => 5, 'sent' => 5, 'duration_ms' => 4010.72]]];
+        [$c, $d, $official, $identity] = $this->resultFixture('INCONCLUSIVO', $evidence);
+        $c->channel = 'telegram';
+        $before = $official->fresh()->getRawOriginal();
+        $result = app(DiagnosticExperience::class)->result($c, $d, $identity);
+        $this->assertStringContainsString("Latência média: 3,1 ms\nPerda de pacotes: 0%\nRespostas recebidas: 5 de 5", $result['text']);
+        $this->assertStringNotContainsString('3.115 ms', $result['text']);
+        $this->assertStringNotContainsString('4010.72 ms', $result['text']);
+        $this->assertSame($before, $official->fresh()->getRawOriginal());
+        $this->assertSame(3.115, $official->fresh()->evidence['ping']['data']['avg_ms']);
+        $this->assertSame(0, AgentTask::count());
+    }
+
     public function test_missing_metrics_are_unavailable_instead_of_zero_or_invented_latency(): void
     {
         [$c, , , $identity] = $this->resultFixture('INCONCLUSIVO', ['tcp' => ['ok' => true, 'data' => []]]);

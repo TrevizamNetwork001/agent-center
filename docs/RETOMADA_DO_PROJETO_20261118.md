@@ -2,6 +2,8 @@
 
 ## Comece aqui
 
+**Continuação de 18/11:** consultar primeiro o [fechamento Telegram/MTR](TELEGRAM_MTR_FECHAMENTO_20261118.md). Registra as imagens atuais selecionadas, o alinhamento Agent/helper 0.6.6 pelo Lifecycle e os testes das correções de confirmação, saudação e latência. As referências a panel-updater e à ausência de inspeção operacional abaixo pertencem ao levantamento anterior.
+
 Repositório: https://github.com/TrevizamNetwork001/agent-center. A linha de desenvolvimento consolidada é `main`; a base verificada antes deste complemento documental é `4453457f0734a52e57a5e810e5428da112b050d6`. Leia primeiro [AGENTS.md](../AGENTS.md), [README](../README.md), [fluxo consolidado](FLUXO_ATUAL_20261118.md) e [pendências verificadas](PENDENCIAS_20261118.md). Este guia registra fonte e evidências existentes; não é uma nova atestação de produção.
 
 Para localizar todos os documentos e evidências versionados, consulte o [índice completo](INDICE_DOCUMENTACAO.md). Os relatórios datados preservam decisões e resultados de cada fase. Quando houver divergência, conferir o relatório posterior, o código, o contrato e a implantação efetiva; não aplicar uma instrução antiga automaticamente.

@@ -145,7 +145,7 @@ class DiagnosticExperience
                 $metrics[] = 'perda de respostas ICMP: '.$data['loss_percent'].'%';
             }
             if ($n($data['avg_ms'] ?? null)) {
-                $metrics[] = 'latência média ICMP: '.$data['avg_ms'].' ms';
+                $metrics[] = 'latência média ICMP: '.$this->latency($data['avg_ms']).' ms';
             } else {
                 $metrics[] = 'latência média ICMP: indisponível';
             }
@@ -165,7 +165,7 @@ class DiagnosticExperience
                     $metrics[] = 'perda de respostas no destino: '.$last['loss_percent'].'%';
                 }
                 if ($data['destination_reached'] && $n($last['avg_ms'] ?? null)) {
-                    $metrics[] = 'RTT médio no destino: '.$last['avg_ms'].' ms';
+                    $metrics[] = 'RTT médio no destino: '.$this->latency($last['avg_ms']).' ms';
                 }
             }
         }
@@ -181,7 +181,22 @@ class DiagnosticExperience
             $text .= ' · '.$this->error($error);
         }
 
-        return ['key' => $key, 'label' => $label, 'text' => $text, 'plain' => 'Na verificação '.$label.', '.lcfirst(mb_substr($text, mb_strlen($label) + 2)).'.', 'metrics' => $metrics, 'error' => $error ? $this->error($error) : null];
+        $chat = [];
+        if ($key === 'ping') {
+            $chat[] = 'Latência média: '.($n($data['avg_ms'] ?? null) ? $this->latency($data['avg_ms']).' ms' : 'indisponível');
+            $chat[] = 'Perda de pacotes: '.($n($data['loss_percent'] ?? null) && $data['loss_percent'] <= 100 ? str_replace('.', ',', (string) $data['loss_percent']).'%' : 'indisponível');
+            $chat[] = 'Respostas recebidas: '.(is_int($data['received'] ?? null) && is_int($data['sent'] ?? null) ? $data['received'].' de '.$data['sent'] : 'indisponíveis');
+            if ($error) {
+                $chat[] = 'Observação: '.$this->error($error);
+            }
+        }
+
+        return ['key' => $key, 'label' => $label, 'text' => $text, 'plain' => 'Na verificação '.$label.', '.lcfirst(mb_substr($text, mb_strlen($label) + 2)).'.', 'metrics' => $metrics, 'error' => $error ? $this->error($error) : null, 'chat_metrics' => $chat];
+    }
+
+    private function latency(int|float $value): string
+    {
+        return rtrim(rtrim(number_format($value, 1, ',', ''), '0'), ',');
     }
 
     private function error(string $error): string
@@ -281,7 +296,9 @@ class DiagnosticExperience
         }
         foreach ($choice['next_steps'] as $id) {
             [$index, $format] = explode(':', $id);
-            $lines[] = '• '.$facts[(int) $index][$format === 'plain' ? 'plain' : 'text'];
+            $fact = $facts[(int) $index];
+            $lines[] = $c->channel === 'telegram' && $fact['chat_metrics']
+                ? implode("\n", $fact['chat_metrics']) : '• '.$fact[$format === 'plain' ? 'plain' : 'text'];
         }
         if (count($s['facts']) > 6) {
             $lines[] = 'Outras evidências estão nos detalhes técnicos.';
@@ -296,7 +313,7 @@ class DiagnosticExperience
             $lines[] = '';
             $lines[] = 'Próximo passo: '.$s['next_steps'][0];
         }
-        $lines[] = 'Se o sintoma persistir, conte em quais clientes ou situações ele acontece. Outro teste exige nova autorização.';
+        $lines[] = 'Outro teste exige nova autorização.';
 
         return ['text' => Text::clean(implode("\n", $lines)), 'metadata' => $meta];
     }

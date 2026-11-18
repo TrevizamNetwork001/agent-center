@@ -18,9 +18,9 @@ class PreflightController
             'result.state' => ['required_with:result', Rule::in(['ALLOWED', 'DENIED', 'UNKNOWN'])],
             'result.reason' => ['required_with:result', Rule::in(['authorized', 'policy_denied', 'unverified', 'helper_unavailable', 'capability_unavailable'])],
             'result.helper_healthy' => ['present_with:result', 'nullable', 'boolean'],
-            'result.agent_version' => ['required_with:result', 'in:0.6.5'],
+            'result.agent_version' => ['required_with:result', Rule::in(Preflight::VERSIONS)],
             'result.policy_digest' => ['required_with:result', 'string', 'regex:/^[a-f0-9]{64}$/D'],
-            'result.helper_version' => ['sometimes', 'in:0.6.5'],
+            'result.helper_version' => ['sometimes', Rule::in(Preflight::VERSIONS)],
             'result.effective_revision' => ['sometimes', 'string', 'regex:/^[a-f0-9]{64}$/D'],
         ]);
 

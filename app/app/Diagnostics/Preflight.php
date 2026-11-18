@@ -23,6 +23,8 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 /** Agent-authenticated read-only authorization query; never dispatches an AgentTask. */
 class Preflight
 {
+    public const VERSIONS = ['0.6.5', '0.6.6'];
+
     /** Same approval authority as Device Read-Only; simulator proof cannot authorize production. */
     public function device(User $actor, NocDevice $device, Agent $agent, Operation $op, array $params): array
     {
@@ -62,15 +64,18 @@ class Preflight
     public function permission(Agent $agent, string $capability, string $destination, string $protocol): array
     {
         $unknown = ['state' => 'UNKNOWN', 'reason' => 'effective_policy_unverified', 'helper_healthy' => null];
-        // 0.6.2 cannot answer this contract. Never trust unrelated metadata.
-        if ($agent->version !== '0.6.5' || $capability !== 'mtr_path_analysis:v1' || ! filter_var($destination, FILTER_VALIDATE_IP) || ! in_array($protocol, ['icmp', 'tcp'], true)) {
+        // Only reviewed versions can answer this contract. Never trust unrelated metadata.
+        if (! in_array($agent->version, self::VERSIONS, true) || ! filter_var($destination, FILTER_VALIDATE_IP) || ! in_array($protocol, ['icmp', 'tcp'], true)) {
             return [...$unknown, 'reason' => 'preflight_incompatible'];
+        }
+        if ($capability !== 'mtr_path_analysis:v1') {
+            return [...$unknown, 'reason' => 'preflight_method_unsupported'];
         }
         $destination = inet_ntop(inet_pton($destination));
         try {
             return DB::transaction(function () use ($agent, $destination, $protocol, $unknown) {
                 $a = Agent::whereKey($agent->id)->lock('FOR UPDATE NOWAIT')->firstOrFail();
-                if ($a->version !== '0.6.5' || $a->status !== 'active' || $a->revoked_at || ! $a->last_heartbeat_at?->gt(now()->subSeconds(60))) {
+                if (! in_array($a->version, self::VERSIONS, true) || $a->status !== 'active' || $a->revoked_at || ! $a->last_heartbeat_at?->gt(now()->subSeconds(60))) {
                     return [...$unknown, 'reason' => 'agent_unavailable'];
                 }
                 $meta = $a->metadata ?? [];
@@ -123,7 +128,7 @@ class Preflight
         if ($this->digest($agent) !== $request['policy_digest'] || $request['expires_at'] <= now()->timestamp) {
             return $unknown;
         }
-        if ($agent->version !== '0.6.5' || $agent->status !== 'active' || $agent->revoked_at || ! $agent->last_heartbeat_at?->gt(now()->subSeconds(60))) {
+        if (! in_array($agent->version, self::VERSIONS, true) || $agent->status !== 'active' || $agent->revoked_at || ! $agent->last_heartbeat_at?->gt(now()->subSeconds(60))) {
             return ['state' => 'UNKNOWN', 'reason' => 'agent_unavailable'];
         }
         if (! isset($record['result'])) {
@@ -140,7 +145,7 @@ class Preflight
     {
         return DB::transaction(function () use ($agent, $result) {
             $a = Agent::whereKey($agent->id)->lockForUpdate()->firstOrFail();
-            if ($a->version !== '0.6.5') {
+            if (! in_array($a->version, self::VERSIONS, true)) {
                 return null;
             }
             $meta = $a->metadata ?? [];
@@ -154,7 +159,7 @@ class Preflight
                     return null;
                 }
                 abort_unless($result['id'] === $request['id'] && $result['policy_digest'] === $request['policy_digest'] && $result['agent_version'] === $a->version, 422);
-                abort_unless($result['state'] !== 'ALLOWED' || ($result['helper_healthy'] === true && $result['reason'] === 'authorized' && ($result['helper_version'] ?? null) === '0.6.5' && isset($result['effective_revision'])), 422);
+                abort_unless($result['state'] !== 'ALLOWED' || ($result['helper_healthy'] === true && $result['reason'] === 'authorized' && ($result['helper_version'] ?? null) === $a->version && isset($result['effective_revision'])), 422);
                 abort_unless($result['state'] !== 'DENIED' || $result['reason'] === 'policy_denied', 422);
                 if (isset($record['result'])) {
                     abort_unless(Digest::hash($record['result']) === Digest::hash($result), 409);

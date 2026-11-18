@@ -16,12 +16,29 @@ use App\Models\AgentTask;
 use App\Models\ConversationMessage;
 use App\Models\ConversationSetting;
 use App\Models\Diagnostic;
+use App\Models\Profile;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\IdentityTestCase;
 
 class PreflightRealFlowTest extends IdentityTestCase
 {
+    public function test_066_preflight_accepts_only_matching_helper_and_preserves_tenant_scope(): void
+    {
+        Queue::fake();
+        [$agent, $token] = $this->agent('0.6.6');
+        $request = $this->request($agent);
+        $decision = [...$this->decision($request), 'agent_version' => '0.6.6', 'helper_version' => '0.6.6'];
+        $this->postJson('/api/v1/agent/diagnostics/preflight', ['schema_version' => 1, 'result' => [...$decision, 'helper_version' => '0.6.5']], ['Authorization' => 'Bearer '.$token])->assertStatus(422);
+        $this->postJson('/api/v1/agent/diagnostics/preflight', ['schema_version' => 1, 'result' => $decision], ['Authorization' => 'Bearer '.$token])->assertOk();
+        $this->context()->forUser($this->operator);
+        $this->assertSame('ALLOWED', app(Preflight::class)->observation($agent->fresh(), $request)['state']);
+        $this->context()->forUser($this->other);
+        $this->assertNull(Agent::find($agent->id));
+        $this->assertSame(0, AgentTask::count());
+    }
+
     private function agent(string $version = '0.6.5'): array
     {
         $this->context()->forUser($this->operator);
@@ -91,7 +108,7 @@ class PreflightRealFlowTest extends IdentityTestCase
         $this->assertSame(0, Diagnostic::count());
     }
 
-    public function test_allowed_update_expires_and_old_confirmation_cannot_execute(): void
+    public function test_human_confirmation_survives_proof_expiry_and_refreshes_before_execution(): void
     {
         [$agent, $c, $identity, $engine] = $this->waiting();
         $request = app(Preflight::class)->exchange($agent, null);
@@ -103,11 +120,86 @@ class PreflightRealFlowTest extends IdentityTestCase
         $this->assertSame($count, ConversationMessage::count());
         $this->travel(11)->seconds();
         $this->resolve($c);
-        $this->assertSame('FOLLOW_UP', $c->fresh()->state);
-        $this->assertArrayNotHasKey('pending', $c->fresh()->context_json);
-        $engine->send($identity, $c->fresh(), (string) Str::uuid(), 'Confirmo');
+        $this->assertSame('WAITING_FOR_CONFIRMATION', $c->fresh()->state);
+        $this->assertArrayHasKey('pending', $c->fresh()->context_json);
+        $c = $engine->send($identity, $c->fresh(), (string) Str::uuid(), 'isso pode fazer');
+        $this->assertSame('CONFIRMED', $c->context_json['preflight_watch']['phase']);
+        $this->assertArrayHasKey('confirmed_route', $c->context_json);
         $this->assertSame(0, AgentTask::count());
         $this->assertSame(0, Diagnostic::count());
+        $c = $engine->send($identity, $c, (string) Str::uuid(), 'isso pode fazer');
+        $this->assertArrayHasKey('confirmed_route', $c->context_json);
+        $renewed = app(Preflight::class)->exchange($agent, null);
+        $this->assertNotSame($request['id'], $renewed['id']);
+        app(Preflight::class)->exchange($agent, $this->decision($renewed));
+        $this->resolve($c);
+        $this->resolve($c);
+        $this->assertSame(1, Diagnostic::count());
+        $this->assertArrayNotHasKey('confirmed_route', $c->fresh()->context_json);
+        $engine->send($identity, $c->fresh(), (string) Str::uuid(), 'isso pode fazer');
+        $this->assertSame(1, Diagnostic::count());
+    }
+
+    public function test_cancelling_confirmed_route_while_refreshing_prevents_late_execution(): void
+    {
+        [$agent, $c, $identity, $engine] = $this->waiting();
+        $q = app(Preflight::class)->exchange($agent, null);
+        app(Preflight::class)->exchange($agent, $this->decision($q));
+        $this->resolve($c);
+        $this->travel(20)->seconds();
+        $c = $engine->send($identity, $c->fresh(), (string) Str::uuid(), 'pode fazer');
+        $q = app(Preflight::class)->exchange($agent, null);
+        $engine->send($identity, $c, (string) Str::uuid(), 'Cancela');
+        app(Preflight::class)->exchange($agent, $this->decision($q));
+        $this->resolve($c);
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+    }
+
+    public static function routeInvalidations(): array
+    {
+        return [['policy'], ['expiry'], ['scope'], ['revocation'], ['cross_tenant'], ['stale_result'], ['denied'], ['helper']];
+    }
+
+    #[DataProvider('routeInvalidations')]
+    public function test_confirmed_refresh_never_bypasses_expiry_scope_policy_or_tenant(string $change): void
+    {
+        [$agent, $c, $identity, $engine] = $this->waiting();
+        $q = app(Preflight::class)->exchange($agent, null);
+        app(Preflight::class)->exchange($agent, $this->decision($q));
+        $this->resolve($c);
+        $this->travel(20)->seconds();
+        $c = $engine->send($identity, $c->fresh(), (string) Str::uuid(), 'isso pode fazer');
+        $this->assertArrayHasKey('confirmed_route', $c->context_json);
+        $q = app(Preflight::class)->exchange($agent, null);
+        $result = $this->decision($q, $change === 'denied' ? 'DENIED' : 'ALLOWED');
+        if ($change === 'helper') {
+            $result = [...$result, 'state' => 'UNKNOWN', 'reason' => 'helper_unavailable', 'helper_healthy' => false];
+        }
+        app(Preflight::class)->exchange($agent, $result);
+        if ($change === 'policy') {
+            $meta = $agent->fresh()->metadata;
+            $meta['managed_settings']['revision']++;
+            $agent->forceFill(['metadata' => $meta])->save();
+        } elseif ($change === 'expiry') {
+            $this->travel(301)->seconds();
+        } elseif ($change === 'scope') {
+            $profile = Profile::where('key', 'MTR_ICMP')->sole();
+            $profile->forceFill(['definition' => [...$profile->definition, 'latency_ms' => 999]])->save();
+        } elseif ($change === 'revocation') {
+            $this->operator->forceFill(['role' => Role::Viewer])->save();
+        } elseif ($change === 'cross_tenant') {
+            (new ResolvePreflight($this->b->id, $c->id))->handle($engine);
+            $this->context()->forUser($this->operator);
+            $this->assertSame(0, Diagnostic::count());
+
+            return;
+        } elseif (! in_array($change, ['denied', 'helper'], true)) {
+            $this->travel(11)->seconds();
+        }
+        $this->resolve($c);
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
     }
 
     public function test_pending_deadline_and_slow_allowed_response_never_grant_confirmation(): void

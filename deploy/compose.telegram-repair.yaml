@@ -1,0 +1,10 @@
+# Telegram confirmation refresh, greeting and readable diagnostic metrics.
+services:
+  web:
+    image: agent-center-central:confirmation-web-20261118
+  worker:
+    image: agent-center-central:confirmation-queue-20261118
+  telegram-scheduler:
+    image: agent-center-central:confirmation-queue-20261118
+  diagnostic-worker:
+    image: agent-center-central:route-simple-diagnostic-20261118

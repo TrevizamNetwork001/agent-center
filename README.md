@@ -1,5 +1,7 @@
 # Agent Center
 
+Manutenção de 18/11/2026: [Telegram, MTR, confirmação e apresentação da latência](docs/TELEGRAM_MTR_FECHAMENTO_20261118.md), com testes, publicação, backups, rollback e limites.
+
 Central em Laravel e PostgreSQL, com Agent Python separado. Autenticação nativa Laravel, isolamento por tenant, RBAC, FORCE RLS, auditoria e execução limitada por contratos e allowlist. Leia [AGENTS.md](AGENTS.md) antes de alterar o projeto.
 
 **Para continuar o desenvolvimento:** leia o [guia de retomada](docs/RETOMADA_DO_PROJETO_20261118.md) e o [índice completo de documentação e evidências](docs/INDICE_DOCUMENTACAO.md). O guia reúne arquitetura, caminhos do código, branches publicadas, validações históricas, pendências e restrições. Inclui a ressalva do bundle histórico nas branches auxiliares; a publicação dessas branches não equivale à aprovação de seus artefatos.

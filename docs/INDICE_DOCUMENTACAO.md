@@ -2,6 +2,16 @@
 
 Gerado em 18/11/2026 a partir dos caminhos Git de `docs/`. Relatórios e evidências são históricos; consulte o [guia de retomada](RETOMADA_DO_PROJETO_20261118.md) para estado, limites e pendências.
 
+Complemento da manutenção Telegram/MTR:
+
+- [Fechamento com resultados, testes, backups e limites](TELEGRAM_MTR_FECHAMENTO_20261118.md).
+- [Confirmação, saudação e apresentação da latência](CONVERSATION_CONFIRMATION_REFRESH_20261118.md).
+- [Análise da entrega Telegram](TELEGRAM_DELIVERY_REPAIR_20261118.md).
+- [Correção Telegram publicada](TELEGRAM_REPAIR_PRODUCTION_20261118.md).
+- [Análise de rota simplificada](ROUTE_SIMPLE_PRODUCTION_20261118.md).
+- [Política específica para 8.8.8.8](MTR_8_8_8_8_POLICY_20261118.md).
+- [Alinhamento assinado Agent/helper](MTR_HELPER_ALIGNMENT_066_20261118.md).
+
 - [docs/ACCESS_MAINTENANCE_DEPLOY.txt](<../docs/ACCESS_MAINTENANCE_DEPLOY.txt>)
 - [docs/ADAPTIVE_SPEAKING_STYLE_LAB_20261112.md](<../docs/ADAPTIVE_SPEAKING_STYLE_LAB_20261112.md>)
 - [docs/AGENT_API.md](<../docs/AGENT_API.md>)

@@ -2,6 +2,8 @@
 
 namespace App\Telegram;
 
+use GuzzleHttp\TransferStats;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 
@@ -10,6 +12,8 @@ class Client
 {
     public function call(Bot $bot, string $method, array $data = []): array
     {
+        $transportError = null;
+        $timeoutBeforeConnect = false;
         if (! in_array($method, ['getMe', 'setWebhook', 'getWebhookInfo', 'deleteWebhook', 'sendMessage', 'editMessageText'], true)) {
             throw new \InvalidArgumentException('Unsupported Telegram method.');
         }
@@ -18,7 +22,16 @@ class Client
             if (! preg_match('/^[0-9]{5,20}:[A-Za-z0-9_-]{30,100}$/D', $token)) {
                 return ['status' => 'CREDENTIAL_INVALID'];
             }
-            $r = Http::withoutRedirecting()->connectTimeout(3)->timeout(10)->withOptions(['verify' => true])->post('https://api.telegram.org/bot'.$token.'/'.$method, $data);
+            $r = Http::withoutRedirecting()->connectTimeout(3)->timeout(10)->withOptions([
+                'verify' => true, 'force_ip_resolve' => 'v4',
+                'on_stats' => function (TransferStats $stats) use (&$transportError, &$timeoutBeforeConnect): void {
+                    $transportError = $stats->getHandlerErrorData();
+                    $timeoutBeforeConnect = $transportError === 28;
+                    foreach (['http_code', 'request_size', 'size_upload', 'connect_time', 'pretransfer_time'] as $field) {
+                        $timeoutBeforeConnect = $timeoutBeforeConnect && in_array($stats->getHandlerStat($field), [0, 0.0], true);
+                    }
+                },
+            ])->post('https://api.telegram.org/bot'.$token.'/'.$method, $data);
             $j = strlen($r->body()) <= 65536 ? $r->json() : null;
             if ($r->successful() && is_array($j) && ($j['ok'] ?? false) === true) {
                 $result = $j['result'] ?? [];
@@ -41,6 +54,14 @@ class Client
             return ['status' => match ($r->status()) {
                 401 => 'CREDENTIAL_INVALID', 403 => 'BOT_BLOCKED', 400 => 'INVALID_REQUEST', default => 'DELIVERY_UNKNOWN'
             }];
+        } catch (ConnectionException) {
+            // Retry only proven DNS/connect failures or a timeout with complete
+            // evidence of no connection and no request. Missing stats fail closed.
+            if (in_array($transportError, [6, 7], true) || $timeoutBeforeConnect) {
+                return ['status' => 'TRANSPORT_UNAVAILABLE'];
+            }
+
+            return ['status' => 'DELIVERY_UNKNOWN'];
         } catch (\Throwable) {
             return ['status' => 'DELIVERY_UNKNOWN'];
         }

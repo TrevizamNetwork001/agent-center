@@ -59,6 +59,139 @@ class TelegramTest extends IntelligenceTestCase
 {
     use PathReadinessFixture;
 
+    public function test_greeting_and_natural_confirmation_refresh_route_authorization_after_human_delay(): void
+    {
+        $agent = $this->agent();
+        $agent->forceFill(['version' => '0.6.6', 'last_heartbeat_at' => now(), 'metadata' => [...$agent->metadata, 'mtr_capability_confirmed_at' => now()->toIso8601String()]])->save();
+        $link = $this->link();
+        $this->say('boa tarde beleza ai poderia verificar a rota para o 8.8.8.8');
+        $c = $this->conversation($link);
+        $this->assertStringStartsWith('Boa tarde.', ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first()->body);
+        $decision = fn ($q) => ['schema_version' => 1, 'id' => $q['id'], 'state' => 'ALLOWED', 'reason' => 'authorized', 'helper_healthy' => true, 'helper_version' => '0.6.6', 'effective_revision' => str_repeat('a', 64), 'agent_version' => '0.6.6', 'policy_digest' => $q['policy_digest']];
+        $q = app(Preflight::class)->exchange($agent, null);
+        app(Preflight::class)->exchange($agent, $decision($q));
+        (new ResolvePreflight($this->a->id, $c->id))->handle(app(Engine::class));
+        $this->scope();
+        $this->travel(45)->seconds();
+        $agent->forceFill(['last_heartbeat_at' => now()])->save();
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', 'Vou usar MTR ICMP') && str_contains($r['text'], 'Confirma a execução'));
+        $this->say('isso pode fazer');
+        $c = $this->conversation($link);
+        $this->assertArrayHasKey('confirmed_route', $c->context_json);
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+        $renewed = app(Preflight::class)->exchange($agent, null);
+        $this->assertNotSame($q['id'], $renewed['id']);
+        app(Preflight::class)->exchange($agent, $decision($renewed));
+        (new ResolvePreflight($this->a->id, $c->id))->handle(app(Engine::class));
+        $this->scope();
+        $this->assertSame(1, Diagnostic::count());
+        $this->assertSame('DIAGNOSTIC_RUNNING', $c->fresh()->state);
+        $this->assertFalse(ConversationMessage::where('conversation_id', $c->id)->where('body', 'like', '%Não tenho acesso%')->exists());
+    }
+
+    public function test_real_066_colloquial_tracert_waits_for_mtr_authorization_before_confirmation(): void
+    {
+        $agent = $this->agent();
+        $agent->forceFill(['version' => '0.6.6', 'last_heartbeat_at' => now(), 'metadata' => [...$agent->metadata, 'mtr_capability_confirmed_at' => now()->toIso8601String()]])->save();
+        $link = $this->link();
+        $this->say('Consegue fazer um tracert para 8.8.8.8?');
+        $c = $this->conversation($link);
+        $m = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->firstOrFail();
+        $this->assertSame('MTR_ICMP', $m->metadata['diagnostic_planning']['profile']);
+        $this->assertSame('PENDING', $m->metadata['diagnostic_planning']['status']);
+        $this->assertArrayNotHasKey('pending', $c->context_json);
+        $request = app(Preflight::class)->exchange($agent, null);
+        $this->assertSame('8.8.8.8', $request['destination']);
+        app(Preflight::class)->exchange($agent, ['schema_version' => 1, 'id' => $request['id'], 'state' => 'ALLOWED', 'reason' => 'authorized', 'helper_healthy' => true, 'helper_version' => '0.6.6', 'effective_revision' => str_repeat('a', 64), 'agent_version' => '0.6.6', 'policy_digest' => $request['policy_digest']]);
+        (new ResolvePreflight($this->a->id, $c->id))->handle(app(Engine::class));
+        $this->scope();
+        $this->assertSame('WAITING_FOR_CONFIRMATION', $c->fresh()->state);
+        $this->assertSame('MTR_ICMP', $c->fresh()->context_json['pending']['profile']);
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', 'Vou usar MTR ICMP'));
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+    }
+
+    public function test_real_066_tracert_request_explains_unsupported_method_without_substitution_or_authority(): void
+    {
+        $agent = $this->agent();
+        $agent->forceFill(['version' => '0.6.6', 'last_heartbeat_at' => now()])->save();
+        $link = $this->link();
+        $this->say('Faça somente tracert para 8.8.8.8');
+        $c = $this->conversation($link);
+        $m = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->firstOrFail();
+        $this->assertSame('preflight_method_unsupported', $m->metadata['diagnostic_planning']['reason']);
+        $this->assertSame('CAMINHO_TRACEROUTE', $m->metadata['diagnostic_planning']['profile']);
+        $this->assertSame('UNKNOWN', $m->metadata['diagnostic_planning']['authorization']);
+        $this->assertStringContainsString('tracert/traceroute', $m->body);
+        $this->assertStringNotContainsString('Esta versão do Agent', $m->body);
+        $this->assertArrayNotHasKey('pending', $c->context_json);
+        $this->assertArrayNotHasKey('diagnostic_preflight_v1', $agent->fresh()->metadata);
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', 'tracert/traceroute'));
+        $this->say('Sim, confirmo');
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+    }
+
+    public function test_colloquial_tracert_uses_supported_mtr_and_discloses_method_before_confirmation(): void
+    {
+        $agent = $this->agent();
+        $agent->forceFill(['version' => '0.6.6', 'last_heartbeat_at' => now(), 'metadata' => [...$agent->metadata, 'mtr_capability_confirmed_at' => now()->toIso8601String()]])->save();
+        $this->pathReady($agent);
+        $link = $this->link();
+        $this->say('Eu mior de bao consegue fazer um tracert para 8.8.8.8');
+        $c = $this->conversation($link);
+        $this->assertSame('WAITING_FOR_CONFIRMATION', $c->state);
+        $this->assertSame('MTR_ICMP', $c->context_json['pending']['profile']);
+        $this->assertSame(0, Diagnostic::count());
+        $this->assertSame(0, AgentTask::count());
+        $this->deliverAll();
+        Http::assertSent(fn ($r) => str_contains($r['text'] ?? '', 'Vou usar MTR ICMP') && str_contains($r['text'], 'Confirma a execução'));
+        $this->say('Sim, confirmo');
+        $this->assertSame('MTR_ICMP', $this->conversation($link)->context_json['last_profile']);
+        $this->assertSame(1, Diagnostic::count());
+        $this->assertSame(0, AgentTask::where('capability', 'traceroute:v1')->count());
+    }
+
+    public function test_proven_transport_failure_is_bounded_and_rechecks_tenant_and_revocation(): void
+    {
+        $link = $this->link();
+        $this->say('Boa tarde!');
+        $out = Outbound::whereNotNull('message_id')->firstOrFail();
+        $client = new class extends Client
+        {
+            public function call(Bot $bot, string $method, array $data = []): array
+            {
+                return ['status' => 'TRANSPORT_UNAVAILABLE'];
+            }
+        };
+        (new Deliver($this->b->id, $out->id))->handle($client);
+        $this->scope();
+        $this->assertSame(0, $out->fresh()->attempts);
+        for ($attempt = 1; $attempt <= 5; $attempt++) {
+            (new Deliver($this->a->id, $out->id))->handle($client);
+            $this->scope();
+            $this->assertSame($attempt === 5 ? 'FAILED' : 'PENDING', $out->fresh()->status);
+            $this->assertSame($attempt, $out->fresh()->attempts);
+            $this->travel(61)->seconds();
+        }
+        $this->say('Olá!');
+        $next = Outbound::whereNotNull('message_id')->where('id', '!=', $out->id)->firstOrFail();
+        (new Deliver($this->a->id, $next->id))->handle($client);
+        $this->scope();
+        $this->assertSame('PENDING', $next->fresh()->status);
+        app(Accounts::class)->revoke($link, $this->admin);
+        $this->travel(61)->seconds();
+        (new Deliver($this->a->id, $next->id))->handle($client);
+        $this->scope();
+        $this->assertSame('SUPPRESSED', $next->fresh()->status);
+        $this->assertSame(0, AgentTask::count());
+    }
+
     public function test_mikrotik_typed_protocol_uses_native_ingress_outbox_and_freeze(): void
     {
         if (getenv('DEVICE_PROTOCOL_LAB') !== '1') {
@@ -262,7 +395,7 @@ class TelegramTest extends IntelligenceTestCase
         $this->scope();
         $this->assertSame('WAITING_FOR_CONFIRMATION', $c->fresh()->state);
         $confirmation = ConversationMessage::where('conversation_id', $c->id)->latest('sequence')->first();
-        $this->travel(11)->seconds();
+        $this->travel(301)->seconds();
         $this->deliverAll();
         $this->assertSame('SUPPRESSED', Outbound::where('message_id', $confirmation->id)->sole()->status);
         Http::assertNotSent(fn ($r) => str_contains($r['text'] ?? '', 'Confirma a execução'));
