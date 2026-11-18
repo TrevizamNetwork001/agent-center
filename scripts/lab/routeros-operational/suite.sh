@@ -7,7 +7,9 @@ chmod 755 "$suite_dir"
 mkdir "$suite_dir/packaging" "$suite_dir/src"
 cp -R agent/tests "$suite_dir/tests"
 cp agent/candidates/routeros-operational-v1/packaging/build.py "$suite_dir/packaging/"
+cp agent/packaging/install-agent.py "$suite_dir/packaging/"
 docker run --rm --network none --user 65534:65534 \
+  --workdir /agent \
   --mount "type=bind,src=$suite_dir,dst=/agent,readonly" \
   --mount "type=bind,src=$PWD/agent/candidates/routeros-operational-v1/src,dst=/agent/src,readonly" \
   -e PYTHONDONTWRITEBYTECODE=1 -e PYTHONPATH=/agent/src \

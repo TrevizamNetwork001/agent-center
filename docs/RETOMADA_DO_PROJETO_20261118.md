@@ -2,6 +2,8 @@
 
 ## Comece aqui
 
+**Revisão mais recente:** [pendências corrigidas e testes adicionais](PENDENCIAS_REVISADAS_20261118.md). Substitui o estado pendente do bundle e da auditoria de dependências descrito historicamente abaixo. Backup externo e certificado de LAB foram adiados pelo usuário. Não usar os heads antigos das quatro branches auxiliares.
+
 **Continuação de 18/11:** consultar primeiro o [fechamento Telegram/MTR](TELEGRAM_MTR_FECHAMENTO_20261118.md). Registra as imagens atuais selecionadas, o alinhamento Agent/helper 0.6.6 pelo Lifecycle e os testes das correções de confirmação, saudação e latência. As referências a panel-updater e à ausência de inspeção operacional abaixo pertencem ao levantamento anterior.
 
 Repositório: https://github.com/TrevizamNetwork001/agent-center. A linha de desenvolvimento consolidada é `main`; a base verificada antes deste complemento documental é `4453457f0734a52e57a5e810e5428da112b050d6`. Leia primeiro [AGENTS.md](../AGENTS.md), [README](../README.md), [fluxo consolidado](FLUXO_ATUAL_20261118.md) e [pendências verificadas](PENDENCIAS_20261118.md). Este guia registra fonte e evidências existentes; não é uma nova atestação de produção.
@@ -47,9 +49,9 @@ Push de fonte não autoriza deploy, atualização de Agent, ampliação de privi
 | Backup externo atual | Verificação operacional ainda não comprovada; erro de acesso ao bus systemd não prova ausência de timer ou backup |
 | Certificados do LAB `backup-ui` | Correção autorizada documentada; validade até **18/12/2026 16:53:49 UTC**. Renovar antes ou encerrar o LAB com autorização própria |
 | Aceite físico MikroTik | Autorização específica com tenant, ator, equipamento, Agent, destino, fingerprint, credencial, janela e limites; não executar por este guia |
-| Skips opcionais dos testes | Três cenários systemd `PANEL_TRANSITION_LAB=1` e dois RouterOS `ROUTEROS_TASK_LAB=1` não foram reexecutados na publicação anterior |
-| Advisories atuais | Rodada anterior sem rede Composer não foi auditoria atualizada de vulnerabilidades |
-| Branches históricas auxiliares | Preservadas no GitHub; não são novas linhas homologadas para produção. Ver ressalva de bundle abaixo |
+| Skips opcionais dos testes | Resolvidos na revisão posterior: 115 casos de protocolo/Telegram sem skips, dois cenários Task Engine/SSH e três cenários Lifecycle/systemd aprovados em ambientes separados |
+| Advisories atuais | Auditorias atuais Composer e npm sem vulnerabilidades conhecidas nos lockfiles; ver relatório da revisão |
+| Branches históricas auxiliares | Quatro históricos limpos e publicados com código preservado; hashes atuais e scan aprovado no relatório de revisão. A ressalva abaixo é histórica |
 
 Detalhes, evidência e rollback da correção TLS: [pendências de 18/11](PENDENCIAS_20261118.md). Backups restritos, secrets, dumps, identidades e estado persistente continuam fora do versionamento; GitHub não recupera sozinho o banco ou as chaves.
 

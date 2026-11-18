@@ -1,5 +1,7 @@
 # Pendências verificadas — 18/11/2026
 
+**Revisão posterior autorizada:** consultar [correções das demais pendências](PENDENCIAS_REVISADAS_20261118.md). Histórico das quatro branches auxiliares limpo e auditado; runner do Agent corrigido, 202 testes aprovados; 115 testes adicionais de protocolo/Telegram sem skips. Backup externo e certificado do LAB foram adiados pelo usuário. Aceite físico depende dos vínculos operacionais ainda não informados; não é falha corrigível por remover o freeze. As seções anteriores permanecem como evidência histórica.
+
 **Atualização posterior:** correções autorizadas de Telegram, rota, confirmação, saudação e latência publicadas na Central. Estado final, testes, imagens, backups, rollback e limites no [fechamento desta manutenção](TELEGRAM_MTR_FECHAMENTO_20261118.md). Os parágrafos de inspeção inicial abaixo são históricos; as imagens atuais constam no fechamento. Backup externo e demais pendências não foram encerrados por essa correção.
 
 Inspeção inicial somente de leitura do runtime, após a publicação de fonte `2530cca`, seguida de correção autorizada exclusivamente no laboratório `backup-ui`. Não houve deploy da Central, migration ou acesso a Agent/equipamento.

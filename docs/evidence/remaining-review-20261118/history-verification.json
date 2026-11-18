@@ -1,0 +1,43 @@
+{
+  "branches": [
+    {
+      "branch": "dashboard-react-vite",
+      "before": "12fec521c31d0055999018a3815de30446d57119",
+      "after": "71d98ed1325a856070c72d4d1109c4a7e294e636",
+      "commits_verified": 7,
+      "only_removed_path": "agent/dist/recovery8-source.bundle"
+    },
+    {
+      "branch": "mtr-central-ready",
+      "before": "89ba0f5bd39b8fc6ee1ba7af6e4f55daf4cc58e7",
+      "after": "7b748caf6364c351b8f63538dd2b4228463b5013",
+      "commits_verified": 6,
+      "only_removed_path": "agent/dist/recovery8-source.bundle"
+    },
+    {
+      "branch": "mtr-path-analysis-lab",
+      "before": "f301555a9ea8f83255fe21bb922865bc7777cc60",
+      "after": "efbceeb4c2c23fde23df90eb559f5086ec756b0f",
+      "commits_verified": 4,
+      "only_removed_path": "agent/dist/recovery8-source.bundle"
+    },
+    {
+      "branch": "mtr-secure-executor",
+      "before": "4c99a12bc38812a3b09d2c41750a924e1e78b9cf",
+      "after": "52dfa34004e6367d14fae3941b10f56d398af085",
+      "commits_verified": 5,
+      "only_removed_path": "agent/dist/recovery8-source.bundle"
+    }
+  ],
+  "commit_trees_and_metadata_preserved": true,
+  "atomic_push": true,
+  "exact_remote_leases": true,
+  "reachable_history_scan_before_main_publication": {
+    "commits": 161,
+    "blobs": 3033,
+    "secret_or_backup_matches": 0,
+    "forbidden_historical_paths": 0,
+    "exit_code": 0
+  },
+  "server_object_erasure_claimed": false
+}

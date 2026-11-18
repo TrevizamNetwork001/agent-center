@@ -1,0 +1,53 @@
+{
+  "agent_unit_tests": {
+    "tests": 202,
+    "passed": true
+  },
+  "protocol_telegram_tests": {
+    "tests": 115,
+    "assertions": 940,
+    "skipped": 0,
+    "passed": true
+  },
+  "isolated_scenarios": [
+    {
+      "suite": "tasks",
+      "test": "test_complete_runtime_api_ssh_and_conversation_flow_with_security_boundaries",
+      "tests": 1,
+      "assertions": 225,
+      "passed": true
+    },
+    {
+      "suite": "tasks",
+      "test": "test_identity_only_physical_preparation_stays_simulated_and_blocks_other_capabilities",
+      "tests": 1,
+      "assertions": 41,
+      "passed": true
+    },
+    {
+      "suite": "panel",
+      "test": "test_failed_final_package_rolls_back_without_ssh",
+      "tests": 1,
+      "assertions": 19,
+      "passed": true
+    },
+    {
+      "suite": "panel",
+      "test": "test_old_065_companion_updates_both_packages_through_panel_without_ssh",
+      "tests": 1,
+      "assertions": 284,
+      "passed": true
+    },
+    {
+      "suite": "panel",
+      "test": "test_panel_restores_original_065_with_a_new_signed_sequence_without_ssh",
+      "tests": 1,
+      "assertions": 352,
+      "passed": true
+    }
+  ],
+  "total_cases": 322,
+  "physical_equipment_accessed": false,
+  "production_deployed": false,
+  "backup_or_lab_certificate_maintenance": false
+}

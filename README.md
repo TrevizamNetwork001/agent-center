@@ -1,5 +1,7 @@
 # Agent Center
 
+Revisão posterior: [limpeza do histórico, runner corrigido e testes adicionais](docs/PENDENCIAS_REVISADAS_20261118.md). Backup externo e certificado de LAB adiados por decisão do usuário.
+
 Manutenção de 18/11/2026: [Telegram, MTR, confirmação e apresentação da latência](docs/TELEGRAM_MTR_FECHAMENTO_20261118.md), com testes, publicação, backups, rollback e limites.
 
 Central em Laravel e PostgreSQL, com Agent Python separado. Autenticação nativa Laravel, isolamento por tenant, RBAC, FORCE RLS, auditoria e execução limitada por contratos e allowlist. Leia [AGENTS.md](AGENTS.md) antes de alterar o projeto.

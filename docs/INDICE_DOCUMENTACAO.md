@@ -4,6 +4,8 @@ Gerado em 18/11/2026 a partir dos caminhos Git de `docs/`. Relatórios e evidên
 
 Complemento da manutenção Telegram/MTR:
 
+- [Revisão das pendências: limpeza do histórico e testes adicionais](PENDENCIAS_REVISADAS_20261118.md).
+
 - [Fechamento com resultados, testes, backups e limites](TELEGRAM_MTR_FECHAMENTO_20261118.md).
 - [Confirmação, saudação e apresentação da latência](CONVERSATION_CONFIRMATION_REFRESH_20261118.md).
 - [Análise da entrega Telegram](TELEGRAM_DELIVERY_REPAIR_20261118.md).

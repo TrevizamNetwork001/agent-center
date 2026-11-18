@@ -1,5 +1,7 @@
 # Conciliação e publicação no GitHub — 18/11/2026
 
+**Atualização posterior:** o usuário autorizou a limpeza das quatro branches auxiliares. O [relatório de revisão](PENDENCIAS_REVISADAS_20261118.md) registra novos heads, preservação do código e scanner histórico aprovado após a limpeza. A ressalva abaixo descreve o achado anterior; não recolocar os heads antigos no remoto.
+
 > Complemento posterior: as cinco branches locais auxiliares foram publicadas por solicitação do usuário. Isso mudou o alcance da publicação original de main: o bundle antigo descrito abaixo passou a ser alcançável no GitHub pelas quatro branches de desenvolvimento auxiliares. Consulte o [guia de retomada](RETOMADA_DO_PROJETO_20261118.md). O resultado histórico de scan aprovado desta publicação original não se aplica ao conjunto ampliado.
 
 Escopo autorizado: corrigir pendências do repositório, consolidar documentação e publicar fonte/histórico no GitHub. Não é deploy da Central, release operacional assinada, atualização de Agent ou autorização de device.
