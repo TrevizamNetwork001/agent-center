@@ -2,6 +2,8 @@
 
 Consolidação documental em 18/11/2026. Fonte: código e relatórios deste checkout. Os resultados de produção e testes abaixo são evidências históricas dos documentos citados; não constituem nova inspeção de containers, banco, equipamentos ou chamadas externas.
 
+Inspeção posterior de runtime: ver [pendências verificadas](PENDENCIAS_20261118.md). Ela confirma diferenças de implantação e registra a correção autorizada do certificado expirado no laboratório separado `backup-ui`; não atesta backup externo nem atualiza os resultados históricos abaixo.
+
 ## Visão geral
 
 A Central usa Laravel e PostgreSQL. O Agent Python é um cliente separado. Não existe autorização para FastAPI, shell arbitrário ou decisões operacionais pelo LLM.

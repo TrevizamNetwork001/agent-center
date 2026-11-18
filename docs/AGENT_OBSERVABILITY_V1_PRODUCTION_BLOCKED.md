@@ -1,3 +1,5 @@
+> Registro histórico da tentativa 0.6.3 e seu rollback. Não representa a versão atual da VM teste. Consultar o [rollout 0.6.6 de 16/11](AGENT_PANEL_ROLLOUT_066_20261116.md) e as [pendências verificadas em 18/11](PENDENCIAS_20261118.md). A quarentena histórica não deve ser removida.
+
 # AGENT OBSERVABILITY V1 PRODUCTION BLOCKED
 
 MOTIVO: o updater repetiu saídas com código 1 durante a observação, e o Agent

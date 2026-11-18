@@ -4,6 +4,8 @@ Central em Laravel e PostgreSQL, com Agent Python separado. Autenticação nativ
 
 O fluxo completo e a situação das entregas estão em [Fluxo atual — 18/11/2026](docs/FLUXO_ATUAL_20261118.md). A consolidação distingue implementação, laboratório e publicação documentada. A conciliação do repositório está em [Publicação GitHub — 18/11/2026](docs/PUBLICACAO_GITHUB_20261118.md).
 
+As [pendências verificadas no runtime](docs/PENDENCIAS_20261118.md) distinguem a Central saudável, as diferenças de implantação e a correção autorizada do certificado do laboratório antigo `backup-ui`. Esse laboratório não comprova o estado do backup externo de produção.
+
 ```text
 Web / Telegram → Laravel → identidade e tenant → Conversation / Diagnostics
 → Preflight e autorização → Task Engine → Agent API → Python Agent
