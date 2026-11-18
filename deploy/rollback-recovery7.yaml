@@ -1,0 +1,7 @@
+services:
+  web:
+    image: agent-center-central:recovery6
+  worker:
+    image: agent-center-central:recovery6
+  diagnostic-worker:
+    image: agent-center-central:recovery6

@@ -34,3 +34,6 @@ __pycache__/
 /artifacts/agentkit/
 
 /app/public/downloads/agent/
+
+# Local build bundles and signed packages are distributed through Lifecycle.
+/artifacts/

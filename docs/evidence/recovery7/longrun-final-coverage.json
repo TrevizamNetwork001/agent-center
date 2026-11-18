@@ -1,0 +1,10 @@
+{
+  "start_utc": "2026-11-04T20:25:44.818731+00:00",
+  "end_utc": "2026-11-04T20:40:45.074586+00:00",
+  "heartbeat_successes_delta": 45,
+  "poll_successes_delta": 172,
+  "all_worker_and_database_checks_pass": true,
+  "all_queue_progress_checks_pass": true,
+  "all_samples_online": true,
+  "limits_unchanged": true
+}

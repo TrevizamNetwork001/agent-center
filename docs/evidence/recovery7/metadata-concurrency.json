@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "iterations": 12,
+  "requests": 48,
+  "elapsed_seconds": 7.147,
+  "task_opt_in_preserved": true,
+  "path": "Nginx -> Laravel/FPM -> PostgreSQL",
+  "scope": "isolated_lab"
+}

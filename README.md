@@ -2,7 +2,7 @@
 
 Central em Laravel e PostgreSQL, com Agent Python separado. Autenticação nativa Laravel, isolamento por tenant, RBAC, FORCE RLS, auditoria e execução limitada por contratos e allowlist. Leia [AGENTS.md](AGENTS.md) antes de alterar o projeto.
 
-O fluxo completo e a situação das entregas estão em [Fluxo atual — 18/11/2026](docs/FLUXO_ATUAL_20261118.md). A consolidação distingue implementação, laboratório, publicação documentada e pendências no GitHub.
+O fluxo completo e a situação das entregas estão em [Fluxo atual — 18/11/2026](docs/FLUXO_ATUAL_20261118.md). A consolidação distingue implementação, laboratório e publicação documentada. A conciliação do repositório está em [Publicação GitHub — 18/11/2026](docs/PUBLICACAO_GITHUB_20261118.md).
 
 ```text
 Web / Telegram → Laravel → identidade e tenant → Conversation / Diagnostics

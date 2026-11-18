@@ -1,0 +1,105 @@
+[
+  {
+    "name": "agent-center-web-1",
+    "image": "agent-center-central:recovery6",
+    "user": "www-data",
+    "privileged": false,
+    "cap_add": null,
+    "cap_drop": [
+      "ALL"
+    ],
+    "security_opt": [
+      "no-new-privileges:true"
+    ],
+    "read_only": false,
+    "restart": "unless-stopped",
+    "health": "healthy",
+    "port_bindings": {},
+    "volumes": [
+      "agent-center_app_storage"
+    ]
+  },
+  {
+    "name": "agent-center-worker-1",
+    "image": "agent-center-central:recovery6",
+    "user": "www-data",
+    "privileged": false,
+    "cap_add": null,
+    "cap_drop": [
+      "ALL"
+    ],
+    "security_opt": [
+      "no-new-privileges:true"
+    ],
+    "read_only": false,
+    "restart": "unless-stopped",
+    "health": "healthy",
+    "port_bindings": {},
+    "volumes": [
+      "agent-center_app_storage"
+    ]
+  },
+  {
+    "name": "agent-center-diagnostic-worker-1",
+    "image": "agent-center-central:recovery6",
+    "user": "www-data",
+    "privileged": false,
+    "cap_add": null,
+    "cap_drop": [
+      "ALL"
+    ],
+    "security_opt": [
+      "no-new-privileges:true"
+    ],
+    "read_only": false,
+    "restart": "unless-stopped",
+    "health": "healthy",
+    "port_bindings": {},
+    "volumes": [
+      "agent-center_app_storage"
+    ]
+  },
+  {
+    "name": "agent-center-postgres-1",
+    "image": "postgres:17-bookworm@sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5",
+    "user": "",
+    "privileged": false,
+    "cap_add": null,
+    "cap_drop": null,
+    "security_opt": [
+      "no-new-privileges:true"
+    ],
+    "read_only": false,
+    "restart": "unless-stopped",
+    "health": "healthy",
+    "port_bindings": {},
+    "volumes": [
+      "agent-center_postgres_data"
+    ]
+  },
+  {
+    "name": "agent-center-nginx-1",
+    "image": "nginxinc/nginx-unprivileged:stable-alpine@sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03",
+    "user": "101:101",
+    "privileged": false,
+    "cap_add": null,
+    "cap_drop": [
+      "ALL"
+    ],
+    "security_opt": [
+      "no-new-privileges:true"
+    ],
+    "read_only": true,
+    "restart": "unless-stopped",
+    "health": "healthy",
+    "port_bindings": {
+      "8080/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "18083"
+        }
+      ]
+    },
+    "volumes": []
+  }
+]

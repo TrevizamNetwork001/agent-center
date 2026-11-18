@@ -1,11 +1,30 @@
-# Saúde operacional
+> Este documento preserva contratos e procedimentos históricos RECOVERY. Para versões e entregas posteriores, consultar o [fluxo consolidado de 18/11/2026](FLUXO_ATUAL_20261118.md) e os fechamentos datados. Kits antigos não substituem releases assinadas e o Lifecycle vigente.
 
-`/health/live` comprova Laravel vivo; `/health/ready` verifica PostgreSQL. `/operations`, restrito a administradores com tenant selecionado, mostra conexão web/banco, marker funcional de diagnostic-worker, Agents online/offline, idade de heartbeat/poll, tasks ativas, leases vencidas e attempts FAILED/EXPIRED.
+# Operations Health — RECOVERY-7
 
-Worker escreve storage/framework/diagnostic-worker.json atomicamente apenas depois de completar ciclo PostgreSQL de todos os tenants ativos. Marker tem boot_id do kernel, PID, hrtime(true), iterations e progress. Saúde exige mesma inicialização e loop monotônico com idade <15s. PID é verificado apenas no namespace do próprio container. Docker health usa `php artisan agent-center:worker-health` com SELECT 1 adicional. Falha ou travamento deixa marker vencer. Iterações sem tasks são trabalho legítimo de reconciliação; contador progress separa diagnósticos examinados de iterações.
+Tela existente `/operations`, administradores com tenant selecionado, polling leve. Estados VERDE / ATENÇÃO / NO-GO. Cada check inclui componente, motivo fechado, timestamp, valores observados e limite. Ausência de observabilidade nunca equivale a sucesso.
 
-Queue worker Laravel existente continua separado; diagnostic-worker agenda/reconcilia diagnósticos. Restart seguro com transações, locks e materialização idempotente. Stop por SIGTERM/SIGINT, intervalo 2s. Não há dependência de FastAPI nem de timestamp de COMMIT.
+## Sinais funcionais
 
-Heartbeat Python tem cliente/thread próprios; polling tem outro cliente; execução usa thread de controle e subprocesso isolado. Requisição lenta de execução, escrita de journal/status e subprocesso não compartilham locks com heartbeat. Leases 45s, renew 10s, exec <=20s, polling nominal 5s, heartbeat 20s. Sob falha de rede, não há garantia de sucesso de heartbeat; processo permanece controlado e resultados não são inventados.
+- Laravel web: atendimento da requisição atual; não é prova independente de processo FPM/edge.
+- PostgreSQL: SELECT 1 pelo runtime; falha NO-GO.
+- Diagnostic worker: marker atômico após ciclo completo de tenants; boot_id, relógio monotônico, iterações/progresso e idade <15s. Health local também exige PID no namespace correto.
+- Laravel queue worker: job OperationsPulse enfileirado aproximadamente a cada 30s pelo scheduler e concluído pelo worker. Marker só após SELECT 1 e conclusão efetiva do job. Idade <90s. Healthcheck `agent-center:queue-health`. Não usa contagem de commits PostgreSQL ou mero PID como prova de progresso.
+- Agents: heartbeat <60s, poll <30s, ausências e cobertura; detalhe contém journal/processo/versão/capabilities/freeze coletados. Endpoint próprio do companion registra última comunicação real. Nenhum Agent de laboratório vira presença de produção.
+- Task Engine: tasks CLAIMED/RUNNING, attempts ativos vencidos, falhas de hoje e correspondência da geração do attempt com task. Mismatch de fencing é NO-GO; testes negativos continuam verificando rejeição de geração/lease stale.
 
-Subprocesso é argv fixo do próprio Agent, stdin JSON limitado, dispatcher fechado. Ping/traceroute têm argv fixo sem shell. Timeout/cancel/lease perdida encerram o grupo de processos e aguardam reap. Journal nunca recebe lease_token; arquivo privado state/leases/<UUID>.json persiste a credencial somente até confirmação/expiração. Backup do state contém secrets e exige armazenamento privado/criptografado externo.
+## Probes externos da infraestrutura
+
+`scripts/collect-operations.py` consulta somente containers fixos deste projeto, HTTPS ready e validação sem credencial do Agent API (422 esperado). Nunca recebe comandos/endpoints do navegador. Produz JSON sanitizado; Laravel só lê essa evidência. Após 90s, dados externos deixam de valer e componentes voltam a ATENÇÃO.
+
+Configurar `deploy/agent-center-operations.service`/timer no host autorizado após deploy; o output usa o mountpoint do volume compartilhado `agent-center_app_storage` inspecionado nesta VPS; confirmar novamente com docker volume inspect ao implantar em outro host. O timer preparado não foi presumido ativo. Não expor Docker socket ao Laravel. Probe de status do container utiliza healthchecks existentes, não apenas estado running.
+
+Nginx: instalar formato `deploy/nginx/host/agent-center-observability.conf` no contexto http e vhost revisado. Log registra exclusivamente timestamp/status/latência; não contém URL, IP, headers, cookies, token ou body. Leitura limitada a 10 mil linhas/5min; HTTP 5xx acima de 5% é NO-GO. Sem amostras é ATENÇÃO. Rotação específica preparada em deploy/nginx/host/agent-center-logrotate.conf (sete dias, 0640, somente arquivo deste projeto); não habilitar logs de payloads para compensar ausência de métricas.
+
+Uma resposta local HTTPS comprova somente o caminho testado; monitor externo em outra rede continua pendente. Nginx e FPM ausentes na cobertura não são rotulados saudáveis pela tela. Logs/error samples podem conter informação confidencial; somente códigos fechados entram na Central.
+
+## Diagnóstico de travamento e recuperação
+
+Heartbeat recente com poll vencido é ATENÇÃO. Loop worker parado vence seu marker e gera NO-GO. Lease vencida é evidência de ausência de renovação, nunca autorização para reexecução cega. Reconcile/journal preservam execução uncertain. Cancel/timeout encerram grupo de subprocesso e aguardam reap; heartbeat usa thread/cliente separados.
+
+Não restaurar journal antigo sobre state atual nem iniciar duas cópias da mesma identidade. Recovery do updater interrompido está em AGENT_UPDATES.md. Não existe dependência de FastAPI ou de um serviço Python na Central.

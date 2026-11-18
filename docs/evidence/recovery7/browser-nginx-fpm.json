@@ -1,0 +1,15 @@
+{
+  "pass": true,
+  "checks": [
+    "agents_mobile_no_overflow",
+    "agent-detail_mobile_no_overflow",
+    "operations_mobile_no_overflow",
+    "detail_live_fragment",
+    "no_secret_fields",
+    "no_token_before_approval",
+    "native_csrf_review_and_approval",
+    "lab_browser_identity_revoked"
+  ],
+  "screenshots": 7,
+  "scope": "isolated_lab"
+}

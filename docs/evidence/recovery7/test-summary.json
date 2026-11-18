@@ -1,0 +1,45 @@
+{
+  "laravel": {
+    "tests": 134,
+    "assertions": 1095,
+    "passed": true,
+    "migrations_up_down": true
+  },
+  "python": {
+    "tests": 52,
+    "passed": true
+  },
+  "baseline_052": {
+    "tests": 40,
+    "passed": true
+  },
+  "web_regression": {
+    "tests": 32,
+    "assertions": 412,
+    "passed": true
+  },
+  "pint": true,
+  "ruff": true,
+  "compileall": true,
+  "pip_check": true,
+  "composer_validate": true,
+  "composer_audit": true,
+  "frontend_build": true,
+  "chromium": true,
+  "nginx_fpm_postgres_lab": true,
+  "device_freeze": true,
+  "rls_tables": 28,
+  "postgres_restore": true,
+  "secret_key_recovery": true,
+  "agent_backup_integrity": true,
+  "git_bundle_restore": true,
+  "systemd_units_verified": true,
+  "systemd_host_installation": false,
+  "production_promoted": false,
+  "external_backup_verified": false,
+  "real_agent_host_authorized": false,
+  "agent_presence_aggregate_regression": true,
+  "logrotate_binary_available_in_tooling": false,
+  "stale_snapshot_metadata_regression": true,
+  "parallel_metadata_http_contract": true
+}

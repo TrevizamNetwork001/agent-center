@@ -1,0 +1,34 @@
+{
+  "checked_at": "2026-11-04T23:24:29.370631+00:00",
+  "scope": "real_authorized_r2_bucket_agent_center",
+  "credentials_printed": false,
+  "tls_verification_enabled": true,
+  "small_encrypted_put_head_get_sha256": {
+    "bytes": 243,
+    "pass": true
+  },
+  "medium_encrypted_put_head_get_sha256": {
+    "bytes": 2097848,
+    "pass": true
+  },
+  "full_production_backup": {
+    "bytes": 35249103,
+    "pass": false,
+    "failure": "tls_unexpected_eof_during_upload",
+    "head_download_integrity_verified": false
+  },
+  "diagnostics": {
+    "stream_small_pass": true,
+    "without_expect_full_pass": false,
+    "bounded_memory_full_pass": false,
+    "multipart_first_part_bytes": 5242880,
+    "multipart_pass": false,
+    "failed_multipart_aborted_own_upload_only": true,
+    "tls12_six_mib_pass": false
+  },
+  "production_transport_configuration_changed": false,
+  "existing_objects_deleted": false,
+  "secrets_exposed": false,
+  "independent_restore_verified": false,
+  "result": "BLOCKED_FULL_BACKUP_TRANSFER"
+}

@@ -82,7 +82,7 @@ for attempt in {1..30}; do
     sleep 1
 done
 test -f "$lab_state/ready"
-docker network inspect "$lab_net" --format '{{.Internal}}' | rg -x true
+docker network inspect "$lab_net" --format '{{.Internal}}' | grep -Fx true
 docker exec "$lab_ssh" python3 /protocol/check-isolation.py
 docker exec "$lab_ssh" python3 /protocol/check-boundaries.py
 if [ "${ROUTEROS_TASK_LAB:-0}" = 1 ]; then

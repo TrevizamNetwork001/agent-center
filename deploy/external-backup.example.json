@@ -1,0 +1,5 @@
+{
+  "base_url": "https://AUTHORIZED-HOST/APPEND-ONLY-AGENT-CENTER-PREFIX",
+  "token_file": "/opt/agent-center/secrets/external-backup.token",
+  "recipient_certificate": "/opt/agent-center/secrets/backup-recipient.crt"
+}

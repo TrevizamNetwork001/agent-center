@@ -1,5 +1,5 @@
 [Unit]
-Description=Agent Center read-only Agent 0.5.2
+Description=Agent Center read-only Agent
 After=network-online.target
 Wants=network-online.target
 StartLimitIntervalSec=120

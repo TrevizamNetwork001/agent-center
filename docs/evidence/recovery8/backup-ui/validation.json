@@ -1,0 +1,17 @@
+{
+  "laravel_tests": 141,
+  "laravel_assertions": 1154,
+  "pass": true,
+  "new_tests": 6,
+  "browser": "isolated production-base candidate",
+  "root_export_permissions": "0700 directory, 0600 files, web denied",
+  "root_bridge_synthetic_test": true,
+  "actual_r2_request_during_tests": false,
+  "production_image": "agent-center-central:recovery8-r2-ui",
+  "production_candidate_commit": "3c07ea1",
+  "migrations": 9,
+  "force_rls_tables": 27,
+  "agent_changed": false,
+  "audit_display_timezone": "America/Sao_Paulo",
+  "database_clock_or_existing_instants_changed": false
+}

@@ -1,0 +1,16 @@
+{
+  "scope": "isolated_candidate_from_production_base",
+  "pass": true,
+  "save_encrypted_credentials": true,
+  "secret_values_never_rendered": true,
+  "write_only_fields": true,
+  "navigation_link_clicked": true,
+  "browser_key_download": true,
+  "private_key_never_sent": true,
+  "complete_configuration_ready": true,
+  "csrf_without_token": 419,
+  "desktop_mobile_no_overflow": true,
+  "audit_timezone": "America/Sao_Paulo",
+  "audit_day_boundary": true,
+  "real_r2_upload": false
+}

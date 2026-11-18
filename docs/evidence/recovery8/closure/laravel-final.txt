@@ -1,0 +1,155 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.10kB 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/composer:2@sha256:5190d9b445add2fa26090108273cb1ef1e1af98175201c737b85b3c4f90fbf7c
+#2 DONE 0.1s
+
+#3 [internal] load metadata for docker.io/library/php:8.4-fpm-bookworm@sha256:1b6bb4f3d32dfbcd1e159d7bd47caa8852507f61666db7731d73f34acec781b6
+#3 DONE 0.1s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 503B done
+#4 DONE 0.0s
+
+#5 FROM docker.io/library/composer:2@sha256:5190d9b445add2fa26090108273cb1ef1e1af98175201c737b85b3c4f90fbf7c
+#5 resolve docker.io/library/composer:2@sha256:5190d9b445add2fa26090108273cb1ef1e1af98175201c737b85b3c4f90fbf7c 0.1s done
+#5 DONE 0.1s
+
+#6 [base 1/5] FROM docker.io/library/php:8.4-fpm-bookworm@sha256:1b6bb4f3d32dfbcd1e159d7bd47caa8852507f61666db7731d73f34acec781b6
+#6 resolve docker.io/library/php:8.4-fpm-bookworm@sha256:1b6bb4f3d32dfbcd1e159d7bd47caa8852507f61666db7731d73f34acec781b6
+#6 resolve docker.io/library/php:8.4-fpm-bookworm@sha256:1b6bb4f3d32dfbcd1e159d7bd47caa8852507f61666db7731d73f34acec781b6 0.1s done
+#6 DONE 0.1s
+
+#7 [base 2/5] RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev libonig-dev libxml2-dev libzip-dev unzip git ca-certificates libfcgi-bin     && docker-php-ext-install -j2 pdo_pgsql mbstring pcntl bcmath zip dom     && rm -rf /var/lib/apt/lists/*
+#7 CACHED
+
+#8 [base 3/5] COPY --from=composer:2@sha256:5190d9b445add2fa26090108273cb1ef1e1af98175201c737b85b3c4f90fbf7c /usr/bin/composer /usr/local/bin/composer
+#8 CACHED
+
+#9 [base 4/5] WORKDIR /var/www/html
+#9 CACHED
+
+#10 [base 5/5] RUN php -r 'exit(version_compare(PHP_VERSION, "8.4.27", ">=") ? 0 : 1);'
+#10 CACHED
+
+#11 exporting to image
+#11 exporting layers 0.0s done
+#11 exporting manifest sha256:0bcbcc72727d41907e3c04e11ccfb887b4cf90b40767562371103f8f8cbef04e done
+#11 exporting config sha256:25a1d368d40bd8943be33aab8bc24a1210fc5e846df7ca95ac30a07914b82eca done
+#11 exporting attestation manifest sha256:85ab4e5f10113afc50e42a945d569122e16e14e83a7506bb84fee9555501bf0f
+#11 exporting attestation manifest sha256:85ab4e5f10113afc50e42a945d569122e16e14e83a7506bb84fee9555501bf0f 0.0s done
+#11 exporting manifest list sha256:861633875f8101309bb4887fff32b65050e51c9ca05ea6581dc9fc2f4b05baa7 0.1s done
+#11 naming to docker.io/library/agent-center-tooling:foundation done
+#11 unpacking to docker.io/library/agent-center-tooling:foundation 0.0s done
+#11 DONE 0.3s
+Installing dependencies from lock file (including require-dev)
+Verifying lock file contents can be installed on current platform.
+Nothing to install, update or remove
+Generating optimized autoload files
+> Illuminate\Foundation\ComposerScripts::postAutoloadDump
+> @php artisan package:discover --ansi
+
+   INFO  Discovering packages.
+
+  laravel/pail .......................................................... DONE
+  laravel/pao ........................................................... DONE
+  laravel/tinker ........................................................ DONE
+  nesbot/carbon ......................................................... DONE
+  nunomaduro/collision .................................................. DONE
+  nunomaduro/termwind ................................................... DONE
+
+80 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+
+   INFO  Preparing database.
+
+  Creating migration table ...................................... 19.17ms DONE
+
+   INFO  Running migrations.
+
+  0001_01_01_000000_create_users_table .......................... 43.76ms DONE
+  0001_01_01_000001_create_cache_table .......................... 15.22ms DONE
+  0001_01_01_000002_create_jobs_table ........................... 35.70ms DONE
+  2026_11_04_160000_create_identity_and_audit .................. 117.89ms DONE
+  2026_11_04_170000_create_agents_and_enrollments ............... 50.98ms DONE
+  2026_11_04_180000_create_diagnostic_engine ................... 114.39ms DONE
+  2026_11_04_190000_add_operational_read_indexes ................ 20.72ms DONE
+  2026_11_04_200000_create_knowledge_and_llm ................... 192.61ms DONE
+  2026_11_04_210000_agent_operations ............................ 21.16ms DONE
+  2026_11_04_210000_create_conversation_platform ................ 54.16ms DONE
+  2026_11_04_220000_agent_update_intents ........................ 32.58ms DONE
+
+SET
+SET
+ALTER ROLE
+GRANT
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+PHPUnit 12.5.43 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.27
+Configuration: /var/www/html/phpunit.xml
+
+...............................................................  63 / 141 ( 44%)
+............................................................... 126 / 141 ( 89%)
+...............                                                 141 / 141 (100%)
+
+Time: 01:12.926, Memory: 66.50 MB
+
+OK (141 tests, 1175 assertions)
+
+   INFO  Rolling back migrations.
+
+  2026_11_04_220000_agent_update_intents ........................ 25.58ms DONE
+  2026_11_04_210000_create_conversation_platform ................ 52.87ms DONE
+  2026_11_04_210000_agent_operations ............................ 11.58ms DONE
+  2026_11_04_200000_create_knowledge_and_llm .................... 83.22ms DONE
+  2026_11_04_190000_add_operational_read_indexes ................. 9.29ms DONE
+  2026_11_04_180000_create_diagnostic_engine .................... 63.96ms DONE
+  2026_11_04_170000_create_agents_and_enrollments ................ 8.34ms DONE
+  2026_11_04_160000_create_identity_and_audit ................... 34.06ms DONE
+  0001_01_01_000002_create_jobs_table ........................... 15.97ms DONE
+  0001_01_01_000001_create_cache_table .......................... 10.75ms DONE
+  0001_01_01_000000_create_users_table .......................... 10.91ms DONE

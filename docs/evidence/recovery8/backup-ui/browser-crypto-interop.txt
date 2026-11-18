@@ -1,0 +1,2 @@
+Browser-generated synthetic X25519 identity/public recipient interoperable with official age1.2.1: PASS
+Private key stayed in browser download; no request body or DOM leak; no production backup/key used.

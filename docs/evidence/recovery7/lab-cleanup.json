@@ -1,0 +1,9 @@
+{
+  "timestamp_utc": "2026-11-04T20:57:01.860302+00:00",
+  "containers_removed": 8,
+  "lab_database_removed": true,
+  "lab_volume_removed": true,
+  "private_state_archived_after_shutdown": true,
+  "isolated_restore_passed": true,
+  "production_untouched_by_cleanup": true
+}

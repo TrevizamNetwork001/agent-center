@@ -98,6 +98,8 @@ Ver [deploy](DEPLOYMENT.md), [backup](BACKUP_POLICY.md), [recuperação](DISASTE
 
 ## 8. GitHub e estado de conclusão
 
+A divergência descrita abaixo foi o diagnóstico inicial. A conciliação e a publicação desta continuação estão registradas em [Publicação GitHub — 18/11/2026](PUBLICACAO_GITHUB_20261118.md).
+
 Repositório configurado: https://github.com/TrevizamNetwork001/agent-center, remoto SSH pela porta 443. A privacidade foi registrada pelo operador no histórico; não foi reconfirmada por API nesta revisão.
 
 Na consulta read-only de 18/11/2026:
@@ -108,7 +110,7 @@ Na consulta read-only de 18/11/2026:
 - Portanto, **não é correto afirmar que tudo foi enviado ao GitHub**. Hashes distintos exigem conciliar o histórico antes de qualquer push; alterações locais precisam de revisão e varredura, sem inclusão indiscriminada de artifacts ou secrets.
 - GitHub armazena fonte e histórico. Um push não significa deploy da Central ou instalação de Agent.
 
-O fetch inicial foi impedido pela proteção de escrita de `.git/FETCH_HEAD`; após execução autorizada, a comparação confirmou **120 commits exclusivos locais e 19 exclusivos no remoto**. O histórico remoto inclui fechamentos de backup R2 e recuperação; não foram promovidos para este checkout nesta revisão. Nenhum force push é apropriado para resolver essa diferença. A documentação desta consolidação permanece local, sem commit ou push, até a conciliação segura dos históricos.
+O fetch inicial foi impedido pela proteção de escrita de `.git/FETCH_HEAD`; após execução autorizada, a comparação confirmou **120 commits exclusivos locais e 19 exclusivos no remoto**. O histórico remoto inclui fechamentos de backup R2 e recuperação; não foram promovidos para este checkout nesta revisão. Nenhum force push é apropriado para resolver essa diferença. A continuação autorizada preparou a conciliação em checkout isolado, com preservação dos dois históricos e sem force push; consultar o relatório de publicação para o resultado final.
 
 Ver [política do remoto e verificações antes de push](GIT_REMOTE.md). Esta consolidação não publica pacote, não altera serviços e não acessa dispositivos.
 
@@ -124,5 +126,5 @@ Ver [política do remoto e verificações antes de push](GIT_REMOTE.md). Esta co
 | RouterOS por Task Engine/Python Agent | LAB PASS com simulador; infraestrutura publicada na VM teste |
 | Consulta a MikroTik físico | Não homologada por estes relatórios; freeze mantido |
 | WhatsApp e novas integrações | Fora deste escopo; nenhuma entrega declarada |
-| Todo o workspace no GitHub | Não: alterações locais e diferença de hashes confirmadas |
+| Fonte/documentação no GitHub | Divergência inicial conciliada na continuação; ver relatório de publicação. Artefatos locais e secrets ficam excluídos |
 | Saúde e backup externo atuais | Exigem verificação operacional específica; sem nova atestação |

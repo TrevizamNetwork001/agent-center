@@ -1,0 +1,6 @@
+{
+  "pass": true,
+  "path": "Browser -> Nginx -> Laravel/FPM -> PostgreSQL",
+  "scope": "isolated_lab",
+  "ready_http": 200
+}
