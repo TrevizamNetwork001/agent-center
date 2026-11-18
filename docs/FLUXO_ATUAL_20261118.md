@@ -100,6 +100,8 @@ Ver [deploy](DEPLOYMENT.md), [backup](BACKUP_POLICY.md), [recuperação](DISASTE
 
 ## 8. GitHub e estado de conclusão
 
+**Atualização posterior:** main foi conciliada e publicada; as cinco branches locais auxiliares também foram publicadas. Os hashes, limites e a ressalva do bundle histórico estão no [guia de retomada](RETOMADA_DO_PROJETO_20261118.md). A lista abaixo descreve a inspeção inicial, não pendências atuais de arquivos locais.
+
 A divergência descrita abaixo foi o diagnóstico inicial. A conciliação e a publicação desta continuação estão registradas em [Publicação GitHub — 18/11/2026](PUBLICACAO_GITHUB_20261118.md).
 
 Repositório configurado: https://github.com/TrevizamNetwork001/agent-center, remoto SSH pela porta 443. A privacidade foi registrada pelo operador no histórico; não foi reconfirmada por API nesta revisão.

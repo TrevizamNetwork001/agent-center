@@ -1,5 +1,7 @@
 # Conciliação e publicação no GitHub — 18/11/2026
 
+> Complemento posterior: as cinco branches locais auxiliares foram publicadas por solicitação do usuário. Isso mudou o alcance da publicação original de main: o bundle antigo descrito abaixo passou a ser alcançável no GitHub pelas quatro branches de desenvolvimento auxiliares. Consulte o [guia de retomada](RETOMADA_DO_PROJETO_20261118.md). O resultado histórico de scan aprovado desta publicação original não se aplica ao conjunto ampliado.
+
 Escopo autorizado: corrigir pendências do repositório, consolidar documentação e publicar fonte/histórico no GitHub. Não é deploy da Central, release operacional assinada, atualização de Agent ou autorização de device.
 
 ## Bases preservadas
@@ -77,3 +79,15 @@ A fonte base em `agent/src` permanece na versão 0.6.4 e a candidata RouterOS 0.
 ## Estado do workspace
 
 O alinhamento local preserva o head inicial na referência `pre-publication-local-20261118`, conserva o snapshot `01be574` no histórico e mantém secrets, dados e artefatos locais. A cópia dos arquivos versionados exige conferir que o workspace original não mudou desde o snapshot; o índice é alinhado sem reset hard e sem remover arquivos locais. Nenhum serviço de produção é recriado.
+
+## Complemento de preservação e retomada
+
+Após a base documental `4453457`, foram publicadas por push atômico as branches `dashboard-react-vite`, `mtr-central-ready`, `mtr-path-analysis-lab`, `mtr-secure-executor` e `pre-publication-local-20261118`. Consulta direta ao GitHub confirmou os cinco hashes; o [guia de retomada](RETOMADA_DO_PROJETO_20261118.md) registra todos os heads e as pendências. Nenhuma branch foi fundida, excluída ou publicada com force.
+
+O scanner histórico existente foi executado nesta continuação: **159 commits, 2.999 blobs, 1 correspondência de secret ou backup e 1 caminho histórico proibido; exit 1**. A inspeção da árvore identifica `agent/dist/recovery8-source.bundle` no histórico auxiliar, já alertado no relatório original. O resultado não comprova uma credencial exposta e não permite afirmar ausência universal de secrets. A tentativa inicial do scanner falhou por permissão de leitura do material de comparação; a execução posterior com permissão concluiu e produziu as contagens acima, sem emitir valores. O scan básico do índice passou; ele não substitui o histórico e não invalida essa ressalva.
+
+O envio remoto funcionou, mas a atualização dos caches locais `refs/remotes/origin/*` foi recusada pelo filesystem somente leitura de `.git`. Por isso a confirmação usou `git ls-remote`, e não o cache de tracking. A gravação deste complemento exige a permissão de escrita Git disponível ao processo autorizado; não alterar permissões nem identidade SSH para contornar a proteção.
+
+Este complemento modifica somente documentação: guia, índice e links de entrada. Não reexecuta a suíte de aplicação, não inspeciona serviços, não publica release assinada nem acessa equipamentos. O índice permite localizar relatórios, evidências e arquivos de apoio versionados; dados reais, backups e secrets não são documentação para GitHub. A limpeza do bundle remoto continua pendente de decisão específica; não a descrever como concluída.
+
+Validação documental deste complemento: **1.354 links locais conferidos, zero destinos ausentes**, e `git diff --check` aprovado. O índice foi gerado a partir dos caminhos versionados de `docs/`, acrescido do guia novo; não presume completude de informações que nunca foram registradas no repositório.
